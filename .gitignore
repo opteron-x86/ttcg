@@ -1,0 +1,12 @@
+/build/
+/MeridianUI/ttcg/art/
+/Music/
+/Sound/
+/SKSE/Plugins/TTCG.ini
+**/__pycache__/
+*.pyc
+*.dll
+*.pex
+*.pdb
+*.lib
+*.exp

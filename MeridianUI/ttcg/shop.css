@@ -1,0 +1,41 @@
+/* Trading uses the album's navigation, cards, inspector and shared controls. */
+#shop { display:flex;flex-direction:column;height:calc(100% - 54px);padding:22px 26px 12px;min-height:0; }
+.shop-heading { display:flex;align-items:center;justify-content:space-between;gap:24px;min-height:64px;flex-shrink:0; }
+#shop-name { margin:0;font-size:32px;font-weight:normal;color:#e6d2a3; }
+#shop-specialist { margin:5px 0 0;color:var(--muted);font-size:16px; }
+.shop-purses { display:flex;gap:32px;color:var(--muted);font-size:17px; }
+.shop-purses span { display:flex;flex-direction:column;gap:5px;text-align:right; }
+.shop-purses strong { color:var(--ink);font-size:23px;font-weight:normal;font-variant-numeric:tabular-nums; }
+#shop .album-toolbar { height:62px;margin-bottom:20px; }
+#shop .album-main { min-height:0; }
+.shop-filters { display:flex;gap:8px;min-height:42px;flex-shrink:0; }
+#shop-search { flex:1;min-width:100px;font:18px Georgia,serif;padding:9px 12px;color:var(--ink);background:#16211b99;border:1px solid #a48c5559;border-bottom-color:#b49b688c;border-radius:3px; }
+.shop-filters .select-trigger { min-width:120px;font-size:17px;padding:9px 30px 9px 12px; }
+.shop-summary { display:flex;align-items:center;gap:14px;min-height:44px;flex-shrink:0;font-size:15px;color:var(--muted); }
+#shop-results { margin-left:auto;white-space:nowrap; }
+#shop-grid { display:grid;grid-template-columns:repeat(5,minmax(0,1fr));align-content:start;gap:18px 14px;padding:6px 5px 16px;overflow-y:auto;min-height:0;flex:1; }
+.shop-card { display:flex;flex-direction:column;gap:8px;background:none;padding:0;border:0;min-width:0; }
+.shop-card:hover:not(:disabled) { background:none; }
+.shop-card-art { display:block;position:relative;width:100%;aspect-ratio:.76;box-shadow:0 5px 12px #0004; }
+.shop-card[aria-pressed="true"] .shop-card-art { outline:1px solid #f3d394;outline-offset:3px;box-shadow:0 0 15px #d9bc5920; }
+.shop-card-price { display:flex;justify-content:space-between;gap:6px;align-items:center;width:100%;padding:0 3px;font-size:17px;color:#ddc998; }
+.shop-card-price small { font-size:14px;color:var(--muted); }
+.shop-card .owned-count { top:auto;bottom:25%;font-size:14px; }
+#shop-empty { padding:42px 16px;text-align:center;color:var(--muted);font-size:21px;line-height:1.5; }
+#shop .card-inspector-preview { width:228px;max-width:100%;margin:0 auto; }
+.card-inspector-preview { padding:0;display:block;background:none;cursor:zoom-in; }
+.card-inspector-preview:hover:not(:disabled) { box-shadow:0 8px 24px #0006,0 0 0 1px #d8c08080; }
+.card-inspector-count,.card-inspector-meta { text-align:center; }
+.card-inspector-meta { color:#c9c3af; }
+#shop-deck-note { text-align:center;color:#d8c398;font-size:15px;line-height:1.4;margin:8px 0 18px; }
+#shop-deck-note:empty { display:none; }
+.shop-quantity { display:flex;align-items:center;justify-content:space-between;gap:16px;color:var(--muted);font-size:17px;margin:16px 0 10px; }
+.shop-quantity .select-trigger { min-width:75px;font-size:17px;padding:8px 30px 8px 12px; }
+.shop-quantity .select-options { top:auto;bottom:calc(100% + 4px);max-height:220px;overflow-y:auto; }
+#shop-action { font-size:19px;padding:11px 12px; }
+#shop-reason { margin:6px 0 0;font-size:15px;color:#cdbf9f;text-align:center;line-height:1.4; }
+#shop-no-selection { margin:90px 0;text-align:center;color:var(--muted);font-size:18px; }
+#shop-notice { min-height:28px;flex-shrink:0;font-size:16px;color:#cfc1a2;margin:12px 0 0; }
+#shop-confirm .modal { width:600px; }
+#shop-confirm-title { font-size:25px;font-weight:normal;line-height:1.35;margin:0 0 20px;color:#eddaad; }
+#shop-confirm-copy { font-size:18px;line-height:1.6;white-space:pre-line;color:#cfc4ac; }
