@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Tessera</title><link rel="stylesheet" href="style.css"><link rel="stylesheet" href="album.css"><link rel="preload" href="art/backs/mosaic.png" as="image"><link rel="stylesheet" href="foil.css"><link rel="stylesheet" href="table.css"><link rel="stylesheet" href="tournaments.css"><link rel="stylesheet" href="shop.css"></head>
+<body>
+<div id="backdrop" hidden aria-hidden="true"></div>
+<main id="table" hidden>
+ <header><span class="brand">TESSERA</span><span id="rules-label">Open</span><button id="settings-open" class="icon-button" aria-label="Settings" title="Settings"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 17h16M9 4v6M15 14v6"/></svg></button><button id="music" class="music-control icon-button" aria-label="Match music" aria-pressed="true" title="Turn match music off"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9h4l5-4v14l-5-4H3z"/><g class="speaker-waves"><path d="M16 8a6 6 0 0 1 0 8M19 5a10 10 0 0 1 0 14"/></g><path class="speaker-muted" d="m16 9 6 6m0-6-6 6"/></svg></button><div class="size-control"><span>Size</span> <select id="window-size" aria-label="Window size"><option value="60">60%</option><option value="65">65%</option><option value="70">70%</option><option value="75">75%</option><option value="80">80%</option><option value="85">85%</option><option value="90" selected>90%</option><option value="95">95%</option></select></div><button id="leave" class="icon-button" aria-label="Close match" title="Close match (Esc)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></header>
+ <section id="challenge" hidden>
+   <div class="challenge-bar"><div class="opponent-heading"><span id="challenge-name"></span><span id="challenge-skill"></span></div><button id="library-open" class="quiet">Album</button></div>
+   <div id="normal-rules" class="rule-chips" aria-label="Match rules"></div>
+   <div id="match-summary"><button id="rule-lesson" class="quiet" hidden>Show rule</button></div>
+   <div id="culture-terms" hidden><span id="culture-status"></span><button id="abolition-open" class="quiet" hidden>Challenge a rule</button></div>
+   <div id="lobby-deck-tools" class="deck-tools"><label for="lobby-deck-select">Deck</label><select id="lobby-deck-select" aria-label="Choose deck"></select><span id="deck-label"></span><button id="lobby-edit" class="quiet">Edit deck</button></div>
+   <div class="decks"><div class="your-deck"><div id="selected-deck" aria-label="Selected cards"></div></div></div>
+   <div class="challenge-footer"><div class="match-stakes"><div class="wager-details"><label id="wager-control">Wager <select id="wager" aria-label="Gold wager"><option value="0">No wager</option><option value="5">5 gold</option><option value="10">10 gold</option><option value="25">25 gold</option><option value="50">50 gold</option><option value="100">100 gold</option><option value="200">200 gold</option></select></label><span id="fixed-wager"></span></div></div><div class="match-start"><span id="match-terms" role="status"></span><button id="start" class="primary">Play</button></div></div>
+ </section>
+ <section id="rule-request" role="dialog" aria-modal="true" aria-labelledby="rule-request-speaker" aria-describedby="rule-request-text" hidden><p id="rule-request-speaker"></p><p id="rule-request-text"></p><div class="modal-actions"><button id="accept-rule" class="primary">Yes</button><button id="decline-rule">No</button></div></section>
+ <section id="shop" aria-label="Card trading" hidden>
+  <div class="shop-heading"><div><h1 id="shop-name"></h1><p id="shop-specialist" hidden>Specialist card dealer</p></div><div class="shop-purses"><span>Your gold <strong id="shop-gold"></strong></span><span>Merchant gold <strong id="shop-merchant-gold"></strong></span></div></div>
+  <div class="album-toolbar"><nav id="shop-tabs" class="section-tabs" aria-label="Card trading"><button id="shop-buy-tab" aria-pressed="true">Buy</button><button id="shop-sell-tab" aria-pressed="false">Sell</button><button id="shop-buyback-tab" aria-pressed="false">Buy back</button></nav></div>
+  <div class="album-layout"><div class="album-main">
+   <div class="shop-filters"><input id="shop-search" type="search" placeholder="Search cards" aria-label="Search cards" autocomplete="off"><select id="shop-tier" aria-label="Card tier"><option value="">All tiers</option><option value="1">Tier I</option><option value="2">Tier II</option><option value="3">Tier III</option><option value="4">Tier IV</option><option value="5">Tier V</option><option value="6">Tier VI</option><option value="7">Tier VII</option><option value="8">Tier VIII</option><option value="9">Tier IX</option><option value="10">Tier X</option></select><select id="shop-rarity" aria-label="Card rarity"><option value="">All rarities</option><option>Common</option><option>Rare</option><option>Epic</option><option>Legendary</option></select><select id="shop-inventory" aria-label="Cards to sell"><option value="all">All cards</option><option value="surplus">Surplus only</option></select></div>
+   <div class="shop-summary"><span id="shop-filter-note"></span><span id="shop-results"></span></div>
+   <div id="shop-grid" aria-label="Cards for trade"></div><p id="shop-empty" hidden></p>
+  </div><aside class="album-inspector"><div id="shop-selection" hidden><button id="shop-preview" class="card-inspector-preview" aria-label="Inspect card"></button><p id="shop-count" class="card-inspector-count"></p><div id="shop-metadata" class="card-inspector-meta"></div><p id="shop-deck-note"></p><div class="shop-quantity"><label for="shop-quantity">Quantity</label><select id="shop-quantity" aria-label="Quantity"><option value="1">1</option></select></div><div class="inspect-actions"><button id="shop-action" class="primary"></button><p id="shop-reason" role="status"></p></div></div><p id="shop-no-selection">Select a card.</p></aside></div>
+  <p id="shop-notice" role="status" aria-live="polite"></p>
+ </section>
+ <div id="shop-confirm" class="modal-shade" hidden><section class="modal" role="dialog" aria-modal="true" aria-labelledby="shop-confirm-title" aria-describedby="shop-confirm-copy"><h2 id="shop-confirm-title"></h2><p id="shop-confirm-copy"></p><div class="modal-actions"><button id="shop-cancel" class="quiet">Keep card</button><button id="shop-confirm-action" class="primary">Sell</button></div></section></div>
+ <section id="album" aria-label="Tessera album" hidden>
+  <div class="album-toolbar"><span id="album-title" hidden></span><nav class="section-tabs" id="album-tabs" aria-label="Album sections"><button id="album-cards-tab" aria-pressed="true">Cards</button><button id="album-decks-tab" aria-pressed="false">Decks</button><button id="album-opponents-tab" aria-pressed="false">Journal</button><button id="album-tournaments-tab" aria-pressed="false">Tournaments</button><button id="album-rules-tab" aria-pressed="false">Rules</button></nav><span id="album-count"></span><button id="album-back" class="quiet">Back to match setup</button></div>
+  <div id="album-tournaments" hidden>
+   <aside class="tournament-sidebar"><div class="tournament-views" aria-label="Tournament list"><button id="tournament-available" class="quiet" aria-pressed="true">Available</button><button id="tournament-history" class="quiet" aria-pressed="false">History</button></div><nav id="tournament-list" class="chapter-nav" aria-label="Tournaments"></nav></aside>
+   <div class="tournament-main">
+    <div class="tournament-heading"><div><h2 id="tournament-title" class="chapter-title">Tournaments</h2><p id="tournament-venue"></p></div><span id="tournament-status"></span></div>
+    <div id="tournament-content" hidden>
+     <div id="tournament-rules" class="rule-chips" aria-label="Tournament rules"></div>
+     <div class="tournament-terms"><span id="tournament-dates"></span><span id="tournament-entry"></span></div>
+     <div class="tournament-body"><div id="tournament-bracket" aria-label="Tournament bracket"></div><aside class="tournament-prize"><div id="tournament-prize-art"></div><h3 id="tournament-prize-name"></h3><p id="tournament-purse"></p><p id="tournament-prize-description"></p></aside></div>
+     <div class="tournament-actions"><p id="tournament-reason" role="status"></p><button id="tournament-withdraw" class="quiet">Withdraw</button><button id="tournament-edit" class="quiet">Edit deck</button><button id="tournament-action" class="primary"></button></div>
+    </div>
+   </div>
+  </div>
+  <div id="opponents-panel" hidden>
+   <nav id="journal-chapters" class="chapter-nav" aria-label="Hold chapters"></nav>
+   <div class="journal-main">
+    <div class="hold-toolbar"><h2 id="journal-title" class="chapter-title"></h2><select id="opponent-hold" aria-label="Hold"><option value="0">All holds</option></select><span id="hold-rules"></span></div>
+    <div class="journal-objective"><p id="progress-step"></p></div>
+    <div class="journal-search"><input id="journal-search" type="search" placeholder="Find a player" aria-label="Find a known player"><select id="journal-filter" aria-label="Player filter"><option value="all">All players</option><option value="unplayed">Not played</option><option value="played">Played</option></select><span id="journal-count"></span></div>
+    <div class="journal-players"><div id="opponents-list" aria-label="Known players"></div><aside id="journal-player" aria-label="Player details"></aside></div>
+   </div>
+  </div>
+  <div id="album-rules" hidden>
+   <p id="album-rules-hold"></p>
+   <div class="rules-split">
+    <nav id="rules-list" class="chapter-nav" aria-label="Rules"></nav>
+    <aside id="rules-panel">
+     <h3 id="rules-title" class="chapter-title"></h3>
+     <p id="rules-copy"></p>
+     <div id="rules-demo" hidden>
+      <div class="rules-table">
+       <div class="rules-hand-column"><div class="rules-player">You <span id="rules-player-score"></span></div><div id="rules-player-hand" class="rules-hand" aria-label="Your practice hand"></div></div>
+       <div id="rules-demo-board" class="rules-demo-board" aria-label="Practice board"></div>
+       <div class="rules-hand-column"><div class="rules-player rival">Opponent <span id="rules-rival-score"></span></div><div id="rules-rival-hand" class="rules-hand" aria-label="Opponent’s practice hand"></div></div>
+      </div>
+      <p id="rules-demo-caption" role="status" aria-live="polite"></p>
+      <div id="rules-demo-controls" class="rules-controls"><button id="rules-demo-back" class="quiet">← Back</button><span id="rules-demo-position"></span><button id="rules-demo-next" class="primary">Opponent’s turn</button><button id="rules-demo-replay" class="quiet">Start again</button></div>
+     </div>
+    </aside>
+   </div>
+  </div>
+  <div id="album-workspace">
+   <aside id="saved-decks-panel" hidden><div class="saved-decks-heading">Saved decks</div><div id="saved-decks-list" aria-label="Saved decks"></div><button id="album-deck-new" class="quiet"><span aria-hidden="true">＋</span> New deck</button></aside>
+   <div class="album-layout"><div class="album-main">
+    <div id="album-deck-editor" hidden>
+     <div id="album-deck-tools" class="deck-tools"><div class="deck-title-editor"><button id="album-deck-rename" class="quiet" aria-label="Rename deck"><span id="album-deck-name"></span><svg class="rename-pencil" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 4 5 5M4 20l5-1L21 7a2 2 0 0 0-5-5L4 14Z"/></svg></button><input id="album-deck-name-input" aria-label="Deck name" maxlength="32" autocomplete="off" spellcheck="false" hidden></div><select id="album-deck-select" aria-label="Choose deck"></select><span id="album-deck-label"></span><div class="deck-actions" aria-label="Deck actions"><button id="album-deck-copy" class="quiet">Duplicate</button><button id="album-clear" class="quiet">Clear</button><button id="album-deck-delete" class="quiet">Delete</button></div></div>
+     <div id="album-deck" aria-label="Saved deck"></div>
+     <div class="deck-details"><span id="deck-composition"></span><div id="deck-slot-actions"><button id="album-move-left" class="quiet" aria-label="Move card left">←</button><button id="album-move-right" class="quiet" aria-label="Move card right">→</button><button id="album-remove" class="quiet">Remove</button></div></div>
+    </div>
+    <div class="album-filters"><input id="album-search" type="search" placeholder="Search cards" aria-label="Search collection"><select id="album-filter" aria-label="Card filter"><option value="owned">Owned</option><option value="all">Discovered</option><option value="missing">Missing</option><option value="extras">Extras</option></select><select id="album-sort" aria-label="Sort cards"><option value="tier">Tier</option><option value="name">Name</option><option value="rarity">Rarity</option><option value="quantity">Quantity</option></select><select id="album-direction" aria-label="Sort direction"><option value="asc">Low to high</option><option value="desc">High to low</option></select><button id="album-filters-toggle" class="filter-toggle" aria-expanded="false" aria-controls="album-filter-panel">Filters</button><div id="album-filter-panel" hidden><select id="album-tier" aria-label="Tier"><option value="0">All tiers</option><option value="1">Tier I</option><option value="2">Tier II</option><option value="3">Tier III</option><option value="4">Tier IV</option><option value="5">Tier V</option><option value="6">Tier VI</option><option value="7">Tier VII</option><option value="8">Tier VIII</option><option value="9">Tier IX</option><option value="10">Tier X</option></select><select id="album-group" aria-label="Creature group"><option value="">All types</option></select><select id="album-affinity" aria-label="Affinity"><option value="">All affinities</option><option>Strength</option><option>Intelligence</option><option>Willpower</option><option>Agility</option><option>Endurance</option><option>Neutral</option></select><select id="album-rarity" aria-label="Rarity"><option value="">All rarities</option><option>Common</option><option>Rare</option><option>Epic</option><option>Legendary</option></select><select id="album-finish" aria-label="Finish"><option value="">All finishes</option><option value="normal">Standard</option><option value="foil">Foil</option></select><button id="album-filters-done" class="quiet">Done</button></div></div>
+    <div id="album-filter-summary"><div id="album-pack-shelf"></div><div id="album-filter-chips"></div><span id="album-results"></span><button id="album-filters-clear" class="quiet" hidden>Clear filters</button></div>
+    <div id="album-grid" aria-label="Cards"></div>
+   </div><aside class="album-inspector"><button id="inspect-card" aria-label="Inspect card" title="Inspect card"></button><p id="inspect-count"></p><div id="inspect-metadata"></div><div class="inspect-actions"><button id="inspect-add" class="primary" disabled>Add to deck</button><span id="inspect-reason" role="status"></span><button id="inspect-open-pack" class="primary" hidden>Open pack</button></div></aside></div>
+  </div>
+  <div id="album-status" role="status"></div>
+ </section>
+ <div id="album-modal" class="modal-shade" hidden><section class="modal" role="dialog" aria-modal="true" aria-labelledby="album-modal-title"><p id="album-modal-title"></p><div id="pack-reveal"></div><div id="inspect-tools" hidden><span>Drag to rotate</span><button id="inspect-flip" class="quiet">Turn over</button><button id="inspect-reset" class="quiet">Reset</button></div><div id="inspect-navigation" hidden><button id="inspect-previous" aria-label="Previous card">←</button><span id="inspect-position"></span><button id="inspect-next" aria-label="Next card">→</button></div><div class="modal-actions"><button id="album-confirm" class="primary">Continue</button><button id="album-cancel" hidden>Cancel</button></div></section></div>
+ <section id="guided-lesson" aria-label="Learn to play" hidden>
+  <div class="match-heading">
+   <div id="demo-player-nameplate" class="nameplate"><span class="turn-marker" aria-hidden="true">◆</span><span>You</span><span id="demo-player-score" class="score player">5</span></div>
+   <div class="demo-terms"><div id="demo-rules" class="rule-chips"></div><span>No stakes</span></div>
+   <div id="demo-rival-nameplate" class="nameplate rival"><span id="demo-rival-score" class="score rival">5</span><span id="demo-rival-name" class="rival-name">Opponent</span><span class="turn-marker" aria-hidden="true">◆</span></div>
+  </div>
+  <div class="demo-stage"><div id="demo-player-hand" class="demo-hand" aria-label="Your demonstration hand"></div><div class="board-stage"><div id="demo-board" aria-label="Demonstration board"></div><div id="demo-callout" role="status" aria-live="polite" hidden></div></div><div id="demo-rival-hand" class="demo-hand" aria-label="Opponent demonstration hand"></div></div>
+  <p id="demo-prompt" role="status" aria-live="polite"></p>
+  <div class="demo-actions"><button id="demo-next" class="primary">Opponent's turn</button><button id="demo-replay" hidden>Replay lesson</button><button id="demo-play" class="quiet">Play Opponent</button></div>
+ </section>
+ <section id="game" hidden>
+   <div class="match-heading"><div id="player-nameplate" class="nameplate"><span class="turn-marker" aria-hidden="true">◆</span><span class="player-name">You</span><span class="score player" id="player-score">5</span></div><div id="board-rules" class="rule-chips"></div><div id="rival-nameplate" class="nameplate rival"><span class="score rival" id="rival-score">5</span><span class="rival-name" id="rival-name"></span><span class="turn-marker" aria-hidden="true">◆</span></div></div>
+   <div class="play-area"><div id="player-hand" class="hand" aria-label="Your hand"></div><div class="board-stage"><div id="board" aria-label="Board"></div><div id="rule-callout" role="status" aria-live="polite" hidden></div></div><div id="rival-hand" class="hand" aria-label="Opponent hand"></div></div>
+   <footer id="match-footer"><span id="turn" role="status" aria-live="polite"></span><span id="group-status" role="status"></span><span id="board-stakes"></span><button id="table-inspect" class="quiet" disabled>Inspect <kbd>I</kbd></button></footer>
+ </section>
+
+ <div id="table-inspection" class="modal-shade" hidden><section class="table-inspection-panel" role="dialog" aria-modal="true" aria-labelledby="table-inspect-name"><div id="table-inspect-art"></div><div class="table-inspect-details"><h2 id="table-inspect-name"></h2><p id="table-inspect-meta"></p><p id="table-inspect-types"></p><div id="table-inspect-affinities"></div><div id="table-inspect-ranks" aria-label="Printed ranks"></div><p id="table-inspect-modifier"></p><div class="art-controls"><button id="table-inspect-flip" class="quiet">Turn over</button><button id="table-inspect-reset" class="quiet">Reset</button></div></div><button id="table-inspect-close" class="icon-button" aria-label="Close inspection">×</button></section></div>
+ <div id="abolition-dialog" class="modal-shade" hidden><section class="modal" role="dialog" aria-modal="true" aria-labelledby="abolition-title"><h2 id="abolition-title">Challenge a rule</h2><p>Win against this player to abolish one rule throughout the hold.</p><div id="abolition-options" class="modal-actions"></div><p id="abolition-description"></p><div class="modal-actions"><button id="abolition-confirm" class="primary" disabled>Accept challenge</button><button id="abolition-cancel">Cancel</button></div></section></div>
+ <div id="group-choice" class="modal-shade" hidden><section class="modal" role="dialog" aria-modal="true" aria-labelledby="group-choice-title"><p id="group-choice-title">Choose a group</p><div id="group-options" class="modal-actions"></div><button id="group-cancel" class="quiet">Cancel</button></section></div>
+ <div id="post-match" class="modal-shade" hidden><section class="modal post-match-panel" role="dialog" aria-modal="true" aria-label="Match complete"><p id="culture-result" role="status" hidden></p><p id="post-match-reason" role="status" hidden></p><div id="post-tournament" hidden><p id="post-tournament-copy"></p><button id="post-tournament-view" class="quiet">View tournament</button></div><div class="modal-actions"><button id="play-again" class="primary">Play Again</button><button id="post-leave">Leave</button></div></section></div>
+ <div id="reward" class="modal-shade" hidden><section class="modal trade-panel" role="dialog" aria-modal="true" aria-labelledby="reward-title">
+  <p id="reward-title">Choose a card</p>
+  <div class="trade-row"><div class="trade-label" id="trade-rival-name"></div><div id="reward-cards" class="trade-hand"></div><div id="trade-owner-1" class="trade-received" aria-label="Opponent receives"></div></div>
+  <div class="trade-row"><div class="trade-label">You</div><div id="trade-player-cards" class="trade-hand"></div><div id="trade-owner-0" class="trade-received" aria-label="You receive"></div></div>
+  <div class="trade-footer"><span id="trade-gold" role="status"></span><span id="trade-status" role="status"></span><button id="take-card" class="primary" disabled>Confirm</button></div>
+ </section></div>
+ <div id="tournament-outcome" class="modal-shade" hidden><section class="modal tournament-outcome-panel" role="dialog" aria-modal="true" aria-labelledby="tournament-outcome-title"><h2 id="tournament-outcome-title"></h2><p id="tournament-outcome-copy"></p><div id="tournament-outcome-rewards" hidden></div><div id="tournament-foil-reward" hidden><p id="tournament-foil-remaining"></p><div class="tournament-foil-choice"><div id="tournament-foil-preview"></div><div><label id="tournament-foil-control">Choose a card<select id="tournament-foil-card" aria-label="Card to upgrade"></select></label><button id="tournament-upgrade">Make foil</button><p id="tournament-foil-empty" hidden>No eligible cards.</p></div></div><p class="tournament-foil-expiry">Unused upgrades are lost when you leave.</p></div><div class="modal-actions"><button id="tournament-outcome-leave" class="quiet">Leave</button><button id="tournament-outcome-bracket">View bracket</button><button id="tournament-outcome-next" class="primary"></button></div></section></div>
+ <div id="tournament-confirm" class="modal-shade" hidden><section class="modal tournament-confirm-panel" role="dialog" aria-modal="true" aria-labelledby="tournament-confirm-title"><h2 id="tournament-confirm-title"></h2><p id="tournament-confirm-copy" hidden></p><div class="modal-actions"><button id="tournament-cancel">Cancel</button><button id="tournament-confirm-action" class="primary">Confirm</button></div></section></div>
+ <div id="forfeit" class="modal-shade" hidden><section class="modal" role="dialog" aria-modal="true" aria-labelledby="forfeit-title"><p id="forfeit-title">Forfeit?</p><p id="forfeit-cost"></p><div class="modal-actions"><button id="keep-playing" class="primary">Keep playing</button><button id="confirm-forfeit">Forfeit</button></div></section></div>
+ <div id="settings-panel" class="modal-shade" hidden><section class="modal settings-panel" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+  <p id="settings-title">Settings</p>
+  <div class="settings-body">
+  <div class="binding-row"><span>Album</span><button id="bind-collection" aria-label="Album hotkey">F7</button><button id="unbind-collection" class="quiet">Unbind</button><button id="reset-collection" class="quiet">Reset</button></div>
+  <div class="binding-row"><span>Challenge</span><button id="bind-challenge" aria-label="Challenge hotkey">F8</button><button id="unbind-challenge" class="quiet">Unbind</button><button id="reset-challenge" class="quiet">Reset</button></div>
+  <section id="card-back-settings" aria-labelledby="card-back-title">
+   <div class="card-back-heading"><h2 id="card-back-title">Card back</h2><button id="card-back-refresh" class="quiet">Refresh</button></div>
+   <div id="card-back-choices" role="group" aria-labelledby="card-back-title"></div>
+   <p id="card-back-status" role="status"></p>
+   <details class="card-back-help"><summary tabindex="0">Custom card backs</summary>
+    <p>Put PNG, JPG or WebP images in this folder, then select Refresh.</p>
+    <code>Data/MeridianUI/ttcg/art/backs/custom/</code>
+    <p>Use portrait images. The filename becomes the name in the picker.</p>
+   </details>
+  </section>
+  <section id="development-settings" aria-labelledby="development-title" hidden>
+   <h2 id="development-title">Development</h2>
+   <h3>Tournaments</h3>
+   <div class="development-grid">
+    <button id="dev-RegularTournaments" class="development-switch" role="switch" aria-checked="false" data-development="RegularTournaments">Regular tournaments<span></span></button>
+    <button id="dev-InvitationalTournaments" class="development-switch" role="switch" aria-checked="false" data-development="InvitationalTournaments">Invitationals<span></span></button>
+    <button id="dev-MastersTournaments" class="development-switch" role="switch" aria-checked="false" data-development="MastersTournaments">Masters<span></span></button>
+    <label>Invitation hold<select id="dev-TournamentHold" aria-label="Invitation hold" data-development="TournamentHold"><option value="1">Whiterun</option><option value="2">Falkreath</option><option value="3">Haafingar</option><option value="4">Hjaalmarch</option><option value="5">The Pale</option><option value="6">The Rift</option><option value="7">Winterhold</option><option value="8">Eastmarch</option><option value="9">The Reach</option><option value="10">Solstheim</option></select></label>
+   </div>
+   <p class="development-help">Regular tournaments are available at the inn you visit. Invitationals and Masters still require a courier invitation.</p>
+   <h3>Collection &amp; players</h3>
+   <div class="development-grants"><button id="dev-add-cards">Add all cards</button><button id="dev-add-foils">Add all foils</button></div>
+   <div class="development-grid">
+    <button id="dev-ShowAllPlayers" class="development-switch" role="switch" aria-checked="false" data-development="ShowAllPlayers">Show all players<span></span></button>
+    <button id="dev-UnlockAllPlayers" class="development-switch" role="switch" aria-checked="false" data-development="UnlockAllPlayers">Unlock all players<span></span></button>
+    <button id="dev-RevealAllCards" class="development-switch" role="switch" aria-checked="false" data-development="RevealAllCards">Reveal all cards<span></span></button>
+    <button id="dev-AllowAnyNPC" class="development-switch" role="switch" aria-checked="false" data-development="AllowAnyNPC">Challenge any adult<span></span></button>
+    <button id="dev-RecordResults" class="development-switch" role="switch" aria-checked="false" data-development="RecordResults">Record results &amp; reputation<span></span></button>
+   </div>
+   <details class="development-overrides"><summary id="dev-overrides-toggle" tabindex="0">Match overrides</summary>
+    <p class="development-help">Tournament rules stay fixed. Children always play without stakes.</p>
+    <button id="dev-hold-rules" class="development-switch" role="switch" aria-checked="true">Use hold rules<span></span></button>
+    <div id="dev-rules" class="development-rule-grid" aria-label="Match rules" hidden></div>
+    <div class="development-grid development-selects">
+     <label>Trade rule<select id="dev-TradeRule" aria-label="Development trade rule" data-development="TradeRule"><option value="-1">Use hold rule</option><option value="0">None</option><option value="1">One</option><option value="2">Diff</option><option value="3">Direct</option><option value="4">All</option></select></label>
+     <label>Wager<select id="dev-Wager" aria-label="Development wager" data-development="Wager"><option value="-1">Normal</option><option value="0">0 gold</option><option value="5">5 gold</option><option value="10">10 gold</option><option value="25">25 gold</option><option value="50">50 gold</option><option value="100">100 gold</option><option value="200">200 gold</option></select></label>
+     <label>Opponent skill<select id="dev-OpponentSkill" aria-label="Development opponent skill" data-development="OpponentSkill"><option value="-1">Normal</option><option value="0">Beginner</option><option value="1">Regular</option><option value="2">Experienced</option><option value="3">Expert</option></select></label>
+     <label>Practice lesson<select id="dev-RuleLesson" aria-label="Development practice lesson" data-development="RuleLesson"><option value="0">Off</option><option value="1">Three Open</option><option value="2">Legion</option><option value="3">Decimation</option><option value="4">Affinity</option></select></label>
+    </div>
+   </details>
+   <p id="development-status" role="status"></p>
+  </section>
+  </div>
+  <p id="binding-status" role="status"></p><div class="modal-actions"><button id="binding-cancel" hidden>Cancel</button><button id="settings-done" class="primary">Done</button></div>
+ </section></div>
+<div id="deck-dialog" class="modal-shade" hidden><form class="modal" id="deck-form" role="dialog" aria-modal="true" aria-labelledby="deck-dialog-title"><h2 id="deck-dialog-title">New deck</h2><label for="deck-name" id="deck-name-label">Name</label><input id="deck-name" maxlength="32" autocomplete="off" spellcheck="false"><p id="deck-dialog-message" hidden></p><div class="modal-actions"><button id="deck-cancel" type="button">Cancel</button><button id="deck-submit" type="submit" class="primary">Create</button></div></form></div>
+</main><script src="select-menu.js"></script><script src="rule-demos.js"></script><script src="app.js"></script><script src="album.js"></script><script src="shop.js"></script><script src="decks.js"></script><script src="journal.js"></script><script src="campaign.js"></script><script src="lesson.js"></script><script src="hotkeys.js"></script><script src="development.js"></script><script src="card-backs.js"></script><script src="table.js"></script><script src="tournaments.js"></script><script src="meridian-input.js"></script>
+</body></html>

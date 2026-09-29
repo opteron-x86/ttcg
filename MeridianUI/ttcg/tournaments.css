@@ -1,0 +1,67 @@
+#album-tournaments { display:grid;grid-template-columns:190px minmax(0,1fr);gap:24px;flex:1;min-height:0; }
+#tournament-list { overflow-y:auto; }
+#tournament-list .chapter-link { position:relative;padding-right:20px;font-size:17px;white-space:normal;line-height:1.4; }
+#tournament-list .chapter-detail { display:block;margin-top:5px;color:var(--muted);font-size:13px;font-weight:normal;line-height:1.45; }
+#album-tournaments-tab.unseen:before,#tournament-list .chapter-link.unseen:after { content:"";position:absolute;width:5px;height:5px;border-radius:50%;background:var(--gold); }
+#album-tournaments-tab.unseen:before { top:16px;right:-8px; }
+#tournament-list .chapter-link.unseen:after { top:19px;right:8px; }
+.tournament-main { min-width:0;min-height:0;display:flex;flex-direction:column;padding-right:8px; }
+#tournament-content { display:flex;flex-direction:column;flex:1;min-height:0; }
+.tournament-heading { display:flex;align-items:center;justify-content:space-between;gap:24px;padding:4px 0 18px; }
+.tournament-heading p { margin:9px 0 0;color:var(--muted);font-size:17px; }
+#tournament-status { color:var(--gold);font-size:18px;white-space:nowrap; }
+#tournament-rules { justify-content:flex-start;padding:12px 0;border-block:1px solid #bba16b33; }
+.tournament-terms { display:flex;justify-content:space-between;gap:16px;margin:18px 0;color:var(--muted);font-size:15px; }
+.tournament-body { display:grid;grid-template-columns:minmax(0,1fr) 180px;gap:26px;flex:1;min-height:0; }
+#tournament-bracket { display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px; }
+#tournament-bracket section { display:grid;grid-template-rows:24px repeat(8,minmax(0,1fr));gap:0;min-height:0; }
+#tournament-bracket h3 { font-size:16px;font-weight:normal;color:var(--muted);margin:0; }
+.tournament-pair { grid-row:span 2;align-self:center;border:1px solid #bba16b33;background:#0c17134d; }
+.tournament-entrant { padding:6px 10px;min-height:48px;font-size:15px;display:grid;grid-template-columns:minmax(0,1fr) 20px;align-items:center;gap:10px;border-left:2px solid transparent; }
+.tournament-entrant+div { border-top:1px solid #bba16b22; }
+.tournament-entrant.you { border-left-color:var(--gold); }
+.tournament-entrant.reserved { border-left:2px dashed var(--gold);color:var(--gold);background:#bba16b0c; }
+.tournament-entrant.winner { background:#bba16b18;color:var(--gold); }
+.tournament-prize { border-left:1px solid #bba16b33;padding-left:18px;text-align:center;overflow-y:auto; }
+#tournament-prize-art figure,.tournament-reward-cards figure { margin:0;min-width:0; }
+#tournament-prize-art .art-scene { width:140px;height:auto;aspect-ratio:.76;margin:auto; }
+#tournament-prize-art figcaption,.tournament-reward-cards figcaption { color:var(--muted);font-size:15px;line-height:1.4;margin:10px 0 16px; }
+#tournament-prize-art.multiple figure { display:grid;grid-template-columns:64px minmax(0,1fr);gap:10px;align-items:center;margin-bottom:12px;text-align:left; }
+#tournament-prize-art.multiple .art-scene { width:64px; }
+#tournament-prize-art.multiple figcaption { margin:0;font-size:14px; }
+.tournament-reward-cards { display:flex;justify-content:center;gap:18px; }
+.tournament-reward-cards figure { flex:0 1 140px; }
+.tournament-reward-cards .art-scene { width:100%;height:auto;aspect-ratio:.76; }
+.tournament-prize h3 { font-size:19px;font-weight:normal;margin:15px 0 8px;color:var(--gold); }
+.tournament-prize p { font-size:15px;line-height:1.5;color:var(--muted); }
+.tournament-actions { display:flex;align-items:center;justify-content:flex-end;gap:12px;border-top:1px solid #bba16b33;margin-top:16px;padding-top:12px; }
+#tournament-reason { margin:0 auto 0 0;font-size:16px;color:var(--muted); }
+#tournament-foil-reward { margin-bottom:24px;padding-top:16px;border-top:1px solid #bba16b33; }
+#tournament-foil-remaining { color:var(--gold);font-size:20px;margin:0 0 16px; }
+.tournament-foil-choice { display:grid;grid-template-columns:130px minmax(0,1fr);gap:22px;text-align:left;align-items:center; }
+#tournament-foil-preview { position:relative;aspect-ratio:.76; }
+#tournament-foil-control { display:flex;flex-direction:column;gap:10px;margin-bottom:16px;font-size:17px;color:var(--muted); }
+#tournament-foil-card-trigger { min-width:0;width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+#tournament-foil-reward .tournament-foil-expiry,#tournament-foil-empty { color:var(--muted);font-size:16px;line-height:1.5;margin:16px 0 0; }
+
+#tournament-bracket section:nth-child(2) .tournament-pair { grid-row:span 4; }
+#tournament-bracket section:nth-child(3) .tournament-pair { grid-row:span 8; }
+.tournament-wins { font-size:21px;text-align:right;color:var(--muted);font-variant-numeric:tabular-nums; }
+.tournament-entrant.winner .tournament-wins { color:var(--gold); }
+#tournament-bracket .current-round h3 { color:var(--gold); }
+.tournament-outcome-panel { width:560px;max-height:85%;overflow:auto; }
+.tournament-outcome-panel h2 { color:var(--gold);font-size:34px;font-weight:normal;margin:0 0 15px; }
+.tournament-outcome-panel #tournament-outcome-copy { font-size:20px;color:var(--muted);line-height:1.5;margin-bottom:24px; }
+#tournament-outcome-rewards { margin:0 0 24px; }
+#tournament-outcome-rewards p { font-size:22px;margin:6px 0; }
+.tournament-outcome-panel .modal-actions { gap:12px; }
+.tournament-confirm-panel { width:460px;max-width:80%; }
+.tournament-confirm-panel h2 { margin:0 0 26px;color:var(--gold);font-size:28px;font-weight:normal; }
+.tournament-confirm-panel #tournament-confirm-copy { color:var(--muted);font-size:18px;line-height:1.5; }
+
+.tournament-sidebar { display:flex;flex-direction:column;min-height:0; }
+.tournament-views { display:flex;gap:4px;margin-bottom:16px;border-bottom:1px solid #bba16b33; }
+.tournament-views button { flex:1;padding:10px 2px;font-size:15px;border:0;border-bottom:2px solid transparent;border-radius:0; }
+.tournament-views button[aria-pressed="true"] { color:var(--gold);border-bottom-color:var(--gold); }
+#post-tournament { text-align:left;border-top:1px solid #bba16b33;padding-top:16px;margin:20px 0; }
+#post-tournament-copy { color:var(--muted);font-size:18px;line-height:1.5;margin:0 0 8px; }
