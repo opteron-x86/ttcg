@@ -118,6 +118,11 @@
   <div class="settings-body">
   <div class="binding-row"><span>Album</span><button id="bind-collection" aria-label="Album hotkey">F7</button><button id="unbind-collection" class="quiet">Unbind</button><button id="reset-collection" class="quiet">Reset</button></div>
   <div class="binding-row"><span>Challenge</span><button id="bind-challenge" aria-label="Challenge hotkey">F8</button><button id="unbind-challenge" class="quiet">Unbind</button><button id="reset-challenge" class="quiet">Reset</button></div>
+  <div class="album-pause-settings">
+   <button id="pause-world-in-album" class="settings-switch" role="switch" aria-checked="true" aria-describedby="album-pause-help">Pause world in album<span aria-hidden="true">On</span></button>
+   <p id="album-pause-help">Albums opened from match setup stay paused.</p>
+   <p id="interface-status" role="status" hidden></p>
+  </div>
   <section id="card-back-settings" aria-labelledby="card-back-title">
    <div class="card-back-heading"><h2 id="card-back-title">Card back</h2><button id="card-back-refresh" class="quiet">Refresh</button></div>
    <div id="card-back-choices" role="group" aria-labelledby="card-back-title"></div>
@@ -132,24 +137,24 @@
    <h2 id="development-title">Development</h2>
    <h3>Tournaments</h3>
    <div class="development-grid">
-    <button id="dev-RegularTournaments" class="development-switch" role="switch" aria-checked="false" data-development="RegularTournaments">Regular tournaments<span></span></button>
-    <button id="dev-InvitationalTournaments" class="development-switch" role="switch" aria-checked="false" data-development="InvitationalTournaments">Invitationals<span></span></button>
-    <button id="dev-MastersTournaments" class="development-switch" role="switch" aria-checked="false" data-development="MastersTournaments">Masters<span></span></button>
+    <button id="dev-RegularTournaments" class="settings-switch" role="switch" aria-checked="false" data-development="RegularTournaments">Regular tournaments<span></span></button>
+    <button id="dev-InvitationalTournaments" class="settings-switch" role="switch" aria-checked="false" data-development="InvitationalTournaments">Invitationals<span></span></button>
+    <button id="dev-MastersTournaments" class="settings-switch" role="switch" aria-checked="false" data-development="MastersTournaments">Masters<span></span></button>
     <label>Invitation hold<select id="dev-TournamentHold" aria-label="Invitation hold" data-development="TournamentHold"><option value="1">Whiterun</option><option value="2">Falkreath</option><option value="3">Haafingar</option><option value="4">Hjaalmarch</option><option value="5">The Pale</option><option value="6">The Rift</option><option value="7">Winterhold</option><option value="8">Eastmarch</option><option value="9">The Reach</option><option value="10">Solstheim</option></select></label>
    </div>
    <p class="development-help">Regular tournaments are available at the inn you visit. Invitationals and Masters still require a courier invitation.</p>
    <h3>Collection &amp; players</h3>
    <div class="development-grants"><button id="dev-add-cards">Add all cards</button><button id="dev-add-foils">Add all foils</button></div>
    <div class="development-grid">
-    <button id="dev-ShowAllPlayers" class="development-switch" role="switch" aria-checked="false" data-development="ShowAllPlayers">Show all players<span></span></button>
-    <button id="dev-UnlockAllPlayers" class="development-switch" role="switch" aria-checked="false" data-development="UnlockAllPlayers">Unlock all players<span></span></button>
-    <button id="dev-RevealAllCards" class="development-switch" role="switch" aria-checked="false" data-development="RevealAllCards">Reveal all cards<span></span></button>
-    <button id="dev-AllowAnyNPC" class="development-switch" role="switch" aria-checked="false" data-development="AllowAnyNPC">Challenge any adult<span></span></button>
-    <button id="dev-RecordResults" class="development-switch" role="switch" aria-checked="false" data-development="RecordResults">Record results &amp; reputation<span></span></button>
+    <button id="dev-ShowAllPlayers" class="settings-switch" role="switch" aria-checked="false" data-development="ShowAllPlayers">Show all players<span></span></button>
+    <button id="dev-UnlockAllPlayers" class="settings-switch" role="switch" aria-checked="false" data-development="UnlockAllPlayers">Unlock all players<span></span></button>
+    <button id="dev-RevealAllCards" class="settings-switch" role="switch" aria-checked="false" data-development="RevealAllCards">Reveal all cards<span></span></button>
+    <button id="dev-AllowAnyNPC" class="settings-switch" role="switch" aria-checked="false" data-development="AllowAnyNPC">Challenge any adult<span></span></button>
+    <button id="dev-RecordResults" class="settings-switch" role="switch" aria-checked="false" data-development="RecordResults">Record results &amp; reputation<span></span></button>
    </div>
    <details class="development-overrides"><summary id="dev-overrides-toggle" tabindex="0">Match overrides</summary>
     <p class="development-help">Tournament rules stay fixed. Children always play without stakes.</p>
-    <button id="dev-hold-rules" class="development-switch" role="switch" aria-checked="true">Use hold rules<span></span></button>
+    <button id="dev-hold-rules" class="settings-switch" role="switch" aria-checked="true">Use hold rules<span></span></button>
     <div id="dev-rules" class="development-rule-grid" aria-label="Match rules" hidden></div>
     <div class="development-grid development-selects">
      <label>Trade rule<select id="dev-TradeRule" aria-label="Development trade rule" data-development="TradeRule"><option value="-1">Use hold rule</option><option value="0">None</option><option value="1">One</option><option value="2">Diff</option><option value="3">Direct</option><option value="4">All</option></select></label>
