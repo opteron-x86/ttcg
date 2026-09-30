@@ -21,6 +21,10 @@ function renderBindings() {
  }
  $('binding-cancel').hidden=!capture;
  $('binding-status').textContent=config.notice|| (capture?'Esc to cancel':'');
+ const pauseAlbum=config.pauseWorldInAlbum!==false,control=$('pause-world-in-album');
+ control.disabled=Boolean(capture)||state.phase!=='ready';
+ control.setAttribute('aria-checked',String(pauseAlbum));control.lastElementChild.textContent=pauseAlbum?'On':'Off';
+ $('interface-status').textContent=config.interfaceNotice||'';$('interface-status').hidden=!config.interfaceNotice;
  renderDevelopmentSettings();
  renderCardBackSettings();
 }
@@ -33,6 +37,10 @@ $('settings-open').onclick=()=>{if(state?.phase!=='ready')return;closeSelectMenu
 $('settings-panel').querySelector('.settings-body').addEventListener('focusin',event=>event.target.scrollIntoView({block:'nearest',inline:'nearest'}));
 $('settings-done').onclick=closeSettings;
 $('binding-cancel').onclick=()=>{bindingPending='';send('binding','cancel');};
+$('pause-world-in-album').onclick=()=>{
+ const control=$('pause-world-in-album');if(control.disabled)return;
+ control.disabled=true;send('settings',`pause-album ${bindings().pauseWorldInAlbum===false?1:0}`);
+};
 for(const field of ['collection','challenge']) {
  $('bind-'+field).onclick=()=>{bindingPending=field;send('binding',`begin ${field}`);renderBindings();};
  $('unbind-'+field).onclick=()=>send('binding',`unbind ${field}`);

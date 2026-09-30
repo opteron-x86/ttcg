@@ -9,6 +9,7 @@
 #include <thread>
 #include "BuildInfo.h"
 #include "UIHost.h"
+#include "WorldFocus.h"
 #include "Match.h"
 #include "Presentation.h"
 #include "Lesson.h"
@@ -40,6 +41,10 @@ unsigned collectionKey=0x41,challengeKey=0x42;
 std::string bindingCapture,bindingNotice;
 std::string developmentNotice;
 std::string cardBackNotice;
+bool pauseWorldInAlbum=true;
+std::string interfaceNotice;
+ttcg::WorldFocus worldFocus;
+std::atomic<std::uint64_t> unpausedAlbumEpoch{0};
 bool pendingAlbum=false,challengeContext=false;
 ttcg::Match match;
 ttcg::Result lastResult;
@@ -152,8 +157,29 @@ void updateMusic() {
  else log::error("Could not start any music from Data/Music/TTCG");
 }
 
+void close(bool unwind=true);
+bool updateWorldFocus() {
+ const auto result=worldFocus.apply(*api,view,ttcg::shouldPauseWorld(pauseWorldInAlbum,screen,challengeContext,active));
+ unpausedAlbumEpoch.store(result==ttcg::FocusUpdate::Ready&&worldFocus.unpaused()?epoch.load()+1:0);
+ if(result==ttcg::FocusUpdate::Lost){close();return false;}
+ if(result==ttcg::FocusUpdate::Releasing) {
+   const auto token=epoch.load();
+   // Meridian queued its release first. Cross that UI-task boundary before
+   // returning to the game thread to acquire the new mode and publish state.
+   SKSE::GetTaskInterface()->AddUITask([token]() {
+     SKSE::GetTaskInterface()->AddTask([token]() {
+       if(epoch.load()!=token||!visible||!worldFocus.switching())return;
+       auto player=RE::PlayerCharacter::GetSingleton();
+       if(!player||player->IsDead()||player->IsInCombat()||!worldFocus.complete(*api,view)){close();return;}
+       publish();
+     });
+   });
+ }
+ return result==ttcg::FocusUpdate::Ready;
+}
 void publish() {
  if(!api||!domReady||!visible) return;
+ if(!updateWorldFocus())return;
  auto data=ttcg::snapshotJson(match,session,revision,opponentName,active,thinking,lastResult,settling,musicEnabled,(musicDescriptor&&!musicFiles.empty()));
  auto actor=opponent.get();
  const bool conceal=ttcg::concealRivalHand(match,active);
@@ -162,22 +188,23 @@ void publish() {
  data.pop_back();data+=",\"matchContext\":"+std::string(challengeContext?"true":"false")+"}";
  if(screen=="shop"){data.pop_back();data+=",\"shop\":"+campaign::shopJson(actor.get())+"}";}
  if(screen=="lesson"){data.pop_back();data+=",\"lesson\":"+lesson.json()+"}";}
- data.pop_back();data+=std::format(",\"settings\":{{\"collection\":{},\"challenge\":{},\"capturing\":{},\"notice\":{},\"cardBackNotice\":{},\"development\":{}}}}}",collectionKey,challengeKey,ttcg::quote(bindingCapture),ttcg::quote(bindingNotice),ttcg::quote(cardBackNotice),ttcg::developmentJson(campaign::development,developmentNotice));
+ data.pop_back();data+=std::format(",\"settings\":{{\"collection\":{},\"challenge\":{},\"capturing\":{},\"notice\":{},\"cardBackNotice\":{},\"pauseWorldInAlbum\":{},\"interfaceNotice\":{},\"development\":{}}}}}",collectionKey,challengeKey,ttcg::quote(bindingCapture),ttcg::quote(bindingNotice),ttcg::quote(cardBackNotice),pauseWorldInAlbum?"true":"false",ttcg::quote(interfaceNotice),ttcg::developmentJson(campaign::development,developmentNotice));
  api->InteropCall(view,"ttcgState",data.c_str());albumSection.clear();
 }
-void close(bool unwind=true) {
+void close(bool unwind) {
+ unpausedAlbumEpoch.store(0);
  campaign::closeShop();
  ttcg::forfeitTournamentFoils(campaign::saved);
  if(unwind&&campaign::tournamentID&&active&&!match.finished())ttcg::withdrawTournament(campaign::saved,campaign::tournamentID);
  if(!unwind)if(auto* e=ttcg::tournament(campaign::saved,campaign::tournamentID))e->matchNode=0;
  campaign::tournamentID=0;campaign::tournamentRegistration=0;albumSection.clear();
  cancelMasterApproach();
- pendingAlbum=false;challengeContext=false;bindingCapture.clear();bindingNotice.clear();developmentNotice.clear();cardBackNotice.clear();
+ pendingAlbum=false;challengeContext=false;bindingCapture.clear();bindingNotice.clear();developmentNotice.clear();cardBackNotice.clear();interfaceNotice.clear();
  if(unwind){ttcg::abandonRuleCulture(campaign::saved,campaign::gameHour());campaign::recover();}
  campaign::cultureGame=false;
  stopMusic();
  ++epoch; ++session; revision=0; pending={}; opponent={};
- visible=false; active=false; thinking=false; settling=false; screen="lobby"; pendingScreen="lobby";
+ visible=false; active=false; thinking=false; settling=false; screen="lobby"; pendingScreen="lobby";worldFocus.reset();
  if(api&&api->IsValid(view)) { if(domReady) api->InteropCall(view,"ttcgReset",""); if(api->HasFocus(view)) api->Unfocus(view); api->Hide(view); }
 }
 bool eligible(RE::Actor* actor) {
@@ -252,7 +279,7 @@ void showPanel(RE::Actor* actor,const std::string& requested="lobby") {
  ++session; revision=0; active=false; thinking=false; lastResult={}; settling=false;
  match=ttcg::Match(1,campaign::sessionRules); visible=true;
  ttcg::refreshCardArt(); scanMusicFolder(); api->Show(view);
- if(!api->Focus(view,true)) { close(); return; }
+ if(!updateWorldFocus())return;
  updateMusic(); publish();
  log::info("TTCG {}: {}",screen,opponentName);
 }
@@ -330,8 +357,18 @@ void command(const char* raw) {
  std::string text(raw); if(!validCommandSize(text)) return;
  std::istringstream input(text); std::string verb,extra; std::uint64_t s=0,r=0;
  if(!(input>>verb>>s>>r)||s!=session||r!=revision) return;
+ if(worldFocus.switching())return;
  if(!ttcg::tournamentRewardAllowsCommand(campaign::saved,verb)){publish();return;}
- if(screen=="shop"&&verb!="shop"&&verb!="close"&&verb!="binding"&&verb!="development"&&verb!="cardback")return;
+ if(screen=="shop"&&verb!="shop"&&verb!="close"&&verb!="binding"&&verb!="development"&&verb!="cardback"&&verb!="settings")return;
+ if(verb=="settings") {
+   std::string key;int value=-1;
+   if(active||thinking||settling||screen=="lesson"||!bindingCapture.empty()||
+      !(input>>key>>value)||(input>>extra)||key!="pause-album"||(value!=0&&value!=1))return;
+   if(!WritePrivateProfileStringW(L"Interface",L"PauseWorldInAlbum",value?L"1":L"0",settingsPath.c_str())) {
+     interfaceNotice="Couldn't save this setting.";publish();return;
+   }
+   pauseWorldInAlbum=value!=0;interfaceNotice.clear();publish();return;
+ }
  if(verb=="shop"){
   if(screen!="shop"||active||thinking||settling)return;
   auto actor=opponent.get();if(!eligible(actor.get())||!campaign::shopAvailable(actor.get())){close();return;}
@@ -668,8 +705,28 @@ void logAlbumDialogue() {
    campaign::progression?campaign::progression->value:-1,quest&&quest->IsRunning(),
    info&&info->objConditions.IsTrue(actor,player),campaign::physicalCount(player,campaign::goldForm));
 }
-class Events final: public RE::BSTEventSink<RE::InputEvent*>, public RE::BSTEventSink<RE::MenuOpenCloseEvent>, public RE::BSTEventSink<RE::TESContainerChangedEvent> {
- public:
+void interruptAlbum() {
+ const auto token=unpausedAlbumEpoch.load();if(!token)return;
+ SKSE::GetTaskInterface()->AddTask([token]() {
+   if(unpausedAlbumEpoch.load()!=token||epoch.load()+1!=token||!visible||!worldFocus.unpaused())return;
+   log::info("Closing unpaused album for a world interruption");close();
+ });
+}
+class Events final: public RE::BSTEventSink<RE::InputEvent*>, public RE::BSTEventSink<RE::MenuOpenCloseEvent>, public RE::BSTEventSink<RE::TESContainerChangedEvent>, public RE::BSTEventSink<RE::TESCombatEvent>, public RE::BSTEventSink<RE::TESHitEvent>, public RE::BSTEventSink<RE::TESDeathEvent> {
+public:
+ RE::BSEventNotifyControl ProcessEvent(const RE::TESCombatEvent* event,RE::BSTEventSource<RE::TESCombatEvent>*) override {
+   if(event&&event->newState!=RE::ACTOR_COMBAT_STATE::kNone&&
+      ((event->actor&&event->actor->GetFormID()==0x14)||(event->targetActor&&event->targetActor->GetFormID()==0x14)))interruptAlbum();
+   return RE::BSEventNotifyControl::kContinue;
+ }
+ RE::BSEventNotifyControl ProcessEvent(const RE::TESHitEvent* event,RE::BSTEventSource<RE::TESHitEvent>*) override {
+   if(event&&event->target&&event->target->GetFormID()==0x14)interruptAlbum();
+   return RE::BSEventNotifyControl::kContinue;
+ }
+ RE::BSEventNotifyControl ProcessEvent(const RE::TESDeathEvent* event,RE::BSTEventSource<RE::TESDeathEvent>*) override {
+   if(event&&event->actorDying&&event->actorDying->GetFormID()==0x14)interruptAlbum();
+   return RE::BSEventNotifyControl::kContinue;
+ }
  RE::BSEventNotifyControl ProcessEvent(const RE::TESContainerChangedEvent* event,RE::BSTEventSource<RE::TESContainerChangedEvent>*) override {
    // Inventory stacks need not have an ObjectReference. The engine event gives
    // us the base form directly, including letters moved by RemoveAllItems.
@@ -730,6 +787,7 @@ class Events final: public RE::BSTEventSink<RE::InputEvent*>, public RE::BSTEven
  RE::BSEventNotifyControl ProcessEvent(const RE::MenuOpenCloseEvent* event,RE::BSTEventSource<RE::MenuOpenCloseEvent>*) override {
    if(!event) return RE::BSEventNotifyControl::kContinue;
    if(event->opening&&event->menuName==RE::DialogueMenu::MENU_NAME){
+     interruptAlbum();
      SKSE::GetTaskInterface()->AddTask([](){campaign::claimAlbum();campaign::updateTournaments();logAlbumDialogue();});
    }
    if(event->opening&&event->menuName==RE::BookMenu::MENU_NAME) albumPapyrus(nullptr);
@@ -746,7 +804,9 @@ class Events final: public RE::BSTEventSink<RE::InputEvent*>, public RE::BSTEven
      close(false);
      log::info("Menu cleanup complete");
    }
-   if(!event->opening&&event->menuName==ttcg::ui::focusMenu&&visible) close();
+   // Release/reclaim queues a FocusMenu hide/show while the view keeps ownership.
+   // Only an actual focus loss closes Tessera (and settles its session).
+   if(!event->opening&&event->menuName==ttcg::ui::focusMenu&&visible&&!worldFocus.switching()&&(!api||!api->HasFocus(view))) close();
    return RE::BSEventNotifyControl::kContinue;
  }
 };
@@ -769,6 +829,7 @@ void message(SKSE::MessagingInterface::Message* msg) {
    collectionKey=std::clamp(GetPrivateProfileIntW(L"Input",L"CollectionKey",0x41,settingsPath.c_str()),0u,255u);
    challengeKey=std::clamp(GetPrivateProfileIntW(L"Input",L"ChallengeKey",0x42,settingsPath.c_str()),0u,255u);
    if(collectionKey&&collectionKey==challengeKey)challengeKey=0;
+   pauseWorldInAlbum=GetPrivateProfileIntW(L"Interface",L"PauseWorldInAlbum",1,settingsPath.c_str())!=0;
    wchar_t back[4096]{};
    GetPrivateProfileStringW(L"Appearance",L"CardBack",L"mosaic",back,4096,settingsPath.c_str());
    ttcg::cardBackPreference=ttcg::cardBackFromSetting(ttcg::artUTF8(std::filesystem::path(back)));
@@ -778,6 +839,9 @@ void message(SKSE::MessagingInterface::Message* msg) {
    scanMusicFolder();
    log::info("Direct music descriptor available: {}, enabled {}",musicDescriptor!=nullptr,musicEnabled);
    RE::ScriptEventSourceHolder::GetSingleton()->AddEventSink<RE::TESContainerChangedEvent>(&events);
+   RE::ScriptEventSourceHolder::GetSingleton()->AddEventSink<RE::TESCombatEvent>(&events);
+   RE::ScriptEventSourceHolder::GetSingleton()->AddEventSink<RE::TESHitEvent>(&events);
+   RE::ScriptEventSourceHolder::GetSingleton()->AddEventSink<RE::TESDeathEvent>(&events);
    RE::BSInputDeviceManager::GetSingleton()->AddEventSink(&events);
    RE::UI::GetSingleton()->AddEventSink<RE::MenuOpenCloseEvent>(&events);
    if(!api) { log::error("{} API not found; core remains available",ttcg::ui::name); return; }
