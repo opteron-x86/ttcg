@@ -21,7 +21,3 @@ cmake --build --preset linux-msvc-meridian
 ```
 
 Output: `build/runtime-meridian/SKSE/Plugins/TTCG.dll`. Papyrus compilation separately requires Bethesda's compiler and the game/SKSE script sources.
-
-This is a source snapshot, not an installable mod. Artwork, audio, ESP/PEX files, dependency checkouts, tests, and authoring tools are omitted. Use the matching mod package for runtime assets and records; Skyrim also needs SKSE, Address Library, and Meridian UI. The browser interface expects the native bridge.
-
-The existing repository license is retained. Meridian's API headers carry their own license in `include/MeridianUIAPI/LICENSE-MIT`.
