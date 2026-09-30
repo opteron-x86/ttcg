@@ -56,8 +56,9 @@ struct Lesson {
    match.turn=0;if(!sameLesson)return;
    match=Match({card("legends-209436"),card("legends-223709"),card("legends-253882"),card("legends-234017"),card("legends-214331")},
                {card("legends-284352"),card("legends-209155"),card("legends-220453"),card("legends-245458"),card("legends-276452")},1,Same|Open);
-   if(plusLesson)match=Match({card("thieves-guild-recruit"),card("legends-214287"),card("murkwater-goblin"),card("legends-234082"),card("legends-282540")},
-     {card("legends-253909"),card("imperial-grunt"),card("legends-214138"),card("legends-289746"),card("legends-223299")},1,Plus|Open);
+   // The touching pairs are 4+4 and 6+2: equal sums without two Same matches.
+   if(plusLesson)match=Match({card("thieves-guild-recruit"),card("legends-214287"),card("murkwater-goblin"),card("dwarven-ballista"),card("legends-282540")},
+     {card("legends-253909"),card("sunhold-medic"),card("legends-214138"),card("legends-289746"),card("legends-223299")},1,Plus|Open);
    match.turn=0;for(unsigned n=0;n<6;++n)match.play(sameMoves[n]);
  }
  bool advance(int hand=-1,int square=-1) {

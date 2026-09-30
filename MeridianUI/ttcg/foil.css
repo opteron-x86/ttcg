@@ -1,25 +1,25 @@
-/* Static 72% finish approved in the card preview. No pointer or time animation. */
-.foil {--foil-strength:.72;--light-x:50%;--light-y:38%;--film-x:50%;--film-y:50%;--grain-x:0px;}
+/* Prismatic, approved in the card library at 72%. Shared renderer: foil-material.js. */
+.foil {--foil-strength:.72;--light-x:50%;--light-y:38%;--film-x:50%;--film-y:50%;}
 .foil .portrait {isolation:isolate;}
-/* All finish layers live inside the portrait, below the actual name, ranks and icons. */
-.foil-film,.foil-grain,.foil-glare { position:absolute; inset:0; pointer-events:none; }
+/* All finish layers stay inside the portrait, below names, ranks and icons. */
+.foil-film,.foil-grain,.foil-glare,.foil-material {position:absolute;inset:0;pointer-events:none;}
+.foil-material {width:100%;height:100%;mix-blend-mode:screen;opacity:var(--foil-strength);display:none;}
+.foil.material-ready .foil-material {display:block;}
+.foil.material-ready .foil-film,.foil.material-ready .foil-grain,.foil.material-ready .foil-glare {display:none;}
+/* Lightweight fallback when the embedded browser cannot create a WebGL context. */
 .foil-film {
- background-image:repeating-linear-gradient(118deg,#6fa8dd 0%,#83ddd0 12%,#e5d28f 23%,#d28cae 34%,#9e90d3 45%,#6fa8dd 56%);
- background-size:280% 280%; background-position:var(--film-x) var(--film-y);
- mix-blend-mode:color-dodge; opacity:calc(var(--foil-strength) * .62);
+ background-image:linear-gradient(118deg,transparent 10%,#b284cc55 28%,#85cfe788 42%,#d9e6ab88 54%,#e8b99a55 68%,transparent 90%);
+ background-size:240% 220%;background-position:var(--film-x) var(--film-y);
+ mix-blend-mode:screen;opacity:var(--foil-strength);
  mask-image:radial-gradient(ellipse at var(--light-x) var(--light-y),#000 8%,#000c 42%,#0002 84%);
  -webkit-mask-image:radial-gradient(ellipse at var(--light-x) var(--light-y),#000 8%,#000c 42%,#0002 84%);
 }
 .foil-grain {
- background-image:url('foil-grain.svg'),repeating-linear-gradient(126deg,#d5e5e6 0px,#304143 1px,transparent 2px,transparent 5px);
- background-size:160px 160px,210% 210%; background-position:var(--grain-x) 0,var(--film-y) var(--film-x);
- mix-blend-mode:soft-light; opacity:calc(var(--foil-strength) * .31);
- mask-image:radial-gradient(ellipse at var(--light-x) var(--light-y),black,transparent 80%);
- -webkit-mask-image:radial-gradient(ellipse at var(--light-x) var(--light-y),black,transparent 80%);
+ background-image:url('foil-grain.svg');background-size:160px 160px;background-position:0 0;
+ mix-blend-mode:soft-light;opacity:calc(var(--foil-strength)*.2);
 }
 .foil-glare {
- background:radial-gradient(ellipse at var(--light-x) var(--light-y),#fff3d766 0%,#e4edff20 22%,transparent 57%);
- mix-blend-mode:screen; opacity:calc(var(--foil-strength) * .7);
+ background:radial-gradient(ellipse at var(--light-x) var(--light-y),#fff9 0%,#eaf4ff28 17%,#0000 52%,#05081866 100%);
+ mix-blend-mode:soft-light;opacity:calc(var(--foil-strength)*.4);
 }
-
 .saved-deck-preview .foil {position:relative;isolation:isolate;overflow:hidden;}

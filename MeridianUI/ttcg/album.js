@@ -245,7 +245,7 @@ window.addEventListener('pointermove',event=>{
  if(!albumDrag) {
    albumDrag={type:pointer.type,value:pointer.value,session:pointer.session};
    pointer.source.setPointerCapture(pointer.id);
-   const rect=pointer.source.getBoundingClientRect(),ghost=pointer.source.cloneNode(true);
+   const rect=pointer.source.getBoundingClientRect(),ghost=foilMaterial.clone(pointer.source);
    ghost.removeAttribute('id');ghost.querySelectorAll('[id]').forEach(el=>el.removeAttribute('id'));
    ghost.classList.add('album-drag-ghost');ghost.setAttribute('aria-hidden','true');
    Object.assign(ghost.style,{width:`${pointer.source.offsetWidth}px`,height:`${pointer.source.offsetHeight}px`,transform:`scale(${rect.width/pointer.source.offsetWidth})`});
@@ -406,9 +406,7 @@ function createCardArtViewer(id){
  const rotation={x:0,y:0,pointer:null,update(){
   turn.style.transform=`rotateX(${this.x}deg) rotateY(${this.y}deg)`;
   const lightX=50+Math.sin(this.y*Math.PI/180)*45,lightY=38+Math.sin(this.x*Math.PI/180)*35;
-  front.style.setProperty('--light-x',lightX+'%');front.style.setProperty('--light-y',lightY+'%');
-  front.style.setProperty('--film-x',(50+Math.sin(this.y*Math.PI/360)*48)+'%');front.style.setProperty('--film-y',(50+Math.sin(this.x*Math.PI/360)*48)+'%');
-  front.style.setProperty('--grain-x',(this.y%160)+'px');
+  if(state.cards[id].foil)foilMotion.paint(front,{x:lightX/100,y:lightY/100});
   scene.dataset.side=Math.cos(this.x*Math.PI/180)*Math.cos(this.y*Math.PI/180)<0?'back':'front';
  }};
  scene.rotation=rotation;rotation.update();

@@ -102,7 +102,7 @@ window.addEventListener('pointermove',event=>{
    pointer.active=true;pointer.source.setPointerCapture(pointer.id);
    startBoardDrag(pointer.value);
    const rect=pointer.source.getBoundingClientRect(),ghost=document.createElement('div');ghost.className='table-drag-ghost';ghost.setAttribute('aria-hidden','true');
-   ghost.append(pointer.source.querySelector('.card').cloneNode(true));
+   ghost.append(foilMaterial.clone(pointer.source.querySelector('.card')));
    Object.assign(ghost.style,{width:pointer.source.offsetWidth+'px',height:pointer.source.offsetHeight+'px',transform:`scale(${rect.width/pointer.source.offsetWidth})`});
    pointer.offsetX=pointer.x-rect.x;pointer.offsetY=pointer.y-rect.y;pointer.ghost=ghost;document.body.append(ghost);
  }

@@ -39,7 +39,10 @@ function renderCardMetadata(container,card){
   const line=document.createElement('div');line.className='inspect-'+kind;line.textContent=value||'';if(kind==='rarity')line.dataset.rarity=card.rarity;container.append(line);
  }
 }
-function appendFoilLayers(portrait){for(const name of ['film','grain','glare']){const layer=document.createElement('span');layer.className='foil-'+name;portrait.append(layer);}}
+function appendFoilLayers(portrait){
+ for(const name of ['film','grain','glare']){const layer=document.createElement('span');layer.className='foil-'+name;portrait.append(layer);}
+ foilMaterial.attach(portrait.classList.contains('foil')?portrait:portrait.parentElement,'prismatic',portrait);
+}
 function resizeWindow() {
  const size=Math.max(60,Math.min(95,Number($('window-size').value)||90));
  document.documentElement.style.setProperty('--window-scale',Math.min(innerWidth/1400,innerHeight/920)*size/100);
@@ -309,7 +312,7 @@ window.ttcgReset=()=>{
  resetLesson();
  ruleAnswerPending='';$('rule-request').hidden=true;$('table').classList.remove('rule-prompt');
  closeDeckDialog();closeAbolition();resetSettings();closeSelectMenu(); cancelPlayback(); state=null; lastRevision=''; selected=-1; sent=false; displayBoard=[];
- $('board').replaceChildren(); $('table').hidden=true; $('backdrop').hidden=true;
+ foilMotion.stop(); $('board').replaceChildren(); $('table').hidden=true; $('backdrop').hidden=true;
  $('forfeit').hidden=true;$('tournament-confirm').hidden=true;$('tournament-outcome').hidden=true;tournamentConfirmation=null;resetTournaments();resetTrade();resetAlbum();
 };
 window.ttcgState=raw=>{
@@ -471,7 +474,7 @@ async function flyCard(source,target,token,delay=0) {
  if(!source||!target||matchMedia('(prefers-reduced-motion: reduce)').matches) return;
  const from=source.rect,to=target.getBoundingClientRect();
  if(!from.width||!to.width) return;
- const clone=source.card.cloneNode(true);
+ const clone=foilMaterial.clone(source.card);
  // Animate in viewport coordinates so the scaled table does not distort paths.
  const wrapper=document.createElement('div'); wrapper.className='trade-flight';
  Object.assign(wrapper.style,{left:`${from.x}px`,top:`${from.y}px`,width:'160px',height:'210px'});
@@ -492,7 +495,7 @@ function tradeSources() {
    const id=parent.id.startsWith('square-')?displayBoard[Number(parent.id.slice(7))]?.card:state.hands[Number(parent.id.split('-')[1])][Number(parent.id.split('-')[2])];
    const p=Number(parent.id.split('-')[1]),h=Number(parent.id.split('-')[2]);
    const origin=parent.id.startsWith('square-')?displayBoard[Number(parent.id.slice(7))]?.origin:state.handOrigins?.[p]?.[h]??p*5+h;
-   sources.push({id,origin,card:card.cloneNode(true),rect:card.getBoundingClientRect()});
+   sources.push({id,origin,card:foilMaterial.clone(card),rect:card.getBoundingClientRect()});
  });
  return sources;
 }
@@ -528,7 +531,7 @@ async function transferTrade(token) {
    const slot=document.querySelector(`.trade-hand button[data-owner="${p}"][data-slot="${h}"]`);
    const card=slot?.firstElementChild,target=$(`trade-owner-${receiver}`);
    if(card){
-     const source={card:card.cloneNode(true),rect:card.getBoundingClientRect()};
+     const source={card:foilMaterial.clone(card),rect:card.getBoundingClientRect()};
      const received=cardElement(t.hands[p][h],receiver);received.style.setProperty('--stack-index',target.children.length);
      // The receiving stack keeps every transferred card visible, including both directions.
      target.append(received);target.classList.add('receiving');slot.classList.add('transferred');
