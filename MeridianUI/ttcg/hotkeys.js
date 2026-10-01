@@ -7,6 +7,12 @@ for(let i=1;i<=10;i++)scanCodes['F'+i]=58+i;
 const scanNames=Object.fromEntries(Object.entries(scanCodes).map(([key,value])=>[value,key.replace(/^Key|^Digit/,'').replace('Numpad','Num ').replace('Arrow','')]));
 Object.assign(scanNames,{0:'Unbound',12:'−',13:'=',26:'[',27:']',39:';',40:"'",41:'`',43:'\\',51:',',52:'.',53:'/',57:'Space',183:'Print Screen',201:'Page Up',209:'Page Down'});
 let bindingPending='',bindingKeyHeld=false;
+const worldPauseOptions=[
+ ['pause-world-in-album','pauseWorldInAlbum','pause-album'],
+ ['pause-world-in-shops','pauseWorldInShops','pause-shop'],
+ ['pause-world-in-match-setup','pauseWorldInMatchSetup','pause-setup'],
+ ['pause-world-during-matches','pauseWorldDuringMatches','pause-match']
+];
 function bindings() {return state?.settings||{collection:65,challenge:66,capturing:'',notice:''};}
 function renderBindings() {
  if(!state)return;
@@ -21,9 +27,11 @@ function renderBindings() {
  }
  $('binding-cancel').hidden=!capture;
  $('binding-status').textContent=config.notice|| (capture?'Esc to cancel':'');
- const pauseAlbum=config.pauseWorldInAlbum!==false,control=$('pause-world-in-album');
- control.disabled=Boolean(capture)||state.phase!=='ready';
- control.setAttribute('aria-checked',String(pauseAlbum));control.lastElementChild.textContent=pauseAlbum?'On':'Off';
+ for(const [id,key] of worldPauseOptions){
+  const paused=config[key]!==false,control=$(id);
+  control.disabled=Boolean(capture)||state.phase!=='ready';
+  control.setAttribute('aria-checked',String(paused));control.lastElementChild.textContent=paused?'On':'Off';
+ }
  $('interface-status').textContent=config.interfaceNotice||'';$('interface-status').hidden=!config.interfaceNotice;
  renderDevelopmentSettings();
  renderCardBackSettings();
@@ -37,9 +45,9 @@ $('settings-open').onclick=()=>{if(state?.phase!=='ready')return;closeSelectMenu
 $('settings-panel').querySelector('.settings-body').addEventListener('focusin',event=>event.target.scrollIntoView({block:'nearest',inline:'nearest'}));
 $('settings-done').onclick=closeSettings;
 $('binding-cancel').onclick=()=>{bindingPending='';send('binding','cancel');};
-$('pause-world-in-album').onclick=()=>{
- const control=$('pause-world-in-album');if(control.disabled)return;
- control.disabled=true;send('settings',`pause-album ${bindings().pauseWorldInAlbum===false?1:0}`);
+for(const [id,key,command] of worldPauseOptions)$(id).onclick=()=>{
+ const control=$(id);if(control.disabled)return;
+ control.disabled=true;send('settings',`${command} ${bindings()[key]===false?1:0}`);
 };
 for(const field of ['collection','challenge']) {
  $('bind-'+field).onclick=()=>{bindingPending=field;send('binding',`begin ${field}`);renderBindings();};

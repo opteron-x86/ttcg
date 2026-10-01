@@ -178,11 +178,13 @@ button:hover:not(:disabled) { background:#344335;border-color:#d2b47b; }
 #settings-title { margin-bottom:18px; }
 .settings-body { min-height:0;overflow-y:auto;padding-right:12px; }
 .settings-panel .binding-row { margin:12px 0; }
-.album-pause-settings { margin-top:12px;text-align:left; }
-#pause-world-in-album { width:100%;font-size:19px; }
-#album-pause-help { margin:4px 0 0;color:var(--muted);font-size:16px;line-height:1.4; }
-#interface-status { margin:8px 0 0;color:var(--gold);font-size:17px; }
-#card-back-settings { border-top:1px solid #bba16b33;margin-top:22px;padding-top:18px;text-align:left; }
+.world-pause-settings { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:28px;margin-top:12px;text-align:left; }
+.world-pause-settings .settings-switch { width:100%;font-size:19px; }
+#interface-status { grid-column:1/-1;margin:8px 0 0;color:var(--gold);font-size:17px; }
+.interrupted-match { display:flex;align-items:center;gap:16px;padding:10px 0;border-bottom:1px solid #bba16b33;color:var(--muted); }
+.interrupted-match p { flex:1;margin:0;font-size:18px;line-height:1.4; }
+.interrupted-match button { flex-shrink:0;font-size:18px; }
+#card-back-settings { border-top:1px solid #bba16b33;margin-top:16px;padding-top:14px;text-align:left; }
 .card-back-heading { display:flex;align-items:center;justify-content:space-between;margin-bottom:16px; }
 .card-back-heading h2 { color:var(--gold);font-size:25px;font-weight:normal;margin:0; }
 .card-back-heading button { font-size:16px; }
@@ -191,7 +193,7 @@ button:hover:not(:disabled) { background:#344335;border-color:#d2b47b; }
 #card-back-choices .card-back-choice:hover:not(:disabled) { color:var(--ink);background:#bba16b0d;border-color:#bba16b66; }
 #card-back-choices .card-back-choice[aria-pressed="true"] { color:var(--gold);border-color:var(--gold);background:#bba16b0d; }
 #card-back-choices .card-back-choice:focus-visible { outline:2px solid var(--gold);outline-offset:3px; }
-.card-back-thumb { display:block;position:relative;width:100%;max-width:140px;margin:0 auto;aspect-ratio:3/4;background:#101c17;overflow:hidden;border-radius:2px; }
+.card-back-thumb { display:block;position:relative;width:100%;max-width:120px;margin:0 auto;aspect-ratio:3/4;background:#101c17;overflow:hidden;border-radius:2px; }
 .card-back-thumb img { display:block;width:100%;height:100%;object-fit:contain; }
 .card-back-choice[data-loaded="false"] img { visibility:hidden; }
 .card-back-choice[data-loaded="false"] .card-back-thumb::after { content:'—';position:absolute;inset:0;display:grid;place-items:center;color:var(--muted);font-size:26px; }
@@ -201,7 +203,7 @@ button:hover:not(:disabled) { background:#344335;border-color:#d2b47b; }
 .card-back-detail:empty { display:none; }
 #card-back-status { color:var(--gold);font-size:17px;line-height:1.4;margin:14px 0 0; }
 #card-back-status:empty { display:none; }
-.card-back-help { margin-top:18px;font-size:16px;color:var(--muted); }
+.card-back-help { margin-top:12px;font-size:16px;color:var(--muted); }
 .card-back-help summary { cursor:pointer;color:var(--gold); }
 .card-back-help p { font-size:16px;line-height:1.5;margin:12px 0; }
 .card-back-help code { display:block;font-size:13px;overflow-wrap:anywhere;user-select:text; }

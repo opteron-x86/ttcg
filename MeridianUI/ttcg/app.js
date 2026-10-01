@@ -139,7 +139,7 @@ function render() {
  clearBoardGhosts();
  updateTableMode();
  const focus=document.activeElement?.id;
- $('settings-open').hidden=state.phase!=='ready';renderBindings();
+ $('settings-open').hidden=state.phase!=='ready';renderBindings();renderInterruptedMatch();
  $('music').setAttribute('aria-pressed',String(Boolean(state.musicEnabled)));
  $('music').disabled=!state.musicAvailable;
  $('music').title=state.musicAvailable?(state.musicEnabled?'Turn match music off':'Turn match music on'):'No match tracks installed';
@@ -306,6 +306,7 @@ async function playCaptures(next) {
  send('settled');
 }
 window.ttcgReset=()=>{
+ interruptedForfeit=false;$('interrupted-match').hidden=true;
  resetShop();
  resetTablePresentation();
  closeGroupChoice();
@@ -348,8 +349,9 @@ function closeView() {
  if(!$('album-modal').hidden) { closeAlbumModal(); return; }
  if(closeAlbumPopover())return;
  if(trade&&trade.phase!=='done') return;
+ interruptedForfeit=false;
  if(state?.collection?.tournamentID&&state.phase==='match'){$('forfeit-cost').textContent='This ends your tournament run.';$('forfeit').hidden=false;$('keep-playing').focus();return;}
- if(state?.collection?.staked) {
+ if(state?.collection?.staked&&state.phase!=='ready') {
    if(state.phase==='result') { renderReward(); return; }
    $('forfeit-cost').textContent=[(state.collection.trade)?`Lose ${(state.collection.trade||1)===1?'one card':'five cards'}`:'',state.collection.wager?`Lose ${state.collection.wager} gold`:''].filter(Boolean).join(' · ');
    $('forfeit').hidden=false; closeSelectMenu(); $('keep-playing').focus(); return;
@@ -620,8 +622,24 @@ $('take-card').onclick=()=>{
    trade.phase='claiming'; updateTrade(); if(trade.kind===1)send('claim',String([...trade.choices][0]));else send('claim-many',String([...trade.choices].reduce((mask,h)=>mask|(1<<h),0)));
  }
 };
-$('keep-playing').onclick=()=>{ $('forfeit').hidden=true; $('leave').focus(); };
-$('confirm-forfeit').onclick=()=>send('forfeit');
+let interruptedForfeit=false;
+function renderInterruptedMatch(){
+ const saved=state?.interruptedMatch,show=Boolean(saved)&&state.phase==='ready'&&state.screen==='album';
+ $('interrupted-match').hidden=!show;if(!show)return;
+ $('interrupted-match-copy').textContent=saved.tournament?`${saved.finished?'Collect your rewards':'Resume your game'} at ${saved.venue}.`:
+  `${saved.finished?'Finish your game':'Resume your game'} with ${saved.opponent}.`;
+ $('interrupted-resume').hidden=!saved.canResume;
+ $('interrupted-resume').textContent=saved.finished?'Collect rewards':'Resume game';
+ $('interrupted-forfeit').hidden=Boolean(saved.finished);
+}
+$('interrupted-resume').onclick=()=>send('interrupted','resume');
+$('interrupted-forfeit').onclick=()=>{
+ if(!state?.interruptedMatch)return;
+ interruptedForfeit=true;$('forfeit-cost').textContent=state.interruptedMatch.tournament?'This ends your tournament run.':'The game counts as a loss. Its trade rule and wager still apply.';
+ $('forfeit').hidden=false;$('keep-playing').focus();
+};
+$('keep-playing').onclick=()=>{ $('forfeit').hidden=true;(interruptedForfeit?$('interrupted-forfeit'):$('leave')).focus();interruptedForfeit=false; };
+$('confirm-forfeit').onclick=()=>{const saved=interruptedForfeit;interruptedForfeit=false;$('forfeit').hidden=true;send(saved?'interrupted':'forfeit',saved?'forfeit':'');};
 $('wager').addEventListener('change',renderCollection);
 window.addEventListener('keydown',event=>{
  if(event.key!=='Tab'||event.defaultPrevented)return;
