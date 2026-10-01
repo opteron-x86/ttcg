@@ -56,7 +56,7 @@
     <nav id="rules-list" class="chapter-nav" aria-label="Rules"></nav>
     <aside id="rules-panel">
      <h3 id="rules-title" class="chapter-title"></h3>
-     <p id="rules-copy"></p>
+     <p id="rules-copy"></p><dl id="rules-trades" hidden></dl>
      <div id="rules-demo" hidden>
       <div class="rules-table">
        <div class="rules-hand-column"><div class="rules-player">You <span id="rules-player-score"></span></div><div id="rules-player-hand" class="rules-hand" aria-label="Your practice hand"></div></div>
@@ -97,10 +97,12 @@
  </section>
  <section id="game" hidden>
    <div class="match-heading"><div id="player-nameplate" class="nameplate"><span class="turn-marker" aria-hidden="true">◆</span><span class="player-name">You</span><span class="score player" id="player-score">5</span></div><div id="board-rules" class="rule-chips"></div><div id="rival-nameplate" class="nameplate rival"><span class="score rival" id="rival-score">5</span><span class="rival-name" id="rival-name"></span><span class="turn-marker" aria-hidden="true">◆</span></div></div>
-   <div class="play-area"><div id="player-hand" class="hand" aria-label="Your hand"></div><div class="board-stage"><div id="board" aria-label="Board"></div><div id="rule-callout" role="status" aria-live="polite" hidden></div></div><div id="rival-hand" class="hand" aria-label="Opponent hand"></div></div>
-   <footer id="match-footer"><span id="turn" role="status" aria-live="polite"></span><span id="group-status" role="status"></span><span id="board-stakes"></span><button id="table-inspect" class="quiet" disabled>Inspect <kbd>I</kbd></button></footer>
+   <div class="play-area"><div id="player-hand" class="hand" aria-label="Your hand"></div><div class="board-stage"><div id="board" aria-label="Board"></div><div id="starter-draw" role="status" aria-label="Drawing the first turn" hidden><div class="starter-mark" aria-hidden="true"><span class="starter-line"></span><span class="starter-token"></span></div></div><div id="rule-callout" role="status" aria-live="polite" hidden></div></div><div id="rival-hand" class="hand" aria-label="Opponent hand"></div></div>
+   <footer id="match-footer"><span id="turn" role="status" aria-live="polite"></span><span id="group-status" role="status"></span><span id="board-stakes"></span><button id="match-rules-open" class="quiet">Rules</button><button id="table-inspect" class="quiet" disabled>Inspect <kbd>I</kbd></button></footer>
  </section>
 
+ <div id="rule-tooltip" role="tooltip" hidden></div>
+ <div id="match-rules" class="modal-shade" hidden><section class="match-rules-panel" role="dialog" aria-modal="true" aria-labelledby="match-rules-title"><header><h2 id="match-rules-title">Rules</h2><button id="match-rules-close" class="quiet">Back to game</button></header><div id="match-rules-content"></div></section></div>
  <div id="table-inspection" class="modal-shade" hidden><section class="table-inspection-panel" role="dialog" aria-modal="true" aria-labelledby="table-inspect-name"><div id="table-inspect-art"></div><div class="table-inspect-details"><h2 id="table-inspect-name"></h2><p id="table-inspect-meta"></p><p id="table-inspect-types"></p><div id="table-inspect-affinities"></div><div id="table-inspect-ranks" aria-label="Printed ranks"></div><p id="table-inspect-modifier"></p><div class="art-controls"><button id="table-inspect-flip" class="quiet">Turn over</button><button id="table-inspect-reset" class="quiet">Reset</button></div></div><button id="table-inspect-close" class="icon-button" aria-label="Close inspection">×</button></section></div>
  <div id="abolition-dialog" class="modal-shade" hidden><section class="modal" role="dialog" aria-modal="true" aria-labelledby="abolition-title"><h2 id="abolition-title">Challenge a rule</h2><p>Win against this player to abolish one rule throughout the hold.</p><div id="abolition-options" class="modal-actions"></div><p id="abolition-description"></p><div class="modal-actions"><button id="abolition-confirm" class="primary" disabled>Accept challenge</button><button id="abolition-cancel">Cancel</button></div></section></div>
  <div id="group-choice" class="modal-shade" hidden><section class="modal" role="dialog" aria-modal="true" aria-labelledby="group-choice-title"><p id="group-choice-title">Choose a group</p><div id="group-options" class="modal-actions"></div><button id="group-cancel" class="quiet">Cancel</button></section></div>
@@ -109,7 +111,7 @@
   <p id="reward-title">Choose a card</p>
   <div class="trade-row"><div class="trade-label" id="trade-rival-name"></div><div id="reward-cards" class="trade-hand"></div><div id="trade-owner-1" class="trade-received" aria-label="Opponent receives"></div></div>
   <div class="trade-row"><div class="trade-label">You</div><div id="trade-player-cards" class="trade-hand"></div><div id="trade-owner-0" class="trade-received" aria-label="You receive"></div></div>
-  <div class="trade-footer"><span id="trade-gold" role="status"></span><span id="trade-status" role="status"></span><button id="take-card" class="primary" disabled>Confirm</button></div>
+  <div class="trade-footer"><span id="trade-gold" role="status"></span><span id="trade-status" role="status"></span><button id="trade-inspect" class="quiet" disabled>Inspect <kbd>I</kbd></button><button id="take-card" class="primary" disabled>Confirm</button></div>
  </section></div>
  <div id="tournament-outcome" class="modal-shade" hidden><section class="modal tournament-outcome-panel" role="dialog" aria-modal="true" aria-labelledby="tournament-outcome-title"><h2 id="tournament-outcome-title"></h2><p id="tournament-outcome-copy"></p><div id="tournament-outcome-rewards" hidden></div><div id="tournament-foil-reward" hidden><p id="tournament-foil-remaining"></p><div class="tournament-foil-choice"><div id="tournament-foil-preview"></div><div><label id="tournament-foil-control">Choose a card<select id="tournament-foil-card" aria-label="Card to upgrade"></select></label><button id="tournament-upgrade">Make foil</button><p id="tournament-foil-empty" hidden>No eligible cards.</p></div></div><p class="tournament-foil-expiry">Unused upgrades are lost when you leave.</p></div><div class="modal-actions"><button id="tournament-outcome-leave" class="quiet">Leave</button><button id="tournament-outcome-bracket">View bracket</button><button id="tournament-outcome-next" class="primary"></button></div></section></div>
  <div id="tournament-confirm" class="modal-shade" hidden><section class="modal tournament-confirm-panel" role="dialog" aria-modal="true" aria-labelledby="tournament-confirm-title"><h2 id="tournament-confirm-title"></h2><p id="tournament-confirm-copy" hidden></p><div class="modal-actions"><button id="tournament-cancel">Cancel</button><button id="tournament-confirm-action" class="primary">Confirm</button></div></section></div>
@@ -121,9 +123,15 @@
   <div class="binding-row"><span>Challenge</span><button id="bind-challenge" aria-label="Challenge hotkey">F8</button><button id="unbind-challenge" class="quiet">Unbind</button><button id="reset-challenge" class="quiet">Reset</button></div>
   <div class="world-pause-settings" role="group" aria-label="Pause world">
    <button id="pause-world-in-album" class="settings-switch" role="switch" aria-checked="true">Pause in album<span aria-hidden="true">On</span></button>
-   <button id="pause-world-in-shops" class="settings-switch" role="switch" aria-checked="true">Pause in shops<span aria-hidden="true">On</span></button>
-   <button id="pause-world-in-match-setup" class="settings-switch" role="switch" aria-checked="true">Pause in match setup<span aria-hidden="true">On</span></button>
-   <button id="pause-world-during-matches" class="settings-switch" role="switch" aria-checked="true">Pause in match<span aria-hidden="true">On</span></button>
+   <details id="experimental-pause-settings">
+    <summary id="experimental-pause-toggle" tabindex="0">Experimental</summary>
+    <p id="experimental-pause-note">Keep these on for normal play. When unpaused, NPCs can move away and interrupt the session.</p>
+    <div role="group" aria-label="Experimental pause options" aria-describedby="experimental-pause-note">
+     <button id="pause-world-in-shops" class="settings-switch" role="switch" aria-checked="true">Pause in shops<span aria-hidden="true">On</span></button>
+     <button id="pause-world-in-match-setup" class="settings-switch" role="switch" aria-checked="true">Pause in match setup<span aria-hidden="true">On</span></button>
+     <button id="pause-world-during-matches" class="settings-switch" role="switch" aria-checked="true">Pause in match<span aria-hidden="true">On</span></button>
+    </div>
+   </details>
    <p id="interface-status" role="status" hidden></p>
   </div>
   <section id="card-back-settings" aria-labelledby="card-back-title">
@@ -172,5 +180,5 @@
   <p id="binding-status" role="status"></p><div class="modal-actions"><button id="binding-cancel" hidden>Cancel</button><button id="settings-done" class="primary">Done</button></div>
  </section></div>
 <div id="deck-dialog" class="modal-shade" hidden><form class="modal" id="deck-form" role="dialog" aria-modal="true" aria-labelledby="deck-dialog-title"><h2 id="deck-dialog-title">New deck</h2><label for="deck-name" id="deck-name-label">Name</label><input id="deck-name" maxlength="32" autocomplete="off" spellcheck="false"><p id="deck-dialog-message" hidden></p><div class="modal-actions"><button id="deck-cancel" type="button">Cancel</button><button id="deck-submit" type="submit" class="primary">Create</button></div></form></div>
-</main><script src="select-menu.js"></script><script src="rule-demos.js"></script><script src="foil-material.js"></script><script src="foil.js"></script><script src="app.js"></script><script src="album.js"></script><script src="shop.js"></script><script src="decks.js"></script><script src="journal.js"></script><script src="campaign.js"></script><script src="lesson.js"></script><script src="hotkeys.js"></script><script src="development.js"></script><script src="card-backs.js"></script><script src="table.js"></script><script src="tournaments.js"></script><script src="meridian-input.js"></script>
+</main><script src="select-menu.js"></script><script src="rule-demos.js"></script><script src="foil-material.js"></script><script src="foil.js"></script><script src="app.js"></script><script src="album.js"></script><script src="shop.js"></script><script src="decks.js"></script><script src="journal.js"></script><script src="campaign.js"></script><script src="lesson.js"></script><script src="hotkeys.js"></script><script src="development.js"></script><script src="card-backs.js"></script><script src="table.js"></script><script src="rules-reference.js"></script><script src="tournaments.js"></script><script src="meridian-input.js"></script>
 </body></html>

@@ -278,6 +278,13 @@ window.addEventListener('keydown',event=>{
    event.preventDefault();const from=Number(event.target.id.slice(11));moveAlbumCard(from,from+(event.key==='ArrowRight'?1:-1));
  }
 });
+const TRADE_RULES=[
+ {title:'None',copy:'Both players keep their original hands. No cards change hands.'},
+ {title:'One',copy:'The winner chooses one card from the opponent’s original hand.'},
+ {title:'Diff',copy:'The winner chooses as many cards from the opponent’s original hand as the difference in score, up to five. A 6–4 win earns two cards; 7–3 earns four; 8–2 or higher earns all five.'},
+ {title:'Direct',copy:'Each player takes the cards they control at the end of the game, including the unplayed card. Cards can change hands even on a draw.'},
+ {title:'All',copy:'The winner takes all five cards from the opponent’s original hand.'}
+];
 const RULE_PAGES=[
  {id:'play',title:'How to play',demo:'play',copy:'Each player has five cards. Take turns placing one card on the 3×3 board. A card captures an adjacent opponent when its touching rank is higher. The tenth, unplayed card still counts, so the total is always ten. More than five wins.'},
  {id:'open',title:'Open',demo:'open',copy:'Both hands stay visible after the deal.'},
@@ -295,7 +302,7 @@ const RULE_PAGES=[
  {id:'suddenDeath',title:'Sudden Death',demo:'suddenDeath',copy:'A draw starts another board with the same rules. Each player receives the five cards they control, including the unplayed card. Known cards stay known. Board affinities, creature bonuses and the starting player reset. After five redeals, another draw ends the game. Trades and wagers settle only once, at the end.'},
  {id:'samewall',title:'Same Wall',demo:'samewall',copy:'The edge of the board counts as A for Same. Match a printed A to the wall and another printed rank to an adjacent enemy to capture it and start Combo. Requires Same. Walls do not count toward Plus.'},
  {id:'swap',title:'Swap',demo:'swap',copy:'One random card from each hand changes sides before the first turn. The swap happens once, even with Sudden Death. Your deck stays unchanged. Trades use the original hands; Direct awards the cards each player controls at the end.'},
- {id:'trade',title:'Trade',demo:'',copy:'None, One, Diff, Direct or All decides which cards change hands after a staked game. Casual games never trade cards or gold.'}
+ {id:'trade',title:'Trade',demo:'',copy:'The trade rule decides which cards change hands. On a draw, both players keep their original hands unless Direct is active. Games with children and tournament games never trade cards.'}
 ];
 function stopRulesDemo(){rulesRenderedKey='';rulesDemoGen++;rulesBusy=false;if(rulesDemoTimer){clearTimeout(rulesDemoTimer);rulesDemoTimer=0;}}
 function rulesFrames(){return typeof ruleDemos==='object'?ruleDemos[rulesTopic]:null;}
@@ -365,12 +372,15 @@ $('rules-demo-replay').onclick=()=>playRulesDemo(rulesTopic);
 function renderAlbumRules(){
  const c=state.collection||{},hold=c.regions?.find(r=>r.id===c.holdID);
  const flags=hold?.rules??c.fixedRules??0,trade=tradeRuleText(hold?.trade);
- $('album-rules-hold').hidden=!hold;
+ const inMatch=!$('match-rules').hidden;
+ $('album-rules-hold').hidden=inMatch||!hold;
  $('album-rules-hold').textContent=hold?`${hold.name} · ${rulesText(flags)||'Hidden hands'} · ${trade}`:'';
  const key=`${state.session}:${rulesTopic}`;if(rulesRenderedKey===key)return;
  renderChapterNavigation($('rules-list'),RULE_PAGES,rulesTopic,id=>{rulesTopic=id;renderAlbumRules();},'rules-topic-');
  const page=RULE_PAGES.find(p=>p.id===rulesTopic)||RULE_PAGES[0];
  $('rules-title').textContent=page.title;$('rules-copy').textContent=page.copy;
+ const trades=$('rules-trades');trades.hidden=page.id!=='trade';trades.replaceChildren();
+ if(page.id==='trade')for(const rule of TRADE_RULES){const name=document.createElement('dt'),copy=document.createElement('dd');name.textContent=rule.title;copy.textContent=rule.copy;trades.append(name,copy);} 
  if(page.demo)playRulesDemo(page.demo);else{$('rules-demo').hidden=true;stopRulesDemo();}
  rulesRenderedKey=key;
 }

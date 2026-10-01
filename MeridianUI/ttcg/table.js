@@ -2,10 +2,10 @@
 // Presentation only: native commands remain authoritative for decks and matches.
 let boardDrag=-1,tableScore=null,inspectionReturn=null;
 function ownershipCorners(){const corners=document.createElement('span');corners.className='ownership-corners';corners.setAttribute('aria-hidden','true');return corners;}
-const tableRuleHelp={None:'No cards change hands.',One:'The winner takes one card.',Diff:'The winner takes cards equal to the score difference.',Direct:'Each player keeps the cards they control.',All:'The winner takes the opponent’s hand.',Casual:'Games with children have no card trades or gold wagers.'};
+const tableRuleHelp=Object.fromEntries([...TRADE_RULES,{title:'Casual',copy:'Games with children have no card trades or gold wagers.'}].map(rule=>[rule.title,rule.copy]));
 function renderRuleChips(root,flags,trade,casual=false){
  const labels=[!(flags&(16|64))?'Hidden hands':'',...rulesText(flags).split(' · '),casual?'Casual':trade===undefined?'':tradeRuleText(trade)].filter(Boolean),key=labels.join('|');if(root.dataset.rules===key)return;root.dataset.rules=key;root.replaceChildren();
- for(const label of labels){const chip=document.createElement('span');chip.className='rule-chip';chip.textContent=label;chip.title=RULE_PAGES.find(page=>page.title===label)?.copy||tableRuleHelp[label]||label;root.append(chip);}
+ for(const label of labels){const chip=document.createElement('span');chip.className='rule-chip';chip.textContent=label;chip.tabIndex=0;chip.dataset.help=RULE_PAGES.find(page=>page.title===label)?.copy||tableRuleHelp[label]||label;root.append(chip);}
 }
 function updateTableMode(){
  const lesson=state?.screen==='lesson',lobby=state?.phase==='ready'&&(!state.screen||state.screen==='lobby'),match=!lesson&&state?.phase!=='ready';
@@ -34,7 +34,8 @@ function updateTableScores(score){
  }tableScore=[...score];
 }
 function inspectTableCard(id,owner=0,modifier=0){
- if(id===null||id<0||!state?.cards[id]||busy||sent||document.querySelector('.modal-shade:not([hidden])'))return;
+ const overlay=activeOverlay();
+ if(id===null||id<0||!state?.cards[id]||busy||sent||(overlay&&!(overlay===$('reward')&&['selecting','opponent'].includes(trade?.phase))))return;
  clearBoardGhosts();closeSelectMenu();inspectionReturn=document.activeElement;
  const c=state.cards[id];$('table-inspect-art').replaceChildren(createCardArtViewer(id));$('table-inspect-name').textContent=c.name;
  $('table-inspect-meta').textContent=[`Tier ${['','I','II','III','IV','V','VI','VII','VIII','IX','X'][c.tier]}`,c.rarity,c.foil?'Foil':''].filter(Boolean).join(' · ');
@@ -54,7 +55,8 @@ $('table-inspect').onclick=()=>{if(selected>=0)inspectTableCard(state.hands[0][s
 document.addEventListener('keydown',e=>{
  if(!state||['INPUT','SELECT','TEXTAREA'].includes(e.target.tagName))return;
  if(e.key.toLowerCase()==='i'&&!e.repeat){
-   if(document.querySelector('.modal-shade:not([hidden])'))return;
+   if(activeOverlay()===$('reward')){inspectTradeCard();e.preventDefault();return;}
+   if(activeOverlay())return;
    const el=document.activeElement;
    if(el?.id.startsWith('deck-'))inspectTableCard(draftDeck[Number(el.dataset.slot)],0);
    else if(el?.id.startsWith('square-')){const i=Number(el.id.slice(7)),cell=displayBoard[i];if(cell)inspectTableCard(cell.card,cell.owner,state.modifiers?.[i]||0);else $('table-inspect').click();}
@@ -76,7 +78,7 @@ function startBoardDrag(h){
 }
 function clearBoardDrag(){boardDrag=-1;clearBoardGhosts();}
 function cancelTableDrag(){const active=!!tablePointer?.active;clearTablePointer();return active;}
-function resetTablePresentation(){clearTablePointer();closeTableInspection(false);clearBoardDrag();tableScore=null;}
+function resetTablePresentation(){closeMatchRules(false);hideRuleTooltip();clearTablePointer();closeTableInspection(false);clearBoardDrag();tableScore=null;}
 
 // Match the album's in-page pointer drag path; CEF never needs a desktop drag.
 let tablePointer=null,tableSuppressClick=false;

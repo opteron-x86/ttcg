@@ -23,6 +23,11 @@ inline bool tournamentReserved(const CollectionSave& s,unsigned base,unsigned ex
 inline void discoverTournaments(CollectionSave& s,unsigned hold,unsigned hour){
  for(auto& e:s.tournaments.events)if(!e.circuit&&e.hold==hold&&tournamentOpen(e,hour))e.discovered=true;
 }
+inline void discoverAllTournaments(CollectionSave& s,unsigned hour){
+ // Information reveals active events; eligibility and courier receipt still
+ // govern registration. Future courier windows remain undisclosed.
+ for(auto& e:s.tournaments.events)if(tournamentOpen(e,hour))e.discovered=true;
+}
 inline bool acknowledgeTournamentNotice(CollectionSave& s,unsigned id,unsigned hour){
  auto* e=tournament(s,id);if(!e||!tournamentVisible(*e,hour))return false;e->notified=true;return true;
 }
@@ -288,7 +293,7 @@ inline unsigned newTournament(CollectionSave& s,unsigned hold,unsigned hour,bool
 }
 inline void tickTournaments(CollectionSave& s,unsigned hour,unsigned currentHold=0,std::array<bool,3> developmentCircuits={}){
  auto& ts=s.tournaments;if(!s.starter&&!s.developmentCardsGranted)return;
- for(auto& e:ts.events)if(!e.awarded&&e.ends){if(hour>=e.ends&&!e.matchNode)resolveTournament(s,e,true);else if(tournamentOpen(e,hour))resolveTournament(s,e);}
+ for(auto& e:ts.events)if(!e.awarded&&e.ends){if(hour>=e.ends)resolveTournament(s,e,true);else if(tournamentOpen(e,hour))resolveTournament(s,e);}
  constexpr unsigned rotation[]{1,8,2,6,3,9,4,7,5,10};
  if(!ts.nextRegular[0]){
   // Spread the first local season over 37 days; subsequent dates are per hold.

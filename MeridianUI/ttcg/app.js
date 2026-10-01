@@ -8,7 +8,7 @@ function cancelPlayback() {
  pauses.clear();
  for(const animation of flips) animation.cancel();
  flips.clear(); busy=false; highlights=0;
- $('rule-callout').hidden=true;
+ $('rule-callout').hidden=true;$('starter-draw').hidden=true;hideRuleTooltip();
  document.querySelectorAll('.first-turn').forEach(el=>el.classList.remove('first-turn'));
 }
 function pause(ms) {
@@ -18,7 +18,7 @@ const $=id=>document.getElementById(id);
 // Shared interaction scope for keyboard and Meridian navigation. Keep overlay
 // priority here so a hidden control cannot receive focus behind another dialog.
 function activeOverlay(){
- return ['shop-confirm','tournament-confirm','tournament-outcome','deck-dialog','settings-panel','album-modal','abolition-dialog','table-inspection','group-choice','rule-request','post-match','forfeit','reward','album-filter-panel'].map($).find(el=>el&&!el.hidden)||null;
+ return ['shop-confirm','tournament-confirm','tournament-outcome','deck-dialog','settings-panel','album-modal','abolition-dialog','table-inspection','match-rules','group-choice','rule-request','post-match','forfeit','reward','album-filter-panel'].map($).find(el=>el&&!el.hidden)||null;
 }
 function activeInteractionScope(){return openSelectMenu?.list||activeOverlay()||$('table');}
 function visibleControls(scope){return [...scope.querySelectorAll('button,input,select,[tabindex="0"]')].filter(el=>!el.disabled&&el.getClientRects().length);}
@@ -164,18 +164,20 @@ function render() {
  const score=state.hands.map(hand=>hand.filter(id=>id!==null).length);
  for(const cell of displayBoard) if(cell) score[cell.owner]++;
  updateTableScores(score);
- $('player-nameplate').classList.toggle('active',state.phase==='match'&&state.turn===0);
- $('rival-nameplate').classList.toggle('active',state.phase==='match'&&state.turn===1);
+ $('player-nameplate').classList.toggle('active',state.phase==='match'&&!state.opening&&state.turn===0);
+ $('rival-nameplate').classList.toggle('active',state.phase==='match'&&!state.opening&&state.turn===1);
  $('board-stakes').textContent=tableStakes();
  $('group-status').textContent=state.activeGroup?`${state.activeGroup} ${state.groupModifier>0?'+1':'−1'}`:'';
  const yourTurn=state.phase==='match'&&state.turn===0&&!state.thinking&&!state.settling&&!busy&&!sent;
- if(state.turn===0&&state.forcedHand>=0&&playableHand(state.forcedHand))selected=state.forcedHand;
+ if(!state.opening&&state.turn===0&&state.forcedHand>=0&&playableHand(state.forcedHand))selected=state.forcedHand;
  $('table-inspect').disabled=selected<0||busy;
+ $('match-rules-open').disabled=busy||sent||state.settling||state.thinking;
  for(let p=0;p<2;p++) {
    const hand=$(p===0?'player-hand':'rival-hand'); hand.replaceChildren();
    state.hands[p].forEach((id,h)=>{
      const slot=document.createElement('button'); slot.id=`hand-${p}-${h}`; slot.className='hand-slot';
      slot.disabled=id===null||id===-2||busy;
+     if(busy&&state.opening&&state.swapped?.[p]===h&&!$('rule-callout').hidden&&$('rule-callout').textContent==='Swap')slot.classList.add('swap-highlight');
      if(id===null) { slot.classList.add('spent'); slot.setAttribute('aria-label','Played'); }
      else { slot.append(cardElement(id,p,state.handModifiers?.[p]?.[h]||0)); slot.setAttribute('aria-label',description(id)); }
      slot.querySelector('.card-face')?.append(ownershipCorners());
@@ -224,7 +226,7 @@ function render() {
  $('match-footer').hidden=state.phase==='result';
  $('turn').classList.toggle('opponent-turn',state.turn===1);
  $('turn').textContent=busy||state.settling||state.phase==='result'?'':(state.turn===0?(state.forcedHand>=0?'Place the highlighted card':'Your turn'):`${state.opponent}'s turn`);
- if(!$('table-inspection').hidden||openSelectMenu||!$('forfeit').hidden||!$('reward').hidden||!$('post-match').hidden) return;
+ if(!$('match-rules').hidden||!$('table-inspection').hidden||openSelectMenu||!$('forfeit').hidden||!$('reward').hidden||!$('post-match').hidden) return;
  if(focus&&$(focus)&&!$(focus).disabled&&$(focus).getClientRects().length) $(focus).focus({preventScroll:true});
  else if(yourTurn) document.querySelector('#player-hand button[data-placeable="true"]')?.focus({preventScroll:true});
 }
@@ -243,12 +245,13 @@ async function playOpening(next) {
  busy=true; displayBoard=next.board.map(cell=>cell?{...cell}:null); render();
  const hand=$(next.turn===0?'player-hand':'rival-hand');
  const name=$('game').querySelector(next.turn===0?'.player-name':'.rival-name');
- hand.classList.add('first-turn'); name.classList.add('first-turn');
  if(next.swapped?.[0]>=0&&!next.redeals){
    const swapped=next.swapped.map((h,p)=>$(`hand-${p}-${h}`));swapped.forEach(el=>el?.classList.add('swap-highlight'));
-   await announce('Swap','rule',1100,token);if(token!==playbackToken)return;
-   swapped.forEach(el=>el?.classList.remove('swap-highlight'));
+   await announce('Swap','rule',2200,token);if(token!==playbackToken)return;
+   document.querySelectorAll('.swap-highlight').forEach(el=>el.classList.remove('swap-highlight'));
  }
+ await drawStarter(next,token);if(token!==playbackToken)return;
+ hand.classList.add('first-turn'); name.classList.add('first-turn');
  send('opening');
  await announce(next.turn===0?'You start':`${next.opponent} starts`,next.turn===0?'first-player':'first-rival',1100,token);
  if(token!==playbackToken) return;
@@ -322,7 +325,7 @@ window.ttcgState=raw=>{
  const changed=key!==lastRevision;
  if(next.screen!=='lesson'||next.session!==state?.session)resetLesson();
  clearTablePointer();
- if(changed) { closeShopConfirmation(false);closeAbolition(false);clearBoardDrag();closeTableInspection(false);closeGroupChoice();cancelPlayback(); selected=-1; sent=false; lastRevision=key; }
+ if(changed) { closeMatchRules(false);hideRuleTooltip();closeShopConfirmation(false);closeAbolition(false);clearBoardDrag();closeTableInspection(false);closeGroupChoice();cancelPlayback(); selected=-1; sent=false; lastRevision=key; }
  if(!state||next.session!==state.session) { tableScore=null;resetTrade(); closeSelectMenu(); $('board').replaceChildren(); }
  if(next.albumSection==='tournaments'&&next.session!==state?.session&&next.screen==='album'){albumTab='tournaments';routeTournamentBoard(next.collection?.tournaments);}
  state=next;
@@ -340,6 +343,7 @@ function closeView() {
  if(closeTournamentConfirmation())return;
  if(closeTournamentOutcome())return;
  if(closeTableInspection())return;
+ if(closeMatchRules())return;
  if(cancelTableDrag())return;
  if(closeDeckDialog())return;
  if(closeGroupChoice())return;
@@ -384,6 +388,7 @@ window.ttcgKey=key=>{
  if(albumNameEdit&&key==='cancel'){window.ttcgEscape('gamepad');return;}
  if(albumNameEdit&&key==='confirm'){$('album-deck-name-input').dispatchEvent(new KeyboardEvent('keydown',{key:'Enter',bubbles:true}));return;}
  if(key==='cancel'&&closeTableInspection())return;
+ if(key==='cancel'&&closeMatchRules())return;
  if(key==='cancel'&&cancelTableDrag())return;
  if(key==='cancel'&&closeDeckDialog())return;
  if(key==='cancel'&&closeGroupChoice())return;
@@ -514,17 +519,20 @@ function updateTrade() {
    const chosen=t.kind===3?t.destinations[origin]!==Math.floor(origin/5):Number(button.dataset.owner)===1-t.winner&&t.choices.has(Number(button.dataset.slot));
    button.classList.toggle('selected',chosen);
    button.setAttribute('aria-pressed',String(chosen));
-   button.disabled=!(t.phase==='selecting'&&t.winner===0&&button.dataset.owner==='1');
+   button.disabled=!['selecting','opponent'].includes(t.phase);
  }
+ $('trade-inspect').disabled=!['selecting','opponent'].includes(t.phase)||!t.inspectSlot;
  const action=$('take-card');
  action.hidden=t.phase==='done'||(!c.paying&&!(t.chooses&&t.winner===0));
  action.textContent=c.paying?'Retry':'Confirm';
  action.disabled=!(c.paying||(t.phase==='selecting'&&t.choices.size===t.required));
 }
 async function transferTrade(token) {
- const t=trade; if(!t||t.phase==='transferring'||t.phase==='done') return;
+ const t=trade; if(!t||['reviewing','transferring','done'].includes(t.phase)) return;
  // A native payout failure must not be presented as a completed transfer.
  if(state.collection.staked) { updateTrade(); return; }
+ t.phase='reviewing';updateTrade();
+ while(!$('table-inspection').hidden){await pause(100);if(token!==playbackToken||trade!==t)return;}
  t.phase='transferring'; updateTrade();
  const destinations=t.kind===3?t.destinations:Array.from({length:10},(_,i)=>i/5|0);
  if(t.kind!==3&&t.winner>=0)for(const h of t.choices)destinations[(1-t.winner)*5+h]=t.winner;
@@ -609,12 +617,19 @@ function renderReward() {
      const slot=document.createElement('button'); slot.id=p===1?`prize-${h}`:`trade-card-${h}`;
      slot.dataset.owner=p; slot.dataset.slot=h; slot.append(cardElement(id,p));
      slot.setAttribute('aria-label',state.cards[id].name);
-     slot.onclick=()=>{ if(t.phase!=='selecting'||p!==1) return; if(t.choices.has(h))t.choices.delete(h);else if(t.required===1)t.choices=new Set([h]);else if(t.choices.size<t.required)t.choices.add(h);updateTrade(); };
+     slot.onclick=()=>{ if(t.phase!=='selecting'||p!==1){inspectTradeCard(slot);return;} if(t.choices.has(h))t.choices.delete(h);else if(t.required===1)t.choices=new Set([h]);else if(t.choices.size<t.required)t.choices.add(h);updateTrade(); };
+     slot.onfocus=slot.onmouseenter=()=>{t.inspectSlot=slot;$('trade-inspect').disabled=!['selecting','opponent'].includes(t.phase);};
+     slot.oncontextmenu=e=>{e.preventDefault();inspectTradeCard(slot);};
      target.append(slot);
    });
  }
  updateTrade(); void gatherTrade(t,sources,playbackToken);
 }
+function inspectTradeCard(slot=document.activeElement?.closest('.trade-hand button')||trade?.inspectSlot){
+ if(!trade||!slot||!['selecting','opponent'].includes(trade.phase))return;
+ inspectTableCard(trade.hands[Number(slot.dataset.owner)][Number(slot.dataset.slot)],Number(slot.dataset.owner));
+}
+$('trade-inspect').onclick=()=>inspectTradeCard();
 $('take-card').onclick=()=>{
  if(!trade||$('take-card').disabled) return;
  if(state.collection.paying) { trade.phase='claiming'; send('payout'); updateTrade(); return; }

@@ -184,7 +184,7 @@
 #album #inspect-metadata,.card-inspector-meta { margin-bottom:16px;font-size:17px;line-height:1.65; }
 .inspect-rarity { color:var(--rarity-text,#e1cca0);font-size:19px;margin-bottom:7px; }
 #album .inspect-actions { gap:6px;margin-top:18px; }
-#shop .inspect-actions .primary,#album .inspect-actions .primary,#album .rules-controls .primary { color:#f4dfb0;border-color:#c1a05f99;background:linear-gradient(180deg,#8c713a55,#50432666);box-shadow:inset 0 0 0 3px #121e1833,0 3px 10px #0003; }
+#shop .inspect-actions .primary,#album .inspect-actions .primary,#table .rules-controls .primary { color:#f4dfb0;border-color:#c1a05f99;background:linear-gradient(180deg,#8c713a55,#50432666);box-shadow:inset 0 0 0 3px #121e1833,0 3px 10px #0003; }
 #shop .inspect-actions .primary:hover:not(:disabled),#album .inspect-actions .primary:hover:not(:disabled) { background:linear-gradient(180deg,#aa894866,#5b4b2866);border-color:#edca86; }
 #album #inspect-reason { font-size:15px;color:#b5b09a;margin-top:6px; }
 #album .inspecting-pack #inspect-card { display:grid;place-items:center;padding:36px;opacity:1;box-shadow:none;background:radial-gradient(ellipse,#a78b3420,transparent 70%);overflow:visible; }
@@ -220,7 +220,7 @@
 .rules-hand { height:342px;position:relative; }
 .rules-hand-card { position:absolute;left:12px;top:calc(var(--hand-index)*46px);width:120px;height:158px;padding:0;border:0;box-shadow:0 -4px 12px #0005; }
 .rules-hand-card.spent { visibility:hidden; }
-#album .rules-hand-card:disabled,#album .rules-demo-board button:disabled { opacity:1; }
+#rules-demo .rules-hand-card:disabled,#rules-demo .rules-demo-board button:disabled { opacity:1; }
 .rules-hand-card.demo-target { z-index:5; }
 .rules-hand-card.selected { transform:translateX(14px);z-index:6; }
 .rules-hand-card:enabled:hover,.rules-hand-card:focus-visible { z-index:7; }
@@ -232,15 +232,15 @@
 #rules-demo-caption { max-width:800px;min-height:52px;margin:22px auto 10px;font-size:19px;line-height:1.45;color:#e3d5b5;text-align:center; }
 .rules-controls { display:flex;align-items:center;justify-content:center;gap:20px; }
 #rules-demo-position { font-size:15px;color:#a8aa93; }
-#album .rules-controls button { font-size:17px;padding:8px 18px; }
+#table .rules-controls button { font-size:17px;padding:8px 18px; }
 /* Both chapter lists use the same row dimensions and all interaction states. */
-#album .chapter-nav { display:flex; flex-direction:column; gap:4px; width:192px; flex-shrink:0; min-height:0; overflow-y:auto; padding:2px 16px 12px 0; border-right:1px solid #a18e5844; }
-#album .chapter-link { display:block; width:100%; flex-shrink:0; text-align:left; padding:11px 12px; margin:0; font-size:19px; line-height:1.25; color:#b9b199; border:0; border-left:2px solid transparent; border-radius:0; background:transparent; box-shadow:none; }
-#album .chapter-link:hover:not(:disabled) { color:#ead9b3; background:linear-gradient(90deg,#aa8f4826,transparent); border-left-color:#bca16a66; }
-#album .chapter-link[aria-pressed="true"] { color:#f1d9a6; border-left-color:#d6b879; background:linear-gradient(90deg,#aa8f482b,transparent); }
-#album .chapter-link:focus-visible,#album .chapter-link[data-meridian-focused] { outline:0; border-left-color:#fff1c6; color:#fff1c6; background:linear-gradient(90deg,#aa8f4844,transparent); }
-#album .chapter-title { margin:0; font-size:30px; line-height:1.2; font-weight:normal; color:#e6d2a3; }
-#album #rules-title { margin-bottom:12px; }
+#table .chapter-nav { display:flex; flex-direction:column; gap:4px; width:192px; flex-shrink:0; min-height:0; overflow-y:auto; padding:2px 16px 12px 0; border-right:1px solid #a18e5844; }
+#table .chapter-link { display:block; width:100%; flex-shrink:0; text-align:left; padding:11px 12px; margin:0; font-size:19px; line-height:1.25; color:#b9b199; border:0; border-left:2px solid transparent; border-radius:0; background:transparent; box-shadow:none; }
+#table .chapter-link:hover:not(:disabled) { color:#ead9b3; background:linear-gradient(90deg,#aa8f4826,transparent); border-left-color:#bca16a66; }
+#table .chapter-link[aria-pressed="true"] { color:#f1d9a6; border-left-color:#d6b879; background:linear-gradient(90deg,#aa8f482b,transparent); }
+#table .chapter-link:focus-visible,#table .chapter-link[data-meridian-focused] { outline:0; border-left-color:#fff1c6; color:#fff1c6; background:linear-gradient(90deg,#aa8f4844,transparent); }
+#table .chapter-title { margin:0; font-size:30px; line-height:1.2; font-weight:normal; color:#e6d2a3; }
+#table #rules-title { margin-bottom:12px; }
 
 /* Visibility rules are illustrations, without lesson selection or progression. */
 .visibility-example .rules-player span { display:none; }
@@ -248,3 +248,7 @@
 .visibility-example .rules-hand-card,.visibility-example .demo-square { cursor:default; }
 #album[data-view="decks"] .inspect-actions #inspect-add { white-space:normal;overflow-wrap:anywhere;line-height:1.3;padding:10px 12px; }
 #album[data-view="decks"] #album-filter-summary { min-height:36px; }
+#rules-trades { display:grid;grid-template-columns:86px 1fr;gap:0 22px;max-width:920px;margin:0; }
+#rules-trades dt,#rules-trades dd { padding:17px 0;border-top:1px solid #bba16b33;margin:0;font-size:18px;line-height:1.5; }
+#rules-trades dt { color:var(--gold); }
+#rules-trades dd { color:var(--ink); }

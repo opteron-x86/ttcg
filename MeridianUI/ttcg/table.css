@@ -124,3 +124,23 @@
 #table-inspect-art .art-scene { width:100%;height:100%; }
 #table-inspect-ranks { display:flex;gap:18px;margin-top:24px;font-size:24px;color:#ece0c3; }
 .art-controls { display:flex;gap:10px;margin-top:24px; }
+/* Shared reference chapters remain in the table, above the live board. */
+#match-rules { z-index:34; }
+.match-rules-panel { position:absolute;inset:0;display:flex;flex-direction:column;padding:22px 26px 0;background:var(--surface,#17241e); }
+.match-rules-panel>header { display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;border-bottom:1px solid #bba16b44;padding-bottom:14px; }
+.match-rules-panel h2 { margin:0;font-size:25px;color:var(--gold);font-weight:normal; }
+#match-rules-content { display:flex;flex:1;min-height:0; }
+#game .rule-chip { cursor:help; }
+.rule-chip:focus-visible { outline:1px solid var(--gold);outline-offset:4px; }
+#rule-tooltip { position:absolute;z-index:29;width:390px;max-width:calc(100% - 32px);padding:15px 18px;background:#17241e;border:1px solid #ae965b88;box-shadow:0 8px 28px #0008;color:var(--ink);font-size:17px;line-height:1.45;pointer-events:none; }
+/* A short directional ornament introduces the first turn. */
+#starter-draw { position:absolute;inset:0;z-index:5;display:grid;place-items:center;background:radial-gradient(ellipse,#0b1510aa,transparent 64%);pointer-events:none; }
+.starter-mark { position:relative;width:280px;height:24px;color:#e5cb90;animation:starter-reveal 1100ms ease both; }
+.starter-mark:before { content:'';position:absolute;top:50%;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,#bba16b30 25%,#bba16b30 75%,transparent); }
+.starter-mark:after { content:'';position:absolute;top:calc(50% - 2px);left:calc(50% - 2px);width:4px;height:4px;border:1px solid #caa56a88;transform:rotate(45deg); }
+.starter-line { position:absolute;top:50%;left:50%;width:120px;height:1px;background:linear-gradient(90deg,#bba16b44,currentColor);transform-origin:left center;transform:scaleX(var(--starter-direction));animation:starter-line 1100ms cubic-bezier(.2,.65,.25,1) both; }
+.starter-token { position:absolute;top:calc(50% - 4px);left:calc(50% - 4px);width:8px;height:8px;background:currentColor;box-shadow:0 0 9px #d9bb7255;transform:translateX(var(--starter-offset)) rotate(45deg);animation:starter-token 1100ms cubic-bezier(.2,.65,.25,1) both; }
+@keyframes starter-reveal { 0% { opacity:0; } 18%,84% { opacity:1; } 100% { opacity:0; } }
+@keyframes starter-line { 0%,24% { transform:scaleX(0); } 76%,100% { transform:scaleX(var(--starter-direction)); } }
+@keyframes starter-token { 0%,24% { transform:translateX(0) rotate(45deg); } 76%,100% { transform:translateX(var(--starter-offset)) rotate(45deg); } }
+@media(prefers-reduced-motion:reduce) { .starter-mark,.starter-line,.starter-token { animation:none; } }
