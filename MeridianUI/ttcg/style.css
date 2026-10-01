@@ -178,8 +178,11 @@ button:hover:not(:disabled) { background:#344335;border-color:#d2b47b; }
 #settings-title { margin-bottom:18px; }
 .settings-body { min-height:0;overflow-y:auto;padding-right:12px; }
 .settings-panel .binding-row { margin:12px 0; }
-.world-pause-settings { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:28px;margin-top:12px;text-align:left; }
+.world-pause-settings { margin-top:12px;text-align:left; }
 .world-pause-settings .settings-switch { width:100%;font-size:19px; }
+#experimental-pause-settings { margin-top:10px;padding-top:14px;border-top:1px solid #bba16b33; }
+#experimental-pause-toggle { color:var(--gold);cursor:pointer;font-size:18px; }
+#experimental-pause-settings #experimental-pause-note { margin:12px 0 6px;color:var(--muted);font-size:16px;line-height:1.5; }
 #interface-status { grid-column:1/-1;margin:8px 0 0;color:var(--gold);font-size:17px; }
 .interrupted-match { display:flex;align-items:center;gap:16px;padding:10px 0;border-bottom:1px solid #bba16b33;color:var(--muted); }
 .interrupted-match p { flex:1;margin:0;font-size:18px;line-height:1.4; }

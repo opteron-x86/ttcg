@@ -440,7 +440,7 @@ inline bool prepare(RE::Actor* actor,bool resetTerms=false) {
  const auto* event=ttcg::tournament(saved,tournamentID);const auto node=event?ttcg::tournamentNode(*event):0;
  if(event&&!node){notice="This tournament has no game to prepare.";return false;}
  const auto seed=event?ttcg::tournamentHash(event->seed^node^(event->wins[node-8][0]+event->wins[node-8][1])*2654435761u^event->replays):handSeed;
- rivalDeck=ttcg::opponentHand(rival,i,seed,sessionRules);
+ rivalDeck=practice?ttcg::childHand(rival,base,seed,sessionRules):ttcg::opponentHand(rival,i,seed,sessionRules);
  if(!ttcg::validHand(rivalDeck,rival)){notice="They don't have enough cards for a game.";return false;}
  if(saved.culture.pending.kind&&practice){ttcg::abandonRuleCulture(saved,gameHour());sessionRules=terms(actor).rules;notice="Rule challenge canceled.";}
  if(!tournamentID&&cultureEnabled(actor))ttcg::prepareRuleSpread(saved,i,gameHour());
@@ -505,7 +505,7 @@ inline std::string json(RE::Actor* actor,bool=true,bool conceal=false) {
    auto npc=resolveID<RE::TESNPC>(base);if(!npc||!npc->GetRace()||!npc->GetRace()->IsChildRace())continue;
    if(!first)out+=',';first=false;const auto& r=record.competitive;
    const auto hold=saved.childHolds.contains(base)?saved.childHolds.at(base):1;
-   out+=std::format("{{\"name\":{},\"location\":{},\"skill\":\"Beginner\",\"wins\":{},\"losses\":{},\"draws\":{},\"unlocked\":true}}",ttcg::quote(npc->GetName()),ttcg::quote(childPlace(base,hold)),r.wins,r.losses,r.draws);
+   out+=std::format("{{\"name\":{},\"location\":{},\"skill\":{},\"wins\":{},\"losses\":{},\"draws\":{},\"unlocked\":true}}",ttcg::quote(npc->GetName()),ttcg::quote(childPlace(base,hold)),ttcg::quote(ttcg::childSkillName(base)),r.wins,r.losses,r.draws);
    out.pop_back();out+=",\"holdID\":"+std::to_string(hold)+",\"hold\":"+ttcg::quote(ttcg::holdName(hold))+"}";
    out.pop_back();out+=",\"base\":"+std::to_string(base)+",\"friendlyOnly\":true}";
  }
@@ -513,7 +513,7 @@ inline std::string json(RE::Actor* actor,bool=true,bool conceal=false) {
  const auto playStock=isChild(actor)?ttcg::childStock(actor?persistentID(actor->GetActorBase()):0):rival;
  const std::string playReason=ttcg::cardsPreventingPlay(stock,playStock,i);
  const bool ready=actor&&canChallenge(actor,false)&&playReason.empty();
- out+=std::format("],\"introduced\":{},\"unlocked\":{},\"skill\":{},\"fixedRules\":{},\"fixedTrade\":{},\"maxWager\":{},\"tutorial\":false}}",saved.starter?"true":"false",saved.starter?"true":"false",ttcg::quote(development.skillName(p?p->skillName:isChild(actor)?"Beginner":"")),sessionRules,!practice&&!tournamentID?terms(actor).trade:0,maxWager(actor));
+ out+=std::format("],\"introduced\":{},\"unlocked\":{},\"skill\":{},\"fixedRules\":{},\"fixedTrade\":{},\"maxWager\":{},\"tutorial\":false}}",saved.starter?"true":"false",saved.starter?"true":"false",ttcg::quote(development.skillName(p?p->skillName:isChild(actor)?ttcg::childSkillName(persistentID(actor->GetActorBase())):"")),sessionRules,!practice&&!tournamentID?terms(actor).trade:0,maxWager(actor));
  out.pop_back();out+=std::format(",\"canPlay\":{},\"practice\":{},\"ruleRequest\":{},\"hold\":{},\"objective\":{}}}",
  ready?"true":"false",practice?"true":"false",requestAnswered?0:ruleRequest,ttcg::quote(p&&p->traveller?"":ttcg::holdName(displayHold)),ttcg::quote(ttcg::reputationObjective(saved,displayHold)));
 

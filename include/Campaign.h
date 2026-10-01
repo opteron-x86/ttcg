@@ -100,11 +100,40 @@ inline unsigned childRequestedRule(const CollectionSave& s,std::uint32_t base,un
  for(unsigned step=0;step<choices.size();++step){const auto rule=choices[(seed+step)%choices.size()];if(validRules(currentRules|rule)&&!(currentRules&rule)&&!(s.encounteredRules&rule))return rule;}
  for(unsigned step=0;step<choices.size();++step){auto rule=choices[(seed+step)%choices.size()];if(validRules(currentRules|rule)&&!(currentRules&rule))return rule;}return 0;
 }
+struct ChildProfile {std::uint32_t base;const char* name;int skill;const char* group;};
+// Practice collections are separate from the adult roster and tournament field.
+inline constexpr std::array<ChildProfile,17> childProfiles{{
+ {0x1347E,"Frodnar",0,"Beast"},{0x13477,"Dorthe",0,"Nord"},
+ {0x132A9,"Svari",0,"Beastfolk"},{0x13363,"Hroar",0,"Beast"},
+ {0x13294,"Knud",0,"Nord"},{0x13BAD,"Mila Valentia",0,"Imperial"},
+ {0x13BAF,"Lars Battle-Born",1,"Nord"},{0x19C01,"Gralnach",1,"Orc"},
+ {0x13B78,"Skuli",1,"Construct"},{0x19A2C,"Clinton Lylvieve",1,"Breton"},
+ {0x1337A,"Samuel",1,"Khajiit"},{0x135E5,"Agni",1,"Spirit"},
+ {0x13BA9,"Braith",2,"Redguard"},{0x1434D,"Nelkir",2,"Daedra"},
+ {0x1434B,"Dagny",2,"High Elf"},{0x1329B,"Minette Vinius",2,"Imperial"},
+ {0x136BA,"Sissel",2,"Spirit"}
+}};
+inline const ChildProfile& childProfile(std::uint32_t base){
+ for(const auto& p:childProfiles)if(p.base==base)return p;
+ static constexpr ChildProfile fallback{0,"",0,"Beast"};return fallback;
+}
+inline const char* childSkillName(std::uint32_t base){return std::array{"Beginner","Regular","Expert"}[childProfile(base).skill];}
+inline std::pair<int,int> childTiers(std::uint32_t base){return std::array{std::pair{1,2},std::pair{3,4},std::pair{5,7}}[childProfile(base).skill];}
 inline Stock childStock(std::uint32_t base) {
- // Friendly collections vary by child; no persistent card or gold transfers.
- std::vector<CardID> pool;for(const auto& c:cards)if(c.tier==1&&std::string_view(c.rarity)=="Common")pool.push_back(c.form);
- std::mt19937 rng(base);std::shuffle(pool.begin(),pool.end(),rng);Stock stock;
- for(unsigned i=0;i<std::min(std::size_t(18),pool.size());++i)stock[pool[i]]=1;
+ const auto& profile=childProfile(base);const auto [low,high]=childTiers(base);
+ std::vector<CardID> pool,themed,reverse;
+ for(const auto& c:cards)if(c.available&&!c.pending&&!c.unique&&std::string_view(c.rarity)!="Legendary"){
+  if(c.tier<=2)reverse.push_back(c.form);
+  if(c.tier<low||c.tier>high||(profile.skill==0&&std::string_view(c.rarity)=="Epic"))continue;
+  pool.push_back(c.form);
+  if(std::string_view(c.groups).find(profile.group)!=std::string_view::npos)themed.push_back(c.form);
+ }
+ std::mt19937 rng(base);std::shuffle(pool.begin(),pool.end(),rng);std::shuffle(themed.begin(),themed.end(),rng);std::shuffle(reverse.begin(),reverse.end(),rng);
+ Stock stock;for(unsigned n=0;n<std::min(std::size_t(12),themed.size());++n)stock[themed[n]]=1;
+ for(auto id:pool){if(stock.size()>=24)break;stock[id]=1;}
+ // Higher practice decks keep a small low-tier reserve for Reverse. It never
+ // dilutes their ordinary hands and cannot be traded into the adult economy.
+ if(low>2)for(unsigned n=0;n<std::min(std::size_t(6),reverse.size());++n)stock[reverse[n]]=1;
  return stock;
 }
 inline void recordCompetitiveGame(CollectionSave& s,int i,int winner,unsigned rules){
@@ -181,6 +210,12 @@ inline Hand opponentHand(const Stock& stock,int i,std::uint32_t seed,unsigned ru
  const auto permitted=playableOpponentStock(stock,i);
  for(unsigned n=0;n<128;++n){auto hand=selectHand(permitted,seed+n*2654435761u);if(legal(hand))return hand;}
  return Hand{};
+}
+inline Hand childHand(const Stock& stock,std::uint32_t base,std::uint32_t seed,unsigned rules){
+ if(rules&Reverse)return opponentHand(stock,-1,seed,rules);
+ const auto [low,high]=childTiers(base);Stock normal;
+ for(auto [id,n]:stock){const int i=cardIndex(id);if(i>=0&&cards[i].tier>=low&&cards[i].tier<=high)normal[id]=n;}
+ return opponentHand(normal,-1,seed,rules);
 }
 inline void replenishOpponent(CollectionSave& s,int i,std::uint32_t actor,unsigned hour) {
  if(i<0||i>=static_cast<int>(opponents.size())||!actor||s.contract.pending())return;

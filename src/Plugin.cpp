@@ -396,18 +396,19 @@ void showPanel(RE::Actor* actor,const std::string& requested="lobby") {
   if(campaign::resumingWith(actor)&&resumeMatch())return;
   RE::SendHUDMessage::ShowHUDMessage(("Finish your game with "+campaign::savedMatchName()+" first.").c_str());return;
  }
- if(campaign::savedMatch.present&&campaign::savedMatch.tournament&&(requested=="tournaments"||requested=="registration")){
+ if(campaign::savedMatch.present&&campaign::savedMatch.tournament&&requested=="registration"){
   const auto* e=ttcg::tournament(campaign::saved,campaign::savedMatch.tournament);const auto* p=campaign::profile(actor);
   if(e&&p&&campaign::tournamentVenue()==e->hold&&std::string_view(p->name)==ttcg::tournamentVenues[e->hold-1].host&&resumeMatch())return;
  }
  if(target=="lobby"&&actor&&!campaign::profile(actor)&&!campaign::isChild(actor)&&!campaign::development.allowAnyNPC) { RE::SendHUDMessage::ShowHUDMessage("They don't play Tessera.");return; }
  albumSection=(requested=="tournaments"||requested=="registration")?"tournaments":"";campaign::tournamentID=0;campaign::tournamentRegistration=0;
- if((requested=="registration"||requested=="tournaments")&&actor){const auto* p=campaign::profile(actor);const auto venue=campaign::tournamentVenue();if(p&&venue&&std::string_view(p->name)==ttcg::tournamentVenues[venue-1].host)campaign::tournamentRegistration=venue;}
+ if(requested=="registration"&&actor){const auto* p=campaign::profile(actor);const auto venue=campaign::tournamentVenue();if(p&&venue&&std::string_view(p->name)==ttcg::tournamentVenues[venue-1].host)campaign::tournamentRegistration=venue;}
  campaign::syncProgression();
  if(target=="lobby"&&!campaign::canChallenge(actor)) {
    RE::SendHUDMessage::ShowHUDMessage(campaign::hasAlbum()?"They are unavailable for a game.":"Buy a Tessera Album from a general-goods merchant.");return;
  }
  campaign::updateTournaments();
+ if(requested=="tournaments")ttcg::discoverAllTournaments(campaign::saved,campaign::gameHour());
  if(!campaign::prepare(target=="lobby"?actor:nullptr,true)) { RE::SendHUDMessage::ShowHUDMessage(campaign::notice.c_str()); return; }
  if(target=="shop"&&!campaign::openShop(actor)){RE::SendHUDMessage::ShowHUDMessage("Card trading is unavailable here.");return;}
  opponent=actor?actor->GetHandle():RE::ActorHandle{}; opponentName=actor?actor->GetName():"";
@@ -472,7 +473,7 @@ void recordResult(const ttcg::Result& result) {
 void runAI() {
  if(!visible||!active||thinking||settling||worldFocus.switching()||match.finished()||match.turn!=1||!checkLiveWorld()) return;
  thinking=true; publish();
- const auto snapshot=match; auto actor=opponent.get();const auto* profile=campaign::profile(actor.get());const int skill=campaign::development.opponentSkill>=0?campaign::development.opponentSkill:profile?profile->skill:campaign::isChild(actor.get())?0:3; const auto token=epoch.load(); const auto round=session; const auto stateRevision=revision;
+ const auto snapshot=match; auto actor=opponent.get();const auto* profile=campaign::profile(actor.get());const int skill=campaign::development.opponentSkill>=0?campaign::development.opponentSkill:profile?profile->skill:campaign::isChild(actor.get())?ttcg::childProfile(campaign::persistentID(actor->GetActorBase())).skill:3; const auto token=epoch.load(); const auto round=session; const auto stateRevision=revision;
  std::thread([snapshot,token,round,stateRevision,skill]() {
    auto move=ttcg::opponentMove(snapshot,skill,ttcg::matchDecisionSeed(snapshot));
    // Presentation has acknowledged the previous move before this search starts.
