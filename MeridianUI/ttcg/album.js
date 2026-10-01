@@ -30,11 +30,12 @@ function closeAlbumPopover(restore=true){
  return false;
 }
 function setAlbumTab(tab){
- if(!['cards','decks','opponents','tournaments','rules'].includes(tab)||state?.screen!=='album')return;
+ if(!['cards','decks','opponents','tournaments','rules'].includes(tab)||state?.screen!=='album'||tab==='decks'&&state.interruptedMatch)return;
  stopRulesDemo();clearAlbumDrag();closeSelectMenu();closeAlbumPopover(false);albumTab=tab;renderAlbum();
  $('album-'+(tab==='opponents'?'opponents':tab)+'-tab').focus({preventScroll:true});
 }
 function openAlbumDeckForCard(id){
+ if(state?.interruptedMatch)return;
  setAlbumTab('decks');
  if(!albumVisible.includes(id)){
   $('album-search').value='';$('album-filter').value='owned';$('album-filter')._refresh();
@@ -43,7 +44,7 @@ function openAlbumDeckForCard(id){
  }
  inspected=id;renderAlbumInspection();
 }
-function saveAlbumDeck(){send('deck',Array.from({length:5},(_,h)=>albumDeck[h]??-1).join(' '));}
+function saveAlbumDeck(){if(!state?.interruptedMatch)send('deck',Array.from({length:5},(_,h)=>albumDeck[h]??-1).join(' '));}
 function albumExtras(id){if(state.cards[id].foil)return 0;return Math.max(0,state.collection.owned[id]-Math.max(1,protectedDeckCopies(id)));}
 function albumKnown(id){return state.revealCards===true||state.collection.known?.[id]||state.collection.owned[id]>0;}
 function albumCard(id,thumbnail=true){if(albumKnown(id))return cardElement(id,0,0,thumbnail);const back=document.createElement('div');back.className='unknown-card';back.textContent='?';return back;}
@@ -59,6 +60,9 @@ function renderAlbum(){
  const focus=document.activeElement?.id,c=state.collection;
  refreshAlbumGroups();
  const route=albumRoute;if(route){albumTab=route.tab;albumRoute=null;}
+ if(state.interruptedMatch&&albumTab==='decks')albumTab='cards';
+ $('album-decks-tab').disabled=Boolean(state.interruptedMatch);
+ $('album-decks-tab').title=state.interruptedMatch?'Finish your current game to edit decks.':'';
  const tab=albumTab;
  const entering=albumSession!==String(state.session);
  if(entering){albumSession=String(state.session);albumDeck=deckSlots(c.deck);albumSavedDeck=JSON.stringify(c.deck);inspected=state.cards.findIndex(card=>card.art+Boolean(card.foil)===collectionInspectedArt);closeAlbumModal(false);closeAlbumPopover(false);}
@@ -186,8 +190,8 @@ function renderAlbumInspection(){
   const n=pack.count;
   $('inspect-count').textContent=pack.label;$('inspect-card').disabled=true;
   const metadata=$('inspect-metadata');metadata.replaceChildren();
-  $('inspect-open-pack').hidden=n<1;$('inspect-open-pack').disabled=n<1;
-  $('inspect-reason').textContent='';
+  $('inspect-open-pack').hidden=n<1;$('inspect-open-pack').disabled=n<1||Boolean(state.interruptedMatch);
+  $('inspect-reason').textContent=state.interruptedMatch?'Finish your current game to open packs.':'';
   return;
  }
  $('inspect-open-pack').hidden=true;
@@ -204,7 +208,7 @@ function renderAlbumInspection(){
  $('inspect-reason').textContent=!editing||!valid?'':!owned?'Not owned':choose?'Select a card in your deck to replace.':!canAdd?'Already at limit':'';
 }
 function canAddAlbumCard(id,index=-1){
- if(state?.screen!=='album'||!Number.isInteger(id)||id<0||id>=state.cards.length)return false;
+ if(state?.screen!=='album'||state.interruptedMatch||!Number.isInteger(id)||id<0||id>=state.cards.length)return false;
  const replace=index>=0&&(deckCount(albumDeck)===5||index===albumTarget),used=albumDeck.filter((card,h)=>card===id&&(!replace||h!==index)).length;
  return (deckCount(albumDeck)<5||replace)&&state.collection.owned[id]>used&&(state.cards[id].unique?1:2)>albumDeck.filter((card,h)=>card>=0&&cardIdentity(card)===cardIdentity(id)&&(!replace||h!==index)).length;
 }
@@ -391,7 +395,7 @@ $('album-filters-clear').onclick=()=>{$('album-search').value='';for(const key o
 document.addEventListener('pointerdown',event=>{
  if(!$('album-filter-panel').hidden&&!event.target.closest('#album-filter-panel,#album-filters-toggle'))closeAlbumPopover(false);
 });
-$('inspect-open-pack').onclick=()=>{const pack=albumPacks().find(pack=>pack.id===inspected);if(albumTab==='cards'&&pack?.count>0){$('inspect-open-pack').disabled=true;send(...pack.command);}};
+$('inspect-open-pack').onclick=()=>{const pack=albumPacks().find(pack=>pack.id===inspected);if(!state.interruptedMatch&&albumTab==='cards'&&pack?.count>0){$('inspect-open-pack').disabled=true;send(...pack.command);}};
 $('album-confirm').onclick=()=>{const action=albumConfirmation;closeAlbumModal();action?.();};$('album-cancel').onclick=()=>closeAlbumModal();
 // The album viewer shows the print and finish without gameplay overlays.
 let albumArtRotation=null;

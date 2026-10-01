@@ -10,9 +10,11 @@
 #include "Opponents.h"
 #include "Presentation.h"
 #include "DeckPresentation.h"
+#include "SavedMatch.h"
 namespace campaign {
 inline constexpr const char* plugin="Tessera TCG.esp";
 inline ttcg::CollectionSave saved;
+inline ttcg::SavedMatch savedMatch;
 inline RE::TESBoundObject* goldForm{};
 inline RE::TESObjectBOOK* albumForm{};
 inline RE::TESBoundObject* packForm{};
@@ -125,7 +127,8 @@ inline bool isChild(RE::Actor* actor) {return actor&&actor->IsChild();}
 inline bool cultureEnabled(RE::Actor* actor){return !tournamentID&&development.recordResults&&development.rules<0&&!practice&&!isChild(actor)&&ttcg::cultureOpponent(saved,profileIndex(actor));}
 inline bool hasAlbum() {return development.albumAccess(saved);}
 inline bool actorReadyForCards(RE::Actor* actor){return actor&&!actor->IsDead()&&!actor->IsDisabled()&&!actor->IsInCombat()&&!actor->GetCurrentScene()&&!actor->IsHostileToActor(RE::PlayerCharacter::GetSingleton());}
-inline bool canChallenge(RE::Actor* actor) {if(!hasAlbum())return false;const int i=profileIndex(actor);if(tournamentID){const auto* e=ttcg::tournament(saved,tournamentID);return e&&i>=0&&ttcg::tournamentRival(*e)==ttcg::opponents[i].base;}if(!actorReadyForCards(actor))return false;return isChild(actor)||(i>=0?unlocked(i)&&ttcg::opponentHasCards(saved,i)&&ttcg::encounterReady(saved,i,gameHour())&&(development.unlockAllPlayers||ttcg::challengeReputationMet(saved,i)):actor&&development.allowAnyNPC);}
+inline bool resumingWith(RE::Actor* actor){return savedMatch.present&&!savedMatch.tournament&&actor&&persistentID(actor)==savedMatch.opponent;}
+inline bool canChallenge(RE::Actor* actor,bool allowResume=true) {if(!hasAlbum())return false;if(allowResume&&resumingWith(actor))return actorReadyForCards(actor);const int i=profileIndex(actor);if(tournamentID){const auto* e=ttcg::tournament(saved,tournamentID);return e&&i>=0&&ttcg::tournamentRival(*e)==ttcg::opponents[i].base;}if(!actorReadyForCards(actor))return false;return isChild(actor)||(i>=0?unlocked(i)&&ttcg::opponentHasCards(saved,i)&&ttcg::encounterReady(saved,i,gameHour())&&(development.unlockAllPlayers||ttcg::challengeReputationMet(saved,i)):actor&&development.allowAnyNPC);}
 inline int fixedWager() {if(tournamentID)return 0;return development.fixedWager(practice,canStake);}
 inline int maxWager(RE::Actor* actor) {if(tournamentID)return 0;const auto* p=profile(actor);return development.maxWager(practice,canStake,p?p->wager:0);}
 inline ttcg::Stock inventory(RE::TESObjectREFR* actor) {
@@ -138,13 +141,18 @@ inline ttcg::Stock inventory(RE::TESObjectREFR* actor) {
 struct Bank {
  std::array<RE::TESObjectREFR*,2> actors{};
  std::uint32_t rival=0;
- explicit Bank(std::uint32_t opponent):actors{RE::PlayerCharacter::GetSingleton(),resolveID<RE::TESObjectREFR>(opponent)},rival(ledgerKey(actors[1])) {}
+ bool removedOpponent=false;
+ explicit Bank(std::uint32_t opponent,std::uint32_t recoveryLedger=0):actors{RE::PlayerCharacter::GetSingleton(),resolveID<RE::TESObjectREFR>(opponent)},rival(actors[1]?ledgerKey(actors[1]):recoveryLedger),removedOpponent(!actors[1]&&recoveryLedger) {}
  int count(int p,ttcg::CardID id) {
    if(!id) return physicalCount(actors[p],goldForm);
    if(p==0) return ttcg::count(saved.player,id);
    auto it=saved.opponents.find(rival); return it==saved.opponents.end()?0:ttcg::count(it->second,id);
  }
  int change(int p,ttcg::CardID id,int amount) {
+   // Canceling a removed reference still restores its virtual card collection.
+   // Its physical purse has ceased to exist; do not strand the player's refund
+   // behind gold which can no longer be returned to that actor.
+   if(p==1&&!id&&removedOpponent&&amount>0)return amount;
    if(!id) return physicalChange(actors[p],goldForm,amount);
    if(ttcg::cardIndex(id)<0||(p==1&&!rival)) return 0;
    auto& stock=p==0?saved.player:saved.opponents[rival];
@@ -212,8 +220,9 @@ inline void syncProgression() {
      if(actor)seedOpponent(actor);
    }
    const bool freeToTalk=actorReadyForCards(resolveID<RE::Actor>(p.reference))||(p.alternateReference&&actorReadyForCards(resolveID<RE::Actor>(p.alternateReference)));
-   if(opponentGlobals[i])opponentGlobals[i]->value=hasAlbum()&&unlocked(i)&&freeToTalk?
-     (ttcg::opponentHasCards(saved,i)&&ttcg::encounterReady(saved,i,hour)&&(development.unlockAllPlayers||ttcg::willingToPlay(saved,i,hour))?1.0f:2.0f):0.0f;
+   const bool resuming=savedMatch.present&&!savedMatch.tournament&&(savedMatch.opponent==p.reference||savedMatch.opponent==p.alternateReference);
+   if(opponentGlobals[i])opponentGlobals[i]->value=hasAlbum()&&(resuming||unlocked(i))&&freeToTalk?
+     (resuming||(ttcg::opponentHasCards(saved,i)&&ttcg::encounterReady(saved,i,hour)&&(development.unlockAllPlayers||ttcg::willingToPlay(saved,i,hour)))?1.0f:2.0f):0.0f;
  }
 }
 inline unsigned tournamentLetterID(RE::TESObjectBOOK* book){
@@ -278,7 +287,7 @@ inline void updateTournaments(){
  if(saved.goldCredit>0){Bank bank(0);saved.goldCredit-=std::clamp(bank.change(0,0,saved.goldCredit),0,saved.goldCredit);}
 }
 inline void acceptChallenge(RE::Actor* actor) {
- if(!actor)return;const int i=profileIndex(actor);
+ if(!actor||resumingWith(actor))return;const int i=profileIndex(actor);
  if(i>=0)ttcg::acceptOpponentChallenge(saved,i);
  else if(isChild(actor)){const auto base=persistentID(actor->GetActorBase());saved.players[base].known=true;saved.childHolds[base]=actorHold(actor);}
 }
@@ -295,7 +304,7 @@ inline void recordGame(RE::Actor* actor,int winner,bool completed=true) {
  ttcg::finishTravellerEncounter(saved,i,gameHour());
  syncProgression();
 }
-inline void finish(int winner,unsigned selection=~0u) {
+inline void finish(int winner,unsigned selection=~0u,std::uint32_t recoveryLedger=0) {
  auto& c=saved.contract;if(!c.pending())return;
  if(selection==~0u)selection=c.automaticChoice(winner);
  if(c.held){
@@ -305,7 +314,7 @@ inline void finish(int winner,unsigned selection=~0u) {
    if(lost){if(!receipt.empty())receipt+=" · ";receipt+=std::format("Lost {} card{}",lost,lost==1?"":"s");}
    if(c.wager){if(!receipt.empty())receipt+=" · ";receipt+=winner<0?"Wager returned":std::format("{}{} gold",winner==0?"+":"−",c.wager);}
  }
- Bank bank(c.opponent);
+ Bank bank(c.opponent,recoveryLedger);
  if(!c.settleSelection(bank,winner,selection))notice="Inventory transfer pending.";
  else{ttcg::retainOwnedDecks(saved);notice.clear();syncProgression();SKSE::log::info("Match stakes settled: outcome {}, selection {}",winner,selection);}
 }
@@ -334,6 +343,37 @@ inline void removeLegacyAlbumStock() {
    [](RE::TESObjectREFR* ref,int amount){return physicalChange(ref,albumForm,amount);});
  if(changed)SKSE::log::info("Removed legacy album stock from {} merchant inventories",changed);
 }
+inline std::string savedMatchName(){auto actor=resolveID<RE::Actor>(savedMatch.opponent);return actor?actor->GetName():"your opponent";}
+inline void resolveSavedMatch(bool forfeit) {
+ if(!savedMatch.present)return;
+ const auto table=savedMatch; savedMatch={};
+ const auto previousTournament=tournamentID;
+ tournamentID=table.tournament;competitiveMatch=table.competitive;cultureGame=table.culture;sessionRules=table.table.rules;
+ if(!table.table.finished()){
+  if(forfeit){recordGame(resolveID<RE::Actor>(table.opponent),1,false);saved.contract.forfeit();}
+  else {
+   if(table.tournament)if(auto* event=ttcg::tournament(saved,table.tournament)){
+    if(!ttcg::tournamentOpen(*event,gameHour()))ttcg::withdrawTournament(saved,table.tournament);
+    else {event->matchNode=0;syncProgression();ttcg::resolveTournament(saved,*event);}
+   }
+   if(table.culture)ttcg::abandonRuleCulture(saved,gameHour());
+  }
+ }
+ if(saved.contract.pending())finish(saved.contract.completed?saved.contract.outcome:-1,~0u,table.ledger);
+ tournamentID=previousTournament;cultureGame=false;
+}
+inline bool recoverSavedMatch() {
+ if(!savedMatch.present)return false;
+ const auto* event=ttcg::tournament(saved,savedMatch.tournament);
+ if(savedMatch.tournament&&!savedMatch.table.finished()&&(!event||!ttcg::tournamentOpen(*event,gameHour())||event->eliminated||event->awarded||!event->matchNode||event->matchNode!=ttcg::tournamentNode(*event))){
+  resolveSavedMatch(false);notice="The tournament has ended.";return false;
+ }
+ auto actor=resolveID<RE::Actor>(savedMatch.opponent);
+ if(!actor||actor->IsDead()||actor->IsDisabled()){
+  resolveSavedMatch(false);notice="Your interrupted game has been canceled.";return false;
+ }
+ return true;
+}
 inline void recover() {
  if(!available()) return;
  removeLegacyAlbumStock();
@@ -341,14 +381,20 @@ inline void recover() {
  claimAlbum();
  if(saved.goldCredit) { Bank bank(0); saved.goldCredit-=bank.change(0,0,saved.goldCredit); }
  syncProgression();
+ if(recoverSavedMatch()){
+  // A committed choice may still have outstanding native inventory writes.
+  // Retry those credits without replacing a held, unchosen card reward.
+  if(saved.contract.paying)finish(saved.contract.outcome);
+  return;
+ }
  if(!saved.contract.pending()) {
    development.grantFoils(saved);
  if(development.grantCards(saved)){ensureAlbum();SKSE::log::info("Development: granted all {} playable cards",ttcg::cards.size());}
    ensureAlbum();ttcg::retainOwnedDecks(saved);updateTournaments();return;
  }
  auto& c=saved.contract;
- // Saved unfinished games are canceled. Finished games retain their outcome;
- // if a reward was still unchosen, use the same deterministic choice as the NPC.
+ // Legacy/malformed saves without a resumable table still recover their escrow.
+ // Finished legacy games keep their result and use a deterministic card choice.
  int winner=c.outcome>=-1?c.outcome:-1;
  finish(winner);
  development.grantFoils(saved);
@@ -370,7 +416,12 @@ inline void seedOpponent(RE::Actor* actor) {
 inline bool prepare(RE::Actor* actor,bool resetTerms=false) {
  notice.clear();receipt.clear();revealed.clear();revealKind.clear();
  if(!available()){notice="Card data unavailable.";return false;}
- recover();if(saved.contract.pending()||saved.goldCredit){notice="Transfer pending.";return false;}
+ recover();
+ if(savedMatch.present){
+  if(actor){notice="Finish your game with "+savedMatchName()+" first.";return false;}
+  owned=inventory(RE::PlayerCharacter::GetSingleton());rivalDeck={};canStake=false;return true;
+ }
+ if(saved.contract.pending()||saved.goldCredit){notice="Transfer pending.";return false;}
  seedOpponent(actor);
  const int i=profileIndex(actor);
  if(resetTerms){ttcg::abandonRuleCulture(saved,gameHour());cultureGame=false;cultureNotice.clear();requestAnswered=false;sessionRules=terms(actor).rules;ruleRequest=development.rules>=0||!isChild(actor)?0:ttcg::childRequestedRule(saved,persistentID(actor->GetActorBase()),gameHour()/24,sessionRules);}
@@ -461,7 +512,7 @@ inline std::string json(RE::Actor* actor,bool=true,bool conceal=false) {
  const auto* p=profile(actor);const int i=profileIndex(actor);
  const auto playStock=isChild(actor)?ttcg::childStock(actor?persistentID(actor->GetActorBase()):0):rival;
  const std::string playReason=ttcg::cardsPreventingPlay(stock,playStock,i);
- const bool ready=actor&&canChallenge(actor)&&playReason.empty();
+ const bool ready=actor&&canChallenge(actor,false)&&playReason.empty();
  out+=std::format("],\"introduced\":{},\"unlocked\":{},\"skill\":{},\"fixedRules\":{},\"fixedTrade\":{},\"maxWager\":{},\"tutorial\":false}}",saved.starter?"true":"false",saved.starter?"true":"false",ttcg::quote(development.skillName(p?p->skillName:isChild(actor)?"Beginner":"")),sessionRules,!practice&&!tournamentID?terms(actor).trade:0,maxWager(actor));
  out.pop_back();out+=std::format(",\"canPlay\":{},\"practice\":{},\"ruleRequest\":{},\"hold\":{},\"objective\":{}}}",
  ready?"true":"false",practice?"true":"false",requestAnswered?0:ruleRequest,ttcg::quote(p&&p->traveller?"":ttcg::holdName(displayHold)),ttcg::quote(ttcg::reputationObjective(saved,displayHold)));
@@ -484,12 +535,19 @@ inline void save(SKSE::SerializationInterface* serial) {
  if(!saveValid) return;
  auto data=ttcg::encodeCollection(saved);
  if(!serial->WriteRecord(0x434F4C4C,ttcg::collectionFormat,data.data(),static_cast<std::uint32_t>(data.size()*4))) SKSE::log::error("Could not save collection state");
+ if(savedMatch.present){const auto table=ttcg::encodeMatch(savedMatch);if(!serial->WriteRecord(0x4D415443,ttcg::savedMatchFormat,table.data(),static_cast<std::uint32_t>(table.size()*4)))SKSE::log::error("Could not save interrupted match");}
 }
-inline void revert(SKSE::SerializationInterface*) {saved={};tournamentID=0;tournamentRegistration=0;tournamentLetterReady=0;tournamentLetterInFlight=0;cultureGame=false;cultureNotice.clear();saveValid=true;notice.clear();receipt.clear();revealed.clear();revealKind.clear();revealID=0;practice=false;competitiveMatch=false;requestAnswered=false;ruleRequest=0;sessionRules=0;}
+inline void revert(SKSE::SerializationInterface*) {saved={};savedMatch={};tournamentID=0;tournamentRegistration=0;tournamentLetterReady=0;tournamentLetterInFlight=0;cultureGame=false;cultureNotice.clear();saveValid=true;notice.clear();receipt.clear();revealed.clear();revealKind.clear();revealID=0;practice=false;competitiveMatch=false;requestAnswered=false;ruleRequest=0;sessionRules=0;}
 inline void load(SKSE::SerializationInterface* serial) {
  revert(serial);
  std::uint32_t type,version,length;
  while(serial->GetNextRecordInfo(type,version,length)) {
+   if(type==0x4D415443){
+    if(version!=ttcg::savedMatchFormat||length!=65*4){SKSE::log::warn("Unsupported saved match; returning its stakes");continue;}
+    std::vector<std::uint32_t> data(length/4);
+    if(serial->ReadRecordData(data.data(),length)!=length||!ttcg::decodeMatch(data,savedMatch)){savedMatch={};SKSE::log::warn("Invalid saved match; returning its stakes");}
+    continue;
+   }
    if(type!=0x434F4C4C) continue;
    if((version!=20&&version!=21&&version!=26&&version!=27&&version!=ttcg::collectionFormat)||length%4||length>1048576) { saveValid=false; continue; }
    std::vector<std::uint32_t> data(length/4);
@@ -514,12 +572,15 @@ inline void load(SKSE::SerializationInterface* serial) {
  std::map<std::uint32_t,unsigned> childHolds;
  for(auto [old,hold]:saved.childHolds){if(ttcg::opponentIndex(old)>=0||authoredKey(old)){childHolds[old]=hold;continue;}RE::FormID resolved=0;if(serial->ResolveFormID(old,resolved))childHolds[resolved]=hold;}
  saved.childHolds=std::move(childHolds);
- for(auto& e:saved.tournaments.events)e.matchNode=0;
- // Loading returns to the world, not the prize screen. Unused foil rewards
- // cannot wait in a save for cards acquired after the tournament.
- ttcg::forfeitTournamentFoils(saved);
- // Active tables are not resumed on load. Acceptance already committed the cooldown.
- ttcg::abandonRuleCulture(saved,0);
+ for(auto* id:{&savedMatch.opponent,&savedMatch.ledger,&savedMatch.waitPackage})if(*id&&!authoredKey(*id)){
+  RE::FormID resolved=0;if(serial->ResolveFormID(*id,resolved))*id=resolved;else *id=0;
+ }
+ if(savedMatch.present&&(!savedMatch.opponent||!ttcg::matchContractValid(savedMatch,saved.contract))){savedMatch={};SKSE::log::warn("Saved match does not match its stakes; recovering collection");}
+ for(auto& e:saved.tournaments.events)if(!savedMatch.present||savedMatch.tournament!=e.id||savedMatch.table.finished())e.matchNode=0;
+ // An interrupted final keeps its prize screen. Acquisition stays locked until
+ // it is resolved; deliberately leaving still forfeits unused foil upgrades.
+ if(!savedMatch.present||!savedMatch.tournament)ttcg::forfeitTournamentFoils(saved);
+ if(!savedMatch.present||!savedMatch.culture)ttcg::abandonRuleCulture(saved,0);
  syncProgression();
  SKSE::log::info("Collection loaded: valid {}, starter {}, pending {}",saveValid,saved.starter,saved.contract.pending());
 }

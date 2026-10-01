@@ -3,8 +3,15 @@
 #include <string_view>
 
 namespace ttcg {
-inline bool shouldPauseWorld(bool pauseAlbum,std::string_view screen,bool matchContext,bool active) {
- return pauseAlbum||screen!="album"||matchContext||active;
+struct WorldPauseSettings {
+ bool album=true,shops=true,setup=true,matches=true;
+};
+inline bool shouldPauseWorld(const WorldPauseSettings& settings,std::string_view screen,bool active) {
+ if(active)return settings.matches;
+ if(screen=="album")return settings.album;
+ if(screen=="shop")return settings.shops;
+ if(screen=="lobby")return settings.setup;
+ return true;
 }
 
 // Meridian's AlreadyFocused result does not change the existing pause mode.

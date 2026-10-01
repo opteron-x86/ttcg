@@ -41,10 +41,20 @@ unsigned collectionKey=0x41,challengeKey=0x42;
 std::string bindingCapture,bindingNotice;
 std::string developmentNotice;
 std::string cardBackNotice;
-bool pauseWorldInAlbum=true;
+ttcg::WorldPauseSettings worldPauseSettings;
+struct PauseOption {std::string_view command,jsonKey;const wchar_t* iniKey;bool ttcg::WorldPauseSettings::* member;};
+constexpr std::array pauseOptions{
+ PauseOption{"pause-album","pauseWorldInAlbum",L"PauseWorldInAlbum",&ttcg::WorldPauseSettings::album},
+ PauseOption{"pause-shop","pauseWorldInShops",L"PauseWorldInShops",&ttcg::WorldPauseSettings::shops},
+ PauseOption{"pause-setup","pauseWorldInMatchSetup",L"PauseWorldInMatchSetup",&ttcg::WorldPauseSettings::setup},
+ PauseOption{"pause-match","pauseWorldDuringMatches",L"PauseWorldDuringMatches",&ttcg::WorldPauseSettings::matches}
+};
 std::string interfaceNotice;
 ttcg::WorldFocus worldFocus;
-std::atomic<std::uint64_t> unpausedAlbumEpoch{0};
+std::atomic<std::uint64_t> unpausedWorldEpoch{0},worldMonitorGeneration{0};
+std::atomic<RE::FormID> watchedOpponent{0};
+RE::ActorHandle waitingOpponent;
+RE::TESPackage* waitingPackage{};
 bool pendingAlbum=false,challengeContext=false;
 ttcg::Match match;
 ttcg::Result lastResult;
@@ -158,10 +168,94 @@ void updateMusic() {
 }
 
 void close(bool unwind=true);
+void runAI();
+void checkpointMatch() {
+ if(!active)return;
+ auto actor=opponent.get();if(!actor)return;
+ auto& saved=campaign::savedMatch;
+ saved.present=true;saved.opponent=campaign::persistentID(actor.get());saved.ledger=campaign::ledgerKey(actor.get());
+ saved.tournament=campaign::tournamentID;saved.table=match;saved.practice=campaign::practice;
+ saved.competitive=campaign::competitiveMatch;saved.culture=campaign::cultureGame;
+ saved.waiting=bool(waitingPackage);saved.waitPackage=waitingPackage?campaign::persistentID(waitingPackage):0;
+}
+void releaseOpponent() {
+ auto actor=waitingOpponent.get();auto package=waitingPackage;
+ waitingOpponent={};waitingPackage=nullptr;
+ if(package){campaign::savedMatch.waiting=false;campaign::savedMatch.waitPackage=0;}
+ if(actor&&package&&actor->GetCurrentPackage()==package){actor->EndInterruptPackage(false);actor->EvaluatePackage();}
+}
+void waitOpponent() {
+ if(waitingPackage||!active||!worldFocus.unpaused())return;
+ auto actor=opponent.get();auto player=RE::PlayerCharacter::GetSingleton();
+ // Tournament opponents need not be physically present. Leave remote actors' AI alone.
+ if(!actor||!player||actor->IsDead()||actor->IsInCombat()||actor->GetCurrentScene()||
+    actor->GetParentCell()!=player->GetParentCell()||actor->GetPosition().GetDistance(player->GetPosition())>=600.f)return;
+ auto previous=actor->GetCurrentPackage();if(previous&&previous->packData.packType==RE::PACKAGE_TYPE::kDoNothing)return;
+ actor->InitiateDoNothingPackage();auto package=actor->GetCurrentPackage();
+ if(package&&package!=previous&&package->packData.packType==RE::PACKAGE_TYPE::kDoNothing){waitingOpponent=actor->GetHandle();waitingPackage=package;checkpointMatch();}
+}
+void releaseSavedOpponent() {
+ auto& saved=campaign::savedMatch;
+ if(saved.present&&saved.waiting)if(auto actor=campaign::resolveID<RE::Actor>(saved.opponent)){
+  auto package=actor->GetCurrentPackage();
+  if(package&&package->packData.packType==RE::PACKAGE_TYPE::kDoNothing&&campaign::persistentID(package)==saved.waitPackage){actor->EndInterruptPackage(false);actor->EvaluatePackage();}
+ }
+ saved.waiting=false;saved.waitPackage=0;
+}
+void interruptPanel() {
+ if(!visible)return;
+ const bool interrupted=active;checkpointMatch();close(!interrupted);
+ if(interrupted)RE::SendHUDMessage::ShowHUDMessage("Tessera game interrupted. You can resume it later.");
+}
+bool checkLiveWorld() {
+ if(!visible||!worldFocus.unpaused())return true;
+ auto player=RE::PlayerCharacter::GetSingleton();auto actor=opponent.get();
+ if(!player||player->IsDead()||player->IsInCombat()){interruptPanel();return false;}
+ if(active){
+  if(campaign::tournamentID&&!match.finished()){
+   const auto* event=ttcg::tournament(campaign::saved,campaign::tournamentID);
+   if(!event||!ttcg::tournamentOpen(*event,campaign::gameHour())){
+    releaseOpponent();campaign::resolveSavedMatch(false);active=false;close(false);
+    RE::SendHUDMessage::ShowHUDMessage("The tournament has ended.");return false;
+   }
+  }
+  if(!actor||actor->IsDead()||actor->IsDisabled()){
+   // A completed table already owns its result. Preserve its prize screen;
+   // ordinary recovery can settle any remaining stakes when the album opens.
+   if(match.finished()){interruptPanel();return false;}
+   releaseOpponent();campaign::resolveSavedMatch(false);active=false;close(false);
+   RE::SendHUDMessage::ShowHUDMessage("Your Tessera game has been canceled.");return false;
+  }
+  if(actor->IsInCombat()||actor->IsHostileToActor(player)||actor->GetCurrentScene()||
+     (!campaign::tournamentID&&(actor->GetParentCell()!=player->GetParentCell()||actor->GetPosition().GetDistance(player->GetPosition())>=900.f))){interruptPanel();return false;}
+ }else if(screen=="shop"||challengeContext){
+  // Setup and shops have no live table to save. Close if their NPC leaves or
+  // becomes unavailable, including while browsing an album from match setup.
+  if(!campaign::actorReadyForCards(actor.get())||(!campaign::tournamentID&&
+     (actor->GetParentCell()!=player->GetParentCell()||actor->GetPosition().GetDistance(player->GetPosition())>=900.f))){interruptPanel();return false;}
+ }
+ return true;
+}
+void monitorWorld() {
+ const auto generation=++worldMonitorGeneration;
+ auto pendingTick=std::make_shared<std::atomic<bool>>(false);
+ std::thread([generation,pendingTick](){
+  while(worldMonitorGeneration.load()==generation){
+   std::this_thread::sleep_for(std::chrono::milliseconds(250));
+   if(worldMonitorGeneration.load()!=generation)break;
+   if(pendingTick->exchange(true))continue;
+   SKSE::GetTaskInterface()->AddTask([generation,pendingTick](){
+    pendingTick->store(false);if(worldMonitorGeneration.load()==generation)checkLiveWorld();
+   });
+  }
+ }).detach();
+}
 bool updateWorldFocus() {
- const auto result=worldFocus.apply(*api,view,ttcg::shouldPauseWorld(pauseWorldInAlbum,screen,challengeContext,active));
- unpausedAlbumEpoch.store(result==ttcg::FocusUpdate::Ready&&worldFocus.unpaused()?epoch.load()+1:0);
- if(result==ttcg::FocusUpdate::Lost){close();return false;}
+ const auto result=worldFocus.apply(*api,view,ttcg::shouldPauseWorld(worldPauseSettings,screen,active));
+ const auto token=result==ttcg::FocusUpdate::Ready&&worldFocus.unpaused()?epoch.load()+1:0;
+ if(unpausedWorldEpoch.exchange(token)!=token){++worldMonitorGeneration;if(token)monitorWorld();}
+ watchedOpponent.store(token&&(active||challengeContext||screen=="shop")&&opponent.get()?opponent.get()->GetFormID():0);
+ if(result==ttcg::FocusUpdate::Lost){interruptPanel();return false;}
  if(result==ttcg::FocusUpdate::Releasing) {
    const auto token=epoch.load();
    // Meridian queued its release first. Cross that UI-task boundary before
@@ -170,12 +264,13 @@ bool updateWorldFocus() {
      SKSE::GetTaskInterface()->AddTask([token]() {
        if(epoch.load()!=token||!visible||!worldFocus.switching())return;
        auto player=RE::PlayerCharacter::GetSingleton();
-       if(!player||player->IsDead()||player->IsInCombat()||!worldFocus.complete(*api,view)){close();return;}
-       publish();
+       if(!player||player->IsDead()||player->IsInCombat()||!worldFocus.complete(*api,view)){interruptPanel();return;}
+       publish();runAI();
      });
    });
  }
- return result==ttcg::FocusUpdate::Ready;
+ if(result==ttcg::FocusUpdate::Ready){waitOpponent();return checkLiveWorld();}
+ return false;
 }
 void publish() {
  if(!api||!domReady||!visible) return;
@@ -188,19 +283,28 @@ void publish() {
  data.pop_back();data+=",\"matchContext\":"+std::string(challengeContext?"true":"false")+"}";
  if(screen=="shop"){data.pop_back();data+=",\"shop\":"+campaign::shopJson(actor.get())+"}";}
  if(screen=="lesson"){data.pop_back();data+=",\"lesson\":"+lesson.json()+"}";}
- data.pop_back();data+=std::format(",\"settings\":{{\"collection\":{},\"challenge\":{},\"capturing\":{},\"notice\":{},\"cardBackNotice\":{},\"pauseWorldInAlbum\":{},\"interfaceNotice\":{},\"development\":{}}}}}",collectionKey,challengeKey,ttcg::quote(bindingCapture),ttcg::quote(bindingNotice),ttcg::quote(cardBackNotice),pauseWorldInAlbum?"true":"false",ttcg::quote(interfaceNotice),ttcg::developmentJson(campaign::development,developmentNotice));
+ data.pop_back();data+=std::format(",\"settings\":{{\"collection\":{},\"challenge\":{},\"capturing\":{},\"notice\":{},\"cardBackNotice\":{},\"interfaceNotice\":{},\"development\":{}",collectionKey,challengeKey,ttcg::quote(bindingCapture),ttcg::quote(bindingNotice),ttcg::quote(cardBackNotice),ttcg::quote(interfaceNotice),ttcg::developmentJson(campaign::development,developmentNotice));
+ for(const auto& option:pauseOptions)data+=","+ttcg::quote(option.jsonKey)+":"+(worldPauseSettings.*option.member?"true":"false");
+ data+="}}";
+ const auto& saved=campaign::savedMatch;
+ data.pop_back();data+=",\"interruptedMatch\":";
+ if(saved.present&&!active){const auto* e=ttcg::tournament(campaign::saved,saved.tournament);
+  data+="{\"opponent\":"+ttcg::quote(campaign::savedMatchName())+",\"tournament\":"+std::to_string(saved.tournament)+",\"finished\":"+(saved.table.finished()?"true":"false")+",\"venue\":"+ttcg::quote(e?ttcg::tournamentVenues[e->hold-1].name:"")+",\"canResume\":"+(e&&campaign::tournamentVenue()==e->hold?"true":"false")+"}";
+ }else data+="null";
+ data+="}";
  api->InteropCall(view,"ttcgState",data.c_str());albumSection.clear();
 }
 void close(bool unwind) {
- unpausedAlbumEpoch.store(0);
+ if(!unwind)checkpointMatch();
+ unpausedWorldEpoch.store(0);watchedOpponent.store(0);++worldMonitorGeneration;releaseOpponent();
  campaign::closeShop();
- ttcg::forfeitTournamentFoils(campaign::saved);
+ if(unwind&&active)campaign::savedMatch={};
+ if(!campaign::savedMatch.present)ttcg::forfeitTournamentFoils(campaign::saved);
  if(unwind&&campaign::tournamentID&&active&&!match.finished())ttcg::withdrawTournament(campaign::saved,campaign::tournamentID);
- if(!unwind)if(auto* e=ttcg::tournament(campaign::saved,campaign::tournamentID))e->matchNode=0;
  campaign::tournamentID=0;campaign::tournamentRegistration=0;albumSection.clear();
  cancelMasterApproach();
  pendingAlbum=false;challengeContext=false;bindingCapture.clear();bindingNotice.clear();developmentNotice.clear();cardBackNotice.clear();interfaceNotice.clear();
- if(unwind){ttcg::abandonRuleCulture(campaign::saved,campaign::gameHour());campaign::recover();}
+ if(unwind&&!campaign::savedMatch.present){ttcg::abandonRuleCulture(campaign::saved,campaign::gameHour());campaign::recover();}
  campaign::cultureGame=false;
  stopMusic();
  ++epoch; ++session; revision=0; pending={}; opponent={};
@@ -231,7 +335,7 @@ void scanMasterApproach(){
 
  }
  if(approachingMaster){if(masterPresented)return;if(!worldReady()||std::chrono::steady_clock::now()-approachStarted>std::chrono::seconds(30))cancelMasterApproach();return;}
- if(!worldReady()||!campaign::available()||campaign::saved.contract.pending())return;
+ if(!worldReady()||!campaign::available()||campaign::savedMatch.present||campaign::saved.contract.pending())return;
  campaign::syncProgression();auto player=RE::PlayerCharacter::GetSingleton();const auto hour=campaign::gameHour(),hold=campaign::actorHold(player);
  for(std::size_t i=0;i<ttcg::opponents.size();++i){const auto& p=ttcg::opponents[i];
   if(p.hold!=hold||!ttcg::canMasterApproach(campaign::saved,int(i),hour)||ttcg::invitationHash(p.base^(hour/6))%3!=0)continue;
@@ -256,6 +360,28 @@ void masterArrivedPapyrus(RE::StaticFunctionTag*,RE::Actor* actor){
   masterPresented=true;if(!actor->SetDialogueWithPlayer(true,true,info))cancelMasterApproach();
  });
 }
+bool resumeMatch() {
+ if(!campaign::recoverSavedMatch())return false;
+ const auto saved=campaign::savedMatch;auto actor=campaign::resolveID<RE::Actor>(saved.opponent);
+ auto player=RE::PlayerCharacter::GetSingleton();
+ const auto* event=ttcg::tournament(campaign::saved,saved.tournament);
+ if(!player||player->IsDead()||player->IsInCombat()||!actor||!campaign::actorReadyForCards(actor)||
+    (saved.tournament?(!event||campaign::tournamentVenue()!=event->hold):!eligible(actor)))return false;
+ if(!api||!domReady||!api->IsValid(view)||(!visible&&api->HasAnyActiveFocus()))return false;
+ cancelMasterApproach();campaign::closeShop();
+ campaign::tournamentID=saved.tournament;campaign::sessionRules=saved.table.rules;
+ campaign::practice=saved.practice;campaign::competitiveMatch=saved.competitive;campaign::cultureGame=saved.culture;
+ campaign::rivalDeck=saved.originals()[1];campaign::canStake=saved.competitive&&!saved.tournament;
+ opponent=actor->GetHandle();opponentName=actor->GetName();match=saved.table;
+ // Captures are atomic. Resume the completed position, without replaying an
+ // old capture or choosing another Chaos card. Only a pending redeal advances.
+ const bool redealt=match.redeal();
+ active=true;visible=true;thinking=false;settling=match.finished()||redealt;
+ lastResult={};playedRuleSounds=0;playedResultSound=false;playedOpeningSound=false;
+ screen="lobby";challengeContext=true;albumSection.clear();campaign::notice.clear();
+ ++epoch;++session;revision=0;checkpointMatch();ttcg::refreshCardArt();scanMusicFolder();api->Show(view);
+ updateMusic();publish();runAI();return true;
+}
 void showPanel(RE::Actor* actor,const std::string& requested="lobby") {
  auto player=RE::PlayerCharacter::GetSingleton();
  const std::string target=(requested=="tournaments"||requested=="registration")?"album":requested;
@@ -264,6 +390,16 @@ void showPanel(RE::Actor* actor,const std::string& requested="lobby") {
  if(!api||!domReady||!api->IsValid(view)) { RE::SendHUDMessage::ShowHUDMessage(std::format("Tessera: {} is unavailable.",ttcg::ui::name).c_str()); return; }
  cancelMasterApproach();
  if(api->HasAnyActiveFocus()) { RE::SendHUDMessage::ShowHUDMessage("Close the other menu first."); return; }
+ campaign::recoverSavedMatch();
+ if(campaign::savedMatch.present&&target=="shop"){RE::SendHUDMessage::ShowHUDMessage("Finish your interrupted game before trading cards.");return;}
+ if(campaign::savedMatch.present&&target=="lobby"){
+  if(campaign::resumingWith(actor)&&resumeMatch())return;
+  RE::SendHUDMessage::ShowHUDMessage(("Finish your game with "+campaign::savedMatchName()+" first.").c_str());return;
+ }
+ if(campaign::savedMatch.present&&campaign::savedMatch.tournament&&(requested=="tournaments"||requested=="registration")){
+  const auto* e=ttcg::tournament(campaign::saved,campaign::savedMatch.tournament);const auto* p=campaign::profile(actor);
+  if(e&&p&&campaign::tournamentVenue()==e->hold&&std::string_view(p->name)==ttcg::tournamentVenues[e->hold-1].host&&resumeMatch())return;
+ }
  if(target=="lobby"&&actor&&!campaign::profile(actor)&&!campaign::isChild(actor)&&!campaign::development.allowAnyNPC) { RE::SendHUDMessage::ShowHUDMessage("They don't play Tessera.");return; }
  albumSection=(requested=="tournaments"||requested=="registration")?"tournaments":"";campaign::tournamentID=0;campaign::tournamentRegistration=0;
  if((requested=="registration"||requested=="tournaments")&&actor){const auto* p=campaign::profile(actor);const auto venue=campaign::tournamentVenue();if(p&&venue&&std::string_view(p->name)==ttcg::tournamentVenues[venue-1].host)campaign::tournamentRegistration=venue;}
@@ -293,8 +429,8 @@ void requestChallenge(RE::Actor* actor) {
  campaign::syncProgression();
  if(!campaign::hasAlbum()){RE::SendHUDMessage::ShowHUDMessage("Buy a Tessera Album from a general-goods merchant.");return;}
  const auto i=campaign::profileIndex(actor);
- if(!(campaign::isChild(actor)||(i>=0?campaign::unlocked(i):actor&&campaign::development.allowAnyNPC))){RE::SendHUDMessage::ShowHUDMessage("They are unavailable for a game.");return;}
- const bool accepted=i<0||(ttcg::opponentHasCards(campaign::saved,i)&&(campaign::development.unlockAllPlayers||ttcg::willingToPlay(campaign::saved,i,campaign::gameHour())));
+ if(!(campaign::resumingWith(actor)||campaign::isChild(actor)||(i>=0?campaign::unlocked(i):actor&&campaign::development.allowAnyNPC))){RE::SendHUDMessage::ShowHUDMessage("They are unavailable for a game.");return;}
+ const bool accepted=campaign::resumingWith(actor)||i<0||(ttcg::opponentHasCards(campaign::saved,i)&&(campaign::development.unlockAllPlayers||ttcg::willingToPlay(campaign::saved,i,campaign::gameHour())));
  const bool alternate=i>=0&&ttcg::opponents[i].alternateBase&&campaign::persistentID(actor->GetActorBase())==ttcg::opponents[i].alternateBase;
  const auto id=i<0?ttcg::encounter_childAccept:alternate?(accepted?ttcg::encounter_alternateAccept:ttcg::encounter_alternateDecline):accepted?ttcg::encounterRecords[i].accept:ttcg::encounterRecords[i].decline;
  auto info=RE::TESDataHandler::GetSingleton()->LookupForm<RE::TESTopicInfo>(id,campaign::plugin);
@@ -330,19 +466,21 @@ void recordResult(const ttcg::Result& result) {
  ++revision;
  if(match.finished()&&campaign::saved.contract.held&&!campaign::saved.contract.capture(match)){log::error("Invalid match provenance");close();return;}
  if(match.finished()) { campaign::saved.dealReveals={}; const auto s=match.score();auto actor=opponent.get();campaign::recordGame(actor.get(),s[0]==s[1]?-1:s[0]>s[1]?0:1); }
+ checkpointMatch();
  playSound("UIMenuFocus");
 }
 void runAI() {
- if(!visible||!active||thinking||settling||match.finished()||match.turn!=1) return;
+ if(!visible||!active||thinking||settling||worldFocus.switching()||match.finished()||match.turn!=1||!checkLiveWorld()) return;
  thinking=true; publish();
  const auto snapshot=match; auto actor=opponent.get();const auto* profile=campaign::profile(actor.get());const int skill=campaign::development.opponentSkill>=0?campaign::development.opponentSkill:profile?profile->skill:campaign::isChild(actor.get())?0:3; const auto token=epoch.load(); const auto round=session; const auto stateRevision=revision;
  std::thread([snapshot,token,round,stateRevision,skill]() {
-   auto move=ttcg::opponentMove(snapshot,skill,static_cast<std::uint32_t>(round*31+stateRevision));
+   auto move=ttcg::opponentMove(snapshot,skill,ttcg::matchDecisionSeed(snapshot));
    // Presentation has acknowledged the previous move before this search starts.
    std::this_thread::sleep_for(std::chrono::milliseconds(300));
    if(epoch.load()!=token) return;
    SKSE::GetTaskInterface()->AddTask([move,token,round,stateRevision]() {
      if(epoch.load()!=token||!visible||session!=round||revision!=stateRevision||match.turn!=1) return;
+     if(!checkLiveWorld())return;
      thinking=false;
      auto result=match.play(move);
      if(!result.legal) { log::error("AI returned an illegal move"); close(); return; }
@@ -358,16 +496,30 @@ void command(const char* raw) {
  std::istringstream input(text); std::string verb,extra; std::uint64_t s=0,r=0;
  if(!(input>>verb>>s>>r)||s!=session||r!=revision) return;
  if(worldFocus.switching())return;
+ if(!checkLiveWorld())return;
+ if(verb=="interrupted"){
+  std::string action;if(active||screen!="album"||!(input>>action)||(input>>extra)||!campaign::savedMatch.present)return;
+  if(action=="resume"){if(!resumeMatch()){
+   if(campaign::savedMatch.present)campaign::notice=campaign::savedMatch.tournament?"Return to the tournament inn to resume.":"Return to "+campaign::savedMatchName()+" to resume.";
+   ++revision;publish();
+  }return;}
+  if(action=="forfeit"&&!campaign::savedMatch.table.finished()){
+   campaign::resolveSavedMatch(true);campaign::prepare(nullptr,true);++session;revision=0;publish();return;
+  }
+  return;
+ }
  if(!ttcg::tournamentRewardAllowsCommand(campaign::saved,verb)){publish();return;}
  if(screen=="shop"&&verb!="shop"&&verb!="close"&&verb!="binding"&&verb!="development"&&verb!="cardback"&&verb!="settings")return;
  if(verb=="settings") {
    std::string key;int value=-1;
    if(active||thinking||settling||screen=="lesson"||!bindingCapture.empty()||
-      !(input>>key>>value)||(input>>extra)||key!="pause-album"||(value!=0&&value!=1))return;
-   if(!WritePrivateProfileStringW(L"Interface",L"PauseWorldInAlbum",value?L"1":L"0",settingsPath.c_str())) {
+      !(input>>key>>value)||(input>>extra)||(value!=0&&value!=1))return;
+   const auto option=std::find_if(pauseOptions.begin(),pauseOptions.end(),[&](const auto& entry){return entry.command==key;});
+   if(option==pauseOptions.end())return;
+   if(!WritePrivateProfileStringW(L"Interface",option->iniKey,value?L"1":L"0",settingsPath.c_str())) {
      interfaceNotice="Couldn't save this setting.";publish();return;
    }
-   pauseWorldInAlbum=value!=0;interfaceNotice.clear();publish();return;
+   worldPauseSettings.*option->member=value!=0;interfaceNotice.clear();publish();return;
  }
  if(verb=="shop"){
   if(screen!="shop"||active||thinking||settling)return;
@@ -385,7 +537,7 @@ void command(const char* raw) {
  }
  if(verb=="development") {
    if(!campaign::development.enabled||!campaign::available()||active||thinking||settling||screen=="lesson"||
-      !bindingCapture.empty()||campaign::saved.contract.pending()||campaign::saved.goldCredit)return;
+      !bindingCapture.empty()||campaign::savedMatch.present||campaign::saved.contract.pending()||campaign::saved.goldCredit)return;
    std::string action,key;int value=0;if(!(input>>action))return;
    bool resetTerms=false;
    if(action=="set"){
@@ -428,7 +580,7 @@ void command(const char* raw) {
  }
  if(verb=="close") {
    if(input>>extra) return;
-   if(campaign::saved.contract.pending()||(campaign::tournamentID&&active&&!match.finished())) { publish(); return; }
+   if((active&&campaign::saved.contract.pending())||(campaign::tournamentID&&active&&!match.finished())) { publish(); return; }
    close(); return;
  }
  if(verb=="rule-lesson"){
@@ -488,13 +640,14 @@ void command(const char* raw) {
    screen=target;if(target=="lobby")challengeContext=true; ++session; revision=0; updateMusic(); publish(); return;
  }
  if(verb=="open-pack") {
-   if((input>>extra)||active||screen!="album") return;
+   if((input>>extra)||active||campaign::savedMatch.present||screen!="album") return;
    const auto seed=static_cast<std::uint32_t>(std::chrono::steady_clock::now().time_since_epoch().count());
    campaign::notice=campaign::openPack(seed)?"":"Pack unavailable.";
    ++revision; publish(); return;
  }
  if(verb=="forfeit") {
    if((input>>extra)||!active||match.finished())return;
+   campaign::savedMatch={};releaseOpponent();
    if(campaign::tournamentID){ttcg::withdrawTournament(campaign::saved,campaign::tournamentID);tournamentBoard();return;}
    if(!campaign::saved.contract.held)return;
    auto& contract=campaign::saved.contract;
@@ -518,19 +671,20 @@ void command(const char* raw) {
  if(verb=="prepare") {
    if((input>>extra)||settling||thinking||(active&&!match.finished())||campaign::saved.contract.pending()) return;
    auto actor=opponent.get(); if(!eligible(actor.get())) { close(); return; }
+   releaseOpponent();campaign::savedMatch={};
    if(!campaign::prepare(actor.get(),true)) { publish(); return; }
    ++epoch; ++session; revision=0; active=false; lastResult={}; match=ttcg::Match(1,campaign::sessionRules);
    updateMusic(); publish(); return;
  }
  if(verb=="deck-manage") {
-   if(active||settling||thinking||!campaign::available()||campaign::saved.contract.pending()||campaign::saved.goldCredit||(screen!="album"&&screen!="lobby"))return;
+   if(active||settling||thinking||!campaign::available()||campaign::savedMatch.present||campaign::saved.contract.pending()||campaign::saved.goldCredit||(screen!="album"&&screen!="lobby"))return;
    std::string action,name;unsigned id=0;if(!(input>>action>>id))return;
    if(action=="new"||action=="copy"||action=="rename")std::getline(input>>std::ws,name);
    else if(input>>extra)return;
    if(ttcg::manageDeck(campaign::saved,action,id,name)){++session;revision=0;publish();}return;
  }
  if(verb=="deck") {
-   if(active||settling||campaign::saved.contract.pending()||campaign::saved.goldCredit||(screen!="album"&&screen!="lobby")) return;
+   if(active||settling||campaign::savedMatch.present||campaign::saved.contract.pending()||campaign::saved.goldCredit||(screen!="album"&&screen!="lobby")) return;
    ttcg::Hand deck{};
    for(auto& id:deck) { int index=-1; if(!(input>>index)||index< -1||index>=static_cast<int>(ttcg::cards.size()*2)) return; id=index<0?0:ttcg::displayCardID(index); }
    if(input>>extra) return;
@@ -581,7 +735,7 @@ void command(const char* raw) {
    settling=false;
    if(match.redeal()){
      ++revision;lastResult={};settling=true;playedOpeningSound=false;playedRuleSounds=0;
-     publish();return;
+     checkpointMatch();publish();return;
    }
    auto& contract=campaign::saved.contract;
    if(match.finished()&&contract.held&&!contract.choicePending()) {
@@ -592,7 +746,7 @@ void command(const char* raw) {
  }
  if(verb=="start") {
    unsigned rules=0; int tradeRule=-1,wager=-1;
-   if(!(input>>rules>>tradeRule>>wager)||!ttcg::validRules(rules)||(tradeRule<0||tradeRule>4)||(wager<0||wager>ttcg::maximumWager||wager%5)||thinking||settling||active||screen!="lobby"||campaign::saved.contract.pending()||campaign::saved.goldCredit) return;
+   if(!(input>>rules>>tradeRule>>wager)||!ttcg::validRules(rules)||(tradeRule<0||tradeRule>4)||(wager<0||wager>ttcg::maximumWager||wager%5)||thinking||settling||active||screen!="lobby"||campaign::savedMatch.present||campaign::saved.contract.pending()||campaign::saved.goldCredit) return;
    ttcg::Hand deck{};
    for(auto& id:deck) { int index=-1; if(!(input>>index)||index<0||index>=static_cast<int>(ttcg::cards.size()*2)) return; id=ttcg::displayCardID(index); }
    if(input>>extra) return;
@@ -625,6 +779,7 @@ void command(const char* raw) {
    for(int p=0;p<2;++p)for(int h=0;h<5;++h)match.foilHands[p][h]=ttcg::isFoil(p==0?deck[h]:campaign::rivalDeck[h]);
    ttcg::retainDealVisibility(campaign::saved,match);
    lastResult={}; settling=true; playedResultSound=false; playedOpeningSound=false;
+   checkpointMatch();
    log::info("Match {} seed {} rules {} trade {} wager {}",session,seed,rules,tradeRule,wager);
    updateMusic(); publish(); runAI(); return;
  }
@@ -705,26 +860,30 @@ void logAlbumDialogue() {
    campaign::progression?campaign::progression->value:-1,quest&&quest->IsRunning(),
    info&&info->objConditions.IsTrue(actor,player),campaign::physicalCount(player,campaign::goldForm));
 }
-void interruptAlbum() {
- const auto token=unpausedAlbumEpoch.load();if(!token)return;
+void interruptWorld() {
+ const auto token=unpausedWorldEpoch.load();if(!token)return;
  SKSE::GetTaskInterface()->AddTask([token]() {
-   if(unpausedAlbumEpoch.load()!=token||epoch.load()+1!=token||!visible||!worldFocus.unpaused())return;
-   log::info("Closing unpaused album for a world interruption");close();
+   if(unpausedWorldEpoch.load()!=token||epoch.load()+1!=token||!visible||!worldFocus.unpaused())return;
+   log::info("Closing unpaused Tessera for a world interruption");interruptPanel();
  });
 }
+bool watchedActor(RE::TESObjectREFR* actor){return actor&&(actor->GetFormID()==0x14||actor->GetFormID()==watchedOpponent.load());}
 class Events final: public RE::BSTEventSink<RE::InputEvent*>, public RE::BSTEventSink<RE::MenuOpenCloseEvent>, public RE::BSTEventSink<RE::TESContainerChangedEvent>, public RE::BSTEventSink<RE::TESCombatEvent>, public RE::BSTEventSink<RE::TESHitEvent>, public RE::BSTEventSink<RE::TESDeathEvent> {
 public:
  RE::BSEventNotifyControl ProcessEvent(const RE::TESCombatEvent* event,RE::BSTEventSource<RE::TESCombatEvent>*) override {
    if(event&&event->newState!=RE::ACTOR_COMBAT_STATE::kNone&&
-      ((event->actor&&event->actor->GetFormID()==0x14)||(event->targetActor&&event->targetActor->GetFormID()==0x14)))interruptAlbum();
+      (watchedActor(event->actor.get())||watchedActor(event->targetActor.get())))interruptWorld();
    return RE::BSEventNotifyControl::kContinue;
  }
  RE::BSEventNotifyControl ProcessEvent(const RE::TESHitEvent* event,RE::BSTEventSource<RE::TESHitEvent>*) override {
-   if(event&&event->target&&event->target->GetFormID()==0x14)interruptAlbum();
+   if(event&&watchedActor(event->target.get()))interruptWorld();
    return RE::BSEventNotifyControl::kContinue;
  }
  RE::BSEventNotifyControl ProcessEvent(const RE::TESDeathEvent* event,RE::BSTEventSource<RE::TESDeathEvent>*) override {
-   if(event&&event->actorDying&&event->actorDying->GetFormID()==0x14)interruptAlbum();
+   if(event&&watchedActor(event->actorDying.get()))interruptWorld();
+   if(event&&event->actorDying){const auto id=campaign::persistentID(event->actorDying.get());
+    SKSE::GetTaskInterface()->AddTask([id](){if(campaign::savedMatch.present&&campaign::savedMatch.opponent==id&&!active)campaign::recoverSavedMatch();});
+   }
    return RE::BSEventNotifyControl::kContinue;
  }
  RE::BSEventNotifyControl ProcessEvent(const RE::TESContainerChangedEvent* event,RE::BSTEventSource<RE::TESContainerChangedEvent>*) override {
@@ -787,7 +946,7 @@ public:
  RE::BSEventNotifyControl ProcessEvent(const RE::MenuOpenCloseEvent* event,RE::BSTEventSource<RE::MenuOpenCloseEvent>*) override {
    if(!event) return RE::BSEventNotifyControl::kContinue;
    if(event->opening&&event->menuName==RE::DialogueMenu::MENU_NAME){
-     interruptAlbum();
+     interruptWorld();
      SKSE::GetTaskInterface()->AddTask([](){campaign::claimAlbum();campaign::updateTournaments();logAlbumDialogue();});
    }
    if(event->opening&&event->menuName==RE::BookMenu::MENU_NAME) albumPapyrus(nullptr);
@@ -805,8 +964,8 @@ public:
      log::info("Menu cleanup complete");
    }
    // Release/reclaim queues a FocusMenu hide/show while the view keeps ownership.
-   // Only an actual focus loss closes Tessera (and settles its session).
-   if(!event->opening&&event->menuName==ttcg::ui::focusMenu&&visible&&!worldFocus.switching()&&(!api||!api->HasFocus(view))) close();
+   // Only an actual focus loss interrupts Tessera and preserves its table.
+   if(!event->opening&&event->menuName==ttcg::ui::focusMenu&&visible&&!worldFocus.switching()&&(!api||!api->HasFocus(view))) interruptPanel();
    return RE::BSEventNotifyControl::kContinue;
  }
 };
@@ -829,7 +988,7 @@ void message(SKSE::MessagingInterface::Message* msg) {
    collectionKey=std::clamp(GetPrivateProfileIntW(L"Input",L"CollectionKey",0x41,settingsPath.c_str()),0u,255u);
    challengeKey=std::clamp(GetPrivateProfileIntW(L"Input",L"ChallengeKey",0x42,settingsPath.c_str()),0u,255u);
    if(collectionKey&&collectionKey==challengeKey)challengeKey=0;
-   pauseWorldInAlbum=GetPrivateProfileIntW(L"Interface",L"PauseWorldInAlbum",1,settingsPath.c_str())!=0;
+   for(const auto& option:pauseOptions)worldPauseSettings.*option.member=GetPrivateProfileIntW(L"Interface",option.iniKey,1,settingsPath.c_str())!=0;
    wchar_t back[4096]{};
    GetPrivateProfileStringW(L"Appearance",L"CardBack",L"mosaic",back,4096,settingsPath.c_str());
    ttcg::cardBackPreference=ttcg::cardBackFromSetting(ttcg::artUTF8(std::filesystem::path(back)));
@@ -861,9 +1020,12 @@ void message(SKSE::MessagingInterface::Message* msg) {
  } else if(msg->type==SKSE::MessagingInterface::kPreLoadGame||msg->type==SKSE::MessagingInterface::kNewGame||msg->type==SKSE::MessagingInterface::kPostLoadGame) {
    const char* name=msg->type==SKSE::MessagingInterface::kPreLoadGame?"PreLoadGame":msg->type==SKSE::MessagingInterface::kNewGame?"NewGame":"PostLoadGame";
    log::info("{}: cleanup begin (visible {}, music owned {})",name,visible,musicPlaying);
+   // Only PreLoad still belongs to the old save. Do not write its table into
+   // a newly loaded character after the serialization callbacks have run.
+   if(msg->type!=SKSE::MessagingInterface::kPreLoadGame)active=false;
    close(false);
    if(msg->type==SKSE::MessagingInterface::kNewGame) SKSE::GetTaskInterface()->AddTask([](){ campaign::recover(); });
-   if(msg->type==SKSE::MessagingInterface::kPostLoadGame) SKSE::GetTaskInterface()->AddTask([](){ campaign::recover(); });
+   if(msg->type==SKSE::MessagingInterface::kPostLoadGame) SKSE::GetTaskInterface()->AddTask([](){ releaseSavedOpponent();campaign::recover(); });
    log::info("{}: cleanup complete",name);
  }
 }
@@ -904,7 +1066,7 @@ extern "C" __declspec(dllexport) bool SKSEPlugin_Load(const SKSE::LoadInterface*
    return true;
  });
  auto serial=SKSE::GetSerializationInterface();
- serial->SetUniqueID(0x54544347); serial->SetSaveCallback(campaign::save); serial->SetLoadCallback([](SKSE::SerializationInterface* serial){campaign::load(serial);SKSE::GetTaskInterface()->AddTask([](){cancelMasterApproach();});}); serial->SetRevertCallback(campaign::revert);
+ serial->SetUniqueID(0x54544347); serial->SetSaveCallback([](SKSE::SerializationInterface* serial){checkpointMatch();campaign::save(serial);}); serial->SetLoadCallback([](SKSE::SerializationInterface* serial){campaign::load(serial);SKSE::GetTaskInterface()->AddTask([](){cancelMasterApproach();});}); serial->SetRevertCallback(campaign::revert);
  SKSE::GetMessagingInterface()->RegisterListener(message);
  log::info("Tessera {} loaded ({} / CommonLibSSE-NG {} / {} / Skyrim {})",TTCG_VERSION,ttcg::ui::name,TTCG_COMMONLIB_VERSION,TTCG_COMMONLIB_COMMIT,REL::Module::get().version().string()); return true;
 }

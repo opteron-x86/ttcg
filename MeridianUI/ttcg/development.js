@@ -1,7 +1,7 @@
 'use strict';
 function developmentSettings(){return state?.settings?.development;}
 function developmentCommand(args){
- if(!developmentSettings()?.enabled||state.phase!=='ready')return;
+ if(!developmentSettings()?.enabled||state.phase!=='ready'||state.interruptedMatch)return;
  for(const control of $('development-settings').querySelectorAll('button,select')){control.disabled=true;control._refresh?.();}
  send('development',args);
 }
@@ -9,7 +9,7 @@ function renderDevelopmentSettings(){
  const config=developmentSettings(),section=$('development-settings');section.hidden=!config?.enabled;
  $('settings-panel').firstElementChild.classList.toggle('has-development',!!config?.enabled);
  if(!config?.enabled)return;
- const disabled=Boolean(bindings().capturing||bindingPending)||state.phase!=='ready';
+ const disabled=Boolean(bindings().capturing||bindingPending||state.interruptedMatch)||state.phase!=='ready';
  for(const control of section.querySelectorAll('button,select'))control.disabled=disabled;
  for(const control of section.querySelectorAll('[data-development]')){
   const value=config[control.dataset.development];

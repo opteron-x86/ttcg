@@ -27,6 +27,7 @@
  </section>
  <div id="shop-confirm" class="modal-shade" hidden><section class="modal" role="dialog" aria-modal="true" aria-labelledby="shop-confirm-title" aria-describedby="shop-confirm-copy"><h2 id="shop-confirm-title"></h2><p id="shop-confirm-copy"></p><div class="modal-actions"><button id="shop-cancel" class="quiet">Keep card</button><button id="shop-confirm-action" class="primary">Sell</button></div></section></div>
  <section id="album" aria-label="Tessera album" hidden>
+  <div id="interrupted-match" class="interrupted-match" hidden><p id="interrupted-match-copy" role="status"></p><button id="interrupted-resume" class="quiet">Resume game</button><button id="interrupted-forfeit" class="quiet">Forfeit</button></div>
   <div class="album-toolbar"><span id="album-title" hidden></span><nav class="section-tabs" id="album-tabs" aria-label="Album sections"><button id="album-cards-tab" aria-pressed="true">Cards</button><button id="album-decks-tab" aria-pressed="false">Decks</button><button id="album-opponents-tab" aria-pressed="false">Journal</button><button id="album-tournaments-tab" aria-pressed="false">Tournaments</button><button id="album-rules-tab" aria-pressed="false">Rules</button></nav><span id="album-count"></span><button id="album-back" class="quiet">Back to match setup</button></div>
   <div id="album-tournaments" hidden>
    <aside class="tournament-sidebar"><div class="tournament-views" aria-label="Tournament list"><button id="tournament-available" class="quiet" aria-pressed="true">Available</button><button id="tournament-history" class="quiet" aria-pressed="false">History</button></div><nav id="tournament-list" class="chapter-nav" aria-label="Tournaments"></nav></aside>
@@ -118,9 +119,11 @@
   <div class="settings-body">
   <div class="binding-row"><span>Album</span><button id="bind-collection" aria-label="Album hotkey">F7</button><button id="unbind-collection" class="quiet">Unbind</button><button id="reset-collection" class="quiet">Reset</button></div>
   <div class="binding-row"><span>Challenge</span><button id="bind-challenge" aria-label="Challenge hotkey">F8</button><button id="unbind-challenge" class="quiet">Unbind</button><button id="reset-challenge" class="quiet">Reset</button></div>
-  <div class="album-pause-settings">
-   <button id="pause-world-in-album" class="settings-switch" role="switch" aria-checked="true" aria-describedby="album-pause-help">Pause world in album<span aria-hidden="true">On</span></button>
-   <p id="album-pause-help">Albums opened from match setup stay paused.</p>
+  <div class="world-pause-settings" role="group" aria-label="Pause world">
+   <button id="pause-world-in-album" class="settings-switch" role="switch" aria-checked="true">Pause in album<span aria-hidden="true">On</span></button>
+   <button id="pause-world-in-shops" class="settings-switch" role="switch" aria-checked="true">Pause in shops<span aria-hidden="true">On</span></button>
+   <button id="pause-world-in-match-setup" class="settings-switch" role="switch" aria-checked="true">Pause in match setup<span aria-hidden="true">On</span></button>
+   <button id="pause-world-during-matches" class="settings-switch" role="switch" aria-checked="true">Pause in match<span aria-hidden="true">On</span></button>
    <p id="interface-status" role="status" hidden></p>
   </div>
   <section id="card-back-settings" aria-labelledby="card-back-title">

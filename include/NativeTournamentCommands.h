@@ -1,11 +1,16 @@
 // Included in Plugin.cpp after the normal table helpers.
 void tournamentBoard(){
- ttcg::forfeitTournamentFoils(campaign::saved);
+ releaseOpponent();if(active)campaign::savedMatch={};
+ if(!campaign::savedMatch.present)ttcg::forfeitTournamentFoils(campaign::saved);
  campaign::tournamentID=0;opponent={};opponentName.clear();challengeContext=false;
  ++epoch;++session;revision=0;active=false;thinking=false;settling=false;lastResult={};
  screen="album";albumSection="tournaments";campaign::updateTournaments();match=ttcg::Match(1,0);publish();
 }
 bool prepareTournament(unsigned id){
+ if(campaign::savedMatch.present){
+  if(active&&match.finished()){releaseOpponent();campaign::savedMatch={};}
+  else {if(campaign::savedMatch.tournament==id&&resumeMatch())return true;campaign::notice="Finish your interrupted game first.";++revision;publish();return true;}
+ }
  auto& saved=campaign::saved;auto* e=ttcg::tournament(saved,id);const auto hour=campaign::gameHour();
  if(!e||campaign::tournamentVenue()!=e->hold||!ttcg::tournamentOpen(*e,hour)||!ttcg::tournamentNode(*e))return false;
  ttcg::resolveTournament(saved,*e);const auto base=ttcg::tournamentRival(*e);const int i=ttcg::opponentIndex(base);
@@ -19,7 +24,8 @@ bool prepareTournament(unsigned id){
 }
 bool tournamentCommand(std::istringstream& input){
  std::string action,extra;unsigned id=0;if(!(input>>action))return false;
- if(thinking||settling||(active&&!match.finished())||campaign::saved.contract.pending())return false;
+ if(thinking||settling||(active&&!match.finished())||(campaign::saved.contract.pending()&&(active||(action!="board"&&action!="seen"))))return false;
+ if(campaign::savedMatch.present&&!active&&action!="round"&&action!="board"&&action!="seen")return false;
  if(action=="board"){if(input>>extra)return false;tournamentBoard();return true;}
  if(action=="foil"){
   unsigned card=0;if(!(input>>id>>card)||(input>>extra)||!campaign::hasAlbum())return false;

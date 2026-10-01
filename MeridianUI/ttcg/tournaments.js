@@ -78,7 +78,19 @@ function renderTournaments(){
   $('tournament-withdraw').hidden=!e.joined||e.eliminated||Boolean(e.champion);$('tournament-withdraw').onclick=()=>confirmTournament('Withdraw from tournament?',e.fee?'Your entry fee will not be refunded.':'This ends your tournament run.',`withdraw ${e.id}`);
   $('tournament-edit').hidden=!e.joined||e.eliminated||Boolean(e.champion);$('tournament-edit').onclick=()=>setAlbumTab('decks');
   $('tournament-reason').textContent=registration&&data.activeEntry?'Finish your current tournament first.':registration&&!e.canEnter?`Speak to ${e.host} at ${e.venue} to enter.`:!e.atVenue&&!e.champion?`Return to ${e.venue} to play.`:registration&&state.collection.gold<e.fee?'Not enough gold for entry.':registration&&playable<5?'You need five playable cards to enter.':'';
-  if(e.announcement)showTournamentOutcome(e);
+  const interrupted=state.interruptedMatch;
+  if(interrupted){
+   const same=interrupted.tournament===e.id;
+   $('tournament-edit').hidden=true;
+   $('tournament-withdraw').hidden=!same||interrupted.finished;
+   if(same){
+    action.hidden=false;action.textContent=interrupted.finished?'Collect rewards':'Resume game';action.disabled=!interrupted.canResume;
+    action.onclick=()=>send('interrupted','resume');
+    $('tournament-withdraw').onclick=()=>confirmTournament('Withdraw from tournament?','This ends your tournament run.',()=>send('interrupted','forfeit'));
+   }else action.disabled=true;
+   $('tournament-reason').textContent=same?interrupted.canResume?'':`Return to ${e.venue} to resume.`:'Finish your interrupted game first.';
+  }
+  if(e.announcement&&!state.interruptedMatch)showTournamentOutcome(e);
 
  }
 }
