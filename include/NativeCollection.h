@@ -11,6 +11,7 @@
 #include "Presentation.h"
 #include "DeckPresentation.h"
 #include "SavedMatch.h"
+#include "InterfaceSettings.h"
 namespace campaign {
 inline constexpr const char* plugin="Tessera TCG.esp";
 inline ttcg::CollectionSave saved;
@@ -21,6 +22,9 @@ inline RE::TESBoundObject* packForm{};
 inline RE::TESBoundObject* tournamentPackForm{};
 inline bool saveValid=true;
 inline ttcg::DevelopmentSettings development;
+inline ttcg::InterfaceSettings interfaceSettings;
+inline RE::TESGlobal* gamesEnabledGlobal{};
+inline void syncGameAvailability(){if(gamesEnabledGlobal)gamesEnabledGlobal->value=interfaceSettings.gamesEnabled?1.f:0.f;}
 inline RE::TESGlobal* progression{};
 inline RE::TESGlobal *erandurGlobal{},*collegeGlobal{};
 inline RE::TESFaction* collegeFaction{};
@@ -128,7 +132,7 @@ inline bool cultureEnabled(RE::Actor* actor){return !tournamentID&&development.r
 inline bool hasAlbum() {return development.albumAccess(saved);}
 inline bool actorReadyForCards(RE::Actor* actor){return actor&&!actor->IsDead()&&!actor->IsDisabled()&&!actor->IsInCombat()&&!actor->GetCurrentScene()&&!actor->IsHostileToActor(RE::PlayerCharacter::GetSingleton());}
 inline bool resumingWith(RE::Actor* actor){return savedMatch.present&&!savedMatch.tournament&&actor&&persistentID(actor)==savedMatch.opponent;}
-inline bool canChallenge(RE::Actor* actor,bool allowResume=true) {if(!hasAlbum())return false;if(allowResume&&resumingWith(actor))return actorReadyForCards(actor);const int i=profileIndex(actor);if(tournamentID){const auto* e=ttcg::tournament(saved,tournamentID);return e&&i>=0&&ttcg::tournamentRival(*e)==ttcg::opponents[i].base;}if(!actorReadyForCards(actor))return false;return isChild(actor)||(i>=0?unlocked(i)&&ttcg::opponentHasCards(saved,i)&&ttcg::encounterReady(saved,i,gameHour())&&(development.unlockAllPlayers||ttcg::challengeReputationMet(saved,i)):actor&&development.allowAnyNPC);}
+inline bool canChallenge(RE::Actor* actor,bool allowResume=true) {if(!interfaceSettings.gamesEnabled||!hasAlbum())return false;if(allowResume&&resumingWith(actor))return actorReadyForCards(actor);const int i=profileIndex(actor);if(tournamentID){const auto* e=ttcg::tournament(saved,tournamentID);return e&&i>=0&&ttcg::tournamentRival(*e)==ttcg::opponents[i].base;}if(!actorReadyForCards(actor))return false;return isChild(actor)||(i>=0?unlocked(i)&&ttcg::opponentHasCards(saved,i)&&ttcg::encounterReady(saved,i,gameHour())&&(development.unlockAllPlayers||ttcg::challengeReputationMet(saved,i)):actor&&development.allowAnyNPC);}
 inline int fixedWager() {if(tournamentID)return 0;return development.fixedWager(practice,canStake);}
 inline int maxWager(RE::Actor* actor) {if(tournamentID)return 0;const auto* p=profile(actor);return development.maxWager(practice,canStake,p?p->wager:0);}
 inline ttcg::Stock inventory(RE::TESObjectREFR* actor) {
@@ -163,6 +167,8 @@ struct Bank {
 };
 inline bool available() { return saveValid&&goldForm&&packForm&&tournamentPackForm&&progression&&albumForm; }
 inline void initForms() {
+ gamesEnabledGlobal=RE::TESDataHandler::GetSingleton()->LookupForm<RE::TESGlobal>(0xFDA,plugin);
+ syncGameAvailability();
  erandurGlobal=RE::TESDataHandler::GetSingleton()->LookupForm<RE::TESGlobal>(0xD20,plugin);
  guildGlobal=RE::TESDataHandler::GetSingleton()->LookupForm<RE::TESGlobal>(0xB40,plugin);
  guildFaction=RE::TESForm::LookupByID<RE::TESFaction>(0x29DA9);
@@ -183,6 +189,7 @@ inline void initForms() {
 }
 inline void seedOpponent(RE::Actor* actor);
 inline void syncProgression() {
+ syncGameAvailability();
  auto player=RE::PlayerCharacter::GetSingleton();
  saved.guildMember=player&&guildFaction&&guildBan&&player->IsInFaction(guildFaction)&&!guildBan->IsRunning();
  saved.brandSheiJailed=brandSheiArrest&&brandSheiArrest->IsRunning()&&brandSheiArrest->GetCurrentStageID()==20;
@@ -329,7 +336,7 @@ inline bool claimAlbum() {
  return true;
 }
 inline bool buyAlbum(RE::Actor* actor) {
- if(!available()||!vendors::albumEligible(actor)||hasAlbum())return false;
+ if(!interfaceSettings.gamesEnabled||!available()||!vendors::albumEligible(actor)||hasAlbum())return false;
  claimAlbum();if(hasAlbum())return false;
  Bank bank(0);
  if(!ttcg::buyAlbum(saved,bank))return false;

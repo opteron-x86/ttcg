@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Tessera</title><link rel="stylesheet" href="style.css"><link rel="stylesheet" href="album.css"><link rel="preload" href="art/backs/mosaic.png" as="image"><link rel="stylesheet" href="foil.css"><link rel="stylesheet" href="table.css"><link rel="stylesheet" href="tournaments.css"><link rel="stylesheet" href="shop.css"></head>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Tessera</title><link rel="stylesheet" href="style.css"><link rel="stylesheet" href="card-faces.css"><link rel="stylesheet" href="album.css"><link rel="preload" href="art/backs/mosaic.png" as="image"><link rel="stylesheet" href="foil.css"><link rel="stylesheet" href="table.css"><link rel="stylesheet" href="tournaments.css"><link rel="stylesheet" href="shop.css"></head>
 <body>
 <div id="backdrop" hidden aria-hidden="true"></div>
 <main id="table" hidden>
@@ -121,6 +121,11 @@
   <div class="settings-body">
   <div class="binding-row"><span>Album</span><button id="bind-collection" aria-label="Album hotkey">F7</button><button id="unbind-collection" class="quiet">Unbind</button><button id="reset-collection" class="quiet">Reset</button></div>
   <div class="binding-row"><span>Challenge</span><button id="bind-challenge" aria-label="Challenge hotkey">F8</button><button id="unbind-challenge" class="quiet">Unbind</button><button id="reset-challenge" class="quiet">Reset</button></div>
+  <section class="game-settings" aria-label="Games">
+   <button id="games-enabled" class="settings-switch" role="switch" aria-checked="true">Tessera games<span aria-hidden="true">On</span></button>
+   <div class="binding-row"><span>Toggle games</span><button id="bind-toggleGames" aria-label="Enable or disable games hotkey">Unbound</button><button id="unbind-toggleGames" class="quiet">Unbind</button><button id="reset-toggleGames" class="quiet">Reset</button></div>
+   <p>When off, Tessera dialogue and challenges are hidden. Your album stays available.</p>
+  </section>
   <div class="world-pause-settings" role="group" aria-label="Pause world">
    <button id="pause-world-in-album" class="settings-switch" role="switch" aria-checked="true">Pause in album<span aria-hidden="true">On</span></button>
    <details id="experimental-pause-settings">
@@ -134,6 +139,14 @@
    </details>
    <p id="interface-status" role="status" hidden></p>
   </div>
+  <section id="card-face-settings" aria-labelledby="card-face-title">
+   <h2 id="card-face-title">Card face</h2>
+   <div id="card-face-choices" role="group" aria-label="Value placement">
+    <button id="card-face-edges" class="card-face-choice" data-rank-layout="edges" aria-pressed="true"><span class="card-face-preview"></span><span>Edge values</span></button>
+    <button id="card-face-classic" class="card-face-choice" data-rank-layout="classic" aria-pressed="false"><span class="card-face-preview"></span><span>Classic values</span></button>
+   </div>
+   <button id="card-face-names" class="settings-switch" role="switch" aria-checked="true">Card names<span aria-hidden="true">On</span></button>
+  </section>
   <section id="card-back-settings" aria-labelledby="card-back-title">
    <div class="card-back-heading"><h2 id="card-back-title">Card back</h2><button id="card-back-refresh" class="quiet">Refresh</button></div>
    <div id="card-back-choices" role="group" aria-labelledby="card-back-title"></div>
@@ -180,5 +193,5 @@
   <p id="binding-status" role="status"></p><div class="modal-actions"><button id="binding-cancel" hidden>Cancel</button><button id="settings-done" class="primary">Done</button></div>
  </section></div>
 <div id="deck-dialog" class="modal-shade" hidden><form class="modal" id="deck-form" role="dialog" aria-modal="true" aria-labelledby="deck-dialog-title"><h2 id="deck-dialog-title">New deck</h2><label for="deck-name" id="deck-name-label">Name</label><input id="deck-name" maxlength="32" autocomplete="off" spellcheck="false"><p id="deck-dialog-message" hidden></p><div class="modal-actions"><button id="deck-cancel" type="button">Cancel</button><button id="deck-submit" type="submit" class="primary">Create</button></div></form></div>
-</main><script src="select-menu.js"></script><script src="rule-demos.js"></script><script src="foil-material.js"></script><script src="foil.js"></script><script src="app.js"></script><script src="album.js"></script><script src="shop.js"></script><script src="decks.js"></script><script src="journal.js"></script><script src="campaign.js"></script><script src="lesson.js"></script><script src="hotkeys.js"></script><script src="development.js"></script><script src="card-backs.js"></script><script src="table.js"></script><script src="rules-reference.js"></script><script src="tournaments.js"></script><script src="meridian-input.js"></script>
+</main><script src="select-menu.js"></script><script src="rule-demos.js"></script><script src="foil-material.js"></script><script src="foil.js"></script><script src="app.js"></script><script src="album.js"></script><script src="shop.js"></script><script src="decks.js"></script><script src="journal.js"></script><script src="campaign.js"></script><script src="lesson.js"></script><script src="card-faces.js"></script><script src="hotkeys.js"></script><script src="development.js"></script><script src="card-backs.js"></script><script src="table.js"></script><script src="rules-reference.js"></script><script src="tournaments.js"></script><script src="meridian-input.js"></script>
 </body></html>
