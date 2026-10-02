@@ -7,6 +7,7 @@ for(let i=1;i<=10;i++)scanCodes['F'+i]=58+i;
 const scanNames=Object.fromEntries(Object.entries(scanCodes).map(([key,value])=>[value,key.replace(/^Key|^Digit/,'').replace('Numpad','Num ').replace('Arrow','')]));
 Object.assign(scanNames,{0:'Unbound',12:'−',13:'=',26:'[',27:']',39:';',40:"'",41:'`',43:'\\',51:',',52:'.',53:'/',57:'Space',183:'Print Screen',201:'Page Up',209:'Page Down'});
 let bindingPending='',bindingKeyHeld=false;
+const bindingFields=['collection','challenge','toggleGames'];
 const worldPauseOptions=[
  ['pause-world-in-album','pauseWorldInAlbum','pause-album'],
  ['pause-world-in-shops','pauseWorldInShops','pause-shop'],
@@ -18,13 +19,16 @@ function renderBindings() {
  if(!state)return;
  const config=bindings(),capture=config.capturing||bindingPending;
  if(config.capturing)bindingPending='';
- for(const field of ['collection','challenge']) {
-   $('bind-'+field).textContent=capture===field?'Press a key':scanNames[config[field]]||`Key ${config[field]}`;
+ for(const field of bindingFields) {
+   $('bind-'+field).textContent=capture===field?'Press a key':scanNames[config[field]||0]||`Key ${config[field]}`;
    $('bind-'+field).classList.toggle('binding-active',capture===field);
    $('unbind-'+field).disabled=!config[field]||Boolean(capture);
    $('reset-'+field).disabled=Boolean(capture);
    $('bind-'+field).disabled=Boolean(capture)&&capture!==field;
  }
+ const enabled=config.gamesEnabled!==false,control=$('games-enabled');
+ control.disabled=Boolean(capture)||state.phase!=='ready';
+ control.setAttribute('aria-checked',String(enabled));control.lastElementChild.textContent=enabled?'On':'Off';
  $('binding-cancel').hidden=!capture;
  $('binding-status').textContent=config.notice|| (capture?'Esc to cancel':'');
  for(const [id,key] of worldPauseOptions){
@@ -35,6 +39,7 @@ function renderBindings() {
  $('interface-status').textContent=config.interfaceNotice||'';$('interface-status').hidden=!config.interfaceNotice;
  renderDevelopmentSettings();
  renderCardBackSettings();
+ renderCardFaceSettings();
 }
 function resetSettings() {bindingPending='';bindingKeyHeld=false;$('settings-panel').hidden=true;}
 function closeSettings() {
@@ -44,12 +49,16 @@ function closeSettings() {
 $('settings-open').onclick=()=>{if(state?.phase!=='ready')return;closeSelectMenu();$('settings-panel').hidden=false;renderBindings();$('bind-collection').focus();};
 $('settings-panel').querySelector('.settings-body').addEventListener('focusin',event=>event.target.scrollIntoView({block:'nearest',inline:'nearest'}));
 $('settings-done').onclick=closeSettings;
+$('games-enabled').onclick=()=>{
+ const control=$('games-enabled');if(control.disabled)return;
+ control.disabled=true;send('settings',`games ${bindings().gamesEnabled===false?1:0}`);
+};
 $('binding-cancel').onclick=()=>{bindingPending='';send('binding','cancel');};
 for(const [id,key,command] of worldPauseOptions)$(id).onclick=()=>{
  const control=$(id);if(control.disabled)return;
  control.disabled=true;send('settings',`${command} ${bindings()[key]===false?1:0}`);
 };
-for(const field of ['collection','challenge']) {
+for(const field of bindingFields) {
  $('bind-'+field).onclick=()=>{bindingPending=field;send('binding',`begin ${field}`);renderBindings();};
  $('unbind-'+field).onclick=()=>send('binding',`unbind ${field}`);
  $('reset-'+field).onclick=()=>send('binding',`reset ${field}`);
@@ -68,7 +77,11 @@ window.addEventListener('keydown',event=>{
  }
  if(!$('settings-panel').hidden||event.target.matches('input,textarea')||event.ctrlKey||event.altKey||event.metaKey)return;
  const code=scanCodes[event.code],config=bindings();
- if(code&&(code===config.collection||code===config.challenge)) {
+ if(code&&code===config.toggleGames){
+   event.preventDefault();event.stopImmediatePropagation();
+   if(!event.repeat)send('settings',`games ${config.gamesEnabled===false?1:0}`);return;
+ }
+ if(code&&(code===config.collection||config.gamesEnabled!==false&&code===config.challenge)) {
    event.preventDefault();event.stopImmediatePropagation();if(!event.repeat)window.ttcgEscape('dom');
  }
 },true);

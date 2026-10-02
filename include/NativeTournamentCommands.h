@@ -7,6 +7,7 @@ void tournamentBoard(){
  screen="album";albumSection="tournaments";campaign::updateTournaments();match=ttcg::Match(1,0);publish();
 }
 bool prepareTournament(unsigned id){
+ if(!campaign::interfaceSettings.gamesEnabled)return false;
  if(campaign::savedMatch.present){
   if(active&&match.finished()){releaseOpponent();campaign::savedMatch={};}
   else {if(campaign::savedMatch.tournament==id&&resumeMatch())return true;campaign::notice="Finish your interrupted game first.";++revision;publish();return true;}
@@ -24,6 +25,7 @@ bool prepareTournament(unsigned id){
 }
 bool tournamentCommand(std::istringstream& input){
  std::string action,extra;unsigned id=0;if(!(input>>action))return false;
+ if(!campaign::interfaceSettings.gamesEnabled&&(action=="enter"||action=="round"||action=="continue"))return false;
  if(thinking||settling||(active&&!match.finished())||(campaign::saved.contract.pending()&&(active||(action!="board"&&action!="seen"))))return false;
  if(campaign::savedMatch.present&&!active&&action!="round"&&action!="board"&&action!="seen")return false;
  if(action=="board"){if(input>>extra)return false;tournamentBoard();return true;}

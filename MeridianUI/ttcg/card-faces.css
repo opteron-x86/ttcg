@@ -1,0 +1,27 @@
+/* Geometry is inherited by the shared card renderer, including existing cards.
+   Preview choices override the preference locally without a second renderer. */
+[data-rank-layout="edges"] {
+ --rank-font:clamp(26px,14cqw,48px);
+ --rank-top-x:50%;--rank-top-y:10%;--rank-right-x:91%;--rank-middle-y:var(--edge-middle-y,39.5%);
+ --rank-bottom-x:50%;--rank-bottom-y:var(--edge-bottom-y,69%);--rank-left-x:9%;
+ --tier-x:4.5%;--modifier-x:50%;--modifier-y:19%;
+}
+[data-rank-layout="classic"] {
+ --rank-font:clamp(18px,11cqw,38px);
+ --rank-top-x:20%;--rank-top-y:9%;--rank-right-x:30%;--rank-middle-y:17.5%;
+ --rank-bottom-x:20%;--rank-bottom-y:26%;--rank-left-x:10%;
+ --tier-x:48%;--modifier-x:20%;--modifier-y:34%;
+}
+[data-card-names="shown"] { --face-name-display:flex;--face-shade-opacity:1;--edge-middle-y:39.5%;--edge-bottom-y:69%; }
+[data-card-names="hidden"] { --face-name-display:none;--face-shade-opacity:0;--edge-middle-y:50%;--edge-bottom-y:90%; }
+.game-settings { margin-top:16px;padding:10px 0 16px;border-block:1px solid #bba16b33;text-align:left; }
+.game-settings p { margin:12px 0 0;color:var(--muted);font-size:16px;line-height:1.5; }
+.game-settings>.settings-switch,#card-face-settings>.settings-switch { width:100%;font-size:19px; }
+#card-face-settings { margin-top:16px;padding-top:14px;border-top:1px solid #bba16b33;text-align:left; }
+#card-face-title { margin:0 0 18px;color:var(--gold);font-size:25px;font-weight:normal; }
+#card-face-choices { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;padding:3px; }
+#card-face-choices .card-face-choice { display:flex;flex-direction:column;align-items:center;gap:12px;padding:12px;border:1px solid transparent;background:transparent;box-shadow:none;color:var(--muted);font-size:18px; }
+#card-face-choices .card-face-choice:hover:not(:disabled) { color:var(--ink);border-color:#bba16b66;background:#bba16b0d; }
+#card-face-choices .card-face-choice[aria-pressed="true"] { color:var(--gold);border-color:var(--gold);background:#bba16b0d; }
+.card-face-preview { display:block;position:relative;width:140px;aspect-ratio:.76;pointer-events:none; }
+#card-face-names { margin-top:10px; }

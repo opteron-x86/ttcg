@@ -73,11 +73,11 @@ function renderTournaments(){
    }bracket.append(column);
   }
   const open=!e.champion&&data.hour>=e.starts&&data.hour<e.ends,registration=open&&!e.joined,play=open&&e.joined&&!e.eliminated;
-  const action=$('tournament-action');action.hidden=!registration&&!play;const roundName=['','quarterfinal','semifinal','final'][e.round],node=[0,8,12,14][e.round],games=node?e.wins[node-8].reduce((a,b)=>a+b,0):0;action.textContent=registration?'Enter tournament':games?'Continue '+roundName:'Play '+roundName;action.disabled=!e.atVenue||registration&&(!e.canEnter||state.collection.gold<e.fee||playable<5);
+  const action=$('tournament-action');action.hidden=!registration&&!play;const roundName=['','quarterfinal','semifinal','final'][e.round],node=[0,8,12,14][e.round],games=node?e.wins[node-8].reduce((a,b)=>a+b,0):0;action.textContent=registration?'Enter tournament':games?'Continue '+roundName:'Play '+roundName;action.disabled=state.settings?.gamesEnabled===false||!e.atVenue||registration&&(!e.canEnter||state.collection.gold<e.fee||playable<5);
   action.onclick=()=>registration?confirmTournament(e.fee?`Enter for ${e.fee} gold?`:'Enter tournament?','',`enter ${e.id}`,'Enter'):send('tournament',`round ${e.id}`);
   $('tournament-withdraw').hidden=!e.joined||e.eliminated||Boolean(e.champion);$('tournament-withdraw').onclick=()=>confirmTournament('Withdraw from tournament?',e.fee?'Your entry fee will not be refunded.':'This ends your tournament run.',`withdraw ${e.id}`);
   $('tournament-edit').hidden=!e.joined||e.eliminated||Boolean(e.champion);$('tournament-edit').onclick=()=>setAlbumTab('decks');
-  $('tournament-reason').textContent=registration&&data.activeEntry?'Finish your current tournament first.':registration&&!e.canEnter?`Speak to ${e.host} at ${e.venue} to enter.`:!e.atVenue&&!e.champion?`Return to ${e.venue} to play.`:registration&&state.collection.gold<e.fee?'Not enough gold for entry.':registration&&playable<5?'You need five playable cards to enter.':'';
+  $('tournament-reason').textContent=state.settings?.gamesEnabled===false&&!e.champion?'Turn on Tessera games in Settings to play.':registration&&data.activeEntry?'Finish your current tournament first.':registration&&!e.canEnter?`Speak to ${e.host} at ${e.venue} to enter.`:!e.atVenue&&!e.champion?`Return to ${e.venue} to play.`:registration&&state.collection.gold<e.fee?'Not enough gold for entry.':registration&&playable<5?'You need five playable cards to enter.':'';
   const interrupted=state.interruptedMatch;
   if(interrupted){
    const same=interrupted.tournament===e.id;

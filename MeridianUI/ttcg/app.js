@@ -124,7 +124,8 @@ function cardElement(id,owner,modifier=0,thumbnail=false) {
  const data=state.cards[id], card=document.createElement('div'); card.className=`card card-face owner-${owner}`;
  const portrait=document.createElement('div'); portrait.className='portrait';
  const image=document.createElement('img'); setCardImage(image,data,thumbnail);if(thumbnail){image.loading='lazy';image.decoding='async';} image.style.objectPosition=data.focus||'50% 40%'; image.alt=''; image.draggable=false; portrait.append(image); card.append(portrait);
- if(data.foil){card.classList.add('foil');appendFoilLayers(portrait);card.title='Foil';}
+ if(data.foil){card.classList.add('foil');appendFoilLayers(portrait);}
+ card.title=(data.foil?'Foil · ':'')+data.name;
  const name=document.createElement('span'); name.className='card-name'; name.textContent=data.name; card.append(name);
  card.dataset.rarity=data.rarity||'Common';
  const tier=document.createElement('span'),numeral=['','I','II','III','IV','V','VI','VII','VIII','IX','X'][data.tier]||String(data.tier); tier.className='tier'; tier.dataset.rarity=card.dataset.rarity; tier.append(tierNumeral(numeral)); tier.title=`Tier ${numeral} · ${card.dataset.rarity}`; tier.setAttribute('aria-label',`Tier ${data.tier}, ${card.dataset.rarity}`); card.append(tier);
@@ -136,6 +137,7 @@ function cardElement(id,owner,modifier=0,thumbnail=false) {
 function description(id) { if(id===-2)return 'Hidden card'; const c=state.cards[id]; return `${c.foil?'Foil · ':''}${c.name}: ${c.sides.join(', ')}`; }
 function render() {
  if(!state) return;
+ applyCardFaceSettings();
  clearBoardGhosts();
  updateTableMode();
  const focus=document.activeElement?.id;

@@ -37,7 +37,9 @@ std::chrono::steady_clock::time_point approachStarted;
 void cancelMasterApproach();
 std::string albumSection;
 std::string opponentName,screen="lobby",pendingScreen="lobby";
-unsigned collectionKey=0x41,challengeKey=0x42;
+ttcg::HotkeyBindings hotkeys;
+auto& collectionKey=hotkeys.collection;
+auto& challengeKey=hotkeys.challenge;
 std::string bindingCapture,bindingNotice;
 std::string developmentNotice;
 std::string cardBackNotice;
@@ -284,12 +286,13 @@ void publish() {
  if(screen=="shop"){data.pop_back();data+=",\"shop\":"+campaign::shopJson(actor.get())+"}";}
  if(screen=="lesson"){data.pop_back();data+=",\"lesson\":"+lesson.json()+"}";}
  data.pop_back();data+=std::format(",\"settings\":{{\"collection\":{},\"challenge\":{},\"capturing\":{},\"notice\":{},\"cardBackNotice\":{},\"interfaceNotice\":{},\"development\":{}",collectionKey,challengeKey,ttcg::quote(bindingCapture),ttcg::quote(bindingNotice),ttcg::quote(cardBackNotice),ttcg::quote(interfaceNotice),ttcg::developmentJson(campaign::development,developmentNotice));
+ data+=std::format(",\"toggleGames\":{},\"gamesEnabled\":{},\"rankLayout\":{},\"showCardNames\":{}",hotkeys.toggleGames,campaign::interfaceSettings.gamesEnabled?"true":"false",campaign::interfaceSettings.rankLayout,campaign::interfaceSettings.showCardNames?"true":"false");
  for(const auto& option:pauseOptions)data+=","+ttcg::quote(option.jsonKey)+":"+(worldPauseSettings.*option.member?"true":"false");
  data+="}}";
  const auto& saved=campaign::savedMatch;
  data.pop_back();data+=",\"interruptedMatch\":";
  if(saved.present&&!active){const auto* e=ttcg::tournament(campaign::saved,saved.tournament);
-  data+="{\"opponent\":"+ttcg::quote(campaign::savedMatchName())+",\"tournament\":"+std::to_string(saved.tournament)+",\"finished\":"+(saved.table.finished()?"true":"false")+",\"venue\":"+ttcg::quote(e?ttcg::tournamentVenues[e->hold-1].name:"")+",\"canResume\":"+(e&&campaign::tournamentVenue()==e->hold?"true":"false")+"}";
+  data+="{\"opponent\":"+ttcg::quote(campaign::savedMatchName())+",\"tournament\":"+std::to_string(saved.tournament)+",\"finished\":"+(saved.table.finished()?"true":"false")+",\"venue\":"+ttcg::quote(e?ttcg::tournamentVenues[e->hold-1].name:"")+",\"canResume\":"+(campaign::interfaceSettings.gamesEnabled&&e&&campaign::tournamentVenue()==e->hold?"true":"false")+"}";
  }else data+="null";
  data+="}";
  api->InteropCall(view,"ttcgState",data.c_str());albumSection.clear();
@@ -329,11 +332,37 @@ bool worldReady(){
  return player&&ui&&api&&domReady&&!visible&&!player->IsDead()&&!player->IsInCombat()&&!player->IsSneaking()&&!player->GetCurrentScene()&&!ui->GameIsPaused()&&!ui->IsMenuOpen(RE::DialogueMenu::MENU_NAME)&&!ui->IsMenuOpen(RE::MainMenu::MENU_NAME)&&!api->HasAnyActiveFocus();
 }
 void showPanel(RE::Actor* actor,const std::string& requested);
+bool persistInterfaceSetting(const char* section,const char* key,int value){
+ const std::string a(section),b(key);const std::wstring wideSection(a.begin(),a.end()),wideKey(b.begin(),b.end());
+ return WritePrivateProfileStringW(wideSection.c_str(),wideKey.c_str(),std::to_wstring(value).c_str(),settingsPath.c_str())!=0;
+}
+bool setGamesEnabled(bool enabled){
+ if(!campaign::interfaceSettings.set("games",enabled,persistInterfaceSetting)){
+  interfaceNotice="Couldn't save this setting.";
+  if(visible)publish();else RE::SendHUDMessage::ShowHUDMessage(interfaceNotice.c_str());
+  return false;
+ }
+ interfaceNotice.clear();campaign::syncGameAvailability();
+ if(!enabled){
+  cancelMasterApproach();pending={};
+  if(active){
+   close(false);RE::SendHUDMessage::ShowHUDMessage("Tessera disabled. Your game is saved to resume later.");return true;
+  }
+  if(visible&&(screen!="album"||challengeContext)){
+   campaign::closeShop();opponent={};opponentName.clear();challengeContext=false;
+   campaign::tournamentID=0;campaign::tournamentRegistration=0;screen="album";albumSection.clear();
+   campaign::prepare(nullptr,true);++epoch;++session;revision=0;updateMusic();
+  }
+ }
+ if(visible)publish();else RE::SendHUDMessage::ShowHUDMessage(enabled?"Tessera enabled.":"Tessera disabled.");
+ return true;
+}
 void scanMasterApproach(){
  if(worldReady()&&campaign::available()){
   campaign::syncProgression();campaign::updateTournaments();
 
  }
+ if(!campaign::interfaceSettings.gamesEnabled){cancelMasterApproach();return;}
  if(approachingMaster){if(masterPresented)return;if(!worldReady()||std::chrono::steady_clock::now()-approachStarted>std::chrono::seconds(30))cancelMasterApproach();return;}
  if(!worldReady()||!campaign::available()||campaign::savedMatch.present||campaign::saved.contract.pending())return;
  campaign::syncProgression();auto player=RE::PlayerCharacter::GetSingleton();const auto hour=campaign::gameHour(),hold=campaign::actorHold(player);
@@ -361,7 +390,7 @@ void masterArrivedPapyrus(RE::StaticFunctionTag*,RE::Actor* actor){
  });
 }
 bool resumeMatch() {
- if(!campaign::recoverSavedMatch())return false;
+ if(!campaign::interfaceSettings.gamesEnabled||!campaign::recoverSavedMatch())return false;
  const auto saved=campaign::savedMatch;auto actor=campaign::resolveID<RE::Actor>(saved.opponent);
  auto player=RE::PlayerCharacter::GetSingleton();
  const auto* event=ttcg::tournament(campaign::saved,saved.tournament);
@@ -386,6 +415,7 @@ void showPanel(RE::Actor* actor,const std::string& requested="lobby") {
  auto player=RE::PlayerCharacter::GetSingleton();
  const std::string target=(requested=="tournaments"||requested=="registration")?"album":requested;
  if(target!="album"&&target!="lobby"&&target!="shop")return;
+ if(!campaign::interfaceSettings.gamesEnabled&&requested!="album")return;
  if(visible||!player||player->IsDead()||player->IsInCombat()||(actor&&!eligible(actor))||(!actor&&target!="album")) return;
  if(!api||!domReady||!api->IsValid(view)) { RE::SendHUDMessage::ShowHUDMessage(std::format("Tessera: {} is unavailable.",ttcg::ui::name).c_str()); return; }
  cancelMasterApproach();
@@ -421,12 +451,12 @@ void showPanel(RE::Actor* actor,const std::string& requested="lobby") {
  log::info("TTCG {}: {}",screen,opponentName);
 }
 void requestPanel(RE::Actor* actor,const std::string& requested="lobby") {
- if(!eligible(actor)||visible) return;
+ if(!campaign::interfaceSettings.gamesEnabled||!eligible(actor)||visible) return;
  if(RE::UI::GetSingleton()->IsMenuOpen(RE::DialogueMenu::MENU_NAME)) { pending=actor->GetHandle(); pendingScreen=requested; }
  else showPanel(actor,requested);
 }
 void requestChallenge(RE::Actor* actor) {
- if(!eligible(actor)||visible)return;
+ if(!campaign::interfaceSettings.gamesEnabled||!eligible(actor)||visible)return;
  campaign::syncProgression();
  if(!campaign::hasAlbum()){RE::SendHUDMessage::ShowHUDMessage("Buy a Tessera Album from a general-goods merchant.");return;}
  const auto i=campaign::profileIndex(actor);
@@ -509,6 +539,14 @@ void command(const char* raw) {
   }
   return;
  }
+ // The toggle remains available during play; it checkpoints instead of forfeiting.
+ if(verb=="settings"){
+  const auto position=input.tellg();std::string key;int value=-1;
+  if(!(input>>key>>value)||(input>>extra)||(value!=0&&value!=1)||!bindingCapture.empty())return;
+  if(key=="games"){setGamesEnabled(value!=0);return;}
+  input.clear();input.seekg(position);
+ }
+ if(!campaign::interfaceSettings.gamesEnabled&&(verb=="start"||verb=="play"||verb=="prepare"||verb=="rule-lesson"||verb=="shop"))return;
  if(!ttcg::tournamentRewardAllowsCommand(campaign::saved,verb)){publish();return;}
  if(screen=="shop"&&verb!="shop"&&verb!="close"&&verb!="binding"&&verb!="development"&&verb!="cardback"&&verb!="settings")return;
  if(verb=="settings") {
@@ -516,6 +554,10 @@ void command(const char* raw) {
    if(active||thinking||settling||screen=="lesson"||!bindingCapture.empty()||
       !(input>>key>>value)||(input>>extra)||(value!=0&&value!=1))return;
    const auto option=std::find_if(pauseOptions.begin(),pauseOptions.end(),[&](const auto& entry){return entry.command==key;});
+   if(key=="card-names"||key=="card-ranks"){
+     interfaceNotice=campaign::interfaceSettings.set(key,value,persistInterfaceSetting)?"":"Couldn't save this setting.";
+     publish();return;
+   }
    if(option==pauseOptions.end())return;
    if(!WritePrivateProfileStringW(L"Interface",option->iniKey,value?L"1":L"0",settingsPath.c_str())) {
      interfaceNotice="Couldn't save this setting.";publish();return;
@@ -565,19 +607,21 @@ void command(const char* raw) {
    std::string action,field;unsigned value=0;
    if(!(input>>action))return;
    if(action=="cancel") {if(input>>extra)return;bindingCapture.clear();bindingNotice.clear();publish();return;}
-   if(!(input>>field)||(field!="collection"&&field!="challenge"))return;
+   if(!(input>>field))return;
+   const auto setting=std::find_if(hotkeys.fields.begin(),hotkeys.fields.end(),[&](const auto& entry){return entry.name==field;});
+   if(setting==hotkeys.fields.end())return;
    if(action=="begin") {if(input>>extra)return;bindingCapture=field;bindingNotice.clear();publish();return;}
    if(action=="set") {if(!(input>>value)||bindingCapture!=field)return;}
    else if(action=="unbind")value=0;
-   else if(action=="reset")value=field=="collection"?0x41:0x42;
+   else if(action=="reset")value=setting->defaultKey;
    else return;
    if(input>>extra)return;
-   if(value>255||value==1||value==29||value==42||value==54||value==56||value==157||value==184||value==219||value==220) {bindingNotice="Choose a different key.";publish();return;}
-   auto& current=field=="collection"?collectionKey:challengeKey;
-   const auto other=field=="collection"?challengeKey:collectionKey;
-   if(value&&value==other) {bindingNotice=field=="collection"?"Already used for Challenge.":"Already used for Collection.";publish();return;}
-   if(!WritePrivateProfileStringW(L"Input",field=="collection"?L"CollectionKey":L"ChallengeKey",std::to_wstring(value).c_str(),settingsPath.c_str())) {bindingNotice="Couldn't save the key.";publish();return;}
-   current=value;bindingCapture.clear();bindingNotice.clear();publish();return;
+   if(!ttcg::validHotkey(value)){bindingNotice="Choose a different key.";publish();return;}
+   if(const auto conflict=hotkeys.conflict(field,value);!conflict.empty()){
+     bindingNotice="Already used for "+std::string(conflict)+".";publish();return;
+   }
+   if(!WritePrivateProfileStringW(L"Input",setting->ini,std::to_wstring(value).c_str(),settingsPath.c_str())){bindingNotice="Couldn't save the key.";publish();return;}
+   hotkeys.*setting->member=value;bindingCapture.clear();bindingNotice.clear();publish();return;
  }
  if(verb=="close") {
    if(input>>extra) return;
@@ -922,19 +966,27 @@ public:
        SKSE::GetTaskInterface()->AddTask([]() {
          if(visible) { if(api) api->InteropCall(view,"ttcgEscape","native"); return; }
          auto ui=RE::UI::GetSingleton(); if(!ui||ui->GameIsPaused()||ui->IsMenuOpen(RE::MainMenu::MENU_NAME)) return;
-         if(!campaign::hasAlbum()){RE::SendHUDMessage::ShowHUDMessage("Buy a Tessera Album from a general-goods merchant.");return;}
+         if(campaign::interfaceSettings.gamesEnabled&&!campaign::hasAlbum()){RE::SendHUDMessage::ShowHUDMessage("Buy a Tessera Album from a general-goods merchant.");return;}
          showPanel(nullptr,"album");
        });
      }
-     if(button->GetDevice()==RE::INPUT_DEVICE::kKeyboard&&challengeKey&&code==challengeKey&&!visible) {
+     if(button->GetDevice()==RE::INPUT_DEVICE::kKeyboard&&campaign::interfaceSettings.gamesEnabled&&challengeKey&&code==challengeKey&&!visible) {
        SKSE::GetTaskInterface()->AddTask([]() {
          if(visible) { if(api) api->InteropCall(view,"ttcgEscape","native"); return; }
          auto ui=RE::UI::GetSingleton(); if(!ui||ui->GameIsPaused()||ui->IsMenuOpen(RE::MainMenu::MENU_NAME)) return;
+         if(!campaign::interfaceSettings.gamesEnabled)return;
          auto pick=RE::CrosshairPickData::GetSingleton();
          auto ref=pick?pick->GetActiveTarget().get():RE::NiPointer<RE::TESObjectREFR>{};
          auto actor=ref?ref->As<RE::Actor>():nullptr;
          if(!eligible(actor)) { RE::SendHUDMessage::ShowHUDMessage("Face a nearby NPC to challenge them."); return; }
          requestChallenge(actor);
+       });
+     }
+     if(button->GetDevice()==RE::INPUT_DEVICE::kKeyboard&&hotkeys.toggleGames&&code==hotkeys.toggleGames&&!visible){
+       SKSE::GetTaskInterface()->AddTask([](){
+         const auto ui=RE::UI::GetSingleton();
+         if(visible||!ui||ui->GameIsPaused()||ui->IsMenuOpen(RE::MainMenu::MENU_NAME))return;
+         setGamesEnabled(!campaign::interfaceSettings.gamesEnabled);
        });
      }
      if(visible&&api&&!api->HandlesController()&&button->GetDevice()==RE::INPUT_DEVICE::kGamepad) {
@@ -985,10 +1037,12 @@ void message(SKSE::MessagingInterface::Message* msg) {
    log::info("Development: enabled {}, grant {}, foils {}, show players {}, unlock players {}, reveal {}, any NPC {}, rules {}, trade {}, wager {}, skill {}, lesson {}, record results {}, regular tournaments {}, invitational tournaments {}, masters tournaments {}, courier tournament hold {}",
      campaign::development.enabled,campaign::development.addAllCards,campaign::development.addAllFoils,campaign::development.showAllPlayers,
      campaign::development.unlockAllPlayers,campaign::development.revealAllCards,campaign::development.allowAnyNPC,campaign::development.rules,campaign::development.tradeRule,campaign::development.wager,campaign::development.opponentSkill,campaign::development.ruleLesson,campaign::development.recordResults,campaign::development.regularTournaments,campaign::development.invitationalTournaments,campaign::development.mastersTournaments,campaign::development.tournamentHold);
+   campaign::interfaceSettings.gamesEnabled=GetPrivateProfileIntW(L"Gameplay",L"Enabled",1,settingsPath.c_str())!=0;
+   campaign::interfaceSettings.showCardNames=GetPrivateProfileIntW(L"Appearance",L"ShowCardNames",1,settingsPath.c_str())!=0;
+   campaign::interfaceSettings.rankLayout=GetPrivateProfileIntW(L"Appearance",L"RankLayout",0,settingsPath.c_str())==1?1:0;
    campaign::initForms();
-   collectionKey=std::clamp(GetPrivateProfileIntW(L"Input",L"CollectionKey",0x41,settingsPath.c_str()),0u,255u);
-   challengeKey=std::clamp(GetPrivateProfileIntW(L"Input",L"ChallengeKey",0x42,settingsPath.c_str()),0u,255u);
-   if(collectionKey&&collectionKey==challengeKey)challengeKey=0;
+   for(const auto& field:hotkeys.fields)hotkeys.*field.member=GetPrivateProfileIntW(L"Input",field.ini,field.defaultKey,settingsPath.c_str());
+   hotkeys.normalize();
    for(const auto& option:pauseOptions)worldPauseSettings.*option.member=GetPrivateProfileIntW(L"Interface",option.iniKey,1,settingsPath.c_str())!=0;
    wchar_t back[4096]{};
    GetPrivateProfileStringW(L"Appearance",L"CardBack",L"mosaic",back,4096,settingsPath.c_str());
@@ -1024,7 +1078,7 @@ void message(SKSE::MessagingInterface::Message* msg) {
    // Only PreLoad still belongs to the old save. Do not write its table into
    // a newly loaded character after the serialization callbacks have run.
    if(msg->type!=SKSE::MessagingInterface::kPreLoadGame)active=false;
-   close(false);
+   close(false);campaign::syncGameAvailability();
    if(msg->type==SKSE::MessagingInterface::kNewGame) SKSE::GetTaskInterface()->AddTask([](){ campaign::recover(); });
    if(msg->type==SKSE::MessagingInterface::kPostLoadGame) SKSE::GetTaskInterface()->AddTask([](){ releaseSavedOpponent();campaign::recover(); });
    log::info("{}: cleanup complete",name);
