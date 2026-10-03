@@ -63,12 +63,8 @@ function rulesText(flags) { return ruleDefinitions.filter(([bit])=>flags&bit).ma
 function playableHand(h){const id=state?.hands?.[0]?.[h];return Number.isInteger(id)&&id>=0&&(state.forcedHand==null||state.forcedHand<0||state.forcedHand===h);}
 function ruleStageLabel(flags){if(flags&8)return 'Combo';return ruleDefinitions.filter(([bit])=>flags&bit).map(([,name])=>name).filter(name=>name!=='Same'||!(flags&8192)).join(' + ');}
 function artUrl(path) { return 'art/'+path.split('/').map(encodeURIComponent).join('/'); }
-function cardArtUrl(data,thumbnail=false) {
- return artUrl(thumbnail?(data.thumbnail||('thumbs/'+data.name+'.webp')):data.art);
-}
 function setCardImage(image,data,thumbnail=false) {
- image.src=cardArtUrl(data,thumbnail);
- image.onerror=()=>{image.onerror=null;if(thumbnail)image.src=cardArtUrl(data);};
+ artImages.set(image,thumbnail?(data.thumbnail||('thumbs/'+data.name+'.webp')):data.art,{fallback:thumbnail?data.art:''});
 }
 function cardBackElement(owner=1) {
  const card=document.createElement('div');card.className=`card card-back owner-${owner}`;

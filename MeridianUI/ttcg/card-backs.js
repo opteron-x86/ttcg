@@ -1,8 +1,21 @@
 'use strict';
 const defaultCardBack={id:'mosaic',name:'Mosaic',art:'backs/mosaic.png',custom:false};
 const cardBackCacheEpoch=Date.now();
-let cardBackCatalogKey='',cardBackImageKey='',cardBackImageError='';
+let cardBackCatalogKey='',cardBackImageKey='',cardBackImageError='',cardBackObjectURL='';
 function cardBackUrl(path){return `${artUrl(path)}?back=${cardBackCacheEpoch}-${state?.cardBackVersion||0}`;}
+function loadCardBack(image,path,failed=()=>{}){artImages.set(image,path,{version:`${cardBackCacheEpoch}-${state?.cardBackVersion||0}`,failed});}
+function applyCardBackImage(image){
+ // Large data URIs exceed Chromium's CSS custom-property value limit. Keep
+ // one blob alive for the selected back, including cards created later.
+ const previous=cardBackObjectURL;let source=image.src;cardBackObjectURL='';
+ if(source.startsWith('data:image/')){
+  const comma=source.indexOf(','),mime=source.slice(5,source.indexOf(';'));
+  const bytes=Uint8Array.from(atob(source.slice(comma+1)),c=>c.charCodeAt(0));
+  source=cardBackObjectURL=URL.createObjectURL(new Blob([bytes],{type:mime}));
+ }
+ document.documentElement.style.setProperty('--card-back-image',`url("${source}")`);
+ if(previous)URL.revokeObjectURL(previous);
+}
 function updateCardBackImage(){
  const path=state.cardBack||defaultCardBack.art,url=cardBackUrl(path);
  if(url===cardBackImageKey)return;
@@ -10,14 +23,14 @@ function updateCardBackImage(){
  const image=new Image();
  image.onload=()=>{
   if(cardBackImageKey!==url)return;
-  document.documentElement.style.setProperty('--card-back-image',`url("${url}")`);
+  applyCardBackImage(image);
  };
- image.onerror=()=>{
+ loadCardBack(image,path,()=>{
   if(cardBackImageKey!==url)return;
-  document.documentElement.style.setProperty('--card-back-image',`url("${cardBackUrl(defaultCardBack.art)}")`);
+  const fallback=new Image();fallback.onload=()=>{if(cardBackImageKey===url)applyCardBackImage(fallback);};
+  loadCardBack(fallback,defaultCardBack.art);
   cardBackImageError='This image couldn’t be opened. Using Mosaic.';renderCardBackSettings();
- };
- image.src=url;
+ });
 }
 function cardBackSettingsLocked(){return state?.phase!=='ready'||Boolean(bindings().capturing||bindingPending);}
 function renderCardBackSettings(){
@@ -33,8 +46,7 @@ function renderCardBackSettings(){
    const portrait=document.createElement('span');portrait.className='card-back-thumb';
    const image=document.createElement('img');image.alt='';image.draggable=false;
    image.onload=()=>{button.dataset.loaded='true';renderCardBackSettings();};
-   image.onerror=()=>{button.dataset.loaded='false';renderCardBackSettings();};
-   image.src=cardBackUrl(back.art);portrait.append(image);
+   loadCardBack(image,back.art,()=>{button.dataset.loaded='false';renderCardBackSettings();});portrait.append(image);
    const label=document.createElement('span');label.className='card-back-label';
    const name=document.createElement('span');name.className='card-back-name';name.textContent=back.name;
    const detail=document.createElement('span');detail.className='card-back-detail';label.append(name,detail);

@@ -142,8 +142,6 @@
 #album #progress-step { line-height:1.45;font-size:22px;margin:0 0 10px; }
 .rules-split { display:flex;flex:1;min-height:0;gap:24px; }
 #rules-demo { margin-top:8px; }
-#inspect-card .pack-art { display:block;width:100%;height:100%;background:var(--card-back-image,url("art/backs/mosaic.png")) center/contain no-repeat; }
-.pack-tile .pack-label { font-size:15px;color:#e6d2a3; }
 .journal-search { display:flex;align-items:center;gap:12px;margin-bottom:18px; }
 #journal-search { flex:1;min-width:100px;background:#17221b;color:var(--ink);border:1px solid #75644b;padding:10px 12px;font:18px Georgia,serif; }
 .journal-search .select-trigger { font-size:18px; }
@@ -170,12 +168,6 @@
 #album #album-direction-trigger { min-width:136px; }
 #album[data-view="decks"] #album-direction-trigger { min-width:116px; }
 #album #album-filter-summary { min-height:48px; }
-#album-pack-shelf { flex-shrink:0;display:flex;flex-wrap:wrap;gap:4px 16px; }
-#album .pack-tile { position:relative;display:flex;flex-direction:row;height:36px;gap:10px;padding:4px 12px 4px 5px;background:none;border:1px solid transparent;box-shadow:none; }
-#album .pack-tile:hover,#album .pack-tile.inspected { background:#b49b6810;border-color:#b49b6855; }
-#album .pack-tile .pack-art { position:relative;display:block;width:18px;height:25px;border-radius:1px;background:var(--card-back-image) center/100% 100%;box-shadow:2px 1px #aea17a,4px 2px #344537;transform:rotate(-8deg); }
-#album .pack-tile .pack-label { font-size:16px; }
-#album .pack-tile .owned-count { position:static;padding:0;border:0;background:none;color:#b5a989;font-size:15px; }
 .album-inspector { width:284px;overflow-y:auto;border:0;border-left:1px solid #aa925548;padding:14px 18px;background:linear-gradient(140deg,#6370540e,transparent 65%); }
 #album #inspect-card,.card-inspector-preview { width:100%;height:auto;aspect-ratio: .76;position:relative;border:0;border-radius:3px;box-shadow:0 8px 18px #0004; }
 #album #inspect-card:enabled { cursor:zoom-in; }
@@ -187,9 +179,7 @@
 #shop .inspect-actions .primary,#album .inspect-actions .primary,#table .rules-controls .primary { color:#f4dfb0;border-color:#c1a05f99;background:linear-gradient(180deg,#8c713a55,#50432666);box-shadow:inset 0 0 0 3px #121e1833,0 3px 10px #0003; }
 #shop .inspect-actions .primary:hover:not(:disabled),#album .inspect-actions .primary:hover:not(:disabled) { background:linear-gradient(180deg,#aa894866,#5b4b2866);border-color:#edca86; }
 #album #inspect-reason { font-size:15px;color:#b5b09a;margin-top:6px; }
-#album .inspecting-pack #inspect-card { display:grid;place-items:center;padding:36px;opacity:1;box-shadow:none;background:radial-gradient(ellipse,#a78b3420,transparent 70%);overflow:visible; }
-#album .inspecting-pack .pack-art { position:relative;width:100%;height:auto;aspect-ratio:.72;background:var(--card-back-image) center/100% 100%;transform:rotate(-7deg);border:1px solid #bca266;border-radius:3px;box-shadow:4px 3px 0 #596049,6px 5px 0 #baa474,10px 8px 0 #2a3c2e,11px 9px 0 #958358,12px 18px 22px #0007; }
-#album .inspecting-pack .pack-art:after { content:"";position:absolute;top:43%;left:-3px;right:-3px;height:22%;background:linear-gradient(120deg,#77623b,#b29a67 40%,#8e7648);border-top:1px solid #dbc78d;border-bottom:1px solid #4b4126;box-shadow:0 3px 6px #0007; }
+#album .inspecting-pack #inspect-card { display:block;padding:0;opacity:1;box-shadow:none;background:radial-gradient(ellipse,#a78b3415,transparent 70%);overflow:hidden; }
 #album .inspecting-pack #inspect-count { color:#e1cca0;font-size:24px;margin:8px 0 24px; }
 #album .inspecting-pack #inspect-metadata:empty { display:none; }
 #album-modal.inspecting { background:#07100eee; }
@@ -252,3 +242,15 @@
 #rules-trades dt,#rules-trades dd { padding:17px 0;border-top:1px solid #bba16b33;margin:0;font-size:18px;line-height:1.5; }
 #rules-trades dt { color:var(--gold); }
 #rules-trades dd { color:var(--ink); }
+
+/* Packs share the collection grid, using transparent renders of the inventory meshes. */
+#album #album-grid .pack-tile { position:relative;display:flex;flex-direction:column;align-items:center;height:210px;padding:6px;gap:2px;border:1px solid #8d805039;background:radial-gradient(ellipse at 50% 42%,#53654a18,transparent 75%);box-shadow:none; }
+#album #album-grid .pack-tile:hover { border-color:#bca16a80;background-color:#b49b6809; }
+#album #album-grid .pack-tile.inspected { outline:1px solid #f3d394;outline-offset:3px; }
+.pack-preview { display:block;width:100%;height:100%;background:center/contain no-repeat;pointer-events:none; }
+#album-grid .pack-preview { height:calc(100% - 24px);width:auto;aspect-ratio:512/672;max-width:100%; }
+.pack-preview[data-kind="0"] { background-image:url("assets/packs/standard.png"); }
+.pack-preview[data-kind="1"] { background-image:url("assets/packs/tournament.png"); }
+.pack-caption { display:flex;align-items:center;justify-content:center;gap:6px;width:100%;min-height:22px; }
+#album-grid .pack-label { color:#e1cca0;font-size:14px;line-height:1.15; }
+#album #album-grid .pack-tile .owned-count { position:static;flex:none;padding:0;border:0;background:none;color:#b5ad93;font-size:13px; }
