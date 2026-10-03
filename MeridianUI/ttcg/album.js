@@ -6,9 +6,12 @@ let albumViewKey='',albumSession='',albumDeck=[],albumSavedDeck='',inspected=-1,
 const PACK_ID=-2;
 const TOURNAMENT_PACK_ID=-3;
 function albumPacks(){return [
- {id:PACK_ID,element:'album-card-pack',label:'Card pack',count:Number(state.collection.packs?.[0]||0),command:['open-pack']},
- {id:TOURNAMENT_PACK_ID,element:'album-tournament-pack',label:'Tournament pack',count:Number(state.collection.packs?.[1]||0),command:['tournament','pack 0']}
+ {id:PACK_ID,kind:0,element:'album-card-pack',label:'Card pack',count:Number(state.collection.packs?.[0]||0),command:['open-pack']},
+ {id:TOURNAMENT_PACK_ID,kind:1,element:'album-tournament-pack',label:'Tournament pack',count:Number(state.collection.packs?.[1]||0),command:['tournament','pack 0']}
 ];}
+function albumPackArt(kind){
+ const art=document.createElement('span');art.className='pack-preview';art.dataset.kind=String(kind);art.setAttribute('aria-hidden','true');return art;
+}
 let albumRoute=null;
 function openLobbyAlbum(tab='cards',slot=-1){
  if(state?.phase!=='ready'||state.screen==='album')return;
@@ -105,15 +108,15 @@ function renderAlbum(){
  albumVisible.sort((a,b)=>{const x=state.cards[a],y=state.cards[b];return direction*((sort==='tier'?x.tier-y.tier:sort==='rarity'?rarityOrder[x.rarity]-rarityOrder[y.rarity]:sort==='quantity'?(c.owned[a]-c.owned[b]):0)||x.name.localeCompare(y.name)||a-b);});
  const grid=$('album-grid');grid.replaceChildren();
  const availablePacks=tab==='cards'?albumPacks().filter(pack=>pack.count>0):[];
- const packs=$('album-pack-shelf');packs.replaceChildren();packs.hidden=!availablePacks.length;
  for(const pack of availablePacks){
   const button=document.createElement('button');button.id=pack.element;button.className='pack-tile';
-  const art=document.createElement('span');art.className='pack-art';button.append(art);
-  const label=document.createElement('span');label.className='pack-label';label.textContent=pack.label+'s';button.append(label);
-  const count=document.createElement('span');count.className='owned-count';count.textContent=`×${pack.count}`;button.append(count);
+  button.append(albumPackArt(pack.kind));
+  const caption=document.createElement('span');caption.className='pack-caption';button.append(caption);
+  const label=document.createElement('span');label.className='pack-label';label.textContent=pack.label;caption.append(label);
+  const count=document.createElement('span');count.className='owned-count';count.textContent=`×${pack.count}`;caption.append(count);
   button.setAttribute('aria-label',`${pack.label}s: ${pack.count}`);
   button.onclick=()=>{if(performance.now()<albumClickAfter)return;inspected=pack.id;renderAlbumInspection();};
-  packs.append(button);
+  grid.append(button);
  }
  for(const id of albumVisible){
   const card=state.cards[id],n=c.owned[id],button=document.createElement('button');button.id=`album-card-${id}`;button.className='collection-card';
@@ -178,13 +181,13 @@ function renderAlbumFilterSummary(){
 function renderAlbumInspection(){
  const c=state.collection,editing=albumTab==='decks';
  const pack=albumTab==='cards'?albumPacks().find(pack=>pack.id===inspected):null;
- document.querySelectorAll('#album-grid button,#album-pack-shelf button').forEach(button=>button.classList.toggle('inspected',button.id===(pack?pack.element:`album-card-${inspected}`)));
+ document.querySelectorAll('#album-grid button').forEach(button=>button.classList.toggle('inspected',button.id===(pack?pack.element:`album-card-${inspected}`)));
  if(inspected>=0)collectionInspectedArt=state.cards[inspected].art+Boolean(state.cards[inspected].foil);
  const preview=$('inspect-card');preview.replaceChildren();
  preview.closest('.album-inspector').classList.toggle('inspecting-pack',Boolean(pack));
  $('inspect-add').hidden=Boolean(pack)||!editing;
  $('inspect-reason').textContent='';
- if(pack){const art=document.createElement('span');art.className='pack-art';preview.append(art);}
+ if(pack)preview.append(albumPackArt(pack.kind));
  else if(inspected>=0)preview.append(albumCard(inspected,false));
  if(pack){
   const n=pack.count;

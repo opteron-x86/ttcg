@@ -158,18 +158,15 @@ inline Stock personalPool(int i) {
  for(auto id:opponents[i].collection)if(id)++pool[id];
  return pool;
 }
-inline int handCeiling(int i) {
- if(i<0||i>=static_cast<int>(opponents.size()))return 10;
- constexpr int ceilings[]={1,2,3,4,8,10};
- return opponents[i].level<6?ceilings[opponents[i].level]:10;
-}
 inline Stock playableOpponentStock(const Stock& stock,int i) {
- Stock permitted;const int ceiling=handCeiling(i);
+ Stock permitted;
  if(i>=0&&i<int(opponents.size())&&opponents[i].traveller){
-  for(auto [id,n]:stock){const int c=cardIndex(id);if(c>=0&&((cards[c].tier>=6&&cards[c].tier<=7)||baseCardID(id)==opponents[i].signature||(cards[c].unique&&!cards[c].available&&!cards[c].pending)))permitted[id]=n;}
+  for(auto [id,n]:stock){const int c=cardIndex(id);if(n>0&&c>=0&&((cards[c].tier>=6&&cards[c].tier<=7)||baseCardID(id)==opponents[i].signature||(cards[c].unique&&!cards[c].available&&!cards[c].pending)))permitted[id]=n;}
   return permitted;
  }
- for(auto [id,n]:stock){const int c=cardIndex(id);if(c>=0&&(cards[c].tier<=ceiling||(cards[c].unique&&!cards[c].available)))permitted[id]=n;}
+ // Skill constrains starting stock, not ownership. Acquired cards must remain
+ // playable so their previous owner can win them back, regardless of tier.
+ for(auto [id,n]:stock)if(n>0&&cardIndex(id)>=0)permitted[id]=n;
  return permitted;
 }
 inline bool opponentHasCards(const CollectionSave& s,int i) {
@@ -184,10 +181,11 @@ inline const char* cardsPreventingPlay(const Stock& player,const Stock& rival,in
  return "";
 }
 inline Hand opponentHand(const Stock& stock,int i,std::uint32_t seed,unsigned rules=0) {
- if(i>=0&&i<int(opponents.size())&&opponents[i].traveller)return selectHand(playableOpponentStock(stock,i),seed);
+ const auto permitted=playableOpponentStock(stock,i);
+ if(i>=0&&i<int(opponents.size())&&opponents[i].traveller)return selectHand(permitted,seed);
  if(rules&Reverse){
   // Reverse uses the entire owned collection, including low cards outside a theme.
-  auto permitted=playableOpponentStock(stock,i);std::vector<CardID> pool;
+  std::vector<CardID> pool;
   for(auto [id,n]:permitted)for(int copy=0;copy<std::min(n,deckLimit(id));++copy)pool.push_back(id);
   std::mt19937 rng(seed);std::shuffle(pool.begin(),pool.end(),rng);
   std::stable_sort(pool.begin(),pool.end(),[](auto a,auto b){
@@ -198,18 +196,8 @@ inline Hand opponentHand(const Stock& stock,int i,std::uint32_t seed,unsigned ru
   Hand hand{};Stock used;unsigned at=0;for(auto id:pool)if(count(used,baseCardID(id))<deckLimit(id)){hand[at++]=id;++used[baseCardID(id)];if(at==5)return hand;}
   return {};
  }
- // Prefer the authored collection while it can still supply a legal hand.
- // Cards won from the player remain owned and can fill a depleted collection.
- Stock themed;for(auto [id,n]:personalPool(i))for(auto copy:{id,id|foilFlag})themed[copy]=std::min(n,count(stock,copy));
- // Tournament trophies stay in the draw even above the owner's ordinary tier ceiling.
- for(auto [id,n]:stock){const int c=cardIndex(id);if(c>=0&&cards[c].unique&&!cards[c].available&&n>0)themed[id]=n;}
- const auto& pool=playableCount(themed)>=5?themed:stock;
- const int ceiling=handCeiling(i);
- auto legal=[&](const Hand& hand){for(auto id:hand){int c=cardIndex(id);if(c<0||(cards[c].tier>ceiling&&!(cards[c].unique&&!cards[c].available)))return false;}return true;};
- for(unsigned n=0;n<128;++n){auto hand=selectHand(pool,seed+n*2654435761u);if(legal(hand))return hand;}
- const auto permitted=playableOpponentStock(stock,i);
- for(unsigned n=0;n<128;++n){auto hand=selectHand(permitted,seed+n*2654435761u);if(legal(hand))return hand;}
- return Hand{};
+ // Original cards and later winnings share the same draw pool immediately.
+ return selectHand(permitted,seed);
 }
 inline Hand childHand(const Stock& stock,std::uint32_t base,std::uint32_t seed,unsigned rules){
  if(rules&Reverse)return opponentHand(stock,-1,seed,rules);

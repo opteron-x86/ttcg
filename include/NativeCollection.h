@@ -12,6 +12,7 @@
 #include "DeckPresentation.h"
 #include "SavedMatch.h"
 #include "InterfaceSettings.h"
+#include "EncounterRecords.h"
 namespace campaign {
 inline constexpr const char* plugin="Tessera TCG.esp";
 inline ttcg::CollectionSave saved;
@@ -24,6 +25,7 @@ inline bool saveValid=true;
 inline ttcg::DevelopmentSettings development;
 inline ttcg::InterfaceSettings interfaceSettings;
 inline RE::TESGlobal* gamesEnabledGlobal{};
+inline RE::TESTopicInfo* childChallengeInfo{};
 inline void syncGameAvailability(){if(gamesEnabledGlobal)gamesEnabledGlobal->value=interfaceSettings.gamesEnabled?1.f:0.f;}
 inline RE::TESGlobal* progression{};
 inline RE::TESGlobal *erandurGlobal{},*collegeGlobal{};
@@ -130,7 +132,12 @@ inline bool unlocked(int i) {
 inline bool isChild(RE::Actor* actor) {return actor&&actor->IsChild();}
 inline bool cultureEnabled(RE::Actor* actor){return !tournamentID&&development.recordResults&&development.rules<0&&!practice&&!isChild(actor)&&ttcg::cultureOpponent(saved,profileIndex(actor));}
 inline bool hasAlbum() {return development.albumAccess(saved);}
-inline bool actorReadyForCards(RE::Actor* actor){return actor&&!actor->IsDead()&&!actor->IsDisabled()&&!actor->IsInCombat()&&!actor->GetCurrentScene()&&!actor->IsHostileToActor(RE::PlayerCharacter::GetSingleton());}
+inline bool childDialogueAvailable(RE::Actor* actor){
+ // Use the loaded INFO conditions for both dialogue and native entry, including
+ // quest/scene gates and any compatibility patch, instead of duplicating them.
+ return childChallengeInfo&&childChallengeInfo->objConditions.IsTrue(actor,RE::PlayerCharacter::GetSingleton());
+}
+inline bool actorReadyForCards(RE::Actor* actor){return actor&&!actor->IsDead()&&!actor->IsDisabled()&&!actor->IsInCombat()&&!actor->GetCurrentScene()&&!actor->IsHostileToActor(RE::PlayerCharacter::GetSingleton())&&(!isChild(actor)||childDialogueAvailable(actor));}
 inline bool resumingWith(RE::Actor* actor){return savedMatch.present&&!savedMatch.tournament&&actor&&persistentID(actor)==savedMatch.opponent;}
 inline bool canChallenge(RE::Actor* actor,bool allowResume=true) {if(!interfaceSettings.gamesEnabled||!hasAlbum())return false;if(allowResume&&resumingWith(actor))return actorReadyForCards(actor);const int i=profileIndex(actor);if(tournamentID){const auto* e=ttcg::tournament(saved,tournamentID);return e&&i>=0&&ttcg::tournamentRival(*e)==ttcg::opponents[i].base;}if(!actorReadyForCards(actor))return false;return isChild(actor)||(i>=0?unlocked(i)&&ttcg::opponentHasCards(saved,i)&&ttcg::encounterReady(saved,i,gameHour())&&(development.unlockAllPlayers||ttcg::challengeReputationMet(saved,i)):actor&&development.allowAnyNPC);}
 inline int fixedWager() {if(tournamentID)return 0;return development.fixedWager(practice,canStake);}
@@ -167,6 +174,7 @@ struct Bank {
 };
 inline bool available() { return saveValid&&goldForm&&packForm&&tournamentPackForm&&progression&&albumForm; }
 inline void initForms() {
+ childChallengeInfo=RE::TESDataHandler::GetSingleton()->LookupForm<RE::TESTopicInfo>(ttcg::encounter_childAccept,plugin);
  gamesEnabledGlobal=RE::TESDataHandler::GetSingleton()->LookupForm<RE::TESGlobal>(0xFDA,plugin);
  syncGameAvailability();
  erandurGlobal=RE::TESDataHandler::GetSingleton()->LookupForm<RE::TESGlobal>(0xD20,plugin);

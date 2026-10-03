@@ -12,6 +12,7 @@
 #include "WorldFocus.h"
 #include "Match.h"
 #include "Presentation.h"
+#include "ArtTransfer.h"
 #include "Lesson.h"
 #include "MusicPlayback.h"
 #include "DropInMusic.h"
@@ -316,10 +317,8 @@ void close(bool unwind) {
 }
 bool eligible(RE::Actor* actor) {
  auto player=RE::PlayerCharacter::GetSingleton();
- return actor&&player&&actor!=player&&!player->IsDead()&&!player->IsInCombat()&&!actor->IsDead()&&!actor->IsInCombat()
-   &&!actor->IsHostileToActor(player)&&actor->GetParentCell()==player->GetParentCell()
-   &&actor->GetPosition().GetDistance(player->GetPosition())<600.0F
-   &&!actor->GetCurrentScene();
+ return actor&&player&&actor!=player&&!player->IsDead()&&!player->IsInCombat()&&campaign::actorReadyForCards(actor)
+   &&actor->GetParentCell()==player->GetParentCell()&&actor->GetPosition().GetDistance(player->GetPosition())<600.0F;
 }
 void cancelMasterApproach(){
  masterCandidate.store(0);masterPresented=false;
@@ -857,6 +856,19 @@ void receiveCommand(const char* raw) {
  // to the game task queue; validate session/revision when the task executes.
  SKSE::GetTaskInterface()->AddTask([text=std::move(text)]() { command(text.c_str()); });
 }
+void receiveArtRequest(const char* raw){
+ if(!raw)return;
+ const auto request=ttcg::parseArtRequest(raw);if(!request)return;
+ SKSE::GetTaskInterface()->AddTask([request=*request](){
+  if(!api||!domReady||!api->IsValid(view))return;
+  const auto image=ttcg::readCardArt(request.path);
+  static bool reported=false;static unsigned failures=0;
+  if(!image.data.empty()&&!reported){reported=true;log::info("Artwork fallback active: reading MO2 virtual Data files through TTCG");}
+  if(!image.error.empty()&&failures++<5)log::warn("Artwork fallback: {} ({})",request.path,image.error);
+  const auto response="{\"id\":"+std::to_string(request.id)+",\"data\":"+ttcg::quote(image.data)+"}";
+  api->InteropCall(view,"ttcgArtResult",response.c_str());
+ });
+}
 RE::TESObjectBOOK* nextTournamentInvitationPapyrus(RE::StaticFunctionTag*){
  const auto request=campaign::tournamentLetterReady.exchange(0);if(!request)return nullptr;
  campaign::tournamentLetterSentAt=campaign::tournamentCourierClock();campaign::tournamentLetterInFlight=request;
@@ -1064,6 +1076,7 @@ void message(SKSE::MessagingInterface::Message* msg) {
      SKSE::GetTaskInterface()->AddTask([ready]() {
        if(!api||view!=ready||!api->IsValid(ready)) return;
        if(!api->RegisterJSListener(ready,"ttcgCommand",receiveCommand)) { log::error("Could not register TTCG bridge"); return; }
+       if(!api->RegisterJSListener(ready,"ttcgReadArt",receiveArtRequest))log::warn("Could not register TTCG artwork fallback");
        domReady=true;
        api->EnableController(ready);
        if(visible) publish(); else api->Hide(ready);
