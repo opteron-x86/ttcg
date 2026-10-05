@@ -13,6 +13,8 @@
 #include "Match.h"
 #include "Presentation.h"
 #include "ArtTransfer.h"
+#include "ExpansionLoader.h"
+#include "ExpansionRewards.h"
 #include "Lesson.h"
 #include "MusicPlayback.h"
 #include "DropInMusic.h"
@@ -31,7 +33,7 @@ ttcg::ui::View view{};
 bool domReady=false, visible=false, active=false, thinking=false, settling=false;
 std::uint64_t session=0, revision=0;
 std::atomic<std::uint64_t> epoch{0};
-RE::ActorHandle opponent, pending, approachingMaster;
+RE::ActorHandle opponent, pending, approachingMaster, enrollmentTarget;
 std::atomic<RE::FormID> masterCandidate{0};
 bool masterPresented=false;
 std::chrono::steady_clock::time_point approachStarted;
@@ -287,7 +289,11 @@ void publish() {
  if(screen=="shop"){data.pop_back();data+=",\"shop\":"+campaign::shopJson(actor.get())+"}";}
  if(screen=="lesson"){data.pop_back();data+=",\"lesson\":"+lesson.json()+"}";}
  data.pop_back();data+=std::format(",\"settings\":{{\"collection\":{},\"challenge\":{},\"capturing\":{},\"notice\":{},\"cardBackNotice\":{},\"interfaceNotice\":{},\"development\":{}",collectionKey,challengeKey,ttcg::quote(bindingCapture),ttcg::quote(bindingNotice),ttcg::quote(cardBackNotice),ttcg::quote(interfaceNotice),ttcg::developmentJson(campaign::development,developmentNotice));
- data+=std::format(",\"toggleGames\":{},\"gamesEnabled\":{},\"rankLayout\":{},\"showCardNames\":{}",hotkeys.toggleGames,campaign::interfaceSettings.gamesEnabled?"true":"false",campaign::interfaceSettings.rankLayout,campaign::interfaceSettings.showCardNames?"true":"false");
+ data+=",\"toggleGames\":"+std::to_string(hotkeys.toggleGames);
+ for(const auto& f:ttcg::InterfaceSettings::fields){const int value=campaign::interfaceSettings.get(f);data+=","+ttcg::quote(f.json)+":"+(f.boolean()?std::string(value?"true":"false"):std::to_string(value));}
+ auto enroll=enrollmentTarget.get();const auto candidate=enroll.get();
+ const bool canEnroll=campaign::canEnrollNpc(candidate);
+ data+=",\"residentCandidate\":"+ttcg::quote(campaign::npcInspector(candidate))+",\"canAddResident\":"+(canEnroll?"true":"false");
  for(const auto& option:pauseOptions)data+=","+ttcg::quote(option.jsonKey)+":"+(worldPauseSettings.*option.member?"true":"false");
  data+="}}";
  const auto& saved=campaign::savedMatch;
@@ -358,7 +364,7 @@ bool setGamesEnabled(bool enabled){
 }
 void scanMasterApproach(){
  if(worldReady()&&campaign::available()){
-  campaign::syncProgression();campaign::updateTournaments();
+  campaign::registerNearbyNpcs();campaign::syncProgression();campaign::updateTournaments();
 
  }
  if(!campaign::interfaceSettings.gamesEnabled){cancelMasterApproach();return;}
@@ -382,7 +388,7 @@ void masterArrivedPapyrus(RE::StaticFunctionTag*,RE::Actor* actor){
  SKSE::GetTaskInterface()->AddTask([handle](){
   auto actor=handle.get();if(!actor||approachingMaster!=handle)return;
   const auto i=campaign::profileIndex(actor.get());
-  if(i<0||!worldReady()||!eligible(actor.get())||!campaign::canChallenge(actor.get())){cancelMasterApproach();return;}
+  if(i<0||i>=int(ttcg::encounterRecords.size())||!worldReady()||!eligible(actor.get())||!campaign::canChallenge(actor.get())){cancelMasterApproach();return;}
   auto data=RE::TESDataHandler::GetSingleton();auto info=data->LookupForm<RE::TESTopicInfo>(ttcg::encounterRecords[i].master,campaign::plugin);auto gate=data->LookupForm<RE::TESGlobal>(ttcg::encounter_masterGlobal,campaign::plugin);
   if(!info||!gate){cancelMasterApproach();return;}gate->value=float(i+1);
   masterPresented=true;if(!actor->SetDialogueWithPlayer(true,true,info))cancelMasterApproach();
@@ -411,7 +417,9 @@ bool resumeMatch() {
  updateMusic();publish();runAI();return true;
 }
 void showPanel(RE::Actor* actor,const std::string& requested="lobby") {
+ if(actor)campaign::registerNpcActor(actor);
  auto player=RE::PlayerCharacter::GetSingleton();
+ if(!visible){auto pick=RE::CrosshairPickData::GetSingleton();auto ref=pick?pick->GetActiveTarget().get():RE::NiPointer<RE::TESObjectREFR>{};auto target=ref?ref->As<RE::Actor>():nullptr;enrollmentTarget=target?target->GetHandle():RE::ActorHandle{};}
  const std::string target=(requested=="tournaments"||requested=="registration")?"album":requested;
  if(target!="album"&&target!="lobby"&&target!="shop")return;
  if(!campaign::interfaceSettings.gamesEnabled&&requested!="album")return;
@@ -455,11 +463,18 @@ void requestPanel(RE::Actor* actor,const std::string& requested="lobby") {
  else showPanel(actor,requested);
 }
 void requestChallenge(RE::Actor* actor) {
+ campaign::registerNpcActor(actor);
  if(!campaign::interfaceSettings.gamesEnabled||!eligible(actor)||visible)return;
  campaign::syncProgression();
  if(!campaign::hasAlbum()){RE::SendHUDMessage::ShowHUDMessage("Buy a Tessera Album from a general-goods merchant.");return;}
  const auto i=campaign::profileIndex(actor);
  if(!(campaign::resumingWith(actor)||campaign::isChild(actor)||(i>=0?campaign::unlocked(i):actor&&campaign::development.allowAnyNPC))){RE::SendHUDMessage::ShowHUDMessage("They are unavailable for a game.");return;}
+ if(i>=0&&ttcg::opponents[i].dynamic){
+  const int ready=campaign::npcAvailability(actor);if(!ready){RE::SendHUDMessage::ShowHUDMessage("They are unavailable for a game.");return;}
+  auto info=campaign::npcResponse(actor,ready);
+  if(info){if(info->objConditions.IsTrue(actor,RE::PlayerCharacter::GetSingleton()))actor->SetDialogueWithPlayer(true,true,info);else RE::SendHUDMessage::ShowHUDMessage("They are unavailable for a game.");return;}
+  if(ready==1){campaign::acceptChallenge(actor);requestPanel(actor);}else RE::SendHUDMessage::ShowHUDMessage(ready==3?"They don't have enough cards for a game.":"They don't want to play right now.");return;
+ }
  const bool accepted=campaign::resumingWith(actor)||i<0||(ttcg::opponentHasCards(campaign::saved,i)&&(campaign::development.unlockAllPlayers||ttcg::willingToPlay(campaign::saved,i,campaign::gameHour())));
  const bool alternate=i>=0&&ttcg::opponents[i].alternateBase&&campaign::persistentID(actor->GetActorBase())==ttcg::opponents[i].alternateBase;
  const auto id=i<0?ttcg::encounter_childAccept:alternate?(accepted?ttcg::encounter_alternateAccept:ttcg::encounter_alternateDecline):accepted?ttcg::encounterRecords[i].accept:ttcg::encounterRecords[i].decline;
@@ -541,8 +556,13 @@ void command(const char* raw) {
  // The toggle remains available during play; it checkpoints instead of forfeiting.
  if(verb=="settings"){
   const auto position=input.tellg();std::string key;int value=-1;
-  if(!(input>>key>>value)||(input>>extra)||(value!=0&&value!=1)||!bindingCapture.empty())return;
-  if(key=="games"){setGamesEnabled(value!=0);return;}
+  if(!(input>>key>>value)||(input>>extra)||value<0||!bindingCapture.empty())return;
+  if(key=="games"){if(value<=1)setGamesEnabled(value!=0);return;}
+  if(key=="residents"||key=="vanilla-voices"){
+   if(active||thinking||settling)return;
+   interfaceNotice=campaign::interfaceSettings.set(key,value,persistInterfaceSetting)?"":"Couldn't save this setting.";
+   campaign::registerNearbyNpcs();campaign::syncProgression();publish();return;
+  }
   input.clear();input.seekg(position);
  }
  if(!campaign::interfaceSettings.gamesEnabled&&(verb=="start"||verb=="play"||verb=="prepare"||verb=="rule-lesson"||verb=="shop"))return;
@@ -551,17 +571,27 @@ void command(const char* raw) {
  if(verb=="settings") {
    std::string key;int value=-1;
    if(active||thinking||settling||screen=="lesson"||!bindingCapture.empty()||
-      !(input>>key>>value)||(input>>extra)||(value!=0&&value!=1))return;
+      !(input>>key>>value)||(input>>extra))return;
    const auto option=std::find_if(pauseOptions.begin(),pauseOptions.end(),[&](const auto& entry){return entry.command==key;});
-   if(key=="card-names"||key=="card-ranks"){
+   if(key=="rank-finish-reset"&&value==0){
+     interfaceNotice=campaign::interfaceSettings.resetRankFinish(persistInterfaceSetting)?"":"Couldn't save every setting.";
+     publish();return;
+   }
+   if(ttcg::InterfaceSettings::find(key)){
      interfaceNotice=campaign::interfaceSettings.set(key,value,persistInterfaceSetting)?"":"Couldn't save this setting.";
      publish();return;
    }
-   if(option==pauseOptions.end())return;
+   if(option==pauseOptions.end()||(value!=0&&value!=1))return;
    if(!WritePrivateProfileStringW(L"Interface",option->iniKey,value?L"1":L"0",settingsPath.c_str())) {
      interfaceNotice="Couldn't save this setting.";publish();return;
    }
    worldPauseSettings.*option->member=value!=0;interfaceNotice.clear();publish();return;
+ }
+ if(verb=="npc-add"){
+  if(active||thinking||settling||campaign::saved.contract.pending()||(input>>extra))return;
+  auto actor=enrollmentTarget.get();const bool added=actor&&eligible(actor.get())&&campaign::canEnrollNpc(actor.get())&&campaign::registerNpcActor(actor.get(),true);
+  interfaceNotice=added?std::string(actor->GetName())+" now plays Tessera.":campaign::npcInspector(actor.get());
+  campaign::syncProgression();publish();return;
  }
  if(verb=="shop"){
   if(screen!="shop"||active||thinking||settling)return;
@@ -843,10 +873,29 @@ void masterResponsePapyrus(RE::StaticFunctionTag*,RE::Actor* actor,bool accepted
   const auto* profile=campaign::profile(actor.get());if(accepted&&actor&&profile&&profile->level==5&&campaign::canChallenge(actor.get())){campaign::acceptChallenge(actor.get());requestPanel(actor.get());}
  });
 }
+int npcAvailabilityPapyrus(RE::StaticFunctionTag*,RE::Actor* actor){
+ if(!actor)return -1;std::scoped_lock lock(campaign::npcCacheMutex);const auto it=campaign::npcAvailabilityCache.find(actor->GetFormID());return it==campaign::npcAvailabilityCache.end()?-1:it->second;
+}
+bool npcRegisteredPapyrus(RE::StaticFunctionTag* tag,RE::Actor* actor){return npcAvailabilityPapyrus(tag,actor)>=0;}
+bool npcGrantedPapyrus(RE::StaticFunctionTag*,RE::Actor* actor,RE::BSFixedString grant){
+ if(!actor||grant.empty())return false;std::scoped_lock lock(campaign::npcCacheMutex);const auto it=campaign::npcIdentityCache.find(actor->GetFormID());
+ return it!=campaign::npcIdentityCache.end()&&campaign::npcGrantedCache.contains("script:"+std::string(grant.c_str())+":"+it->second);
+}
+void npcAddPapyrus(RE::StaticFunctionTag*,RE::Actor* actor){if(!actor)return;const auto handle=actor->GetHandle();SKSE::GetTaskInterface()->AddTask([handle](){auto actor=handle.get();if(actor){const bool added=campaign::registerNpcActor(actor.get(),true);campaign::syncProgression();log::info("NPC enrollment {}: {}",actor->GetName(),added);}});}
+void npcRefreshPapyrus(RE::StaticFunctionTag*,RE::Actor* actor){if(!actor)return;const auto handle=actor->GetHandle();SKSE::GetTaskInterface()->AddTask([handle](){auto actor=handle.get();if(actor){campaign::registerNpcActor(actor.get());campaign::syncProgression();}});}
+void npcEnabledPapyrus(RE::StaticFunctionTag*,RE::Actor* actor,bool enabled){if(!actor)return;const auto handle=actor->GetHandle();SKSE::GetTaskInterface()->AddTask([handle,enabled](){auto actor=handle.get();if(!actor)return;campaign::registerNpcActor(actor.get());const auto base=campaign::persistentID(actor->GetActorBase());if(auto it=campaign::saved.residents.profiles.find(base);it!=campaign::saved.residents.profiles.end())it->second.enabled=enabled;campaign::syncProgression();});}
+void npcGivePapyrus(RE::StaticFunctionTag*,RE::Actor* actor,RE::BSFixedString card,RE::BSFixedString grant,int quantity,bool foil){
+ if(!actor||card.empty()||grant.empty())return;const auto handle=actor->GetHandle();const std::string key=card.c_str(),token=grant.c_str();
+ SKSE::GetTaskInterface()->AddTask([handle,key,token,quantity,foil](){auto actor=handle.get();if(!actor||!ttcg::validExpansionKey(key)||!ttcg::validExpansionKey(token)||quantity<1||quantity>99||(campaign::profileIndex(actor.get())<0&&!campaign::registerNpcActor(actor.get(),true))){log::warn("NPC card grant rejected: {}",token);return;}
+  campaign::seedOpponent(actor.get());const auto base=campaign::persistentID(actor->GetActorBase());
+  const bool given=ttcg::grantNpcCards(campaign::saved,campaign::ledgerKey(actor.get()),"script:"+token+":"+ttcg::worldKey(base),{{key,unsigned(quantity),foil}});
+  campaign::syncProgression();log::info("NPC card grant {}: {}",token,given?"delivered":"already delivered or unavailable");
+ });
+}
 void beginPapyrus(RE::StaticFunctionTag*,RE::Actor* actor) {
  if(!actor) return;
  auto handle=actor->GetHandle();
- SKSE::GetTaskInterface()->AddTask([handle]() { auto target=handle.get(); if(target&&campaign::canChallenge(target.get())){campaign::acceptChallenge(target.get());requestPanel(target.get());} });
+ SKSE::GetTaskInterface()->AddTask([handle]() { auto target=handle.get(); if(target){campaign::registerNpcActor(target.get());campaign::syncProgression();}if(target&&campaign::canChallenge(target.get())){campaign::acceptChallenge(target.get());requestPanel(target.get());} });
 }
 void receiveCommand(const char* raw) {
  if(!raw) return;
@@ -890,6 +939,15 @@ void shopPapyrus(RE::StaticFunctionTag*,RE::Actor* actor){
  if(!actor)return;const auto handle=actor->GetHandle();
  SKSE::GetTaskInterface()->AddTask([handle](){if(auto actor=handle.get())requestPanel(actor.get(),"shop");});
 }
+bool expansionLoadedPapyrus(RE::StaticFunctionTag*,RE::BSFixedString key){return ttcg::expansionCardID(key.c_str())!=0;}
+void expansionGivePapyrus(RE::StaticFunctionTag*,RE::BSFixedString key,std::int32_t quantity,bool foil){
+ const std::string identity(key.c_str());
+ SKSE::GetTaskInterface()->AddTask([identity,quantity,foil](){
+  const bool granted=campaign::available()&&RE::PlayerCharacter::GetSingleton()&&ttcg::grantExpansionCard(campaign::saved,identity,quantity,foil);
+  if(granted){log::info("Expansion reward: {} x{}, foil {}",identity,quantity,foil);++revision;publish();}
+  else log::warn("Expansion reward rejected: {} x{}, foil {} (unavailable card, duplicate unique, or invalid quantity/state)",identity,quantity,foil);
+ });
+}
 void buyAlbumPapyrus(RE::StaticFunctionTag*,RE::Actor* actor) {
  if(!actor)return;
  const auto handle=actor->GetHandle();
@@ -925,8 +983,11 @@ void interruptWorld() {
  });
 }
 bool watchedActor(RE::TESObjectREFR* actor){return actor&&(actor->GetFormID()==0x14||actor->GetFormID()==watchedOpponent.load());}
-class Events final: public RE::BSTEventSink<RE::InputEvent*>, public RE::BSTEventSink<RE::MenuOpenCloseEvent>, public RE::BSTEventSink<RE::TESContainerChangedEvent>, public RE::BSTEventSink<RE::TESCombatEvent>, public RE::BSTEventSink<RE::TESHitEvent>, public RE::BSTEventSink<RE::TESDeathEvent> {
+class Events final: public RE::BSTEventSink<RE::InputEvent*>, public RE::BSTEventSink<RE::MenuOpenCloseEvent>, public RE::BSTEventSink<RE::TESContainerChangedEvent>, public RE::BSTEventSink<RE::TESCombatEvent>, public RE::BSTEventSink<RE::TESHitEvent>, public RE::BSTEventSink<RE::TESDeathEvent>, public RE::BSTEventSink<RE::TESObjectLoadedEvent> {
 public:
+ RE::BSEventNotifyControl ProcessEvent(const RE::TESObjectLoadedEvent* event,RE::BSTEventSource<RE::TESObjectLoadedEvent>*) override {
+  if(event&&event->loaded){const auto id=event->formID;SKSE::GetTaskInterface()->AddTask([id](){auto actor=RE::TESForm::LookupByID<RE::Actor>(id);if(actor){campaign::registerNpcActor(actor);if(campaign::profileIndex(actor)>=0||(campaign::npcAvailabilityFaction&&actor->IsInFaction(campaign::npcAvailabilityFaction)))campaign::syncProgression();}});}return RE::BSEventNotifyControl::kContinue;
+ }
  RE::BSEventNotifyControl ProcessEvent(const RE::TESCombatEvent* event,RE::BSTEventSource<RE::TESCombatEvent>*) override {
    if(event&&event->newState!=RE::ACTOR_COMBAT_STATE::kNone&&
       (watchedActor(event->actor.get())||watchedActor(event->targetActor.get())))interruptWorld();
@@ -1012,7 +1073,7 @@ public:
    if(!event) return RE::BSEventNotifyControl::kContinue;
    if(event->opening&&event->menuName==RE::DialogueMenu::MENU_NAME){
      interruptWorld();
-     SKSE::GetTaskInterface()->AddTask([](){campaign::claimAlbum();campaign::updateTournaments();logAlbumDialogue();});
+     SKSE::GetTaskInterface()->AddTask([](){campaign::registerNearbyNpcs();campaign::syncProgression();campaign::claimAlbum();campaign::updateTournaments();logAlbumDialogue();});
    }
    if(event->opening&&event->menuName==RE::BookMenu::MENU_NAME) albumPapyrus(nullptr);
    if(!event->opening&&(event->menuName==RE::BookMenu::MENU_NAME||event->menuName==RE::InventoryMenu::MENU_NAME)) {
@@ -1041,6 +1102,15 @@ void message(SKSE::MessagingInterface::Message* msg) {
    log::info("{} API acquired at InputLoaded: {}",ttcg::ui::name,api!=nullptr);
  }
  if(msg->type==SKSE::MessagingInterface::kDataLoaded) {
+   const auto expansions=ttcg::loadCardExpansions();ttcg::expansionLoadErrors=expansions.errors;
+   log::info("Card expansions: {} sets, {} cards loaded",expansions.sets,expansions.cards);
+   for(const auto& error:expansions.errors)log::error("Card expansion: {}",error);
+   ttcg::opponentLoadErrors=ttcg::loadOpponentIntegrations();
+   log::info("Opponent integrations: {} profiles, {} grants",ttcg::opponentDefinitions.size(),ttcg::npcGrantDefinitions.size());
+   for(const auto& error:ttcg::opponentLoadErrors)log::error("Opponent integration: {}",error);
+   campaign::logNpcDependencies();
+   ttcg::refreshCardArt();
+   for(std::size_t i=ttcg::baseCards.size();i<ttcg::cards.size();++i)if(ttcg::cardImages[i].art!=ttcg::cards[i].art)log::warn("Card expansion {}: artwork unavailable; using card back ({})",ttcg::cards[i].id,ttcg::cards[i].art);
    campaign::development=ttcg::DevelopmentSettings::load([](const char* key) {
      const std::string name(key);const std::wstring wide(name.begin(),name.end());wchar_t value[128]{};
      GetPrivateProfileStringW(L"Development",wide.c_str(),L"",value,128,settingsPath.c_str());
@@ -1049,9 +1119,10 @@ void message(SKSE::MessagingInterface::Message* msg) {
    log::info("Development: enabled {}, grant {}, foils {}, show players {}, unlock players {}, reveal {}, any NPC {}, rules {}, trade {}, wager {}, skill {}, lesson {}, record results {}, regular tournaments {}, invitational tournaments {}, masters tournaments {}, courier tournament hold {}",
      campaign::development.enabled,campaign::development.addAllCards,campaign::development.addAllFoils,campaign::development.showAllPlayers,
      campaign::development.unlockAllPlayers,campaign::development.revealAllCards,campaign::development.allowAnyNPC,campaign::development.rules,campaign::development.tradeRule,campaign::development.wager,campaign::development.opponentSkill,campaign::development.ruleLesson,campaign::development.recordResults,campaign::development.regularTournaments,campaign::development.invitationalTournaments,campaign::development.mastersTournaments,campaign::development.tournamentHold);
-   campaign::interfaceSettings.gamesEnabled=GetPrivateProfileIntW(L"Gameplay",L"Enabled",1,settingsPath.c_str())!=0;
-   campaign::interfaceSettings.showCardNames=GetPrivateProfileIntW(L"Appearance",L"ShowCardNames",1,settingsPath.c_str())!=0;
-   campaign::interfaceSettings.rankLayout=GetPrivateProfileIntW(L"Appearance",L"RankLayout",0,settingsPath.c_str())==1?1:0;
+   campaign::interfaceSettings.load([](const char* section,const char* key,int fallback){
+     const std::string s(section),k(key);const std::wstring ws(s.begin(),s.end()),wk(k.begin(),k.end());
+     return static_cast<int>(GetPrivateProfileIntW(ws.c_str(),wk.c_str(),fallback,settingsPath.c_str()));
+   });
    campaign::initForms();
    for(const auto& field:hotkeys.fields)hotkeys.*field.member=GetPrivateProfileIntW(L"Input",field.ini,field.defaultKey,settingsPath.c_str());
    hotkeys.normalize();
@@ -1068,6 +1139,7 @@ void message(SKSE::MessagingInterface::Message* msg) {
    RE::ScriptEventSourceHolder::GetSingleton()->AddEventSink<RE::TESCombatEvent>(&events);
    RE::ScriptEventSourceHolder::GetSingleton()->AddEventSink<RE::TESHitEvent>(&events);
    RE::ScriptEventSourceHolder::GetSingleton()->AddEventSink<RE::TESDeathEvent>(&events);
+   RE::ScriptEventSourceHolder::GetSingleton()->AddEventSink<RE::TESObjectLoadedEvent>(&events);
    RE::BSInputDeviceManager::GetSingleton()->AddEventSink(&events);
    RE::UI::GetSingleton()->AddEventSink<RE::MenuOpenCloseEvent>(&events);
    if(!api) { log::error("{} API not found; core remains available",ttcg::ui::name); return; }
@@ -1120,6 +1192,15 @@ extern "C" __declspec(dllexport) bool SKSEPlugin_Load(const SKSE::LoadInterface*
  }
  SKSE::Init(skse);
  SKSE::GetPapyrusInterface()->Register([](RE::BSScript::IVirtualMachine* vm) {
+   vm->RegisterFunction("IsCardLoaded","TTCG_CardExpansion",expansionLoadedPapyrus);
+   vm->RegisterFunction("GiveCard","TTCG_CardExpansion",expansionGivePapyrus);
+   vm->RegisterFunction("GetAvailability","TTCG_Opponents",npcAvailabilityPapyrus);
+   vm->RegisterFunction("IsRegistered","TTCG_Opponents",npcRegisteredPapyrus);
+   vm->RegisterFunction("AddPlayer","TTCG_Opponents",npcAddPapyrus);
+   vm->RegisterFunction("SetEnabled","TTCG_Opponents",npcEnabledPapyrus);
+   vm->RegisterFunction("Refresh","TTCG_Opponents",npcRefreshPapyrus);
+   vm->RegisterFunction("GiveCard","TTCG_Opponents",npcGivePapyrus);
+   vm->RegisterFunction("HasReceivedGrant","TTCG_Opponents",npcGrantedPapyrus);
    vm->RegisterFunction("BeginMatch","TTCG_Native",beginPapyrus);
    vm->RegisterFunction("NextMaster","TTCG_Native",nextMasterPapyrus);
    vm->RegisterFunction("MasterArrived","TTCG_Native",masterArrivedPapyrus);

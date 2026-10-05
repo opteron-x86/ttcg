@@ -2,6 +2,7 @@
 #include "Album.h"
 #include "Opponents.h"
 #include "Reputation.h"
+#include "ExpansionRewards.h"
 namespace ttcg {
 // Stable profile IDs keep saves independent of roster order and actor replacement.
 inline constexpr std::uint32_t whiterunHold=1,falkreathHold=2,paleHold=5,hjaalmarchHold=4,winterholdHold=7,riftHold=6,solstheimRegion=10,reachHold=9,eastmarchHold=8,haafingarHold=3;
@@ -27,11 +28,11 @@ inline PlayerRecord& progress(CollectionSave& s,int i) {return s.players[opponen
 inline void acceptOpponentChallenge(CollectionSave& s,int i){if(i>=0&&i<static_cast<int>(opponents.size()))progress(s,i).known=true;}
 inline HoldTerms holdTerms(const CollectionSave& s,std::uint32_t id=whiterunHold) {
  if(auto it=s.holds.find(id);it!=s.holds.end())return it->second;
- for(auto p:holds)if(p.id==id)return p.defaults;return {};
+ for(auto p:holds)if(p.id==id)return p.defaults;return {Open,TradeOne};
 }
 inline HoldTerms opponentTerms(const CollectionSave& s,int i){
  if(i<0||i>=int(opponents.size()))return {};
- const auto& p=opponents[i];if(!p.traveller)return holdTerms(s,p.hold);
+ const auto& p=opponents[i];if(p.personalRules)return {p.rules,p.personalTrade};if(p.dynamic||!p.traveller)return holdTerms(s,p.hold);
  // A saved game count keeps an encounter's terms stable through lobby visits,
  // album edits and reloads. Finishing or forfeiting advances the next draw.
  const auto& r=progress(s,i).competitive;
@@ -40,12 +41,12 @@ inline HoldTerms opponentTerms(const CollectionSave& s,int i){
 }
 inline bool encounterReady(const CollectionSave& s,int i,unsigned hour){
  if(i<0||i>=int(opponents.size()))return false;
- if(!opponents[i].traveller)return true;
+ if(opponents[i].dynamic||!opponents[i].traveller)return true;
  const auto it=s.masterApproachAfter.find(opponents[i].base);
  return it==s.masterApproachAfter.end()||hour>=it->second;
 }
 inline void finishTravellerEncounter(CollectionSave& s,int i,unsigned hour){
- if(i>=0&&i<int(opponents.size())&&opponents[i].traveller)s.masterApproachAfter[opponents[i].base]=hour+168;
+ if(i>=0&&i<int(opponents.size())&&!opponents[i].dynamic&&opponents[i].traveller)s.masterApproachAfter[opponents[i].base]=hour+168;
 }
 inline bool expertOpponent(int i) { return i>=0&&i<static_cast<int>(opponents.size())&&opponents[i].level>=4; }
 inline unsigned credit(const CollectionSave& s,std::uint32_t id) {auto it=s.achievements.find(id);return it==s.achievements.end()?0:it->second;}
@@ -122,7 +123,7 @@ inline std::pair<int,int> childTiers(std::uint32_t base){return std::array{std::
 inline Stock childStock(std::uint32_t base) {
  const auto& profile=childProfile(base);const auto [low,high]=childTiers(base);
  std::vector<CardID> pool,themed,reverse;
- for(const auto& c:cards)if(c.available&&!c.pending&&!c.unique&&std::string_view(c.rarity)!="Legendary"){
+ for(const auto& c:cards)if(officialCard(c)&&c.available&&!c.pending&&!c.unique&&std::string_view(c.rarity)!="Legendary"){
   if(c.tier<=2)reverse.push_back(c.form);
   if(c.tier<low||c.tier>high||(profile.skill==0&&std::string_view(c.rarity)=="Epic"))continue;
   pool.push_back(c.form);
@@ -155,13 +156,22 @@ inline void recordCampaignResult(CollectionSave& s,int i,int winner,bool competi
 }
 inline Stock personalPool(int i) {
  Stock pool;if(i<0||i>=static_cast<int>(opponents.size()))return pool;
+ if(auto it=opponentPools().find(opponents[i].base);it!=opponentPools().end())return it->second;
  for(auto id:opponents[i].collection)if(id)++pool[id];
+ return pool;
+}
+inline Stock unclaimedPersonalPool(const CollectionSave& s,int i){
+ auto pool=personalPool(i);
+ std::erase_if(pool,[&](const auto& item){const int c=cardIndex(item.first);return c<0||(cards[c].unique&&uniqueCardClaimed(s,item.first));});
  return pool;
 }
 inline Stock playableOpponentStock(const Stock& stock,int i) {
  Stock permitted;
- if(i>=0&&i<int(opponents.size())&&opponents[i].traveller){
-  for(auto [id,n]:stock){const int c=cardIndex(id);if(n>0&&c>=0&&((cards[c].tier>=6&&cards[c].tier<=7)||baseCardID(id)==opponents[i].signature||(cards[c].unique&&!cards[c].available&&!cards[c].pending)))permitted[id]=n;}
+ if(i>=0&&i<int(opponents.size())&&!opponents[i].dynamic&&opponents[i].traveller){
+  for(auto [id,n]:stock){const int c=cardIndex(id);if(n<=0||c<0)continue;const auto* expansion=expansionCard(cards[c]);
+   if((cards[c].tier>=6&&cards[c].tier<=7)||baseCardID(id)==opponents[i].signature||
+      (cards[c].unique&&!cards[c].pending&&(!cards[c].available||(expansion&&expansion->tournamentPrizes))))permitted[id]=n;
+  }
   return permitted;
  }
  // Skill constrains starting stock, not ownership. Acquired cards must remain
@@ -173,7 +183,7 @@ inline bool opponentHasCards(const CollectionSave& s,int i) {
  if(i<0||i>=static_cast<int>(opponents.size()))return false;
  const auto& p=opponents[i];const auto found=s.opponents.find(opponentLedgerKey(p.base,p.reference));
  // Unmet players receive their authored collection on their first game.
- return playableCount(playableOpponentStock(found==s.opponents.end()?personalPool(i):found->second,i))>=5;
+ return playableCount(playableOpponentStock(found==s.opponents.end()?unclaimedPersonalPool(s,i):found->second,i))>=5;
 }
 inline const char* cardsPreventingPlay(const Stock& player,const Stock& rival,int i) {
  if(playableCount(playableOpponentStock(rival,i))<5)return "They don't have enough cards for a game.";
@@ -182,7 +192,7 @@ inline const char* cardsPreventingPlay(const Stock& player,const Stock& rival,in
 }
 inline Hand opponentHand(const Stock& stock,int i,std::uint32_t seed,unsigned rules=0) {
  const auto permitted=playableOpponentStock(stock,i);
- if(i>=0&&i<int(opponents.size())&&opponents[i].traveller)return selectHand(permitted,seed);
+ if(i>=0&&i<int(opponents.size())&&!opponents[i].dynamic&&opponents[i].traveller)return selectHand(permitted,seed);
  if(rules&Reverse){
   // Reverse uses the entire owned collection, including low cards outside a theme.
   std::vector<CardID> pool;
@@ -209,10 +219,11 @@ inline void replenishOpponent(CollectionSave& s,int i,std::uint32_t actor,unsign
  if(i<0||i>=static_cast<int>(opponents.size())||!actor||s.contract.pending())return;
  auto [entry,fresh]=s.opponents.try_emplace(actor);auto& stock=entry->second;
  const auto pool=personalPool(i);const int target=cardCount(pool);
- if(fresh)for(auto [id,n]:pool){stock[id]=0;for(int copy=0;copy<n;++copy)++stock[mintCard(s,id)];}
+ if(fresh)for(auto [id,n]:unclaimedPersonalPool(s,i))for(int copy=0;copy<n;++copy)++stock[opponents[i].dynamic?id:mintCard(s,id)];
+ if(!opponents[i].restock)return;
  auto& next=progress(s,i).restockAt;if(!next){next=hour+72;return;}if(hour<next)return;
  next=hour+72;std::vector<CardID> basics;
- for(auto [id,n]:pool){const auto& c=cards[cardIndex(id)];if(!c.unique&&(std::string_view(c.rarity)=="Common"||std::string_view(c.rarity)=="Rare"))basics.push_back(id);}
+ for(auto [id,n]:pool){const int index=cardIndex(id);if(index<0)continue;const auto& c=cards[index];if(!c.unique&&(std::string_view(c.rarity)=="Common"||std::string_view(c.rarity)=="Rare"))basics.push_back(baseCardID(id));}
  if(basics.size()<4&&!opponents[i].traveller)for(auto& c:cards)if(c.starter&&std::string_view(c.rarity)=="Common"&&std::find(basics.begin(),basics.end(),c.form)==basics.end())basics.push_back(c.form);
  // Replace up to five ordinary themed copies every three days; rare finishes
  // are minted once and high-rarity prizes are never automatically recreated.

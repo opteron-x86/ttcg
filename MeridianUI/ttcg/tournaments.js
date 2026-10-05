@@ -56,7 +56,7 @@ function renderTournaments(){
  const e=events.find(e=>e.id===selectedTournament)||events[0];selectedTournament=e?.id||0;
  if(e)seeTournament(e);
  renderChapterNavigation($('tournament-list'),events.map(event=>({id:event.id,title:`${event.champion===20?'★ ':''}${event.name}${event.circuit===2?' · Masters':event.circuit===1?' · Invitational':''}${event.champion?'':event.joined?' · Entered':''}`,detail:event.champion?`Held ${event.startsLabel}`:`Closes ${event.endsLabel}`,unseen:tournamentUnseen(event)})),selectedTournament,id=>{selectedTournament=id;renderTournaments();},'tournament-event-');
- $('tournament-content').hidden=!e;$('tournament-title').textContent=e?e.circuit===2?`${e.name} · Tessera Masters`:`${e.name} ${e.circuit===1?'invitational':'tournament'}`:'Tournaments';$('tournament-venue').textContent=e?`${e.venue} · ${e.host}`:tournamentHistory?'Your completed tournaments will appear here.':'Visit an inn to find local tournaments. Invitations arrive by courier.';$('tournament-status').textContent=e?tournamentStatus(e,data.hour):'';
+ $('tournament-content').hidden=!e;$('tournament-title').textContent=e?e.circuit===2?`${e.name} · Tessera Masters`:`${e.name} ${e.circuit===1?'invitational':'tournament'}`:'Tournaments';$('tournament-venue').textContent=e?`${e.venue} · ${e.host}`:tournamentHistory?'Your completed tournaments will appear here.':'Speak with an innkeeper to find and enter tournaments.';$('tournament-status').textContent=e?tournamentStatus(e,data.hour):'';
  if(e){
   renderRuleChips($('tournament-rules'),e.rules);$('tournament-dates').textContent=e.champion?`Held ${e.startsLabel}`:`Closes ${e.endsLabel}`;
   $('tournament-entry').textContent=e.fee?`${e.fee} gold entry`:'';

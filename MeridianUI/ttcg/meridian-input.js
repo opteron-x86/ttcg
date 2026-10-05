@@ -24,6 +24,7 @@ window.ttcgInstallMeridianInput=()=>{
      if(key==='confirm'&&input.getState().mode==='cursor') return false;
      selectMenuKey(key); return true;
    }
+   if(settingsRangeKey(key))return true;
    if(key==='cancel'||key==='previous'||key==='next') { window.ttcgKey(key); return true; }
    // Meridian handles spatial navigation, right-stick scroll and cursor mode.
    return false;

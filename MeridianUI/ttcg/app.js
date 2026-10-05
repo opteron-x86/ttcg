@@ -18,7 +18,7 @@ const $=id=>document.getElementById(id);
 // Shared interaction scope for keyboard and Meridian navigation. Keep overlay
 // priority here so a hidden control cannot receive focus behind another dialog.
 function activeOverlay(){
- return ['shop-confirm','tournament-confirm','tournament-outcome','deck-dialog','settings-panel','album-modal','abolition-dialog','table-inspection','match-rules','group-choice','rule-request','post-match','forfeit','reward','album-filter-panel'].map($).find(el=>el&&!el.hidden)||null;
+ return ['shop-confirm','tournament-confirm','tournament-outcome','deck-dialog','album-modal','abolition-dialog','table-inspection','match-rules','group-choice','rule-request','post-match','forfeit','reward','album-filter-panel'].map($).find(el=>el&&!el.hidden)||null;
 }
 function activeInteractionScope(){return openSelectMenu?.list||activeOverlay()||$('table');}
 function visibleControls(scope){return [...scope.querySelectorAll('button,input,select,[tabindex="0"]')].filter(el=>!el.disabled&&el.getClientRects().length);}
@@ -35,20 +35,27 @@ function renderChapterNavigation(container,entries,selected,onSelect,prefix){
 }
 function renderCardMetadata(container,card){
  container.replaceChildren();if(!card)return;
- for(const [kind,value] of [['rarity',card.rarity+(card.unique?' · Unique':'')+(card.foil?' · Foil':'')],['groups',card.groups?.join(' / ')],['affinities',card.affinities?.join(' / ')||'Neutral']]){
-  const line=document.createElement('div');line.className='inspect-'+kind;line.textContent=value||'';if(kind==='rarity')line.dataset.rarity=card.rarity;container.append(line);
+ for(const [kind,value] of [['rarity',card.rarity+(card.unique?' · Unique':'')+(card.foil?' · Foil':'')],['groups',card.groups?.join(' / ')],['affinities',card.affinities?.join(' / ')||'Neutral'],['set',card.setName]]){
+  if(!value)continue;const line=document.createElement('div');line.className='inspect-'+kind;line.textContent=value||'';if(kind==='rarity')line.dataset.rarity=card.rarity;container.append(line);
  }
 }
 function appendFoilLayers(portrait){
  for(const name of ['film','grain','glare']){const layer=document.createElement('span');layer.className='foil-'+name;portrait.append(layer);}
  foilMaterial.attach(portrait.classList.contains('foil')?portrait:portrait.parentElement,'prismatic',portrait);
 }
+let windowedSize=90;
+try {const saved=Number(localStorage.getItem('ttcg.windowedSize'));if(saved>=60&&saved<=95)windowedSize=Math.round(saved/5)*5;}catch{}
 function resizeWindow() {
- const size=Math.max(60,Math.min(95,Number($('window-size').value)||90));
- document.documentElement.style.setProperty('--window-scale',Math.min(innerWidth/1400,innerHeight/920)*size/100);
- try { localStorage.setItem('ttcg.windowSize',String(size)); } catch { /* Storage may be disabled in the embedded view. */ }
+ const size=Math.max(60,Math.min(100,Number($('window-size').value)||90)),full=size===100;
+ const scale=Math.min(innerWidth/1400,innerHeight/920)*(full?1:size/100),root=document.documentElement;
+ root.style.setProperty('--window-scale',scale);
+ root.style.setProperty('--window-width',full?`${innerWidth/scale}px`:'1400px');
+ root.style.setProperty('--window-height',full?`${innerHeight/scale}px`:'920px');
+ root.dataset.fullscreen=String(full);if(!full)windowedSize=size;
+ try {localStorage.setItem('ttcg.windowSize',String(size));localStorage.setItem('ttcg.windowedSize',String(windowedSize));}catch{}
+ if(typeof renderWindowSettings==='function')renderWindowSettings();
 }
-try { const saved=Number(localStorage.getItem('ttcg.windowSize')); if(saved>=60&&saved<=96) $('window-size').value=String(Math.min(95,Math.round(saved/5)*5)); } catch {}
+try {const saved=Number(localStorage.getItem('ttcg.windowSize'));if(saved>=60&&saved<=100)$('window-size').value=String(Math.round(saved/5)*5);}catch{}
 $('window-size').addEventListener('change',resizeWindow);
 window.addEventListener('resize',resizeWindow);
 resizeWindow();
@@ -133,11 +140,13 @@ function cardElement(id,owner,modifier=0,thumbnail=false) {
 function description(id) { if(id===-2)return 'Hidden card'; const c=state.cards[id]; return `${c.foil?'Foil · ':''}${c.name}: ${c.sides.join(', ')}`; }
 function render() {
  if(!state) return;
+ applyThemeSettings();
  applyCardFaceSettings();
  clearBoardGhosts();
  updateTableMode();
  const focus=document.activeElement?.id;
- $('settings-open').hidden=state.phase!=='ready';renderBindings();renderInterruptedMatch();
+ if(state.phase!=='ready'||state.screen!=='album')$('settings-panel').hidden=true;
+ renderInterruptedMatch();
  $('music').setAttribute('aria-pressed',String(Boolean(state.musicEnabled)));
  $('music').disabled=!state.musicAvailable;
  $('music').title=state.musicAvailable?(state.musicEnabled?'Turn match music off':'Turn match music on'):'No match tracks installed';
@@ -397,7 +406,7 @@ window.ttcgKey=key=>{
  if(key==='cancel'&&closeAlbumPopover())return;
  if(!$('album-modal').hidden&&$('album-modal').classList.contains('inspecting')&&['left','right','previous','next'].includes(key)){stepAlbumInspection(['left','previous'].includes(key)?-1:1);return;}
  if(state.screen==='album'&&!document.querySelector('.modal-shade:not([hidden])')&&$('album-filter-panel').hidden&&['previous','next'].includes(key)){
-   const tabs=['cards','decks','opponents','tournaments','rules'];setAlbumTab(tabs[(tabs.indexOf(albumTab)+(key==='previous'?tabs.length-1:1))%tabs.length]);return;
+   const tabs=albumTabs;setAlbumTab(tabs[(tabs.indexOf(albumTab)+(key==='previous'?tabs.length-1:1))%tabs.length]);return;
  }
  if(key==='cancel') {
    if(!$('forfeit').hidden) { $('forfeit').hidden=true; $('leave').focus(); return; }
@@ -405,6 +414,7 @@ window.ttcgKey=key=>{
    else closeView();
    return;
  }
+ if(settingsRangeKey(key))return;
  if(key==='confirm') { document.activeElement?.click(); return; }
  const scope=activeInteractionScope();
  if(scope===$('table')&&document.activeElement?.id.startsWith('album-card-')&&['left','right','up','down'].includes(key)){

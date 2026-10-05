@@ -1,7 +1,8 @@
 'use strict';
 let albumTab='cards',collectionInspectedArt='',albumTarget=-1,albumActiveDeck=null;
-const albumViews=Object.fromEntries(['cards','decks'].map(key=>[key,{query:'',filter:'owned',sort:'tier',direction:'asc',tier:'0',group:'',affinity:'',rarity:'',finish:'',scroll:0}]));
-const albumFilterKeys=['tier','group','affinity','rarity','finish'];
+const albumTabs=['cards','decks','opponents','tournaments','rules','settings'];
+const albumViews=Object.fromEntries(['cards','decks'].map(key=>[key,{query:'',filter:'owned',sort:'tier',direction:'asc',tier:'0',group:'',affinity:'',rarity:'',finish:'',set:'',scroll:0}]));
+const albumFilterKeys=['tier','group','affinity','rarity','finish','set'];
 let albumViewKey='',albumSession='',albumDeck=[],albumSavedDeck='',inspected=-1,seenReveal=0,albumConfirmation=null,albumVisible=[];
 const PACK_ID=-2;
 const TOURNAMENT_PACK_ID=-3;
@@ -33,8 +34,8 @@ function closeAlbumPopover(restore=true){
  return false;
 }
 function setAlbumTab(tab){
- if(!['cards','decks','opponents','tournaments','rules'].includes(tab)||state?.screen!=='album'||tab==='decks'&&state.interruptedMatch)return;
- stopRulesDemo();clearAlbumDrag();closeSelectMenu();closeAlbumPopover(false);albumTab=tab;renderAlbum();
+ if(!albumTabs.includes(tab)||state?.screen!=='album'||tab==='decks'&&state.interruptedMatch)return;
+ closeSettings();stopRulesDemo();clearAlbumDrag();closeSelectMenu();closeAlbumPopover(false);albumTab=tab;renderAlbum();
  $('album-'+(tab==='opponents'?'opponents':tab)+'-tab').focus({preventScroll:true});
 }
 function openAlbumDeckForCard(id){
@@ -58,30 +59,40 @@ function refreshAlbumGroups(){
  select.replaceChildren(new Option('All types',''),...groups.map(group=>new Option(group,group)));
  select.value=groups.includes(selected)?selected:'';select.dataset.groups=signature;select._refresh();
 }
+function refreshAlbumSets(){
+ const select=$('album-set'),sets=[...new Map(state.cards.filter(c=>c.setId).map(c=>[c.setId,c.setName])).entries()].sort((a,b)=>a[1].localeCompare(b[1]));
+ const signature=JSON.stringify(sets);if(select.dataset.sets===signature)return;
+ const selected=select.value;select.replaceChildren(new Option('All sets',''),new Option('Tessera','tessera'),...sets.map(([id,name])=>new Option(name,id)));
+ select.value=[...select.options].some(o=>o.value===selected)?selected:'';select.dataset.sets=signature;select._refresh();
+ select.nextElementSibling.hidden=!sets.length;
+}
 function renderAlbum(){
  if(albumPointer){albumClickAfter=performance.now()+200;clearAlbumDrag();}
  const focus=document.activeElement?.id,c=state.collection;
- refreshAlbumGroups();
+ refreshAlbumGroups();refreshAlbumSets();
  const route=albumRoute;if(route){albumTab=route.tab;albumRoute=null;}
  if(state.interruptedMatch&&albumTab==='decks')albumTab='cards';
  $('album-decks-tab').disabled=Boolean(state.interruptedMatch);
  $('album-decks-tab').title=state.interruptedMatch?'Finish your current game to edit decks.':'';
  const tab=albumTab;
  const entering=albumSession!==String(state.session);
- if(entering){albumSession=String(state.session);albumDeck=deckSlots(c.deck);albumSavedDeck=JSON.stringify(c.deck);inspected=state.cards.findIndex(card=>card.art+Boolean(card.foil)===collectionInspectedArt);closeAlbumModal(false);closeAlbumPopover(false);}
+ if(entering){albumSession=String(state.session);albumDeck=deckSlots(c.deck);albumSavedDeck=JSON.stringify(c.deck);inspected=state.cards.findIndex(card=>(card.id||card.art)+Boolean(card.foil)===collectionInspectedArt);closeAlbumModal(false);closeAlbumPopover(false);}
  if(albumActiveDeck!==c.activeDeck){albumActiveDeck=c.activeDeck;albumTarget=-1;}
  if(route)albumTarget=route.slot;
  if(albumSavedDeck!==JSON.stringify(c.deck)){albumDeck=deckSlots(c.deck);albumSavedDeck=JSON.stringify(c.deck);}
  $('album').dataset.view=tab;
  $('album-tabs').hidden=false;
- for(const key of ['cards','decks','opponents','tournaments','rules'])$('album-'+key+'-tab').setAttribute('aria-pressed',String(tab===key));
+ for(const key of albumTabs)$('album-'+key+'-tab').setAttribute('aria-pressed',String(tab===key));
  renderTournamentBadge();
  $('album-count').hidden=tab!=='cards';
- const discovered=identityTotal(id=>c.known?.[id]||c.owned[id]>0);
- $('album-count').textContent=`${identityTotal(id=>c.owned[id]>0)} owned · ${discovered}/${identityTotal(()=>true)} discovered`;
+ const progress=expansion=>`${identityTotal(id=>Boolean(state.cards[id].setId)===expansion&&(c.known?.[id]||c.owned[id]>0))}/${identityTotal(id=>Boolean(state.cards[id].setId)===expansion)}`;
+ $('album-count').textContent=state.cards.some(card=>card.setId)?`Tessera ${progress(false)} · Expansions ${progress(true)}`:`${identityTotal(id=>c.owned[id]>0)} owned · ${progress(false)} discovered`;
  $('album-back').hidden=!(state.matchContext??Boolean(state.opponent));
- $('album-tournaments').hidden=tab!=='tournaments';$('opponents-panel').hidden=tab!=='opponents';$('album-rules').hidden=tab!=='rules';$('album-workspace').hidden=tab==='opponents'||tab==='rules'||tab==='tournaments';
- $('album-status').textContent=c.notice||'';$('album-status').hidden=!c.notice;
+ $('album-tournaments').hidden=tab!=='tournaments';$('opponents-panel').hidden=tab!=='opponents';$('album-rules').hidden=tab!=='rules';$('settings-panel').hidden=tab!=='settings';$('album-workspace').hidden=tab!=='cards'&&tab!=='decks';
+ const missing=c.missingSets?.length?`Cards unavailable from ${c.missingSets.join(', ')}. Reinstall the expansion to restore them.`:'';
+ const errors=state.expansionErrors?.length?'An expansion could not be loaded. See TTCG.log.':'';
+ $('album-status').textContent=c.notice||missing||errors;$('album-status').hidden=!$('album-status').textContent;$('album-status').title=(state.expansionErrors||[]).join('\n');
+ if(tab==='settings'){renderSettings();return;}
  if(tab==='tournaments'){renderTournaments();renderAlbumReveal();return;}
  if(tab==='opponents'){renderOpponents();return;}
  if(tab==='rules'){renderAlbumRules();return;}
@@ -98,6 +109,7 @@ function renderAlbum(){
  albumVisible=state.cards.map((_,id)=>id).filter(id=>{
   const card=state.cards[id],n=c.owned[id];
   if(!albumKnown(id)||tier&&tier!==card.tier)return false;
+  const set=$('album-set').value;if(set&&(card.setId||'tessera')!==set)return false;
   const finish=$('album-finish').value;if(finish&&(finish==='foil')!==Boolean(card.foil))return false;
   if(query&&![card.name,...(card.groups||[]),...(card.subtypes||[]),...(card.affinities||[]),card.rarity].join(' ').toLowerCase().includes(query))return false;
   if(group&&!card.groups?.includes(group)||rarity&&rarity!==card.rarity)return false;
@@ -182,7 +194,7 @@ function renderAlbumInspection(){
  const c=state.collection,editing=albumTab==='decks';
  const pack=albumTab==='cards'?albumPacks().find(pack=>pack.id===inspected):null;
  document.querySelectorAll('#album-grid button').forEach(button=>button.classList.toggle('inspected',button.id===(pack?pack.element:`album-card-${inspected}`)));
- if(inspected>=0)collectionInspectedArt=state.cards[inspected].art+Boolean(state.cards[inspected].foil);
+ if(inspected>=0)collectionInspectedArt=(state.cards[inspected].id||state.cards[inspected].art)+Boolean(state.cards[inspected].foil);
  const preview=$('inspect-card');preview.replaceChildren();
  preview.closest('.album-inspector').classList.toggle('inspecting-pack',Boolean(pack));
  $('inspect-add').hidden=Boolean(pack)||!editing;
@@ -383,11 +395,11 @@ function renderAlbumRules(){
  const page=RULE_PAGES.find(p=>p.id===rulesTopic)||RULE_PAGES[0];
  $('rules-title').textContent=page.title;$('rules-copy').textContent=page.copy;
  const trades=$('rules-trades');trades.hidden=page.id!=='trade';trades.replaceChildren();
- if(page.id==='trade')for(const rule of TRADE_RULES){const name=document.createElement('dt'),copy=document.createElement('dd');name.textContent=rule.title;copy.textContent=rule.copy;trades.append(name,copy);} 
+ if(page.id==='trade')for(const rule of TRADE_RULES){const name=document.createElement('dt'),copy=document.createElement('dd');name.textContent=rule.title;copy.textContent=rule.copy;trades.append(name,copy);}
  if(page.demo)playRulesDemo(page.demo);else{$('rules-demo').hidden=true;stopRulesDemo();}
  rulesRenderedKey=key;
 }
-for(const tab of ['cards','decks','opponents','tournaments','rules'])$('album-'+tab+'-tab').onclick=()=>setAlbumTab(tab);
+for(const tab of albumTabs)$('album-'+tab+'-tab').onclick=()=>setAlbumTab(tab);
 $('library-open').onclick=()=>state.collection?.tournamentID?openTournamentBoard(state.collection.tournamentID):openLobbyAlbum('cards');$('album-back').onclick=()=>send('browse','lobby');
 $('album-clear').onclick=()=>{closeAlbumPopover();albumDeck=Array(5).fill(-1);albumTarget=-1;saveAlbumDeck();renderAlbum();};
 $('album-remove').onclick=()=>{if(albumTarget<0)return;const h=albumTarget;albumDeck[h]=-1;saveAlbumDeck();renderAlbum();$('album-deck-'+h).focus();};

@@ -1,5 +1,7 @@
 /* Geometry is inherited by the shared card renderer, including existing cards.
    Preview choices override the preference locally without a second renderer. */
+.card-name { font-family:var(--card-name-font,var(--theme-card-name-font,Georgia,"Times New Roman",serif)); }
+.rank,.affinity-modifier { font-family:var(--card-value-font,var(--theme-card-value-font,Georgia,"Times New Roman",serif)); }
 [data-rank-layout="edges"] {
  --rank-font:clamp(26px,14cqw,48px);
  --rank-top-x:50%;--rank-top-y:10%;--rank-right-x:91%;--rank-middle-y:var(--edge-middle-y,39.5%);
@@ -14,14 +16,8 @@
 }
 [data-card-names="shown"] { --face-name-display:flex;--face-shade-opacity:1;--edge-middle-y:39.5%;--edge-bottom-y:69%; }
 [data-card-names="hidden"] { --face-name-display:none;--face-shade-opacity:0;--edge-middle-y:50%;--edge-bottom-y:90%; }
-.game-settings { margin-top:16px;padding:10px 0 16px;border-block:1px solid #bba16b33;text-align:left; }
-.game-settings p { margin:12px 0 0;color:var(--muted);font-size:16px;line-height:1.5; }
-.game-settings>.settings-switch,#card-face-settings>.settings-switch { width:100%;font-size:19px; }
-#card-face-settings { margin-top:16px;padding-top:14px;border-top:1px solid #bba16b33;text-align:left; }
-#card-face-title { margin:0 0 18px;color:var(--gold);font-size:25px;font-weight:normal; }
-#card-face-choices { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;padding:3px; }
-#card-face-choices .card-face-choice { display:flex;flex-direction:column;align-items:center;gap:12px;padding:12px;border:1px solid transparent;background:transparent;box-shadow:none;color:var(--muted);font-size:18px; }
-#card-face-choices .card-face-choice:hover:not(:disabled) { color:var(--ink);border-color:#bba16b66;background:#bba16b0d; }
-#card-face-choices .card-face-choice[aria-pressed="true"] { color:var(--gold);border-color:var(--gold);background:#bba16b0d; }
-.card-face-preview { display:block;position:relative;width:140px;aspect-ratio:.76;pointer-events:none; }
-#card-face-names { margin-top:10px; }
+[data-nameplate="fade"],[data-nameplate="print"] { --name-background:none; }
+[data-nameplate="print"] { --face-shade-opacity:0; }
+[data-name-case="small-caps"] { --name-variant:small-caps;--name-transform:none; }
+[data-name-case="title"] { --name-variant:normal;--name-transform:none; }
+[data-name-case="upper"] { --name-variant:normal;--name-transform:uppercase;--name-font:clamp(12px,6cqw,25px); }

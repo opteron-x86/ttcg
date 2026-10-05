@@ -60,7 +60,7 @@ function demoControls(focus=false){
 }
 function demoSend(action){if(demoBusy||!demoFrame)return;demoBusy=true;demoControls();send('lesson',action);}
 function renderLesson(){
- for(const id of ['challenge','album','game','music','settings-open'])$(id).hidden=true;
+ for(const id of ['challenge','album','game','music','settings-panel'])$(id).hidden=true;
  $('guided-lesson').hidden=false;
  renderRuleChips($('demo-rules'),state.lesson.rules);
  $('rules-label').textContent='';

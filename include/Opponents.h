@@ -1,6 +1,8 @@
 #pragma once
 #include "Match.h"
 #include <string_view>
+#include "RuntimeCatalog.h"
+#include <map>
 namespace ttcg {
 struct OpponentProfile {
  std::uint32_t base;
@@ -20,8 +22,14 @@ struct OpponentProfile {
  bool approaches=true; // Only Masters use this policy.
  bool traveller=false;
  std::uint32_t signature=0,dialogueFaction=0;
+ bool dynamic=false,automatic=false,tournamentEligible=true,requiredMaster=true;
+ bool personalRules=false;unsigned personalTrade=1;
+ int reputationGate=-1; // -1 follows the ordinary skill gate.
+ bool restock=true;
 };
 #include "OpponentProfiles.inc"
+inline constexpr RuntimeCatalog<baseOpponents> opponents{};
+inline auto& opponentPools(){static std::map<std::uint32_t,std::map<std::uint32_t,int>> pools;return pools;}
 inline int opponentIndex(std::uint32_t base) {
  for(std::size_t i=0;i<opponents.size();++i) if(opponents[i].base==base||(opponents[i].alternateBase&&opponents[i].alternateBase==base)) return static_cast<int>(i);
  return -1;

@@ -16,7 +16,7 @@ inline unsigned chooseCultureRule(unsigned mask,unsigned seed){
 inline const RegionalCulture& regionalCulture(const CollectionSave& s,unsigned hold){
  static const RegionalCulture empty{};auto it=s.culture.regions.find(hold);return it==s.culture.regions.end()?empty:it->second;
 }
-inline bool cultureOpponent(const CollectionSave& s,int i){return i>=0&&i<int(opponents.size())&&!opponents[i].traveller&&unlockedOpponent(s,i)&&(i!=0||s.starter);}
+inline bool cultureOpponent(const CollectionSave& s,int i){return i>=0&&i<int(opponents.size())&&opponents[i].hold&&!opponents[i].traveller&&!opponents[i].personalRules&&unlockedOpponent(s,i)&&(i!=0||s.starter);}
 inline void carryLocalRules(CollectionSave& s,unsigned hold){
  auto& c=s.culture;
  for(auto& [id,r]:c.regions)if(r.offer.status==1)r.offer.status=2;

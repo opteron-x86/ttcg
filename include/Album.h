@@ -27,7 +27,7 @@ inline std::vector<CardID> packCards(std::uint32_t seed) {
    const unsigned premium=rng()%1000;
    const char* rarity=slot<4?"Common":premium<965?"Rare":"Epic";
    std::vector<CardID> pool;
-   for(const auto& c:cards)if(c.available&&c.tier==tier&&!c.unique&&std::string_view(c.rarity)==rarity&&std::find(result.begin(),result.end(),c.form)==result.end())pool.push_back(c.form);
+   for(const auto& c:cards)if(c.available&&standardPackCard(c)&&c.tier==tier&&!c.unique&&std::string_view(c.rarity)==rarity&&std::find(result.begin(),result.end(),c.form)==result.end())pool.push_back(c.form);
    if(pool.empty())return {}; // No partial packs or silent rarity downgrades.
    result.push_back(pool[rng()%pool.size()]);
  }

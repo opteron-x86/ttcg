@@ -16,7 +16,7 @@ inline bool willingToPlay(CollectionSave& s,int i,unsigned hour){
  if(!invitation.until||hour>=invitation.until){
   invitation.until=(hour/24+1)*24;
   // A reload before the first request produces the same daily roll too.
-  invitation.accepted=invitationHash(p.base^invitationHash(hour/24)^0x54544347u)%100<challengeAcceptance(s,i);
+  invitation.accepted=invitationHash((p.dynamic?identitySeed(worldKey(p.base)):p.base)^invitationHash(hour/24)^0x54544347u)%100<challengeAcceptance(s,i);
  }
  return invitation.accepted;
 }

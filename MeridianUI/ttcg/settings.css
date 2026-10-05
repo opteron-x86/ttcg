@@ -1,0 +1,94 @@
+/* Settings uses the album's chapter navigation and shared theme tokens. */
+.settings-layout { display:flex;gap:28px;flex:1;min-height:0;padding:4px 0; }
+.settings-main { display:flex;flex-direction:column;flex:1;min-width:0; }
+#table #settings-title { margin:2px 0 22px; }
+.settings-content { display:flex;gap:34px;flex:1;min-height:0; }
+.settings-body { flex:1;min-height:0;min-width:0;overflow-y:auto;padding:0 18px 24px 2px;scrollbar-gutter:stable; }
+.settings-body :is(button,summary,input,select) { scroll-margin-block:12px; }
+.settings-page { max-width:920px; }
+.settings-group,.game-settings,#card-back-settings { margin:0 0 22px;padding:0 0 22px;border-bottom:1px solid var(--ui-divider);text-align:left; }
+.settings-page>:last-child { border-bottom:0;margin-bottom:0; }
+.settings-page h3,#card-back-title { font-size:21px;font-weight:normal;color:var(--gold);margin:0 0 14px; }
+.settings-page p,.settings-help { color:var(--muted);font-size:16px;line-height:1.55;margin:12px 0;max-width:68ch; }
+.settings-select { display:flex;align-items:center;justify-content:space-between;gap:18px;min-height:52px;font-size:18px; }
+.settings-select .select-menu { min-width:0;width:230px; }
+.settings-select .select-trigger { min-width:0;width:100%;font-size:17px; }
+.settings-board-sample { display:flex;align-items:center;gap:32px; }
+.settings-board-controls { flex:1;min-width:0; }
+#settings-board-preview { display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);gap:4px;padding:6px;width:144px;aspect-ratio:.76;flex:none;margin:6px; }
+#settings-board-preview .demo-square { display:grid;place-items:center;width:auto;height:auto;min-width:0;min-height:0;border:1px solid transparent; }
+.settings-choices { display:flex;gap:12px;margin-bottom:8px; }
+.settings-choices button { flex:1;padding:10px 12px;font-size:18px; }
+.settings-choices button[aria-pressed="true"] { color:var(--gold);border-color:var(--gold);background:var(--ui-selected); }
+.settings-group-heading,.card-back-heading { display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px; }
+.settings-group-heading h3,.card-back-heading h2 { margin:0; }
+.settings-group-heading button,.card-back-heading button { font-size:16px;padding:3px 8px; }
+.settings-range { display:grid;grid-template-columns:1fr 52px;gap:10px 20px;align-items:center;margin:20px 0;font-size:18px; }
+.settings-range output { text-align:right;font-size:17px;font-variant-numeric:tabular-nums;color:var(--gold); }
+.settings-range input { grid-column:1/-1;width:100%;margin:0;height:22px;background:transparent;appearance:none;-webkit-appearance:none;cursor:pointer; }
+.settings-range input::-webkit-slider-runnable-track { height:3px;background:var(--ui-divider);border-radius:2px; }
+.settings-range input::-webkit-slider-thumb { appearance:none;-webkit-appearance:none;margin-top:-6px;width:15px;height:15px;border:1px solid var(--gold);border-radius:2px;background:var(--gold);box-shadow:0 1px 5px #0008; }
+.settings-range input:focus-visible { outline:1px solid var(--gold);outline-offset:3px; }
+.settings-range input:disabled { opacity:.35;cursor:default; }
+#settings-preview { width:252px;flex-shrink:0;padding:6px 12px 0 14px;border-left:1px solid var(--ui-divider);text-align:center; }
+#settings-preview-card { position:relative;width:100%;aspect-ratio:.76; }
+.settings-preview-nav { display:flex;gap:10px;align-items:center;justify-content:space-between;margin:20px 0 6px; }
+.settings-preview-nav button { padding:6px;font-size:23px; }
+#settings-preview-name { color:var(--muted);font-size:17px;line-height:1.4; }
+#settings-preview-turn { padding:8px 12px;font-size:16px; }
+.settings-feedback { flex-shrink:0;display:flex;gap:16px;align-items:center;color:var(--gold);font-size:17px; }
+.settings-feedback p { margin:12px 0 0;line-height:1.4; }
+.settings-feedback p:empty { display:none; }
+.settings-feedback button { font-size:16px; }
+.binding-row { display:grid;grid-template-columns:minmax(150px,1fr) 180px 90px 90px;gap:12px;align-items:center;margin:20px 0;text-align:left;font-size:19px; }
+.binding-row>button { padding:10px 12px;font-size:17px; }
+.binding-row>span { color:var(--muted); }
+.binding-row .binding-active { border-color:var(--gold);background:var(--ui-selected); }
+#experimental-pause-settings { margin-top:16px; }
+#experimental-pause-toggle,.development-overrides summary { color:var(--gold);cursor:pointer;font-size:18px; }
+#experimental-pause-note { margin:12px 0 6px; }
+#development-title { display:none; }
+#development-settings h3:not(:first-of-type) { margin-top:24px; }
+#card-back-choices { display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px 16px;padding:3px; }
+#card-back-choices .card-back-choice { min-width:0;padding:6px;border:1px solid transparent;border-radius:3px;background:transparent;box-shadow:none;text-align:left;color:var(--muted); }
+#card-back-choices .card-back-choice:hover:not(:disabled) { color:var(--ink);background:#bba16b0d;border-color:#bba16b66; }
+#card-back-choices .card-back-choice[aria-pressed="true"] { color:var(--gold);border-color:var(--gold);background:#bba16b0d; }
+#card-back-choices .card-back-choice:focus-visible { outline:2px solid var(--gold);outline-offset:3px; }
+.card-back-thumb { display:block;position:relative;width:100%;max-width:120px;margin:0 auto;aspect-ratio:3/4;background:#101c17;overflow:hidden;border-radius:2px; }
+.card-back-thumb img { display:block;width:100%;height:100%;object-fit:contain; }
+.card-back-choice[data-loaded="false"] img { visibility:hidden; }
+.card-back-choice[data-loaded="false"] .card-back-thumb::after { content:'—';position:absolute;inset:0;display:grid;place-items:center;color:var(--muted);font-size:26px; }
+.card-back-label { display:flex;align-items:baseline;justify-content:space-between;gap:6px;padding:10px 3px 4px; }
+.card-back-name { font-size:18px;overflow-wrap:anywhere; }
+.card-back-detail { color:var(--muted);font-size:13px; }
+.card-back-detail:empty { display:none; }
+#card-back-status { color:var(--gold);font-size:17px;line-height:1.4;margin:14px 0 0; }
+#card-back-status:empty { display:none; }
+.card-back-help { margin-top:12px;font-size:16px;color:var(--muted); }
+.card-back-help summary { cursor:pointer;color:var(--gold); }
+.card-back-help p { font-size:16px;line-height:1.5;margin:12px 0; }
+.card-back-help code { display:block;font-size:13px;overflow-wrap:anywhere;user-select:text; }
+.development-grid { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 24px;align-items:center; }
+.development-grid label { display:flex;align-items:center;justify-content:space-between;gap:12px;color:var(--muted);font-size:16px; }
+.development-grid .select-menu { min-width:0; }
+.development-grid .select-trigger { font-size:16px;min-width:140px;width:100%; }
+.settings-switch { display:flex;align-items:center;justify-content:space-between;gap:14px;text-align:left;padding:10px 0;font-size:16px;border:0;border-radius:0;background:transparent;box-shadow:none; }
+.settings-switch span { flex-shrink:0;width:42px;padding:3px 0;text-align:center;font-size:14px;border:1px solid #bba16b44;color:var(--muted); }
+.settings-switch[aria-checked="true"] span { color:var(--gold);border-color:#bba16b99;background:#bba16b15; }
+.development-grants { display:flex;gap:12px;margin-bottom:12px; }
+.development-grants button { font-size:17px; }
+#development-settings .development-help { color:var(--muted);font-size:15px;line-height:1.5;margin:14px 0 18px; }
+.development-overrides { margin-top:22px;border-top:1px solid #bba16b33;padding-top:18px; }
+.development-overrides summary { color:var(--gold);cursor:pointer;font-size:18px; }
+.development-rule-grid { display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin:12px 0 20px; }
+.development-rule-grid button { font-size:15px;padding:8px 5px; }
+.development-rule-grid button[aria-pressed="true"] { color:var(--gold);border-color:var(--gold);background:#bba16b15; }
+.development-selects { margin-top:12px;padding-bottom:12px; }
+#development-settings .select-options { max-height:240px;overflow-y:auto; }
+.development-selects .select-options { top:auto;bottom:calc(100% + 5px); }
+#development-status { color:var(--gold);font-size:17px;margin:16px 0 4px;line-height:1.5; }
+#development-status:empty { display:none; }
+
+/* Switches share one treatment in every section, including developer tools. */
+#settings-panel .settings-switch { width:100%;font-size:18px;min-height:48px;color:var(--ink); }
+#settings-panel .settings-switch:hover:not(:disabled) { color:var(--gold);background:var(--ui-hover); }

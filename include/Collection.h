@@ -1,6 +1,7 @@
 #pragma once
 #include "RuleCultureState.h"
 #include "TournamentState.h"
+#include "OpponentState.h"
 #include "Match.h"
 #include <bit>
 #include <algorithm>
@@ -47,7 +48,7 @@ inline bool validDeck(const Hand& hand,const Stock& stock) {
 // Preserve slot order, retaining the earliest owned copies of duplicate cards.
 inline void retainOwnedDeck(Hand& deck,const Stock& stock) {
  Stock used,identities;
- for(auto& id:deck)if(id){if(cardIndex(id)<0||count(used,id)>=count(stock,id)||count(identities,baseCardID(id))>=deckLimit(id)){id=0;continue;}++used[id];++identities[baseCardID(id)];}
+ for(auto& id:deck)if(id){if(cardIndex(id)<0&&baseCardID(id)>=missingCardBase&&baseCardID(id)<expansionCardBase&&count(stock,id)>0)continue;if(cardIndex(id)<0||count(used,id)>=count(stock,id)||count(identities,baseCardID(id))>=deckLimit(id)){id=0;continue;}++used[id];++identities[baseCardID(id)];}
 }
 inline int cardCount(const Stock& stock) {
  int n=0; for(auto [id,amount]:stock) if(cardIndex(id)>=0) n+=amount; return n;
@@ -207,8 +208,14 @@ struct MerchantStock {
  unsigned restockAt=0, generation=0;
  int goldCredit=0;
 };
-inline constexpr unsigned collectionFormat=28;
+inline constexpr unsigned collectionFormat=30;
 struct CollectionSave {
+ ResidentState residents;
+ std::map<std::uint32_t,std::uint32_t> loadedWorldRemap;
+ // Missing identities remain in ledgers, but cannot enter a playable hand.
+ std::map<CardID,std::string> missingCards;
+ std::map<CardID,CardID> loadedCardRemap; // Per-load translation, never serialized.
+
  RuleCultureState culture;
  TournamentState tournaments;
  bool starter=false;
@@ -238,6 +245,11 @@ struct CollectionSave {
  std::map<std::uint32_t,InvitationDecision> invitations;
  std::map<std::uint32_t,unsigned> masterApproachAfter,holdApproachAfter;
 };
+inline bool storedCard(const CollectionSave& s,CardID id){return cardIndex(id)>=0||s.missingCards.contains(baseCardID(id));}
+inline CardID remapSavedCard(const CollectionSave& s,CardID id){
+ if(baseCardID(id)<missingCardBase)return id;
+ auto it=s.loadedCardRemap.find(baseCardID(id));return it==s.loadedCardRemap.end()?0:it->second|(id&foilFlag);
+}
 inline bool merchantOwnsCard(const CollectionSave& s,CardID id) {
  id=baseCardID(id);
  for(const auto& [key,m]:s.merchants)for(const auto* stock:{&m.stock,&m.resale})
@@ -281,8 +293,39 @@ inline void retainDealVisibility(CollectionSave& save,Match& match){
  if(!(match.rules&ThreeOpen))return;
  if(save.dealReveals==std::array<unsigned,2>{})save.dealReveals=match.reveals;else match.reveals=save.dealReveals;
 }
+// The same visitor is used by portable identity restoration and the native
+// migration of old load-order-based saves. Region IDs and card IDs are separate.
+template<class Remap> bool remapWorldState(CollectionSave& s,Remap remap){
+ bool ok=true;
+ auto id=[&](auto& v){if(v){auto mapped=remap(v);if(!mapped)ok=false;else v=mapped;}};
+ auto map=[&](auto& values){auto old=std::move(values);values={};for(auto& [key,value]:old){auto target=key;id(target);if(!values.emplace(target,std::move(value)).second)ok=false;}};
+ auto set=[&](auto& values){auto old=std::move(values);values={};for(auto value:old){id(value);if(!values.insert(value).second)ok=false;}};
+ id(s.contract.opponent);map(s.opponents);map(s.merchants);map(s.players);map(s.childHolds);
+ map(s.achievements);map(s.localWins);map(s.reputation);map(s.invitations);map(s.masterApproachAfter);
+ set(s.deadPlayers);set(s.accessBlocked);set(s.tournamentBlocked);
+ for(auto& r:s.tournamentReputation)map(r.opponents);
+ map(s.tournaments.npcGold);for(auto& e:s.tournaments.events)for(auto& base:e.bracket)if(base!=tournamentPlayer)id(base);
+ for(auto& base:s.culture.asked)id(base);id(s.culture.pending.opponent);for(auto& [hold,r]:s.culture.regions)id(r.offer.opponent);
+ map(s.residents.profiles);for(auto& [base,p]:s.residents.profiles)id(p.reference);
+ return ok;
+}
 inline std::vector<std::uint32_t> encodeCollection(const CollectionSave& s) {
- std::vector<std::uint32_t> out{static_cast<unsigned>(s.starter)};
+ std::map<CardID,std::string> identities;
+ auto keep=[&](CardID id){auto it=s.missingCards.find(baseCardID(id));if(it!=s.missingCards.end())identities.emplace(*it);};
+ auto keepStock=[&](const Stock& stock){for(auto [id,n]:stock)keep(id);};
+ for(auto id:s.deck)keep(id);for(const auto& d:s.decks)for(auto id:d.cards)keep(id);
+ for(const auto& hand:s.contract.hands)for(auto id:hand)keep(id);
+ for(const auto* stocks:{&s.contract.escrow,&s.contract.credits})for(const auto& stock:*stocks)keepStock(stock);
+ keepStock(s.player);keepStock(s.discovered);for(const auto& [id,stock]:s.opponents)keepStock(stock);
+ for(const auto& [id,m]:s.merchants){keepStock(m.stock);keepStock(m.resale);}
+ for(auto id:s.tournaments.trophies)keep(id);for(const auto& e:s.tournaments.events)keep(e.trophy);
+ for(const auto& [base,p]:s.residents.profiles)for(auto id:p.starting)keep(id);
+ for(const auto& [key,id]:expansionKeys)identities[id]=key;
+ std::vector<std::uint32_t> out{static_cast<unsigned>(worldForms().size())};
+ for(const auto& [id,form]:worldForms()){out.push_back(id);writeIdentityText(out,form.plugin);out.push_back(form.local);}
+ out.push_back(static_cast<unsigned>(identities.size()));
+ for(const auto& [id,key]:identities){out.push_back(id);out.push_back(static_cast<unsigned>(key.size()));for(unsigned char c:key)out.push_back(c);}
+ out.push_back(static_cast<unsigned>(s.starter));
  out.insert(out.end(),s.deck.begin(),s.deck.end()); const auto& c=s.contract;
  for(auto n:{static_cast<unsigned>(c.held),static_cast<unsigned>(c.paying),static_cast<unsigned>(c.wager),static_cast<unsigned>(c.outcome+2),c.opponent}) out.push_back(n);
  for(auto hand:c.hands) out.insert(out.end(),hand.begin(),hand.end());
@@ -341,32 +384,51 @@ inline std::vector<std::uint32_t> encodeCollection(const CollectionSave& s) {
  }
  out.push_back(s.merchants.size());
  for(const auto& [key,m]:s.merchants){out.push_back(key);stock(m.stock);stock(m.resale);out.push_back(m.restockAt);out.push_back(m.generation);out.push_back(m.goldCredit);}
+ encodeResidents(out,s.residents);
  return out;
 }
 inline bool decodeCollection(const std::vector<std::uint32_t>& in,CollectionSave& saved,unsigned version=collectionFormat) {
- if(version!=20&&version!=21&&version!=26&&version!=27&&version!=collectionFormat)return false;
+ if(version!=20&&version!=21&&version!=26&&version!=27&&version!=28&&version!=29&&version!=collectionFormat)return false;
  const bool legacy=version==20;
  CollectionSave s; std::size_t at=0; bool ok=true;
  auto get=[&]() { if(at>=in.size()) { ok=false; return 0u; } return in[at++]; };
  auto boolean=[&]() { auto v=get(); if(v>1) ok=false; return v!=0; };
+ if(version>=30){
+  const auto n=get();if(n>worldIdentityLimit-worldIdentityBase)return false;std::set<std::uint32_t> targets;
+  for(unsigned i=0;i<n;++i){const auto old=get();WorldForm f;if(!virtualWorldID(old)||s.loadedWorldRemap.contains(old)||!readIdentityText(get,f.plugin,240))return false;f.local=get();
+   const auto target=worldFormID(f);if(!target||!targets.insert(target).second)return false;s.loadedWorldRemap[old]=target;
+  }
+ }
+ if(version>=29){
+  auto n=get();if(n>in.size()/5)return false; // Every identity needs at least id, length and a:b.
+  std::set<std::string> keys;CardID missing=missingCardBase;
+  for(unsigned i=0;i<n;++i){
+   const auto id=get(),length=get();if(id<missingCardBase||id>=foilFlag||length>129||s.loadedCardRemap.contains(id))return false;
+   std::string key;for(unsigned j=0;j<length;++j){auto c=get();if(c>127)return false;key+=static_cast<char>(c);}
+   if(!validExpansionKey(key)||!keys.insert(key).second)return false;
+   auto target=expansionCardID(key);if(!target){target=missing++;s.missingCards[target]=std::move(key);}s.loadedCardRemap[id]=target;
+  }
+ }
+ auto card=[&](){const auto old=get(),mapped=remapSavedCard(s,old);if(old&&!mapped)ok=false;return mapped;};
+ auto valid=[&](CardID id){return storedCard(s,id);};
  s.starter=boolean();
- for(auto& id:s.deck) { id=get(); if(id&&cardIndex(id)<0) ok=false; }
+ for(auto& id:s.deck) { id=card(); if(id&&!valid(id)) ok=false; }
  auto& c=s.contract; c.held=boolean(); c.paying=boolean(); c.wager=static_cast<int>(get()); c.outcome=static_cast<int>(get())-2; c.opponent=get();
  if(c.wager<0||c.wager>maximumWager||c.outcome< -2||c.outcome>1||(c.held&&c.paying)||((c.held||c.paying)&&!c.opponent)) ok=false;
- for(auto& hand:c.hands) for(auto& id:hand) { id=get(); if((id||c.pending())&&cardIndex(id)<0) ok=false; }
+ for(auto& hand:c.hands) for(auto& id:hand) { id=card(); if((id||c.pending())&&!valid(id)) ok=false; }
  for(auto* stocks:{&c.escrow,&c.credits}) for(auto& stock:*stocks) {
-   auto size=get(); if(size>cards.size()*2+1) return false;
-   for(unsigned i=0;i<size;++i) { auto id=get(); auto n=get(); if((id&&cardIndex(id)<0)||n>(id?10u:unsigned(maximumWager*2))||stock.contains(id)) ok=false; stock[id]=static_cast<int>(n); }
+   auto size=get(); if(size>21) return false;
+   for(unsigned i=0;i<size;++i) { auto id=card(); auto n=get(); if((id&&!valid(id))||n>(id?10u:unsigned(maximumWager*2))||stock.contains(id)) ok=false; stock[id]=static_cast<int>(n); }
  }
  auto stock=[&](Stock& entries) {
-   auto size=get(); if(size>cards.size()*2) { ok=false; return; }
-   for(unsigned i=0;i<size;++i) { auto id=get(),n=get(); if(cardIndex(id)<0||n>1000000||entries.contains(id)) ok=false; entries[id]=static_cast<int>(n); }
+   auto size=get(); if(size>(baseCards.size()+s.loadedCardRemap.size())*2) { ok=false; return; }
+   for(unsigned i=0;i<size;++i) { auto id=card(),n=get(); if(!valid(id)||n>1000000||entries.contains(id)) ok=false; entries[id]=static_cast<int>(n); }
  };
  stock(s.player); stock(s.discovered);
- auto actors=get(); if(actors>1024) return false;
+ auto actors=get(); if(actors>8192) return false;
  for(unsigned i=0;i<actors;++i) { auto actor=get(); if(!actor||s.opponents.contains(actor)) return false; stock(s.opponents[actor]); }
  // Read and discard retired v20 shop data; it never enters the current model.
- if(legacy){auto n=get();if(n>1024)return false;for(unsigned i=0;i<n;++i){get();Stock discarded;stock(discarded);get();get();}}
+ if(legacy){auto n=get();if(n>8192)return false;for(unsigned i=0;i<n;++i){get();Stock discarded;stock(discarded);get();get();}}
  auto credit=get(); if(credit>2000000) return false; s.goldCredit=static_cast<int>(credit)-1000000;
  
    if(legacy)boolean();
@@ -374,31 +436,31 @@ inline bool decodeCollection(const std::vector<std::uint32_t>& in,CollectionSave
  
 
  
-   auto size=get();if(size>1024)return false;
+   auto size=get();if(size>8192)return false;
    for(unsigned i=0;i<size;++i){auto id=get();if(!id||s.players.contains(id))return false;auto& p=s.players[id];
      for(auto* r:{&p.competitive}){r->wins=get();r->losses=get();r->draws=get();if(r->wins>1000000||r->losses>1000000||r->draws>1000000)return false;}
      auto flags=get();if(flags&~3u)return false;p.known=flags&1;p.unavailable=flags&2;
      p.restockAt=get();if(p.restockAt>100000000)return false;
    }
-   if(legacy){size=get();if(size>1024)return false;for(unsigned i=0;i<size;++i){get();get();get();}}
+   if(legacy){size=get();if(size>8192)return false;for(unsigned i=0;i<size;++i){get();get();get();}}
    size=get();if(size>64)return false;
    for(unsigned i=0;i<size;++i){auto id=get();if(!id||s.holds.contains(id))return false;auto& h=s.holds[id];h.rules=get();h.trade=get();if(!validRules(h.rules)||h.trade>4)return false;}
  
  s.developmentCardsGranted=boolean();
  
    if(legacy){boolean();get();get();get();get();}
-   size=get();if(size>1024)return false;for(unsigned i=0;i<size;++i){auto id=get(),flags=get();if(!id||flags>127||s.achievements.contains(id))return false;s.achievements[id]=flags;}
+   size=get();if(size>8192)return false;for(unsigned i=0;i<size;++i){auto id=get(),flags=get();if(!id||flags>127||s.achievements.contains(id))return false;s.achievements[id]=flags;}
  
  
    s.valdrRescued=boolean();
-   size=get();if(size>1024)return false;
+   size=get();if(size>8192)return false;
    for(unsigned i=0;i<size;++i){auto id=get(),flags=get();if(!id||(flags&~63u)||s.localWins.contains(id))return false;s.localWins[id]=flags;}
-   size=get();if(size>1024)return false;
+   size=get();if(size>8192)return false;
    for(unsigned i=0;i<size;++i){auto id=get(),wins=get(),quarters=get();if(!id||!wins||wins>1000000||!quarters||quarters>8*wins+40||s.reputation.contains(id))return false;s.reputation[id]={wins,quarters};}
-   size=get();if(size>1024)return false;
+   size=get();if(size>8192)return false;
    for(unsigned i=0;i<size;++i){auto id=get();if(!id||!s.deadPlayers.insert(id).second)return false;}
    if(legacy){size=get();if(size>64)return false;for(unsigned i=0;i<size;++i)for(unsigned j=0;j<5;++j)get();}
-   size=get();if(size>1024)return false;for(unsigned i=0;i<size;++i){auto id=get(),hold=get();if(!id||!hold||hold>64||s.childHolds.contains(id))return false;s.childHolds[id]=hold;}
+   size=get();if(size>8192)return false;for(unsigned i=0;i<size;++i){auto id=get(),hold=get();if(!id||hold>64||s.childHolds.contains(id))return false;s.childHolds[id]=hold;}
  
  
    c.trade=get();c.selected=get();c.completed=boolean();c.forfeited=boolean();
@@ -427,7 +489,7 @@ inline bool decodeCollection(const std::vector<std::uint32_t>& in,CollectionSave
      SavedDeck d;d.id=get();auto length=get();if(!d.id||d.id>=s.nextDeck||!ids.insert(d.id).second||length>48)return false;
      for(unsigned j=0;j<length;++j){auto c=get();if(c>255)return false;d.name+=static_cast<char>(c);}
      if(!validDeckName(d.name))return false;
-     Stock copies;for(auto& id:d.cards){id=get();if(id&&(cardIndex(id)<0||++copies[baseCardID(id)]>deckLimit(id)))return false;}
+     Stock copies;for(auto& id:d.cards){id=card();if(id&&(!valid(id)||++copies[baseCardID(id)]>(baseCardID(id)>=missingCardBase?2:deckLimit(id))))return false;}
      if(d.id==s.activeDeck){active=true;if(d.cards!=s.deck)return false;}
      s.decks.push_back(std::move(d));
    }
@@ -436,25 +498,30 @@ inline bool decodeCollection(const std::vector<std::uint32_t>& in,CollectionSave
  s.economyRandom=get();s.developmentFoilsGranted=boolean();
  
   if(legacy)boolean();
-  auto n=get();if(n>1024)return false;
+  auto n=get();if(n>8192)return false;
   for(unsigned i=0;i<n;++i){auto id=get(),until=get();bool accepted=boolean();if(!id||until>100000000||s.invitations.contains(id))return false;s.invitations[id]={until,accepted};}
-  for(auto* values:{&s.masterApproachAfter,&s.holdApproachAfter}){n=get();if(n>1024)return false;for(unsigned i=0;i<n;++i){auto id=get(),hour=get();if(!id||hour>100000000||values->contains(id))return false;(*values)[id]=hour;}}
+  for(auto* values:{&s.masterApproachAfter,&s.holdApproachAfter}){n=get();if(n>8192)return false;for(unsigned i=0;i<n;++i){auto id=get(),hour=get();if(!id||hour>100000000||values->contains(id))return false;(*values)[id]=hour;}}
  
  if(!decodeRuleCulture(get,s.culture,version<27))return false;
- if(version>=22&&!decodeTournaments(get,s.tournaments,[](unsigned id){return cardIndex(id)>=0;},[](unsigned rules){return validRules(rules);},version))return false;
+ if(version>=22&&!decodeTournaments(get,s.tournaments,[&](unsigned id){auto mapped=remapSavedCard(s,id);return mapped&&valid(mapped);},[](unsigned rules){return validRules(rules);},version))return false;
+ if(version>=29){std::set<CardID> mapped;for(auto id:s.tournaments.trophies)mapped.insert(remapSavedCard(s,id));s.tournaments.trophies=std::move(mapped);for(auto& e:s.tournaments.events)if(e.trophy)e.trophy=remapSavedCard(s,e.trophy);}
  if(version>=26)for(auto& r:s.tournamentReputation){
-  auto count=get();if(count>1024)return false;
+  auto count=get();if(count>8192)return false;
   for(unsigned i=0;i<count;++i){auto id=get(),wins=get(),quarters=get();if(!id||!wins||wins>1000000||!quarters||quarters>8*wins+40||r.opponents.contains(id))return false;r.opponents[id]={wins,quarters};}
   for(auto& wins:r.championships){wins=get();if(wins>1000000)return false;}
   r.renownQuarters=get();if(r.renownQuarters>1000000)return false;
  }
  if(version>=28){
-  const auto n=get();if(n>1024)return false;
+  const auto n=get();if(n>8192)return false;
   for(unsigned i=0;i<n;++i){
    const auto key=get();if(!key||s.merchants.contains(key))return false;
    auto& m=s.merchants[key];stock(m.stock);stock(m.resale);m.restockAt=get();m.generation=get();const auto credit=get();
    if(m.restockAt>100000000||!m.generation||credit>1000000)return false;m.goldCredit=int(credit);
   }
+ }
+ if(version>=30){
+  if(!decodeResidents(get,card,s.residents))return false;
+  if(!remapWorldState(s,[&](auto id){auto it=s.loadedWorldRemap.find(id);return it!=s.loadedWorldRemap.end()?it->second:virtualWorldID(id)?0:id;}))return false;
  }
  if(!ok||at!=in.size()) return false;
  saved=std::move(s); return true;

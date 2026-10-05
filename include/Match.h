@@ -5,7 +5,7 @@
 #include <random>
 #include <vector>
 #include <stdexcept>
-#include "Cards.h"
+#include "CardRegistry.h"
 #include "CreatureGroups.h"
 #include "Rules.h"
 
@@ -86,7 +86,7 @@ struct Match {
  explicit Match(std::uint32_t seed=1, unsigned flags=0):rules(flags) {
    if(!validRules(flags))throw std::invalid_argument("Incompatible rules");
    seedTiles(seed);seedVisibility(seed);
-   std::array<int,cards.size()> ids{}; for(std::size_t i=0;i<ids.size();++i) ids[i]=static_cast<int>(i);
+   std::vector<int> ids(cards.size()); for(std::size_t i=0;i<ids.size();++i) ids[i]=static_cast<int>(i);
    std::mt19937 rng(seed); std::shuffle(ids.begin(),ids.end(),rng);
    for(int p=0;p<2;++p) for(int h=0;h<5;++h) hands[p][h]=ids[p*5+h];
    turn=static_cast<int>(rng()%2);

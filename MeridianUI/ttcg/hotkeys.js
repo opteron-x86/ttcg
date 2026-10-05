@@ -29,6 +29,11 @@ function renderBindings() {
  const enabled=config.gamesEnabled!==false,control=$('games-enabled');
  control.disabled=Boolean(capture)||state.phase!=='ready';
  control.setAttribute('aria-checked',String(enabled));control.lastElementChild.textContent=enabled?'On':'Off';
+ $('resident-mode').value=String(config.residents??1);$('resident-mode').disabled=Boolean(capture)||state.phase!=='ready';
+ $('resident-mode')._refresh();
+ const voices=$('vanilla-voices-only'),vanilla=config.vanillaVoicesOnly!==false;voices.disabled=Boolean(capture)||state.phase!=='ready';voices.setAttribute('aria-checked',String(vanilla));voices.lastElementChild.textContent=vanilla?'On':'Off';
+ $('resident-candidate').textContent=config.residentCandidate||'Face a nearby resident to add them.';
+ $('resident-add').disabled=!config.canAddResident||Boolean(capture)||state.phase!=='ready';
  $('binding-cancel').hidden=!capture;
  $('binding-status').textContent=config.notice|| (capture?'Esc to cancel':'');
  for(const [id,key] of worldPauseOptions){
@@ -40,19 +45,22 @@ function renderBindings() {
  renderDevelopmentSettings();
  renderCardBackSettings();
  renderCardFaceSettings();
+ renderThemeSettings();
 }
-function resetSettings() {bindingPending='';bindingKeyHeld=false;$('settings-panel').hidden=true;}
+function resetSettings() {bindingPending='';bindingKeyHeld=false;cardFaceDrafts.clear();boardTextureDraft=null;$('settings-panel').hidden=true;}
+// Settings is an album page. Escape only consumes a pending key capture;
+// otherwise closing or changing tabs follows normal album navigation.
 function closeSettings() {
- if($('settings-panel').hidden)return false;
- bindingPending='';send('binding','cancel');$('settings-panel').hidden=true;$('settings-open').focus();return true;
+ if(!bindingPending&&!bindings().capturing)return false;
+ bindingPending='';bindingKeyHeld=false;send('binding','cancel');return true;
 }
-$('settings-open').onclick=()=>{if(state?.phase!=='ready')return;closeSelectMenu();$('settings-panel').hidden=false;renderBindings();$('bind-collection').focus();};
-$('settings-panel').querySelector('.settings-body').addEventListener('focusin',event=>event.target.scrollIntoView({block:'nearest',inline:'nearest'}));
-$('settings-done').onclick=closeSettings;
+$('vanilla-voices-only').onclick=()=>{const control=$('vanilla-voices-only');if(control.disabled)return;control.disabled=true;send('settings',`vanilla-voices ${bindings().vanillaVoicesOnly===false?1:0}`);};
 $('games-enabled').onclick=()=>{
  const control=$('games-enabled');if(control.disabled)return;
  control.disabled=true;send('settings',`games ${bindings().gamesEnabled===false?1:0}`);
 };
+$('resident-mode').onchange=()=>{const select=$('resident-mode');select.disabled=true;select._refresh();send('settings',`residents ${select.value}`);};
+$('resident-add').onclick=()=>{if($('resident-add').disabled)return;$('resident-add').disabled=true;send('npc-add');};
 $('binding-cancel').onclick=()=>{bindingPending='';send('binding','cancel');};
 for(const [id,key,command] of worldPauseOptions)$(id).onclick=()=>{
  const control=$(id);if(control.disabled)return;
