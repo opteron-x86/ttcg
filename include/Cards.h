@@ -1,9 +1,10 @@
 #pragma once
 #include <array>
+#include "RuntimeCatalog.h"
 namespace ttcg {
 inline constexpr std::array<const char*,5> attributeNames{"Strength","Intelligence","Willpower","Agility","Endurance"};
 struct Card { const char* name; const char* art; std::array<int,4> sides; int tier; const char* focus; const char* id; unsigned form; const char* rarity; const char* groups; const char* subtypes; const char* affinities; unsigned affinityMask; bool starter; bool unique; bool available; bool pending; };
-inline constexpr std::array<Card,703> cards{{
+inline constexpr std::array<Card,703> baseCards{{
  {"Murkwater Goblin","cards/Murkwater Goblin.png",{1,5,3,1},1,"50% 40%","murkwater-goblin",2081,"Common","[\"Beastfolk\"]","[\"Goblin\"]","[\"Willpower\"]",4,true,false,true,false},
  {"Frostbite Spider","cards/Frostbite Spider.png",{5,4,2,2},2,"50% 40%","frostbite-spider",2082,"Common","[\"Beast\"]","[\"Spider\"]","[]",0,false,false,true,false},
  {"Septim Guardsman","cards/Septim Guardsman.png",{7,4,7,2},5,"50% 40%","septim-guardsman",2084,"Common","[\"Imperial\"]","[\"Imperial\"]","[\"Endurance\"]",16,false,false,true,false},
@@ -708,4 +709,5 @@ inline constexpr std::array<Card,703> cards{{
  {"Mannimarco, King of Worms","cards/Mannimarco, King of Worms.png",{4,10,6,8},9,"50% 40%","workshop-6afc0c0c48ed4007b217b465cd603cbb",4194345,"Legendary","[\"Undead\"]","[]","[\"Endurance\"]",16,false,true,true,false},
  {"M'aiq the Liar","cards/M'aiq the Liar.png",{9,4,8,8},9,"50% 40%","maiq-the-liar",4194417,"Legendary","[\"Khajiit\"]","[\"Khajiit\"]","[]",0,false,true,true,false},
 }};
+inline constexpr RuntimeCatalog<baseCards> cards;
 }

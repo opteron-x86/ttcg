@@ -50,13 +50,13 @@ inline void encodeTournaments(std::vector<std::uint32_t>& out,const TournamentSt
  }
 }
 template<class Get,class ValidCard,class ValidRules> bool decodeTournaments(Get get,TournamentState& s,ValidCard card,ValidRules rules,unsigned version=27){
- if(version!=26&&version!=27&&version!=28)return false;
+ if(version!=26&&version!=27&&version!=28&&version!=29&&version!=30)return false;
  for(auto* dates:{&s.nextCircuit,&s.circuitRotation})for(auto& v:*dates){v=get();if(v>100000000)return false;}
  for(auto& v:s.nextRegular){v=get();if(v>100000000)return false;}
  s.sequence=get();s.developmentToken=get();s.packCredit=get();s.standardPackCredit=get();
  if(s.sequence>1000000||s.packCredit>1000000||s.standardPackCredit>1000000)return false;
  auto n=get();if(n>1024)return false;for(unsigned i=0;i<n;++i){auto id=get(),amount=get();if(!id||amount>1000000||s.npcGold.contains(id))return false;s.npcGold[id]=amount;}
- n=get();if(n>1024)return false;for(unsigned i=0;i<n;++i){auto id=get();if(!card(id)||!s.trophies.insert(id).second)return false;}
+ n=get();if(n>8192)return false;for(unsigned i=0;i<n;++i){auto id=get();if(!card(id)||!s.trophies.insert(id).second)return false;}
  n=get();if(n>40)return false;std::set<unsigned> ids,reserved;unsigned entered=0;
  for(unsigned i=0;i<n;++i){
   Tournament e;e.id=get();e.hold=get();e.announced=get();e.starts=get();e.ends=get();e.rules=get();e.fee=get();e.purse=get();e.reward=get();e.trophy=get();e.quantity=get();e.seed=get();e.matchNode=get();e.replays=get();auto flags=get();

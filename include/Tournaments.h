@@ -35,7 +35,7 @@ inline unsigned tournamentNotice(const CollectionSave& s,unsigned hold,unsigned 
  for(const auto& e:s.tournaments.events)if(!e.circuit&&e.hold==hold&&e.discovered&&!e.notified&&tournamentOpen(e,hour)&&!e.joined)return e.id;
  return 0;
 }
-inline bool tournamentEntrant(const CollectionSave& s,int i){return i>=0&&i<int(opponents.size())&&opponents[i].level>=2&&unlockedOpponent(s,i)&&!s.tournamentBlocked.contains(opponents[i].base)&&!s.deadPlayers.contains(opponents[i].base)&&opponentHasCards(s,i);}
+inline bool tournamentEntrant(const CollectionSave& s,int i){return i>=0&&i<int(opponents.size())&&opponents[i].tournamentEligible&&opponents[i].level>=2&&unlockedOpponent(s,i)&&!s.tournamentBlocked.contains(opponents[i].base)&&!s.deadPlayers.contains(opponents[i].base)&&opponentHasCards(s,i);}
 inline unsigned tournamentEligibility(const CollectionSave& s,unsigned hold){
  const auto r=localReputation(s,hold);
  const auto renown=widerRenown(s);
@@ -97,13 +97,13 @@ inline std::vector<unsigned> reconcileTournamentInvitations(CollectionSave& s,un
 inline void advanceTournamentByDefault(Tournament& e,unsigned node,unsigned winner){
  e.bracket[node]=winner;e.wins[node-8][winner==e.bracket[(node-8)*2]?0:1]=2;
 }
-inline Stock tournamentStock(const CollectionSave& s,unsigned base){int i=opponentIndex(base);if(i<0)return {};const auto& p=opponents[i];auto it=s.opponents.find(opponentLedgerKey(p.base,p.reference));return it==s.opponents.end()?personalPool(i):it->second;}
+inline Stock tournamentStock(const CollectionSave& s,unsigned base){int i=opponentIndex(base);if(i<0)return {};const auto& p=opponents[i];auto it=s.opponents.find(opponentLedgerKey(p.base,p.reference));return it==s.opponents.end()?unclaimedPersonalPool(s,i):it->second;}
 inline std::vector<CardID> tournamentPack(unsigned seed){
  std::mt19937 rng(seed);std::vector<CardID> result;
  // Five distinct identities; tiers III–VII. 5% foil per copy.
  for(unsigned n=0;n<5;++n){unsigned r=rng()%100;const char* rarity=r<30?"Common":r<75?"Rare":"Epic";
   unsigned t=rng()%100;int tier=t<15?3:t<40?4:t<70?5:t<90?6:7;std::vector<CardID> pool;
-  for(const auto& c:cards)if(c.available&&!c.unique&&c.tier==tier&&std::string_view(c.rarity)==rarity&&std::none_of(result.begin(),result.end(),[&](auto id){return baseCardID(id)==c.form;}))pool.push_back(c.form);
+  for(const auto& c:cards)if(c.available&&tournamentPackCard(c)&&!c.unique&&c.tier==tier&&std::string_view(c.rarity)==rarity&&std::none_of(result.begin(),result.end(),[&](auto id){return baseCardID(id)==c.form;}))pool.push_back(c.form);
   if(pool.empty())return {};
   auto id=pool[rng()%pool.size()];if(rng()%100<5)id|=foilFlag;result.push_back(id);
  }return result;
@@ -115,7 +115,7 @@ inline std::vector<CardID> tournamentPrizeCards(const Tournament& e){
  // tier IV–VII has equal weight; identities within this prize are distinct.
  std::mt19937 rng(tournamentHash(e.seed^0x45504943));std::vector<CardID> result;
  for(unsigned n=0;n<e.quantity;++n){const int tier=4+rng()%4;std::vector<CardID> pool;
-  for(const auto& c:cards)if(!c.pending&&c.available&&!c.unique&&c.tier==tier&&std::string_view(c.rarity)=="Epic"&&std::none_of(result.begin(),result.end(),[&](auto id){return baseCardID(id)==c.form;}))pool.push_back(c.form);
+  for(const auto& c:cards)if(officialCard(c)&&!c.pending&&c.available&&!c.unique&&c.tier==tier&&std::string_view(c.rarity)=="Epic"&&std::none_of(result.begin(),result.end(),[&](auto id){return baseCardID(id)==c.form;}))pool.push_back(c.form);
   if(pool.empty())return {};
   auto id=pool[rng()%pool.size()];if(e.circuit||rng()%100<10)id|=foilFlag;result.push_back(id);
  }return result;
@@ -129,7 +129,7 @@ template<class Deliver> void deliverTournamentPacks(CollectionSave& s,Deliver de
  }
 }
 inline bool canAddTournamentCards(const CollectionSave& s,const std::vector<CardID>& ids){
- Stock needed;for(auto id:ids){if(cardIndex(id)<0)return false;++needed[id];}for(auto [id,n]:needed)if(count(s.player,id)>1000000-n)return false;
+ Stock needed;for(auto id:ids){if(!storedCard(s,id))return false;++needed[id];}for(auto [id,n]:needed)if(count(s.player,id)>1000000-n)return false;
  return true;
 }
 inline bool addTournamentCards(CollectionSave& s,const std::vector<CardID>& ids){
@@ -174,8 +174,8 @@ inline void awardTournament(CollectionSave& s,Tournament& e){
   s.goldCredit+=e.purse;if(e.reward==1)s.tournaments.packCredit+=e.quantity;if(e.reward==2)s.tournaments.standardPackCredit+=e.quantity;if(e.reward==3&&e.announcement==3)e.foilUpgrades=e.quantity;
  }else{
   auto i=opponentIndex(winner);if(i<0)return;const auto& p=opponents[i];const auto key=opponentLedgerKey(p.base,p.reference);
-  if(!s.opponents.contains(key))s.opponents[key]=personalPool(i);auto& stock=s.opponents[key];
-  for(auto id:prize)if(cardIndex(id)<0||count(stock,id)>=1000000)return;
+  if(!s.opponents.contains(key))s.opponents[key]=unclaimedPersonalPool(s,i);auto& stock=s.opponents[key];
+  for(auto id:prize)if(!storedCard(s,id)||count(stock,id)>=1000000)return;
   for(auto id:prize)++stock[id];
   if(e.reward==1||e.reward==2)for(unsigned n=0;n<e.quantity;++n){auto ids=e.reward==1?tournamentPack(tournamentHash(e.seed+n)):packCards(tournamentHash(e.seed+n));for(auto id:ids){if(e.reward==2)id=mintCard(s,id);if(count(stock,id)<1000000)++stock[id];}}
   if(e.reward==3){std::vector<CardID> ids;for(auto [id,n]:stock)if(n>0&&!isFoil(id))ids.push_back(id);std::sort(ids.begin(),ids.end(),[](auto a,auto b){return prizeValue(a)>prizeValue(b);});for(unsigned n=0;n<std::min(e.quantity,unsigned(ids.size()));++n){--stock[ids[n]];++stock[ids[n]|foilFlag];}}
@@ -232,18 +232,21 @@ template<class Bank> bool enterTournament(CollectionSave& s,unsigned id,unsigned
  if(bank.count(0,0)<int(e->fee))return false;const int paid=-bank.change(0,0,-int(e->fee));if(paid!=int(e->fee)){s.goldCredit+=paid;return false;}
  e->joined=true;e->notified=true;e->bracket[0]=tournamentPlayer;return true;
 }
-inline bool tournamentTrophy(const Card& c,unsigned circuit){return !c.pending&&c.unique&&!c.available&&std::string_view(c.rarity)=="Legendary"&&(circuit==1?c.tier==8:circuit==2&&(c.tier==9||c.tier==10));}
+inline bool tournamentTrophy(const Card& c,unsigned circuit){
+ if((circuit!=1&&circuit!=2)||c.pending||!c.unique||std::string_view(c.rarity)!="Legendary")return false;
+ if(const auto* expansion=expansionCard(c))return expansion->tournamentPrizes&(1u<<(circuit-1));
+ return officialCard(c)&&!c.available&&(circuit==1?c.tier==8:c.tier==9||c.tier==10);
+}
 inline void selectTournamentReward(CollectionSave& s,Tournament& e,std::mt19937& rng){
  auto& ts=s.tournaments;const auto circuit=e.circuit;
  const auto category=rng()%4;e.trophy=0;
  e.reward=category==0?(circuit?Trophy:EpicCards):category==1?TournamentPacks:category==2?(circuit?EpicCards:StandardPacks):FoilUpgrades;
  e.quantity=e.reward==TournamentPacks?circuit+1:e.reward==StandardPacks?3:e.reward==EpicCards?circuit+1:e.reward==FoilUpgrades?(circuit==2?5:circuit==1?3:1):1;
- if(e.reward==Trophy){std::vector<CardID> pool;for(const auto& c:cards)if(tournamentTrophy(c,circuit)&&!ts.trophies.contains(c.form)&&count(s.player,c.form)==0&&count(s.player,c.form|foilFlag)==0){bool owned=merchantOwnsCard(s,c.form);for(const auto& [key,stock]:s.opponents)owned|=count(stock,c.form)>0||count(stock,c.form|foilFlag)>0;if(!owned)pool.push_back(c.form);}
+ if(e.reward==Trophy){std::vector<CardID> pool;for(const auto& c:cards)if(tournamentTrophy(c,circuit)&&!uniqueCardClaimed(s,c.form))pool.push_back(c.form);
   CardID recovered=0;unsigned estate=0;
   for(auto base:s.deadPlayers){int i=opponentIndex(base);if(i<0)continue;const auto key=opponentLedgerKey(base,opponents[i].reference);auto found=s.opponents.find(key);if(found==s.opponents.end())continue;
-   for(auto [id,n]:found->second)if(n>0&&ts.trophies.contains(baseCardID(id))&&tournamentTrophy(cards[cardIndex(id)],circuit)){
-    bool elsewhere=merchantOwnsCard(s,id)||count(s.player,baseCardID(id))||count(s.player,baseCardID(id)|foilFlag);
-    for(const auto& [other,stock]:s.opponents)if(other!=key)elsewhere|=count(stock,baseCardID(id))>0||count(stock,baseCardID(id)|foilFlag)>0;
+   for(auto [id,n]:found->second)if(n>0&&cardIndex(id)>=0&&ts.trophies.contains(baseCardID(id))&&tournamentTrophy(cards[cardIndex(id)],circuit)){
+    bool elsewhere=uniqueCardOwned(s,id,key);
     for(const auto& old:ts.events)if(!old.awarded&&baseCardID(old.trophy)==baseCardID(id))elsewhere=true;
     if(!elsewhere){recovered=id;estate=key;break;}
    }
@@ -263,8 +266,7 @@ inline void refreshTournamentRewards(CollectionSave& s){
    e.reward==EpicCards?e.quantity==e.circuit+1:e.reward==FoilUpgrades&&e.quantity==(e.circuit==2?5u:e.circuit==1?3u:1u);
   if(valid)continue;
   const auto old=baseCardID(e.trophy);e.trophy=0;
-  if(old&&!merchantOwnsCard(s,old)&&!count(s.player,old)&&!count(s.player,old|foilFlag)&&
-    std::none_of(s.opponents.begin(),s.opponents.end(),[&](const auto& item){return count(item.second,old)||count(item.second,old|foilFlag);})&&
+  if(old&&!uniqueCardOwned(s,old)&&
     std::none_of(s.tournaments.events.begin(),s.tournaments.events.end(),[&](const auto& other){return baseCardID(other.trophy)==old;}))s.tournaments.trophies.erase(old);
   std::mt19937 rng(tournamentHash(e.seed^0x5052495A));selectTournamentReward(s,e,rng);
  }

@@ -33,8 +33,11 @@ inline std::string snapshotJson(const ttcg::Match& match, std::uint64_t session,
    data+=std::format("{{\"name\":{},\"art\":{},\"sides\":[{},{},{},{}],\"tier\":{},\"focus\":{}}}",quote(c.name),quote(cardImages[i%cards.size()].art),c.sides[0],c.sides[1],c.sides[2],c.sides[3],c.tier,quote(c.focus));
    data.pop_back();data+=",\"thumbnail\":"+quote(cardImages[i%cards.size()].thumbnail)+"}";
    data.pop_back(); data+=std::format(",\"id\":{},\"cardID\":{},\"rarity\":{},\"groups\":{},\"subtypes\":{},\"affinities\":{}}}",quote(c.id),c.form|(i>=cards.size()?0x80000000u:0u),quote(c.rarity),c.groups,c.subtypes,c.affinities);
+   if(const auto* e=expansionCard(c)){data.pop_back();data+=",\"setId\":"+quote(e->setId)+",\"setName\":"+quote(e->setName)+"}";}
    data.pop_back();data+=std::format(",\"baseIndex\":{},\"foil\":{}",i%cards.size(),i>=cards.size()?"true":"false");data+=std::string(",\"unique\":")+(c.unique?"true":"false")+"}";
  }
+ data+="],\"expansionErrors\":[";
+ for(std::size_t i=0;i<expansionLoadErrors.size();++i){if(i)data+=',';data+=quote(expansionLoadErrors[i]);}
  data+="],\"cardBack\":"+quote(cardBack)+",\"cardBackID\":"+quote(cardBackID)+",\"cardBackVersion\":"+std::to_string(cardBackVersion)+",\"cardBackMissing\":"+(cardBackID!=cardBackPreference?"true":"false")+",\"cardBacks\":[";
  for(std::size_t i=0;i<cardBacks.size();++i){if(i)data+=',';const auto& b=cardBacks[i];data+="{\"id\":"+quote(b.id)+",\"name\":"+quote(b.name)+",\"art\":"+quote(b.art)+",\"custom\":"+(b.custom?"true":"false")+"}";}
  data+="],\"tiles\":[";

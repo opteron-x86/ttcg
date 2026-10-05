@@ -85,7 +85,7 @@
 #table-inspect{padding:6px 10px;font-size:16px}
 #board-stakes{margin-left:auto}
 :is(#rule-callout,#demo-callout){position:absolute;inset:0;z-index:5;display:grid;place-items:center;pointer-events:none;--announcement-duration:760ms;background:linear-gradient(transparent 36%,#07140dbb 44%,#07140ddd 50%,#07140dbb 56%,transparent 64%)}
-:is(#rule-callout,#demo-callout) .announcement-text{position:relative;white-space:normal;text-align:center;display:block;width:100%;padding:22px 0;font:small-caps 52px/1.2 Georgia,serif;letter-spacing:8px;color:#f3e4b9;background:none;-webkit-text-fill-color:currentColor;text-shadow:0 3px 9px #000;animation:table-announcement var(--announcement-duration) ease-out both}
+:is(#rule-callout,#demo-callout) .announcement-text{position:relative;white-space:normal;text-align:center;display:block;width:100%;padding:22px 0;font:small-caps 52px/1.2 var(--interface-font,var(--theme-font,Georgia,"Times New Roman",serif));letter-spacing:8px;color:#f3e4b9;background:none;-webkit-text-fill-color:currentColor;text-shadow:0 3px 9px #000;animation:table-announcement var(--announcement-duration) ease-out both}
 :is(#rule-callout,#demo-callout) .announcement-text:before,:is(#rule-callout,#demo-callout) .announcement-text:after{content:"";position:absolute;height:1px;width:85%;box-shadow:none;background:linear-gradient(90deg,transparent,#dcc385,transparent);top:0;left:0;opacity:1;transform:none;animation:table-rule-line var(--announcement-duration) ease-out both}
 :is(#rule-callout,#demo-callout) .announcement-text:after{top:auto;bottom:0;left:auto;right:0;animation-name:table-rule-line-reverse}
 :is(#rule-callout,#demo-callout)[data-tone="combo"] .announcement-text{color:#cbeafe}
@@ -144,3 +144,7 @@
 @keyframes starter-line { 0%,24% { transform:scaleX(0); } 76%,100% { transform:scaleX(var(--starter-direction)); } }
 @keyframes starter-token { 0%,24% { transform:translateX(0) rotate(45deg); } 76%,100% { transform:translateX(var(--starter-offset)) rotate(45deg); } }
 @media(prefers-reduced-motion:reduce) { .starter-mark,.starter-line,.starter-token { animation:none; } }
+
+[data-fullscreen="true"] #game { display:flex;flex-direction:column;height:calc(100% - 54px);max-width:1500px;margin:0 auto; }
+[data-fullscreen="true"] #game .play-area { flex:1;min-height:0; }
+[data-fullscreen="true"] #game :is(.match-heading,#match-footer) { flex-shrink:0; }

@@ -15,7 +15,7 @@ function renderOpponents(){
  const region=regions.find(r=>r.id===journalHold),hold=journalHold;
  $('journal-title').textContent=region?.name||'Known players';
  $('hold-rules').textContent=region&&!region.travellers?`${rulesText(region.rules)||'No special rules · Hidden hands'} · ${tradeRuleText(region.trade)}`:'';
- $('progress-step').textContent=region&&!region.travellers?`${region.reputationTitle||'Unknown'} · Wins: ${region.wins||0}`:'';$('progress-step').hidden=!region||Boolean(region.travellers);
+ $('progress-step').textContent=region&&!region.travellers&&!region.unaffiliated?`${region.reputationTitle||'Unknown'} · Wins: ${region.wins||0}`:'';$('progress-step').hidden=!region||Boolean(region.travellers||region.unaffiliated);
 
  const query=$('journal-search').value.trim().toLowerCase(),filter=$('journal-filter').value;
  const players=(c.roster||[]).filter(p=>(!hold||(p.holdID||1)===hold)&&(!query||[p.name,p.location,p.skill].join(' ').toLowerCase().includes(query))&&(filter==='all'||filter==='played'&&gamesPlayed(p)>0||filter==='unplayed'&&!gamesPlayed(p)));

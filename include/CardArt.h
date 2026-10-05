@@ -1,5 +1,6 @@
 #pragma once
-#include "Cards.h"
+#include "CardRegistry.h"
+#include <fstream>
 #include <algorithm>
 #include <cctype>
 #include <filesystem>
@@ -11,8 +12,8 @@
 
 namespace ttcg {
 struct CardImages { std::string art, thumbnail; };
-inline std::array<CardImages,cards.size()> cardImages=[] {
- std::array<CardImages,cards.size()> result{};
+inline std::vector<CardImages> cardImages=[] {
+ std::vector<CardImages> result(cards.size());
  for(std::size_t i=0;i<cards.size();++i)
    result[i]={cards[i].art,"thumbs/"+std::string(cards[i].name)+".webp"};
  return result;
@@ -111,7 +112,13 @@ template<class Save> bool cardBackCommand(std::istream& input,std::string& notic
 }
 inline void refreshCardArt(const std::filesystem::path& root="Data/MeridianUI/ttcg/art") {
  const auto full=scanArt(root,"cards"),thumbs=scanArt(root,"thumbs",true);
+ cardImages.resize(cards.size());
  for(std::size_t i=0;i<cards.size();++i) {
+   if(const auto* e=expansionCard(cards[i])){
+     auto readable=[&](const std::string& path){return bool(std::ifstream(root/path,std::ios::binary));};
+     cardImages[i].art=readable(e->art)?e->art:"backs/mosaic.png";
+     cardImages[i].thumbnail=readable(e->thumbnail)?e->thumbnail:cardImages[i].art;continue;
+   }
    const auto key=artLower(cards[i].name);auto face=full.find(key),thumb=thumbs.find(key);
    cardImages[i].art=face==full.end()?cards[i].art:face->second;
    cardImages[i].thumbnail=thumb==thumbs.end()?cardImages[i].art:thumb->second;

@@ -22,8 +22,8 @@ inline bool regionalShopCard(const Card& c,unsigned hold){
 inline bool refreshShop(MerchantStock& m,unsigned key,unsigned hour,unsigned hold,bool specialist){
  if(m.generation&&(hour<m.restockAt||m.goldCredit))return false;
  // Player-sold uniques are never generated and never expire.
- std::erase_if(m.resale,[](auto item){const int i=cardIndex(item.first);return item.second<=0||i<0||!cards[i].unique;});
- m.stock.clear();++m.generation;if(!m.generation)m.generation=1;
+ std::erase_if(m.resale,[](auto item){const int i=cardIndex(item.first);return item.second<=0||(i>=0&&!cards[i].unique);});
+ std::erase_if(m.stock,[](auto item){return cardIndex(item.first)>=0;});++m.generation;if(!m.generation)m.generation=1;
  m.restockAt=std::min(100000000u,hour+shopRestockHours);
  std::mt19937 rng(key^(m.generation*2654435761u)^0x43415244u);
  std::set<CardID> selected;
@@ -33,12 +33,22 @@ inline bool refreshShop(MerchantStock& m,unsigned key,unsigned hour,unsigned hol
    (roll<550?1:roll<800?2:roll<950?3:roll<980?4:roll<990?5:roll<997?6:7);
   const auto r=rng()%100;const std::string_view rarity=specialist?(r<35?"Common":r<80?"Rare":"Epic"):(r<70?"Common":r<95?"Rare":"Epic");
   std::vector<CardID> pool;
-  for(const auto& c:cards)if(c.available&&!c.pending&&!c.unique&&c.tier==tier&&std::string_view(c.rarity)==rarity&&!selected.contains(c.form)){
+  for(const auto& c:cards)if(officialCard(c)&&c.available&&!c.pending&&!c.unique&&c.tier==tier&&std::string_view(c.rarity)==rarity&&!selected.contains(c.form)){
    pool.push_back(c.form);if(regionalShopCard(c,hold))pool.push_back(c.form);
   }
   if(pool.empty())continue;
   const auto id=pool[rng()%pool.size()];selected.insert(id);
   m.stock[id|(rng()%1000<(specialist?20:5)?foilFlag:0)]=1;
+ }
+ // Shared extra offers: installing more sets never displaces the core stock.
+ std::vector<CardID> additions;
+ for(const auto& c:cards)if(const auto* e=expansionCard(c);e&&(e->merchants&(specialist?2u:1u))&&!c.unique&&c.tier<=7&&std::string_view(c.rarity)!="Legendary"){
+  additions.push_back(c.form);if(regionalShopCard(c,hold))additions.push_back(c.form);
+ }
+ std::mt19937 extra(key^(m.generation*2654435761u)^0x45585041u);
+ for(unsigned slot=0;slot<(specialist?3u:2u)&&!additions.empty();++slot){
+  const auto id=additions[extra()%additions.size()];std::erase(additions,id);
+  m.stock[id|(extra()%1000<(specialist?20:5)?foilFlag:0)]=1;
  }
  return true;
 }

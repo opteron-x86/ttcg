@@ -28,6 +28,7 @@ set(BUILD_TESTS OFF CACHE BOOL "Build CommonLib's own test suite" FORCE)
 set(COMMONLIB_PREBUILT OFF CACHE BOOL "Compile CommonLib with Tessera's toolchain" FORCE)
 set(FETCHCONTENT_SOURCE_DIR_HDE64 "${CMAKE_CURRENT_SOURCE_DIR}/build/deps/minhook" CACHE PATH "Locked MinHook sources" FORCE)
 find_package(spdlog CONFIG REQUIRED)
+find_package(nlohmann_json CONFIG REQUIRED)
 add_subdirectory("${TTCG_COMMONLIB_ROOT}" "${CMAKE_CURRENT_BINARY_DIR}/commonlib" EXCLUDE_FROM_ALL)
 # CommonLib exports a Windows 7 API floor. Use one consistent Windows 10
 # declaration set for it and Tessera, without modifying the locked checkout.
@@ -87,6 +88,7 @@ target_compile_options(${PROJECT_NAME} PRIVATE
 target_link_libraries(${PROJECT_NAME} PRIVATE
   CommonLibSSE::CommonLibSSE
   spdlog::spdlog
+  nlohmann_json::nlohmann_json
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES

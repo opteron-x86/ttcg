@@ -23,7 +23,7 @@ inline unsigned tournamentChampionships(const CollectionSave& s,unsigned circuit
 }
 inline unsigned widerRenown(const CollectionSave& s){
  unsigned total=0;for(const auto& r:s.tournamentReputation)total+=r.renownQuarters;
- for(const auto& p:opponents)if(p.traveller)if(auto it=s.reputation.find(p.base);it!=s.reputation.end()&&it->second.wins)total+=32;
+ for(const auto& p:opponents)if(p.traveller&&!p.dynamic)if(auto it=s.reputation.find(p.base);it!=s.reputation.end()&&it->second.wins)total+=32;
  return total;
 }
 struct LocalReputation {
@@ -41,7 +41,7 @@ inline LocalReputation localReputation(const CollectionSave& s,unsigned hold){
   if(p.hold==hold)if(auto it=s.reputation.find(p.base);it!=s.reputation.end()){wins=it->second.wins;quarters=it->second.quarters;}
   if(auto it=tournament.opponents.find(p.base);it!=tournament.opponents.end()){wins+=it->second.wins;quarters+=it->second.quarters;}
   const bool won=wins!=0;
-  if(p.hold==hold&&p.level==5){r.mastersRequired+=won||!s.deadPlayers.contains(p.base);r.masterWins+=won;}
+  if(p.hold==hold&&p.level==5&&p.requiredMaster){r.mastersRequired+=won||!s.deadPlayers.contains(p.base);r.masterWins+=won;}
   if(!won)continue;
   ++r.players;r.wins+=wins;r.quarters+=quarters;r.strongWins+=p.level>=3;r.expertWins+=p.level>=4;
  }
@@ -58,7 +58,7 @@ inline LocalReputation localReputation(const CollectionSave& s,unsigned hold){
  return r;
 }
 inline unsigned reputationFloor(unsigned rank){return rank>=Legendary?4:rank>=Famous?3:rank>=Respected?2:rank>=Recognized?1:0;}
-inline unsigned requiredReputationRank(int i){return i>=0&&i<static_cast<int>(opponents.size())&&!opponents[i].traveller&&opponents[i].level>=3?opponents[i].level-1:Unknown;}
+inline unsigned requiredReputationRank(int i){if(i<0||i>=int(opponents.size()))return Unknown;const auto& p=opponents[i];return p.reputationGate>=0?unsigned(p.reputationGate):!p.traveller&&p.hold&&p.level>=3?p.level-1:Unknown;}
 inline bool challengeReputationMet(const CollectionSave& s,int i){return i>=0&&i<static_cast<int>(opponents.size())&&localReputation(s,opponents[i].hold).rank>=requiredReputationRank(i);}
 inline unsigned reputationWins(const CollectionSave& s,unsigned base){
  unsigned wins=0;

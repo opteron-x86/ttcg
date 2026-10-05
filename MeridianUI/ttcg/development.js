@@ -7,7 +7,6 @@ function developmentCommand(args){
 }
 function renderDevelopmentSettings(){
  const config=developmentSettings(),section=$('development-settings');section.hidden=!config?.enabled;
- $('settings-panel').firstElementChild.classList.toggle('has-development',!!config?.enabled);
  if(!config?.enabled)return;
  const disabled=Boolean(bindings().capturing||bindingPending||state.interruptedMatch)||state.phase!=='ready';
  for(const control of section.querySelectorAll('button,select'))control.disabled=disabled;
