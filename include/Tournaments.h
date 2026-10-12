@@ -84,14 +84,6 @@ inline std::vector<unsigned> reconcileTournamentInvitations(CollectionSave& s,un
    break;
   }
  }
- // One-time repair for the retired Whiterun switch. New tests never set this
- // token; a retained invitation must not unlock their next event.
- if(s.tournaments.developmentToken&&carried&&!courierCopies&&!queued){
-  for(auto& e:s.tournaments.events)if(e.development&&e.hold==1&&e.circuit==1&&e.invitation==1&&tournamentLetter(e)==letter){
-   if(recordTournamentInvitation(s,letter,false,hour,e.id))s.tournaments.developmentToken=0;
-   break;
-  }
- }
  return recoverTournamentInvitations(s,letter,carried,courierCopies,hour);
 }
 inline void advanceTournamentByDefault(Tournament& e,unsigned node,unsigned winner){

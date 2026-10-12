@@ -4,7 +4,6 @@
 namespace ttcg {
 // Demonstration cards are borrowed. This state never touches a collection or contract.
 struct Lesson {
- static constexpr unsigned hiddenHands=1u<<31; // Lesson topic only; never a match rule.
  static int card(std::string_view id) {
    for(std::size_t i=0;i<cards.size();++i)if(cards[i].id==id)return static_cast<int>(i);
    throw std::invalid_argument("Missing lesson card");
@@ -21,13 +20,13 @@ struct Lesson {
  unsigned exampleStep=0;
  bool example() const{return !captions.empty();}
  static constexpr std::array<Move,4> groupMoves{{{0,0},{0,8},{1,4},{1,3}}};
- bool shortWorkshop() const{return !riftTour&&workshopRule&&(workshopRule!=Open&&workshopRule!=ThreeOpen&&workshopRule!=hiddenHands);}
+ bool shortWorkshop() const{return !riftTour&&workshopRule&&(workshopRule!=Open&&workshopRule!=ThreeOpen);}
  static Lesson workshop(unsigned rule){
-   if(rule!=Open&&rule!=Reverse&&rule!=hiddenHands&&rule!=ThreeOpen&&rule!=Legion&&rule!=Decimation&&rule!=Affinity)throw std::invalid_argument("Unknown rule lesson");
+   if(rule!=Open&&rule!=Reverse&&rule!=ThreeOpen&&rule!=Legion&&rule!=Decimation&&rule!=Affinity)throw std::invalid_argument("Unknown rule lesson");
    Lesson demo;demo.workshopRule=rule;
-   if(rule==Open||rule==hiddenHands||rule==ThreeOpen){demo.match.rules=rule==hiddenHands?Basic:rule;demo.match.seedVisibility(73);return demo;}
+   if(rule==Open||rule==ThreeOpen){demo.match.rules=rule;demo.match.seedVisibility(73);return demo;}
    demo.match=Match({card("legends-257893"),card("legends-209123"),card("murkwater-goblin"),card("oldgate-warden"),card("frostbite-spider")},
-     {card("frostbite-spider"),card(rule==Reverse?"legends-299178":"legends-214331"),card("legends-209123"),card("legends-299178"),card("dwarven-spider")},1,rule|Open);
+     {card("frostbite-spider"),card(rule==Reverse?"legends-299178":rule==Affinity?"legends-209105":"legends-214331"),card("legends-209123"),card("legends-299178"),card("dwarven-spider")},1,rule|Open);
    demo.match.turn=0;if(rule==Affinity){demo.match.tiles={};demo.match.tiles[4]=16;}
    for(int n=0;n<2;++n)demo.match.play(groupMoves[n]);return demo;
  }
@@ -156,7 +155,6 @@ inline std::string allRuleDemosJson(){
  add("play",Lesson{});
  add("open",Lesson::workshop(Open));
  add("threeopen",Lesson::workshop(ThreeOpen));
- add("hidden",Lesson::workshop(Lesson::hiddenHands));
  add("same",Lesson(true));
  add("plus",Lesson(true,true));
  add("reverse",Lesson::workshop(Reverse));

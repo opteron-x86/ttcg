@@ -18,9 +18,9 @@ inline std::vector<CardImages> cardImages=[] {
    result[i]={cards[i].art,"thumbs/"+std::string(cards[i].name)+".webp"};
  return result;
 }();
-inline std::string cardBack="backs/mosaic.png";
+inline std::string cardBack="backs/mosaic.webp";
 struct CardBackImage {std::string id,name,art;bool custom=false;};
-inline std::vector<CardBackImage> cardBacks{{"mosaic","Mosaic","backs/mosaic.png"}};
+inline std::vector<CardBackImage> cardBacks{{"mosaic","Mosaic","backs/mosaic.webp"}};
 inline std::string cardBackPreference="mosaic",cardBackID="mosaic";
 inline unsigned cardBackVersion=0;
 inline std::string artUTF8(const std::filesystem::path& path){const auto text=path.u8string();return {text.begin(),text.end()};}
@@ -30,8 +30,8 @@ inline std::string artLower(std::string value) {
 }
 // Scan the game's virtual Data directory once per menu opening. An alternate
 // extension takes priority over the shipped format, including in MO2 overlays.
-inline std::map<std::string,std::string> scanArt(const std::filesystem::path& root,const std::string& folder,bool thumbs=false) {
- const std::vector<std::string> formats=thumbs?std::vector<std::string>{".png",".jpg",".jpeg",".webp"}:std::vector<std::string>{".webp",".jpg",".jpeg",".png"};
+inline std::map<std::string,std::string> scanArt(const std::filesystem::path& root,const std::string& folder) {
+ const std::vector<std::string> formats{".png",".jpg",".jpeg",".webp"};
  std::map<std::string,std::pair<std::size_t,std::string>> selected;
  std::error_code error;
  std::filesystem::directory_iterator it(root/folder,std::filesystem::directory_options::skip_permission_denied,error),end;
@@ -54,9 +54,9 @@ inline const CardBackImage* findCardBack(std::string_view id){
 }
 inline void applyCardBackPreference(){
  const auto* chosen=findCardBack(cardBackPreference);if(!chosen)chosen=findCardBack("mosaic");
- cardBackID=chosen?chosen->id:"mosaic";cardBack=chosen?chosen->art:"backs/mosaic.png";
+ cardBackID=chosen?chosen->id:"mosaic";cardBack=chosen?chosen->art:"backs/mosaic.webp";
 }
-inline void refreshCardBacks(const std::filesystem::path& root="Data/MeridianUI/ttcg/art"){
+inline void refreshCardBacks(const std::filesystem::path& root="Data/TesseraUI/art"){
  const auto shipped=scanArt(root,"backs"),custom=scanArt(root,"backs/custom");
  cardBacks.clear();
  // Keep the default first, and use filename stems as stable preferences when
@@ -65,7 +65,7 @@ inline void refreshCardBacks(const std::filesystem::path& root="Data/MeridianUI/
  for(const auto& [id,name]:builtins){
    const auto found=shipped.find(id);
    if(found!=shipped.end())cardBacks.push_back({id,name,found->second});
-   else if(id=="mosaic")cardBacks.push_back({id,name,"backs/mosaic.png"});
+   else if(id=="mosaic")cardBacks.push_back({id,name,"backs/mosaic.webp"});
  }
  auto add=[&](const auto& files,bool isCustom){for(const auto& [stem,path]:files){
    if(!isCustom&&std::any_of(std::begin(builtins),std::end(builtins),[&](const auto& b){return b.first==stem;}))continue;
@@ -100,7 +100,7 @@ inline std::string cardBackFromSetting(std::string_view value){
  }
  return out.empty()?"mosaic":out;
 }
-template<class Save> bool cardBackCommand(std::istream& input,std::string& notice,Save save,const std::filesystem::path& root="Data/MeridianUI/ttcg/art"){
+template<class Save> bool cardBackCommand(std::istream& input,std::string& notice,Save save,const std::filesystem::path& root="Data/TesseraUI/art"){
  std::string action,id;if(!(input>>action))return false;
  if(action=="refresh"){
    if(input>>id)return false;
@@ -110,13 +110,13 @@ template<class Save> bool cardBackCommand(std::istream& input,std::string& notic
  if(!findCardBack(id)){notice="Card back unavailable. Refresh the list.";return true;}
  notice=selectCardBack(id,save)?"":"Couldn't save the card back.";return true;
 }
-inline void refreshCardArt(const std::filesystem::path& root="Data/MeridianUI/ttcg/art") {
- const auto full=scanArt(root,"cards"),thumbs=scanArt(root,"thumbs",true);
+inline void refreshCardArt(const std::filesystem::path& root="Data/TesseraUI/art") {
+ const auto full=scanArt(root,"cards"),thumbs=scanArt(root,"thumbs");
  cardImages.resize(cards.size());
  for(std::size_t i=0;i<cards.size();++i) {
    if(const auto* e=expansionCard(cards[i])){
      auto readable=[&](const std::string& path){return bool(std::ifstream(root/path,std::ios::binary));};
-     cardImages[i].art=readable(e->art)?e->art:"backs/mosaic.png";
+     cardImages[i].art=readable(e->art)?e->art:"backs/mosaic.webp";
      cardImages[i].thumbnail=readable(e->thumbnail)?e->thumbnail:cardImages[i].art;continue;
    }
    const auto key=artLower(cards[i].name);auto face=full.find(key),thumb=thumbs.find(key);

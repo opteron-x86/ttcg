@@ -56,7 +56,7 @@ struct DevelopmentSettings {
  }
  bool showsPlayer(const CollectionSave& s,int i) const {return showAllPlayers||progress(s,i).known;}
  bool unlockedPlayer(const CollectionSave& s,int i) const {
-   return i>=0&&i<static_cast<int>(opponents.size())&&!s.accessBlocked.contains(opponents[i].base)&&(!opponents[i].college||s.collegeMember)&&(!opponents[i].guild||s.guildMember)&&(opponents[i].base!=0x1334F||!s.brandSheiJailed)&&(unlockedOpponent(s,i)||(unlockAllPlayers&&!progress(s,i).unavailable));
+   return i>=0&&i<static_cast<int>(opponents.size())&&!s.accessBlocked.contains(opponents[i].base)&&(opponents[i].base!=0x1334F||!s.brandSheiJailed)&&(unlockedOpponent(s,i)||(unlockAllPlayers&&!progress(s,i).unavailable));
  }
  const char* skillName(const char* normal) const {
    static constexpr const char* names[]={"Beginner","Regular","Experienced","Expert"};

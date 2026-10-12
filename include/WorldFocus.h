@@ -14,7 +14,7 @@ inline bool shouldPauseWorld(const WorldPauseSettings& settings,std::string_view
  return true;
 }
 
-// Meridian's AlreadyFocused result does not change the existing pause mode.
+// The host's AlreadyFocused result does not change the existing pause mode.
 // Unfocus queues a UI task. Reclaim only after that task has run; an immediate
 // TryFocus would keep the old mode, then lose focus when the release arrives.
 enum class FocusUpdate { Ready, Releasing, Waiting, Lost };

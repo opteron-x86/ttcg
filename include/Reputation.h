@@ -91,6 +91,5 @@ inline void recordTournamentReputation(CollectionSave& s,const Tournament& e,int
   ++r.championships[e.circuit];r.renownQuarters=std::min(1000000u,r.renownQuarters+4*tournamentChampionshipRenown[e.circuit]);
  }
 }
-inline std::string reputationPoints(unsigned quarters){constexpr const char* fraction[]={"",".25",".5",".75"};return std::to_string(quarters/4)+fraction[quarters%4];}
 inline std::string reputationObjective(const CollectionSave& s,unsigned hold){return localReputation(s,hold).title();}
 }

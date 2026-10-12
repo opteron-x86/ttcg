@@ -10,7 +10,6 @@ inline bool grantDevelopmentCards(CollectionSave& s,bool development,int index) 
  for(int i=0;i<static_cast<int>(cards.size());++i)if(index<0||index==i){++s.player[cards[i].form];s.discovered[cards[i].form]=1;}
  return true;
 }
-inline constexpr int packPrice=200;
 // Independent finish roll for newly created copies. Transfers preserve the ID.
 inline CardID mintCard(CollectionSave& s,CardID id){
  if(!s.economyRandom)s.economyRandom=0x7F4A7C15u;

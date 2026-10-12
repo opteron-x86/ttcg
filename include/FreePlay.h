@@ -20,15 +20,4 @@ inline bool willingToPlay(CollectionSave& s,int i,unsigned hour){
  }
  return invitation.accepted;
 }
-inline bool canMasterApproach(const CollectionSave& s,int i,unsigned hour){
- if(!s.starter||!unlockedOpponent(s,i)||opponents[i].level<5||!opponents[i].approaches||!localReputation(s,opponents[i].hold).famous()||!opponentHasCards(s,i))return false;
- const auto npc=s.masterApproachAfter.find(opponents[i].base),hold=s.holdApproachAfter.find(opponents[i].hold);
- return (npc==s.masterApproachAfter.end()||hour>=npc->second)&&(hold==s.holdApproachAfter.end()||hour>=hold->second);
-}
-inline bool reserveMasterApproach(CollectionSave& s,int i,unsigned hour){
- if(!canMasterApproach(s,i,hour))return false;
- s.masterApproachAfter[opponents[i].base]=hour+168;s.holdApproachAfter[opponents[i].hold]=hour+48;
- // An invitation initiated by the master is already an agreement to play.
- s.invitations[opponents[i].base]={hour+24,true};return true;
-}
 }

@@ -24,11 +24,6 @@ inline bool excludedNpc(std::uint32_t base){
  if(const auto* master=identityMaster(base);master&&excludedNpcPlugins.contains(normalizedPlugin(master)))return true;
  for(const auto& form:excludedNpcs)if(worldFormID(form)==base)return true;return false;
 }
-inline CardID namedCardID(std::string_view key){
- if(key.starts_with("tessera:")){key.remove_prefix(8);for(const auto& c:baseCards)if(key==c.id)return c.form;return 0;}
- return expansionCardID(key);
-}
-inline std::string namedCardKey(CardID id){const int i=cardIndex(id);if(i<0)return {};return (officialCard(cards[i])?"tessera:":"")+std::string(cards[i].id);}
 inline bool resolveNpcCards(const std::vector<OpponentCardGrant>& cards,Stock& stock){
  Stock unique;
  for(const auto& entry:cards){auto id=namedCardID(entry.card);const auto index=cardIndex(id);if(index<0||!entry.quantity||entry.quantity>99)return false;
@@ -63,7 +58,7 @@ inline int registerResident(std::uint32_t base,ResidentRecord& record,const Oppo
  residentStrings().push_back({record.name,record.location,record.traveller?"Travellers":holdName(record.hold)});auto& text=residentStrings().back();
  OpponentProfile p{};p.base=base;p.reference=record.reference;p.name=text.name.c_str();p.location=text.location.c_str();p.region=text.region.c_str();
  p.level=record.level;p.skill=record.level<2?0:record.level<4?1:record.level==4?2:3;p.skillName=opponentSkillNames[record.level];p.hold=record.hold;p.traveller=record.traveller;
- p.wager=std::array{10,25,50,75,100,200}[record.level];p.approaches=false;p.dynamic=true;p.automatic=record.source==0;p.tournamentEligible=record.source!=2&&record.hold!=0;p.requiredMaster=false;
+ p.wager=std::array{10,25,50,75,100,200}[record.level];p.dynamic=true;p.automatic=record.source==0;p.tournamentEligible=record.source!=2&&record.hold!=0;p.requiredMaster=false;
  // Travellers and unaffiliated residents have no regional entry gate.
  p.reputationGate=record.hold&&!record.traveller?-1:0;
  if(definition){p.wager=definition->wager;p.tournamentEligible=definition->tournaments;p.requiredMaster=definition->requiredMaster;p.personalRules=definition->personalRules;p.rules=definition->rules;p.personalTrade=definition->trade;p.reputationGate=definition->reputationGate;p.restock=definition->restock;}

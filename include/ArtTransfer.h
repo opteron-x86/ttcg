@@ -39,7 +39,7 @@ inline std::string artBase64(std::string_view bytes){
  return out;
 }
 struct ArtTransfer {std::string data,error;};
-inline ArtTransfer readCardArt(std::string_view path,const std::filesystem::path& root="Data/MeridianUI/ttcg/art"){
+inline ArtTransfer readCardArt(std::string_view path,const std::filesystem::path& root="Data/TesseraUI/art"){
  // Only catalogued raster assets are readable. Open the virtual Data path
  // directly: canonicalizing it can resolve MO2 files into different mod roots.
  if(!transferableArtPath(path))return {{},"unregistered artwork"};
