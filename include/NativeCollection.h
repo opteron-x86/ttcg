@@ -14,11 +14,12 @@
 #include "SavedMatch.h"
 #include "InterfaceSettings.h"
 #include "EncounterRecords.h"
+#include "NpcSyncTiming.h"
 namespace campaign {
 inline bool registerNpcActor(RE::Actor*,bool force=false);
 inline bool npcIntegrationReady(RE::Actor*);
 inline void initNpcForms();
-inline int npcAvailability(RE::Actor*);
+inline int npcAvailability(RE::Actor*,int knownProfile=-2);
 inline void syncNpcDialogue();
 inline void clearNpcCache();
 inline void restoreNpcProfiles();
@@ -41,15 +42,12 @@ inline RE::TESTopicInfo* childChallengeInfo{};
 inline void syncGameAvailability(){if(gamesEnabledGlobal)gamesEnabledGlobal->value=interfaceSettings.gamesEnabled?1.f:0.f;}
 inline RE::TESGlobal* progression{};
 inline RE::TESGlobal *erandurGlobal{},*collegeGlobal{};
-inline RE::TESFaction* collegeFaction{};
-inline RE::TESQuest* collegeSuspension{};
-inline RE::TESFaction* guildFaction{};
-inline RE::TESQuest *guildBan{},*brandSheiArrest{};
+inline RE::TESQuest* brandSheiArrest{};
 inline RE::TESGlobal* guildGlobal{};
 inline RE::TESGlobal* valdrGlobal{};
 inline std::array<RE::TESGlobal*,ttcg::baseOpponents.size()> opponentGlobals{};
 inline bool practice=false,competitiveMatch=false,requestAnswered=false;
-inline unsigned ruleRequest=0,sessionRules=0,tournamentID=0;
+inline unsigned ruleRequest=0,sessionRules=0,tournamentID=0,cultureHeldHold=0;
 inline unsigned tournamentRegistration=0;
 // High word: tournament ID; low word: letter form. An acknowledgement must apply
 // to the event actually queued, even when another event uses the same note.
@@ -80,10 +78,12 @@ inline int physicalChange(RE::TESObjectREFR* actor,RE::TESBoundObject* form,int 
 }
 inline bool authoredKey(std::uint32_t id){return ttcg::identityMaster(id)!=nullptr;}
 inline std::uint32_t persistentID(RE::TESForm* form){
+ const ttcg::NpcSyncWorkScope timing(ttcg::NpcSyncWork::Identity);
  if(!form)return 0;const auto file=form->GetFile(0);
  return file?ttcg::authoredIdentity(file->GetFilename(),form->GetLocalFormID(),form->GetFormID()):form->GetFormID();
 }
 template<class T> T* resolveID(std::uint32_t id){
+ const ttcg::NpcSyncWorkScope timing(ttcg::NpcSyncWork::Forms);
  if(!id)return nullptr;
  const auto master=ttcg::identityMaster(id);
  return master?RE::TESDataHandler::GetSingleton()->LookupForm<T>(ttcg::identityLocal(id),master):RE::TESForm::LookupByID<T>(id);
@@ -94,7 +94,7 @@ inline unsigned tournamentVenue(){
  const auto cell=persistentID(player->GetParentCell());for(unsigned n=0;n<10;++n)if(cell==cells[n])return n+1;
  return 0;
 }
-inline int profileIndex(RE::Actor* actor) {return actor?ttcg::opponentIndex(persistentID(actor->GetActorBase())):-1;}
+inline int profileIndex(RE::Actor* actor) {const ttcg::NpcSyncWorkScope timing(ttcg::NpcSyncWork::Identity);return actor?ttcg::opponentIndex(persistentID(actor->GetActorBase())):-1;}
 inline const ttcg::OpponentProfile* profile(RE::Actor* actor) { const int i=profileIndex(actor);return i<0?nullptr:&ttcg::opponents[i]; }
 inline std::uint32_t ledgerKey(RE::TESObjectREFR* actor) {
  if(!actor)return 0;const auto* p=profile(actor->As<RE::Actor>());return ttcg::opponentLedgerKey(p?p->base:0,persistentID(actor));
@@ -145,13 +145,29 @@ inline bool isChild(RE::Actor* actor) {return actor&&actor->IsChild();}
 inline bool cultureEnabled(RE::Actor* actor){return !tournamentID&&development.recordResults&&development.rules<0&&!practice&&!isChild(actor)&&ttcg::cultureOpponent(saved,profileIndex(actor));}
 inline bool hasAlbum() {return development.albumAccess(saved);}
 inline bool childDialogueAvailable(RE::Actor* actor){
+ const ttcg::NpcSyncWorkScope timing(ttcg::NpcSyncWork::ChildConditions);
  // Use the loaded INFO conditions for both dialogue and native entry, including
  // quest/scene gates and any compatibility patch, instead of duplicating them.
  return childChallengeInfo&&childChallengeInfo->objConditions.IsTrue(actor,RE::PlayerCharacter::GetSingleton());
 }
-inline bool actorReadyForCards(RE::Actor* actor){return actor&&!actor->IsDead()&&!actor->IsDisabled()&&!actor->IsInCombat()&&!actor->GetCurrentScene()&&!actor->IsHostileToActor(RE::PlayerCharacter::GetSingleton())&&(!isChild(actor)||childDialogueAvailable(actor));}
+inline bool actorReadyForCards(RE::Actor* actor){
+ const ttcg::NpcSyncWorkScope timing(ttcg::NpcSyncWork::ActorState);
+ return actor&&ttcg::measureNpcSync(ttcg::NpcSyncWork::Humanoid,[&]{return actor->IsHumanoid();})
+  &&!actor->IsDead()&&!actor->IsDisabled()&&!actor->IsInCombat()
+  &&!ttcg::measureNpcSync(ttcg::NpcSyncWork::Scene,[&]{return actor->GetCurrentScene();})
+  &&!ttcg::measureNpcSync(ttcg::NpcSyncWork::Hostility,[&]{return actor->IsHostileToActor(RE::PlayerCharacter::GetSingleton());})
+  &&(!isChild(actor)||childDialogueAvailable(actor));
+}
 inline bool resumingWith(RE::Actor* actor){return savedMatch.present&&!savedMatch.tournament&&actor&&persistentID(actor)==savedMatch.opponent;}
-inline bool canChallenge(RE::Actor* actor,bool allowResume=true) {if(!interfaceSettings.gamesEnabled||!hasAlbum())return false;if(allowResume&&resumingWith(actor))return actorReadyForCards(actor)&&npcIntegrationReady(actor);const int i=profileIndex(actor);if(tournamentID){const auto* e=ttcg::tournament(saved,tournamentID);return e&&i>=0&&ttcg::tournamentRival(*e)==ttcg::opponents[i].base;}if(!actorReadyForCards(actor)||!npcIntegrationReady(actor))return false;if(i>=0&&ttcg::opponents[i].dynamic)return npcAvailability(actor)==1;return isChild(actor)||(i>=0?unlocked(i)&&ttcg::opponentHasCards(saved,i)&&ttcg::encounterReady(saved,i,gameHour())&&(development.unlockAllPlayers||ttcg::challengeReputationMet(saved,i)):actor&&development.allowAnyNPC);}
+inline bool canChallenge(RE::Actor* actor,bool allowResume=true) {
+ if(!interfaceSettings.gamesEnabled||!hasAlbum()||!npcIntegrationReady(actor))return false;
+ if(allowResume&&resumingWith(actor))return actorReadyForCards(actor);
+ const int i=profileIndex(actor);
+ if(tournamentID){const auto* e=ttcg::tournament(saved,tournamentID);return e&&i>=0&&ttcg::tournamentRival(*e)==ttcg::opponents[i].base;}
+ if(!actorReadyForCards(actor))return false;
+ if(i>=0&&ttcg::opponents[i].dynamic)return npcAvailability(actor)==1;
+ return isChild(actor)||(i>=0?unlocked(i)&&ttcg::opponentHasCards(saved,i)&&ttcg::encounterReady(saved,i,gameHour())&&(development.unlockAllPlayers||ttcg::challengeReputationMet(saved,i)):actor&&development.allowAnyNPC);
+}
 inline int fixedWager() {if(tournamentID)return 0;return development.fixedWager(practice,canStake);}
 inline int maxWager(RE::Actor* actor) {if(tournamentID)return 0;const auto* p=profile(actor);return development.maxWager(practice,canStake,p?p->wager:0);}
 inline ttcg::Stock inventory(RE::TESObjectREFR* actor) {
@@ -192,12 +208,8 @@ inline void initForms() {
  syncGameAvailability();
  erandurGlobal=RE::TESDataHandler::GetSingleton()->LookupForm<RE::TESGlobal>(0xD20,plugin);
  guildGlobal=RE::TESDataHandler::GetSingleton()->LookupForm<RE::TESGlobal>(0xB40,plugin);
- guildFaction=RE::TESForm::LookupByID<RE::TESFaction>(0x29DA9);
- guildBan=RE::TESForm::LookupByID<RE::TESQuest>(0xB03A2);
  brandSheiArrest=RE::TESForm::LookupByID<RE::TESQuest>(0x4EF25);
  collegeGlobal=RE::TESDataHandler::GetSingleton()->LookupForm<RE::TESGlobal>(0xF20,plugin);
- collegeFaction=RE::TESForm::LookupByID<RE::TESFaction>(0x1F259);
- collegeSuspension=RE::TESForm::LookupByID<RE::TESQuest>(0x5B5DC);
  valdrGlobal=RE::TESDataHandler::GetSingleton()->LookupForm<RE::TESGlobal>(0xC20,plugin);
  albumForm=RE::TESDataHandler::GetSingleton()->LookupForm<RE::TESObjectBOOK>(0x870,plugin);
  for(std::size_t i=0;i<ttcg::baseOpponents.size();++i){opponentGlobals[i]=RE::TESDataHandler::GetSingleton()->LookupForm<RE::TESGlobal>(ttcg::opponents[i].knownGlobal,plugin);}
@@ -209,32 +221,43 @@ inline void initForms() {
  SKSE::log::info("Album forms available: {}",available());
 }
 inline void seedOpponent(RE::Actor* actor);
-inline void syncProgression() {
+inline void syncProgression(ttcg::NpcSyncTiming* timing=nullptr) {
+ ttcg::NpcSyncCapture capture(timing);
+ {
+ const ttcg::NpcSyncPhaseScope phase(ttcg::NpcSyncPhase::World);
  syncGameAvailability();
- auto player=RE::PlayerCharacter::GetSingleton();
- saved.guildMember=player&&guildFaction&&guildBan&&player->IsInFaction(guildFaction)&&!guildBan->IsRunning();
  saved.brandSheiJailed=brandSheiArrest&&brandSheiArrest->IsRunning()&&brandSheiArrest->GetCurrentStageID()==20;
- if(guildGlobal)guildGlobal->value=saved.guildMember?1.0f:0.0f;
- saved.collegeMember=player&&collegeFaction&&collegeSuspension&&player->IsInFaction(collegeFaction)&&!collegeSuspension->IsRunning();
- if(collegeGlobal)collegeGlobal->value=saved.collegeMember?1.0f:0.0f;
+ // Retain the legacy forms, but faction membership no longer gates play.
+ if(guildGlobal)guildGlobal->value=1.0f;
+ if(collegeGlobal)collegeGlobal->value=1.0f;
  auto stage=[](std::uint32_t id){const auto q=resolveID<RE::TESQuest>(id);return q?unsigned(q->GetCurrentStageID()):0u;};
  auto running=[](std::uint32_t id){const auto q=resolveID<RE::TESQuest>(id);return q&&q->IsRunning();};
  auto completed=[](std::uint32_t id){const auto q=resolveID<RE::TESQuest>(id);return q&&q->IsCompleted();};
- const auto orcFriends=resolveID<RE::TESFaction>(0x24029),builders=resolveID<RE::TESFaction>(0xDB01C4E5);
- const auto race=player?persistentID(player->GetRace()):0;
- const bool orcWelcome=player&&(race==0x13747||race==0xA82B9||(orcFriends&&player->IsInFaction(orcFriends)));
- ttcg::refreshWorldAccess(saved,{stage(0x23B6C),stage(0x76B4A),running(0xD2CAF)&&stage(0x1F7A3)<200,running(0x21550),stage(0xDB017F90),stage(0xDB01CAF1),stage(0xDB01AAB0),orcWelcome,completed(0x25F3E),completed(0xDB018B15)});
+ ttcg::refreshWorldAccess(saved,{stage(0x23B6C),stage(0x76B4A),running(0xD2CAF)&&stage(0x1F7A3)<200,running(0x21550),stage(0xDB017F90),stage(0xDB01CAF1),stage(0xDB01AAB0),completed(0x25F3E),completed(0xDB018B15)});
+ }
+ {
+ const ttcg::NpcSyncPhaseScope phase(ttcg::NpcSyncPhase::Access);
+ const auto builders=resolveID<RE::TESFaction>(0xDB01C4E5);
  saved.tournamentBlocked.clear();
  for(int i=0;i<static_cast<int>(ttcg::opponents.size());++i){const auto& p=ttcg::opponents[i];bool present=false,dead=false;
-   for(auto id:{p.reference,p.alternateReference})if(id){auto actor=resolveID<RE::Actor>(id);present|=actor&&!actor->IsDead()&&!actor->IsDisabled();dead|=actor&&actor->IsDead();
-    if(actor&&p.dialogueFaction)if(auto faction=RE::TESDataHandler::GetSingleton()->LookupForm<RE::TESFaction>(p.dialogueFaction,plugin);faction&&!actor->IsInFaction(faction))actor->AddToFaction(faction,0);
+   for(auto id:{p.reference,p.alternateReference})if(id){auto actor=resolveID<RE::Actor>(id);
+    {const ttcg::NpcSyncWorkScope stateTiming(ttcg::NpcSyncWork::ActorState);present|=actor&&!actor->IsDead()&&!actor->IsDisabled();dead|=actor&&actor->IsDead();}
+    if(actor&&p.dialogueFaction){
+     auto faction=ttcg::measureNpcSync(ttcg::NpcSyncWork::Forms,[&]{return RE::TESDataHandler::GetSingleton()->LookupForm<RE::TESFaction>(p.dialogueFaction,plugin);});
+     const ttcg::NpcSyncWorkScope factionTiming(ttcg::NpcSyncWork::Factions);
+     if(faction&&!actor->IsInFaction(faction))actor->AddToFaction(faction,0);
+    }
     if(actor&&!npcIntegrationReady(actor))saved.accessBlocked.insert(p.base);
-    if(actor&&builders&&actor->IsInFaction(builders))saved.accessBlocked.insert(p.base);
+    if(actor&&builders&&ttcg::measureNpcSync(ttcg::NpcSyncWork::Factions,[&]{return actor->IsInFaction(builders);}))saved.accessBlocked.insert(p.base);
     if(actor&&(p.base==0x13653||p.base==0x13657)&&locationHold(actor,0)==ttcg::haafingarHold)saved.tournamentBlocked.insert(p.base);
    }
    ttcg::progress(saved,i).unavailable=!present;
    if(dead&&!present)saved.deadPlayers.insert(p.base);else saved.deadPlayers.erase(p.base);
  }
+ }
+ {
+ const ttcg::NpcSyncPhaseScope phase(ttcg::NpcSyncPhase::Globals);
+ const ttcg::NpcSyncWorkScope readinessTiming(ttcg::NpcSyncWork::Readiness);
  if(valdrGlobal&&valdrGlobal->value>0)saved.valdrRescued=true;
  if(erandurGlobal)saved.erandurReady=erandurGlobal->value>0;
  if(progression)progression->value=hasAlbum()?2.0f:0.0f;
@@ -252,6 +275,7 @@ inline void syncProgression() {
    const bool resuming=savedMatch.present&&!savedMatch.tournament&&(savedMatch.opponent==p.reference||savedMatch.opponent==p.alternateReference);
    if(i<int(opponentGlobals.size())&&opponentGlobals[i])opponentGlobals[i]->value=hasAlbum()&&(resuming||unlocked(i))&&freeToTalk?
      (resuming||(ttcg::opponentHasCards(saved,i)&&ttcg::encounterReady(saved,i,hour)&&(development.unlockAllPlayers||ttcg::willingToPlay(saved,i,hour)))?1.0f:2.0f):0.0f;
+ }
  }
  syncNpcDialogue();
 }
@@ -278,11 +302,15 @@ inline void recoverTournamentLetters(){
   for(auto event:ttcg::reconcileTournamentInvitations(saved,id,carried,copies,gameHour()))
    SKSE::log::info("Tournament {} invitation recovered from player inventory",event);
  }
- saved.tournaments.developmentToken=0;
 }
 inline void ensureAlbum();
+inline void updateRegionalRules(){
+ if(available())ttcg::tickRegionalRules(saved,gameHour(),cultureHeldHold);
+}
 inline void updateTournaments(){
- if(!available()||saved.contract.pending())return;
+ if(!available())return;
+ updateRegionalRules();
+ if(saved.contract.pending())return;
  recoverTournamentLetters();
  ttcg::refreshTournamentRewards(saved);
  const auto hour=gameHour();const bool hadAlbum=hasAlbum();
@@ -330,7 +358,7 @@ inline void recordGame(RE::Actor* actor,int winner,bool completed=true) {
  if(completed&&cultureGame)cultureNotice=ttcg::cultureChangeText(ttcg::finishRuleCulture(saved,i,winner,sessionRules,gameHour()));
  else ttcg::abandonRuleCulture(saved,gameHour());
  cultureGame=false;
- ttcg::recordCampaignResult(saved,i,winner,true,sessionRules,static_cast<std::uint32_t>(std::chrono::steady_clock::now().time_since_epoch().count()),true);
+ ttcg::recordCampaignResult(saved,i,winner,true,sessionRules,true);
  ttcg::finishTravellerEncounter(saved,i,gameHour());
  syncProgression();
 }
@@ -399,7 +427,7 @@ inline bool recoverSavedMatch() {
   resolveSavedMatch(false);notice="The tournament has ended.";return false;
  }
  auto actor=resolveID<RE::Actor>(savedMatch.opponent);
- if(!actor||actor->IsDead()||actor->IsDisabled()){
+ if(!actor||!actor->IsHumanoid()||actor->IsDead()||actor->IsDisabled()){
   resolveSavedMatch(false);notice="Your interrupted game has been canceled.";return false;
  }
  return true;
@@ -432,6 +460,7 @@ inline void recover() {
  claimAlbum();ensureAlbum();updateTournaments();
 }
 inline void seedOpponent(RE::Actor* actor) {
+ const ttcg::NpcSyncWorkScope timing(ttcg::NpcSyncWork::Restock);
  const int i=profileIndex(actor);
  if(i<0){
    if(actor&&!isChild(actor)&&development.allowAnyNPC)saved.opponents.try_emplace(ledgerKey(actor),ttcg::childStock(persistentID(actor->GetActorBase())));
@@ -455,7 +484,13 @@ inline bool prepare(RE::Actor* actor,bool resetTerms=false) {
  if(saved.contract.pending()||saved.goldCredit){notice="Transfer pending.";return false;}
  seedOpponent(actor);
  const int i=profileIndex(actor);
- if(resetTerms){ttcg::abandonRuleCulture(saved,gameHour());cultureGame=false;cultureNotice.clear();requestAnswered=false;sessionRules=terms(actor).rules;ruleRequest=development.rules>=0||!isChild(actor)?0:ttcg::childRequestedRule(saved,persistentID(actor->GetActorBase()),gameHour()/24,sessionRules);}
+ if(resetTerms){
+  ttcg::abandonRuleCulture(saved,gameHour());cultureGame=false;cultureNotice.clear();requestAnswered=false;
+  cultureHeldHold=0;updateRegionalRules();
+  const auto* p=profile(actor);
+  cultureHeldHold=actor&&!tournamentID&&!(p&&(p->personalRules||p->traveller))?actorHold(actor):0;
+  sessionRules=terms(actor).rules;ruleRequest=development.rules>=0||!isChild(actor)?0:ttcg::childRequestedRule(saved,persistentID(actor->GetActorBase()),gameHour()/24,sessionRules);
+ }
  owned=inventory(RE::PlayerCharacter::GetSingleton());auto rival=inventory(actor);
  practice=isChild(actor);
  if(!actor){canStake=false;rivalDeck={};if(ttcg::playableCount(owned)<5)notice="You need five cards.";ttcg::retainOwnedDecks(saved);return true;}
@@ -512,7 +547,7 @@ inline std::string json(RE::Actor* actor,bool=true,bool conceal=false) {
  std::set<std::string> missingSets;
  for(const auto& [id,n]:saved.player)if(n>0){auto found=saved.missingCards.find(ttcg::baseCardID(id));if(found!=saved.missingCards.end())missingSets.insert(found->second.substr(0,found->second.find(':')));}
  out+="],\"missingSets\":[";bool firstMissing=true;for(const auto& set:missingSets){if(!firstMissing)out+=',';firstMissing=false;out+=ttcg::quote(set);}
- out+=std::format("],\"gold\":{},\"rivalGold\":{},\"canStake\":{},\"loaner\":false,\"staked\":{},\"reward\":{},\"wager\":{},\"notice\":{},\"receipt\":{},\"prizes\":[",
+ out+=std::format("],\"gold\":{},\"rivalGold\":{},\"canStake\":{},\"staked\":{},\"reward\":{},\"wager\":{},\"notice\":{},\"receipt\":{},\"prizes\":[",
    ttcg::count(stock,0),ttcg::count(rival,0),canStake?"true":"false",c.pending()&&(c.rule()||c.wager)?"true":"false",c.choicePending()?"true":"false",c.wager,ttcg::quote(notice),ttcg::quote(receipt));
  for(int h=0;h<5;++h) { if(h) out+=','; out+=conceal?"-2":std::to_string(ttcg::displayIndex(c.hands[1][h])); }
  out+=std::format("],\"outcome\":{},\"choice\":{},\"paying\":{}}}",c.outcome,c.rule()==ttcg::TradeOne&&c.outcome==1?ttcg::prizeChoice(c.hands[0]):-1,c.paying?"true":"false");
@@ -560,7 +595,7 @@ inline std::string json(RE::Actor* actor,bool=true,bool conceal=false) {
  bool regionFirst=true;
  for(const auto& h:ttcg::holds){if(!regionFirst)out+=',';regionFirst=false;const auto terms=ttcg::holdTerms(saved,h.id);
  const auto rep=ttcg::localReputation(saved,h.id);
- out+=std::format("{{\"id\":{},\"name\":{},\"rules\":{},\"trade\":{},\"reputationTitle\":{},\"wins\":{}}}",h.id,ttcg::quote(h.name),terms.rules,terms.trade,ttcg::quote(rep.title()),rep.wins);}
+ out+=std::format("{{\"id\":{},\"name\":{},\"rules\":{},\"trade\":{},\"reputationTitle\":{},\"wins\":{}}}",h.id,ttcg::quote(h.name),terms.rules,terms.trade,ttcg::quote(rep.title()),rep.wins);out.pop_back();out+=",\"ruleChanges\":"+ttcg::regionalChangesJson(saved,h.id,hour,gameDate())+"}";}
  bool elsewhere=false;for(int n=0;n<int(ttcg::opponents.size());++n)if(!ttcg::opponents[n].hold&&!ttcg::opponents[n].traveller&&development.showsPlayer(saved,n))elsewhere=true;
  for(auto [base,hold]:saved.childHolds)if(!hold&&saved.players.contains(base)&&saved.players.at(base).known)elsewhere=true;
  if(elsewhere){out+=",{\"id\":12,\"name\":\"Elsewhere\",\"rules\":16,\"trade\":1,\"wins\":0,\"reputationTitle\":\"\",\"unaffiliated\":true}";}
@@ -574,7 +609,7 @@ inline void save(SKSE::SerializationInterface* serial) {
  if(!serial->WriteRecord(0x434F4C4C,ttcg::collectionFormat,data.data(),static_cast<std::uint32_t>(data.size()*4))) SKSE::log::error("Could not save collection state");
  if(savedMatch.present){const auto table=ttcg::encodeMatch(savedMatch);if(!serial->WriteRecord(0x4D415443,ttcg::savedMatchFormat,table.data(),static_cast<std::uint32_t>(table.size()*4)))SKSE::log::error("Could not save interrupted match");}
 }
-inline void revert(SKSE::SerializationInterface*) {clearNpcCache();saved={};savedMatch={};tournamentID=0;tournamentRegistration=0;tournamentLetterReady=0;tournamentLetterInFlight=0;cultureGame=false;cultureNotice.clear();saveValid=true;notice.clear();receipt.clear();revealed.clear();revealKind.clear();revealID=0;ttcg::resetRuntimeOpponents();practice=false;competitiveMatch=false;requestAnswered=false;ruleRequest=0;sessionRules=0;}
+inline void revert(SKSE::SerializationInterface*) {clearNpcCache();saved={};savedMatch={};tournamentID=0;cultureHeldHold=0;tournamentRegistration=0;tournamentLetterReady=0;tournamentLetterInFlight=0;cultureGame=false;cultureNotice.clear();saveValid=true;notice.clear();receipt.clear();revealed.clear();revealKind.clear();revealID=0;ttcg::resetRuntimeOpponents();practice=false;competitiveMatch=false;requestAnswered=false;ruleRequest=0;sessionRules=0;}
 inline void load(SKSE::SerializationInterface* serial) {
  revert(serial);
  std::uint32_t type,version,length;
@@ -587,7 +622,7 @@ inline void load(SKSE::SerializationInterface* serial) {
     continue;
    }
    if(type!=0x434F4C4C) continue;
-   if((version!=20&&version!=21&&version!=26&&version!=27&&version!=28&&version!=29&&version!=ttcg::collectionFormat)||length%4||length>16*1048576) { saveValid=false; continue; }
+   if((version!=20&&version!=21&&version!=26&&version!=27&&version!=28&&version!=29&&version!=30&&version!=ttcg::collectionFormat)||length%4||length>16*1048576) { saveValid=false; continue; }
    std::vector<std::uint32_t> data(length/4);
    if(serial->ReadRecordData(data.data(),length)!=length||!ttcg::decodeCollection(data,saved,version)) { saveValid=false; continue; }
    if(version<30){

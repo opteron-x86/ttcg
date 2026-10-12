@@ -77,7 +77,7 @@ inline void initialize(const char* plugin){
   // Inclusion lists need the pack category; blacklist vendors already accept it.
   auto& v=faction->vendorData;
   if(!v.vendorValues.notBuySell&&!v.vendorSellBuyList->HasForm(keyword))v.vendorSellBuyList->forms.push_back(keyword);
-  SKSE::log::info("General-goods faction: {:08X}",faction->GetFormID());
+  SKSE::log::debug("General-goods faction: {:08X}",faction->GetFormID());
  }
  unsigned count=0;
  for(auto base:generalContainers){
@@ -87,7 +87,7 @@ inline void initialize(const char* plugin){
   if(base->GetObjectCount(roll)==0&&base->AddObjectToContainer(roll,1,nullptr))++count;
  }
  const auto tagged=tagAlbumSellers();
- SKSE::log::info("Album dialogue: general-goods role {}, marker {}, tagged {} NPC bases",generalGoodsRole!=nullptr,albumSeller!=nullptr,tagged);
+ SKSE::log::debug("Album dialogue: general-goods role {}, marker {}, tagged {} NPC bases",generalGoodsRole!=nullptr,albumSeller!=nullptr,tagged);
  initialized=true;
  SKSE::log::info("Album sellers: {} service factions; packs added to {} container bases",factions.size(),count);
 }

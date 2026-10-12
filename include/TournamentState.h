@@ -25,9 +25,7 @@ struct Tournament {
 struct TournamentState {
  std::array<unsigned,10> nextRegular{};
  std::array<unsigned,2> nextCircuit{},circuitRotation{};
- // Retain the retired one-shot test token in format 26; new switches use the
- // actual unfinished events rather than a token that can strand a test.
- unsigned sequence=0,developmentToken=0;
+ unsigned sequence=0;
  unsigned packCredit=0,standardPackCredit=0;
  std::map<unsigned,unsigned> npcGold;
  std::set<std::uint32_t> trophies;
@@ -36,7 +34,7 @@ struct TournamentState {
 inline void encodeTournaments(std::vector<std::uint32_t>& out,const TournamentState& s){
  for(const auto* dates:{&s.nextCircuit,&s.circuitRotation})out.insert(out.end(),dates->begin(),dates->end());
  out.insert(out.end(),s.nextRegular.begin(),s.nextRegular.end());
- for(auto v:{s.sequence,s.developmentToken,s.packCredit,s.standardPackCredit})out.push_back(v);
+ for(auto v:{s.sequence,0u,s.packCredit,s.standardPackCredit})out.push_back(v); // Retired development token stays reserved.
  out.push_back(s.npcGold.size());for(auto [id,n]:s.npcGold){out.push_back(id);out.push_back(n);}
  out.push_back(s.trophies.size());for(auto id:s.trophies)out.push_back(id);
  out.push_back(s.events.size());
@@ -50,10 +48,10 @@ inline void encodeTournaments(std::vector<std::uint32_t>& out,const TournamentSt
  }
 }
 template<class Get,class ValidCard,class ValidRules> bool decodeTournaments(Get get,TournamentState& s,ValidCard card,ValidRules rules,unsigned version=27){
- if(version!=26&&version!=27&&version!=28&&version!=29&&version!=30)return false;
+ if(version!=26&&version!=27&&version!=28&&version!=29&&version!=30&&version!=31)return false;
  for(auto* dates:{&s.nextCircuit,&s.circuitRotation})for(auto& v:*dates){v=get();if(v>100000000)return false;}
  for(auto& v:s.nextRegular){v=get();if(v>100000000)return false;}
- s.sequence=get();s.developmentToken=get();s.packCredit=get();s.standardPackCredit=get();
+ s.sequence=get();get();s.packCredit=get();s.standardPackCredit=get();
  if(s.sequence>1000000||s.packCredit>1000000||s.standardPackCredit>1000000)return false;
  auto n=get();if(n>1024)return false;for(unsigned i=0;i<n;++i){auto id=get(),amount=get();if(!id||amount>1000000||s.npcGold.contains(id))return false;s.npcGold[id]=amount;}
  n=get();if(n>8192)return false;for(unsigned i=0;i<n;++i){auto id=get();if(!card(id)||!s.trophies.insert(id).second)return false;}

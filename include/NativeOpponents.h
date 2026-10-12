@@ -1,4 +1,5 @@
 #pragma once
+#include "NpcFactionTracking.h"
 // Included after NativeCollection: integration uses the same campaign ledger,
 // availability checks, actor identity, and restocking as authored vanilla play.
 namespace campaign {
@@ -7,14 +8,16 @@ inline std::mutex npcCacheMutex;
 inline std::map<RE::FormID,int> npcAvailabilityCache;
 inline std::map<RE::FormID,std::string> npcIdentityCache;
 inline std::set<std::string> npcGrantedCache;
-inline void clearNpcCache(){std::scoped_lock lock(npcCacheMutex);npcAvailabilityCache.clear();npcIdentityCache.clear();npcGrantedCache.clear();}
+inline ttcg::NpcFactionTracking npcFactionTracking;
+inline void clearNpcCache(){npcFactionTracking.reset();std::scoped_lock lock(npcCacheMutex);npcAvailabilityCache.clear();npcIdentityCache.clear();npcGrantedCache.clear();}
 inline void initNpcForms(){auto data=RE::TESDataHandler::GetSingleton();npcAvailabilityFaction=data->LookupForm<RE::TESFaction>(0x886,plugin);npcGenericFaction=data->LookupForm<RE::TESFaction>(0x887,plugin);}
 inline bool npcGatesMet(RE::Actor* actor,const std::vector<ttcg::OpponentGate>& gates){
+ const ttcg::NpcSyncWorkScope timing(ttcg::NpcSyncWork::Integration);
  for(const auto& g:gates){const auto id=ttcg::worldFormID(g.form);
   if(g.kind<=1){auto quest=resolveID<RE::TESQuest>(id);if(!quest)return false;
    if(g.kind==1){if(quest->GetCurrentStageID()<g.value)return false;}
    else {bool done=false;if(quest->executedStages)for(const auto& stage:*quest->executedStages)if(stage.data.index==g.value){done=true;break;}if(!done)return false;}
-  }else if(g.kind==2){auto faction=resolveID<RE::TESFaction>(id);auto subject=g.player?static_cast<RE::Actor*>(RE::PlayerCharacter::GetSingleton()):actor;if(!faction||!subject||!subject->IsInFaction(faction))return false;}
+  }else if(g.kind==2){auto faction=resolveID<RE::TESFaction>(id);auto subject=g.player?static_cast<RE::Actor*>(RE::PlayerCharacter::GetSingleton()):actor;if(!faction||!subject||!ttcg::measureNpcSync(ttcg::NpcSyncWork::Factions,[&]{return subject->IsInFaction(faction);}))return false;}
   else {auto value=resolveID<RE::TESGlobal>(id);if(!value||value->value<float(g.value))return false;}
  }return true;
 }
@@ -30,12 +33,16 @@ inline void logNpcDependencies(){
  for(const auto& g:ttcg::npcGrantDefinitions){ttcg::Stock required;if(!resolveID<RE::TESNPC>(ttcg::worldFormID(g.actor))||!ttcg::resolveNpcCards(g.cards,required))SKSE::log::warn("NPC grant {} dormant: actor or card dependency is missing/invalid",g.key);}
 }
 inline std::string npcEligibilityReason(RE::Actor* actor,bool automatic=true){
+ const ttcg::NpcSyncWorkScope timing(ttcg::NpcSyncWork::Integration);
  if(!actor||actor==RE::PlayerCharacter::GetSingleton())return "Face a nearby resident.";
  auto base=actor->GetActorBase();if(!base||!actor->GetRace())return "No stable NPC identity.";
+ // Dialogue flags and a voice type also occur on pets. Use Skyrim's NPC
+ // classification, independently of voice origin or authored enrollment.
+ if(!ttcg::measureNpcSync(ttcg::NpcSyncWork::Humanoid,[&]{return actor->IsHumanoid();}))return "Only humanoid residents can play Tessera.";
  if(actor->IsChild())return "Children use the practice roster.";
  const auto id=persistentID(base);if(ttcg::excludedNpc(id))return "Excluded by an opponent integration.";
  if(!base->IsUnique()||base->Respawns()||!actor->IsPersistent()||actor->GetFormID()>>24==0xFF)return "Requires a unique, persistent resident.";
- if(actor->IsDead()||actor->IsDisabled()||actor->IsHostileToActor(RE::PlayerCharacter::GetSingleton()))return "They are unavailable for games.";
+ if(actor->IsDead()||actor->IsDisabled()||ttcg::measureNpcSync(ttcg::NpcSyncWork::Hostility,[&]{return actor->IsHostileToActor(RE::PlayerCharacter::GetSingleton());}))return "They are unavailable for games.";
  if(actor->IsSummoned()||actor->IsReanimated()||actor->IsGhost())return "This actor is not a resident.";
  if(!actor->GetRace()->AllowsPCDialogue()||!base->GetVoiceType())return "This NPC does not support ordinary dialogue.";
  const auto voiceFile=base->GetVoiceType()->GetFile(0);
@@ -45,6 +52,7 @@ inline std::string npcEligibilityReason(RE::Actor* actor,bool automatic=true){
  return {};
 }
 inline bool npcTemporarilyReady(RE::Actor* actor){
+ const ttcg::NpcSyncWorkScope timing(ttcg::NpcSyncWork::ActorState);
  return actorReadyForCards(actor)&&!actor->IsBleedingOut()&&!actor->IsUnconscious()&&actor->GetLifeState()!=RE::ACTOR_LIFE_STATE::kRestrained&&actor->GetSitSleepState()!=RE::SIT_SLEEP_STATE::kIsSleeping;
 }
 inline std::string npcTheme(RE::Actor* actor){
@@ -52,7 +60,8 @@ inline std::string npcTheme(RE::Actor* actor){
  switch(race){case 0x13740:return "Argonian";case 0x13741:return "Breton";case 0x13742:return "Dark Elf";case 0x13743:return "High Elf";case 0x13744:return "Imperial";case 0x13745:return "Khajiit";case 0x13746:return "Nord";case 0x13747:return "Orc";case 0x13748:return "Redguard";case 0x13749:return "Wood Elf";default:return {};}
 }
 inline bool npcIntegrationReady(RE::Actor* actor){
- if(!actor)return false;const auto base=persistentID(actor->GetActorBase());if(ttcg::excludedNpc(base))return false;
+ const ttcg::NpcSyncWorkScope timing(ttcg::NpcSyncWork::Integration);
+ if(!actor||!ttcg::measureNpcSync(ttcg::NpcSyncWork::Humanoid,[&]{return actor->IsHumanoid();}))return false;const auto base=persistentID(actor->GetActorBase());if(ttcg::excludedNpc(base))return false;
  const auto* d=ttcg::opponentDefinition(base);if(d&&!npcDefinitionAvailable(*d))return false;
  auto it=saved.residents.profiles.find(base);if(it==saved.residents.profiles.end())return !d||npcGatesMet(actor,d->gates);
  const auto& r=it->second;if(!r.enabled||!r.selected||r.reference!=persistentID(actor))return false;
@@ -105,27 +114,55 @@ inline void registerNearbyNpcs(){
  });
 }
 inline void setNpcFaction(RE::Actor* actor,RE::TESFaction* faction,int rank){
+ const ttcg::NpcSyncWorkScope timing(ttcg::NpcSyncWork::Factions);
  if(!actor||!faction)return;if(rank<0){if(actor->IsInFaction(faction))actor->RemoveFromFaction(faction);}
  else if(!actor->IsInFaction(faction)||actor->GetFactionRank(faction,false)!=rank)actor->AddToFaction(faction,rank);
 }
-inline int npcAvailability(RE::Actor* actor){
+inline int npcAvailability(RE::Actor* actor,int knownProfile){
+ const ttcg::NpcSyncWorkScope timing(ttcg::NpcSyncWork::Readiness);
  if(!actor||!interfaceSettings.gamesEnabled||!hasAlbum()||!npcTemporarilyReady(actor)||!npcIntegrationReady(actor))return 0;
- const auto i=profileIndex(actor);if(i<0||!unlocked(i))return 0;
+ // A supplied index belongs to this actor in the current refresh only.
+ const auto i=knownProfile==-2?profileIndex(actor):knownProfile;if(i<0||!unlocked(i))return 0;
  if(resumingWith(actor))return 1;
  if(!ttcg::opponentHasCards(saved,i))return 3;
  if(!ttcg::encounterReady(saved,i,gameHour())||(!development.unlockAllPlayers&&(!ttcg::challengeReputationMet(saved,i)||!ttcg::willingToPlay(saved,i,gameHour()))))return 2;
  return 1;
 }
+inline bool observeNpcFactions(RE::Actor* actor,std::uint64_t generation){
+ const ttcg::NpcSyncWorkScope timing(ttcg::NpcSyncWork::Factions);
+ if(!actor||!((npcAvailabilityFaction&&actor->IsInFaction(npcAvailabilityFaction))||(npcGenericFaction&&actor->IsInFaction(npcGenericFaction))))return false;
+ return npcFactionTracking.observe(generation,actor->GetFormID());
+}
 inline void syncNpcDialogue(){
  if(!npcAvailabilityFaction)return;
+ const auto generation=npcFactionTracking.generation();
  std::map<RE::FormID,int> cache;std::map<RE::FormID,std::string> identities;
+ std::set<RE::FormID> dynamicReferences;
+ {
+ const ttcg::NpcSyncPhaseScope phase(ttcg::NpcSyncPhase::Dialogue);
  for(unsigned i=0;i<ttcg::opponents.size();++i){const auto& p=ttcg::opponents[i];auto actor=resolveID<RE::Actor>(p.reference);if(!actor)continue;
-  const int ready=npcAvailability(actor);cache[actor->GetFormID()]=ready;identities[actor->GetFormID()]=ttcg::worldKey(p.base);if(!p.dynamic)continue;setNpcFaction(actor,npcAvailabilityFaction,ready);
+  const int actorProfile=profileIndex(actor),ready=npcAvailability(actor,actorProfile);
+  {const ttcg::NpcSyncWorkScope cacheTiming(ttcg::NpcSyncWork::Cache);cache[actor->GetFormID()]=ready;identities[actor->GetFormID()]=ttcg::worldKey(p.base);}
+  if(!p.dynamic||actorProfile!=int(i))continue;
+  setNpcFaction(actor,npcAvailabilityFaction,ready);dynamicReferences.insert(actor->GetFormID());
   const auto* d=ttcg::opponentDefinition(p.base);setNpcFaction(actor,npcGenericFaction,d&&d->customDialogue?-1:0);
  }
- // Remove a former eligibility gate after a save switch, mod removal, or an
- // exclusion. Factions are native runtime state, never the profile authority.
- if(auto* lists=RE::ProcessLists::GetSingleton())lists->ForAllActors([&](RE::Actor* actor){if(actor&&(profileIndex(actor)<0||!ttcg::opponents[profileIndex(actor)].dynamic)){setNpcFaction(actor,npcAvailabilityFaction,-1);setNpcFaction(actor,npcGenericFaction,-1);}return RE::BSContainer::ForEachResult::kContinue;});
+ }
+ const ttcg::NpcSyncPhaseScope phase(ttcg::NpcSyncPhase::Cleanup);
+ // Recover markers restored by the game, including tags from older builds or
+ // another character. Untagged actors need no Tessera identity/profile lookup.
+ if(auto* lists=RE::ProcessLists::GetSingleton();lists&&npcFactionTracking.beginDiscovery(generation)){
+  unsigned tagged=0;
+  lists->ForAllActors([&](RE::Actor* actor){if(observeNpcFactions(actor,generation))++tagged;return RE::BSContainer::ForEachResult::kContinue;});
+  SKSE::log::info("NPC dialogue recovery: {} actors with Tessera markers",tagged);
+ }
+ // Ordinary refreshes only consider actors we tagged or saw carrying a tag.
+ // An unresolved reference is forgotten; its load event can rediscover it.
+ for(const auto id:npcFactionTracking.reconcile(generation,dynamicReferences)){
+  if(!npcFactionTracking.current(generation))break;
+  if(auto* actor=RE::TESForm::LookupByID<RE::Actor>(id)){setNpcFaction(actor,npcAvailabilityFaction,-1);setNpcFaction(actor,npcGenericFaction,-1);}
+ }
+ const ttcg::NpcSyncWorkScope cacheTiming(ttcg::NpcSyncWork::Cache);
  std::scoped_lock lock(npcCacheMutex);npcAvailabilityCache=std::move(cache);npcIdentityCache=std::move(identities);npcGrantedCache=saved.residents.grants;
 }
 inline RE::TESTopicInfo* npcResponse(RE::Actor* actor,int state){
@@ -154,6 +191,7 @@ inline bool canEnrollNpc(RE::Actor* actor){
 }
 inline std::string npcInspector(RE::Actor* actor){
  if(!actor)return "Face a nearby resident to add them.";
+ if(!actor->IsHumanoid())return npcEligibilityReason(actor,false);
  const int i=profileIndex(actor);if(i>=0){if(ttcg::opponents[i].dynamic&&ttcg::opponents[i].automatic&&interfaceSettings.residents==0)return std::string("Keep ")+actor->GetName()+" available with automatic players turned off.";return std::string(actor->GetName())+" already plays Tessera.";}
  auto reason=npcEligibilityReason(actor,false);if(!reason.empty())return reason;
  const auto* d=ttcg::opponentDefinition(persistentID(actor->GetActorBase()));

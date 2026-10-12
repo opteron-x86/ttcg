@@ -1,6 +1,5 @@
 #include <RE/Skyrim.h>
 #include <SKSE/SKSE.h>
-#include <spdlog/sinks/basic_file_sink.h>
 #include <atomic>
 #include <chrono>
 #include <format>
@@ -10,9 +9,9 @@
 #include "BuildInfo.h"
 #include "UIHost.h"
 #include "WorldFocus.h"
+#include "PresentationWait.h"
 #include "Match.h"
 #include "Presentation.h"
-#include "ArtTransfer.h"
 #include "ExpansionLoader.h"
 #include "ExpansionRewards.h"
 #include "Lesson.h"
@@ -22,6 +21,7 @@
 #undef GetObject
 #endif
 #include "NativeCollection.h"
+#include "NativeCollectionAPI.h"
 #include "NativeShop.h"
 #include "DevelopmentPresentation.h"
 #include "EncounterRecords.h"
@@ -30,20 +30,23 @@ namespace {
 namespace log=SKSE::log;
 ttcg::ui::Host* api{};
 ttcg::ui::View view{};
-bool domReady=false, visible=false, active=false, thinking=false, settling=false;
+bool uiReady=false, visible=false, active=false, thinking=false, settling=false;
 std::uint64_t session=0, revision=0;
 std::atomic<std::uint64_t> epoch{0};
-RE::ActorHandle opponent, pending, approachingMaster, enrollmentTarget;
-std::atomic<RE::FormID> masterCandidate{0};
-bool masterPresented=false;
-std::chrono::steady_clock::time_point approachStarted;
-void cancelMasterApproach();
+RE::ActorHandle opponent, pending, enrollmentTarget;
 std::string albumSection;
 std::string opponentName,screen="lobby",pendingScreen="lobby";
 ttcg::HotkeyBindings hotkeys;
 auto& collectionKey=hotkeys.collection;
 auto& challengeKey=hotkeys.challenge;
 std::string bindingCapture,bindingNotice;
+unsigned heldHotkeyModifiers(){
+ const auto manager=RE::BSInputDeviceManager::GetSingleton();
+ const auto keyboard=manager?manager->GetKeyboard():nullptr;
+ if(!keyboard)return 0;
+ const auto& keys=keyboard->GetRuntimeData().curState;
+ return ttcg::heldHotkeyModifiers([&](unsigned key){return key<sizeof(keys)&&(keys[key]&0x80)!=0;});
+}
 std::string developmentNotice;
 std::string cardBackNotice;
 ttcg::WorldPauseSettings worldPauseSettings;
@@ -56,6 +59,8 @@ constexpr std::array pauseOptions{
 };
 std::string interfaceNotice;
 ttcg::WorldFocus worldFocus;
+ttcg::PresentationWait presentationWait;
+bool panelMonitoring=false;
 std::atomic<std::uint64_t> unpausedWorldEpoch{0},worldMonitorGeneration{0};
 std::atomic<RE::FormID> watchedOpponent{0};
 RE::ActorHandle waitingOpponent;
@@ -74,7 +79,7 @@ bool musicEnabled=true, musicPlaying=false;
 ttcg::SuspendedMusic<RE::BSIMusicType> suspendedMusic;
 const auto settingsPath=std::filesystem::absolute(L"Data\\SKSE\\Plugins\\TTCG.ini").wstring();
 void playSound(const char* editorID) {
- log::info("Audio request: {} (session {}, revision {})",editorID,session,revision);
+ log::debug("Audio request: {} (session {}, revision {})",editorID,session,revision);
  RE::PlaySound(editorID);
 }
 void playRuleSound(unsigned bit) {
@@ -85,7 +90,8 @@ void playRuleSound(unsigned bit) {
    log::error("Rule sound unavailable: {:06X}",localID); return;
  }
  const bool started=audio->Play(descriptor);
- log::info("Rule sound {:08X}: playback {}",descriptor->GetFormID(),started?"submitted":"failed");
+ if(started)log::debug("Rule sound {:08X}: playback submitted",descriptor->GetFormID());
+ else log::warn("Rule sound {:08X}: playback failed",descriptor->GetFormID());
 }
 void publish();
 std::uint64_t musicTime() {
@@ -94,7 +100,7 @@ std::uint64_t musicTime() {
 void scanMusicFolder() {
  auto scan=ttcg::scanMusic(std::filesystem::path(L"Data\\Music\\TTCG"));
  musicFiles=std::move(scan.files);
- log::info("Music folder: {} tracks, {} duplicate copies, {} rejected files",musicFiles.size(),scan.duplicates,scan.rejected.size());
+ log::debug("Music folder: {} tracks, {} duplicate copies, {} rejected files",musicFiles.size(),scan.duplicates,scan.rejected.size());
  for(const auto& path:scan.rejected) log::warn("Invalid XWM: {}",path.string());
 }
 struct MusicAudio {
@@ -117,27 +123,28 @@ struct MusicAudio {
    handle=RE::BSSoundHandle{};
    const bool built=audio->GetSoundHandle(handle,musicDescriptor);
    const bool submitted=built&&handle.Play();
-   log::info("Direct music: {} (built {}, submitted {}, handle {})",path,built,submitted,handle.soundID);
+   if(submitted)log::debug("Direct music: {} (built {}, submitted {}, handle {})",path,built,submitted,handle.soundID);
+   else log::warn("Music playback failed: {} (built {})",path,built);
    return submitted;
  }
  bool playing() { return handle.IsValid()&&handle.IsPlaying(); }
  void stop() { if(handle.IsValid()) handle.Stop(); handle=RE::BSSoundHandle{}; }
  void failed() { log::warn("Music did not start within 3 seconds: {}",path); }
  void suspend() {
-   log::info("Music playing: {}",path);
+   log::debug("Music playing: {}",path);
    auto manager=RE::BSMusicManager::GetSingleton();
    if(!manager) return;
    const bool paused=suspendedMusic.suspend(manager->current,static_cast<RE::BSIMusicType*>(nullptr),
      [](auto* music) { return music->typeStatus==RE::BSIMusicType::MUSIC_STATUS::kPlaying; },
      [](auto* music) { music->DoPause(); return music->typeStatus==RE::BSIMusicType::MUSIC_STATUS::kPaused; });
-   if(paused) log::info("Location music paused");
+   if(paused) log::debug("Location music paused");
  }
  void restore() {
    auto manager=RE::BSMusicManager::GetSingleton();
    const bool restored=suspendedMusic.restore([manager](auto* music) { return manager&&manager->current==music; },
      [](auto* music) { return music->typeStatus==RE::BSIMusicType::MUSIC_STATUS::kPaused; },
      [](auto* music) { music->DoPlay(); });
-   if(restored) log::info("Location music resumed");
+   if(restored) log::debug("Location music resumed");
  }
 
 } musicAudio;
@@ -153,7 +160,7 @@ void monitorMusic() {
      std::this_thread::sleep_for(std::chrono::milliseconds(250));
      if(musicGeneration.load()!=generation) break;
      if(pendingTick->exchange(true)) continue;
-     SKSE::GetTaskInterface()->AddTask([generation,pendingTick]() {
+     collectionIntegration::queue([generation,pendingTick]() {
        pendingTick->store(false);
        if(musicGeneration.load()!=generation) return;
        folderPlaylist.tick(musicAudio,musicTime());
@@ -249,8 +256,13 @@ void monitorWorld() {
    std::this_thread::sleep_for(std::chrono::milliseconds(250));
    if(worldMonitorGeneration.load()!=generation)break;
    if(pendingTick->exchange(true))continue;
-   SKSE::GetTaskInterface()->AddTask([generation,pendingTick](){
-    pendingTick->store(false);if(worldMonitorGeneration.load()==generation)checkLiveWorld();
+   collectionIntegration::queue([generation,pendingTick](){
+    pendingTick->store(false);
+    if(worldMonitorGeneration.load()!=generation||!visible||!checkLiveWorld())return;
+    if(presentationWait.expired(session,revision,active?(settling?1u:thinking?2u:0u):0u,musicTime())){
+     log::error("Match stalled: session {}, revision {}, placed {}, turn {}, settling {}, thinking {}; preserving table and releasing UI",session,revision,match.placed,match.turn,settling,thinking);
+     interruptPanel();
+    }
    });
   }
  }).detach();
@@ -258,15 +270,17 @@ void monitorWorld() {
 bool updateWorldFocus() {
  const auto result=worldFocus.apply(*api,view,ttcg::shouldPauseWorld(worldPauseSettings,screen,active));
  const auto token=result==ttcg::FocusUpdate::Ready&&worldFocus.unpaused()?epoch.load()+1:0;
- if(unpausedWorldEpoch.exchange(token)!=token){++worldMonitorGeneration;if(token)monitorWorld();}
+ unpausedWorldEpoch.store(token);
+ // Paused matches also need recovery if presentation or AI stops responding.
+ if(!panelMonitoring){panelMonitoring=true;presentationWait.reset();monitorWorld();}
  watchedOpponent.store(token&&(active||challengeContext||screen=="shop")&&opponent.get()?opponent.get()->GetFormID():0);
  if(result==ttcg::FocusUpdate::Lost){interruptPanel();return false;}
  if(result==ttcg::FocusUpdate::Releasing) {
    const auto token=epoch.load();
-   // Meridian queued its release first. Cross that UI-task boundary before
+   // The native menu queued its release first. Cross that UI-task boundary before
    // returning to the game thread to acquire the new mode and publish state.
    SKSE::GetTaskInterface()->AddUITask([token]() {
-     SKSE::GetTaskInterface()->AddTask([token]() {
+     collectionIntegration::queue([token]() {
        if(epoch.load()!=token||!visible||!worldFocus.switching())return;
        auto player=RE::PlayerCharacter::GetSingleton();
        if(!player||player->IsDead()||player->IsInCombat()||!worldFocus.complete(*api,view)){interruptPanel();return;}
@@ -278,8 +292,9 @@ bool updateWorldFocus() {
  return false;
 }
 void publish() {
- if(!api||!domReady||!visible) return;
+ if(!api||!uiReady||!visible) return;
  if(!updateWorldFocus())return;
+ campaign::updateRegionalRules();
  auto data=ttcg::snapshotJson(match,session,revision,opponentName,active,thinking,lastResult,settling,musicEnabled,(musicDescriptor&&!musicFiles.empty()));
  auto actor=opponent.get();
  const bool conceal=ttcg::concealRivalHand(match,active);
@@ -290,6 +305,7 @@ void publish() {
  if(screen=="lesson"){data.pop_back();data+=",\"lesson\":"+lesson.json()+"}";}
  data.pop_back();data+=std::format(",\"settings\":{{\"collection\":{},\"challenge\":{},\"capturing\":{},\"notice\":{},\"cardBackNotice\":{},\"interfaceNotice\":{},\"development\":{}",collectionKey,challengeKey,ttcg::quote(bindingCapture),ttcg::quote(bindingNotice),ttcg::quote(cardBackNotice),ttcg::quote(interfaceNotice),ttcg::developmentJson(campaign::development,developmentNotice));
  data+=",\"toggleGames\":"+std::to_string(hotkeys.toggleGames);
+ data+=",\"heldModifiers\":"+std::to_string(heldHotkeyModifiers());
  for(const auto& f:ttcg::InterfaceSettings::fields){const int value=campaign::interfaceSettings.get(f);data+=","+ttcg::quote(f.json)+":"+(f.boolean()?std::string(value?"true":"false"):std::to_string(value));}
  auto enroll=enrollmentTarget.get();const auto candidate=enroll.get();
  const bool canEnroll=campaign::canEnrollNpc(candidate);
@@ -302,39 +318,34 @@ void publish() {
   data+="{\"opponent\":"+ttcg::quote(campaign::savedMatchName())+",\"tournament\":"+std::to_string(saved.tournament)+",\"finished\":"+(saved.table.finished()?"true":"false")+",\"venue\":"+ttcg::quote(e?ttcg::tournamentVenues[e->hold-1].name:"")+",\"canResume\":"+(campaign::interfaceSettings.gamesEnabled&&e&&campaign::tournamentVenue()==e->hold?"true":"false")+"}";
  }else data+="null";
  data+="}";
- api->InteropCall(view,"ttcgState",data.c_str());albumSection.clear();
+ api->State(view,data);albumSection.clear();
 }
 void close(bool unwind) {
  if(!unwind)checkpointMatch();
- unpausedWorldEpoch.store(0);watchedOpponent.store(0);++worldMonitorGeneration;releaseOpponent();
+ campaign::updateRegionalRules();campaign::cultureHeldHold=0;
+ unpausedWorldEpoch.store(0);watchedOpponent.store(0);++worldMonitorGeneration;panelMonitoring=false;presentationWait.reset();releaseOpponent();
  campaign::closeShop();
  if(unwind&&active)campaign::savedMatch={};
  if(!campaign::savedMatch.present)ttcg::forfeitTournamentFoils(campaign::saved);
  if(unwind&&campaign::tournamentID&&active&&!match.finished())ttcg::withdrawTournament(campaign::saved,campaign::tournamentID);
  campaign::tournamentID=0;campaign::tournamentRegistration=0;albumSection.clear();
- cancelMasterApproach();
  pendingAlbum=false;challengeContext=false;bindingCapture.clear();bindingNotice.clear();developmentNotice.clear();cardBackNotice.clear();interfaceNotice.clear();
  if(unwind&&!campaign::savedMatch.present){ttcg::abandonRuleCulture(campaign::saved,campaign::gameHour());campaign::recover();}
  campaign::cultureGame=false;
  stopMusic();
  ++epoch; ++session; revision=0; pending={}; opponent={};
  visible=false; active=false; thinking=false; settling=false; screen="lobby"; pendingScreen="lobby";worldFocus.reset();
- if(api&&api->IsValid(view)) { if(domReady) api->InteropCall(view,"ttcgReset",""); if(api->HasFocus(view)) api->Unfocus(view); api->Hide(view); }
+ if(api&&api->IsValid(view)) { if(uiReady) api->Reset(view); if(api->HasFocus(view)) api->Unfocus(view); api->Hide(view); }
+ collectionIntegration::publish();
 }
 bool eligible(RE::Actor* actor) {
  auto player=RE::PlayerCharacter::GetSingleton();
  return actor&&player&&actor!=player&&!player->IsDead()&&!player->IsInCombat()&&campaign::actorReadyForCards(actor)
    &&actor->GetParentCell()==player->GetParentCell()&&actor->GetPosition().GetDistance(player->GetPosition())<600.0F;
 }
-void cancelMasterApproach(){
- masterCandidate.store(0);masterPresented=false;
- if(auto actor=approachingMaster.get())actor->EvaluatePackage();
- approachingMaster={};
- if(auto data=RE::TESDataHandler::GetSingleton())if(auto g=data->LookupForm<RE::TESGlobal>(ttcg::encounter_masterGlobal,campaign::plugin))g->value=0;
-}
 bool worldReady(){
  auto player=RE::PlayerCharacter::GetSingleton();auto ui=RE::UI::GetSingleton();
- return player&&ui&&api&&domReady&&!visible&&!player->IsDead()&&!player->IsInCombat()&&!player->IsSneaking()&&!player->GetCurrentScene()&&!ui->GameIsPaused()&&!ui->IsMenuOpen(RE::DialogueMenu::MENU_NAME)&&!ui->IsMenuOpen(RE::MainMenu::MENU_NAME)&&!api->HasAnyActiveFocus();
+ return player&&ui&&api&&uiReady&&!visible&&!player->IsDead()&&!player->IsInCombat()&&!player->IsSneaking()&&!player->GetCurrentScene()&&!ui->GameIsPaused()&&!ui->IsMenuOpen(RE::DialogueMenu::MENU_NAME)&&!ui->IsMenuOpen(RE::MainMenu::MENU_NAME)&&!api->HasAnyActiveFocus();
 }
 void showPanel(RE::Actor* actor,const std::string& requested);
 bool persistInterfaceSetting(const char* section,const char* key,int value){
@@ -349,7 +360,7 @@ bool setGamesEnabled(bool enabled){
  }
  interfaceNotice.clear();campaign::syncGameAvailability();
  if(!enabled){
-  cancelMasterApproach();pending={};
+  pending={};
   if(active){
    close(false);RE::SendHUDMessage::ShowHUDMessage("Tessera disabled. Your game is saved to resume later.");return true;
   }
@@ -362,37 +373,66 @@ bool setGamesEnabled(bool enabled){
  if(visible)publish();else RE::SendHUDMessage::ShowHUDMessage(enabled?"Tessera enabled.":"Tessera disabled.");
  return true;
 }
-void scanMasterApproach(){
+void logNpcSyncTiming(const ttcg::NpcSyncTiming& timing,std::string_view source){
+ if(!spdlog::should_log(spdlog::level::debug))return;
+ std::string phases,work;
+ for(unsigned i=0;i<timing.phases.size();++i){
+  if(i)phases+=", ";phases+=std::format("{} {:.3f}",ttcg::npcSyncPhaseNames[i],ttcg::NpcSyncTiming::ms(timing.phases[i]));
+ }
+ for(unsigned i=0;i<timing.work.size();++i){
+  if(i)work+=", ";work+=std::format("{} {:.3f}/{}",ttcg::npcSyncWorkNames[i],ttcg::NpcSyncTiming::ms(timing.work[i]),timing.calls[i]);
+ }
+ log::debug("NPC sync profile [{}]: {:.3f} ms; phases: {} ({} opponents, {} clock reads)",source,ttcg::NpcSyncTiming::ms(timing.total),phases,ttcg::opponents.size(),timing.clockReads);
+ log::debug("NPC sync work [{}]: {} (exclusive ms/calls)",source,work);
+}
+void backgroundUpdate(){
  if(worldReady()&&campaign::available()){
-  campaign::registerNearbyNpcs();campaign::syncProgression();campaign::updateTournaments();
-
- }
- if(!campaign::interfaceSettings.gamesEnabled){cancelMasterApproach();return;}
- if(approachingMaster){if(masterPresented)return;if(!worldReady()||std::chrono::steady_clock::now()-approachStarted>std::chrono::seconds(30))cancelMasterApproach();return;}
- if(!worldReady()||!campaign::available()||campaign::savedMatch.present||campaign::saved.contract.pending())return;
- campaign::syncProgression();auto player=RE::PlayerCharacter::GetSingleton();const auto hour=campaign::gameHour(),hold=campaign::actorHold(player);
- for(std::size_t i=0;i<ttcg::opponents.size();++i){const auto& p=ttcg::opponents[i];
-  if(p.hold!=hold||!ttcg::canMasterApproach(campaign::saved,int(i),hour)||ttcg::invitationHash(p.base^(hour/6))%3!=0)continue;
-  auto actor=campaign::resolveID<RE::Actor>(p.reference);
-  if(!actor||!actor->Is3DLoaded()||actor->IsDead()||actor->IsDisabled()||actor->IsInCombat()||actor->IsHostileToActor(player)||actor->GetCurrentScene()||actor->GetParentCell()!=player->GetParentCell()||actor->GetPosition().GetDistance(player->GetPosition())>1200)continue;
-  if(!ttcg::reserveMasterApproach(campaign::saved,int(i),hour))continue;
-  approachingMaster=actor->GetHandle();approachStarted=std::chrono::steady_clock::now();masterCandidate.store(actor->GetFormID());return;
+  // Detailed profiling is opt-in. Keep only coarse slow-update timing during
+  // normal play; diagnostic sessions sample the first and every twelfth refresh.
+  static std::atomic_uint profileCount{0};
+  const bool diagnostics=spdlog::should_log(spdlog::level::debug);
+  const bool profile=diagnostics&&profileCount.fetch_add(1,std::memory_order_relaxed)%12==0;
+  ttcg::NpcSyncTiming syncTiming;
+  const auto started=std::chrono::steady_clock::now();
+  campaign::registerNearbyNpcs();const auto registered=std::chrono::steady_clock::now();
+  campaign::syncProgression(profile?&syncTiming:nullptr);const auto refreshed=std::chrono::steady_clock::now();
+  campaign::updateTournaments();const auto finished=std::chrono::steady_clock::now();
+  auto ms=[](auto duration){return std::chrono::duration<double,std::milli>(duration).count();};
+  if(ms(finished-started)>=16.0)log::warn("Slow background update: {:.1f} ms (residents {:.1f}, progression {:.1f}, tournaments {:.1f}; {} opponents)",ms(finished-started),ms(registered-started),ms(refreshed-registered),ms(finished-refreshed),ttcg::opponents.size());
+  if(profile)logNpcSyncTiming(syncTiming,"background");
+  // Successful summaries are diagnostic-only, including their accumulation
+  // and mutex. These measure native work, not frame time or task-queue delay.
+  if(diagnostics){
+   static std::mutex timingsMutex;
+   static std::array<double,4> totals{};
+   static double peak=0;
+   static unsigned samples=0;
+   std::scoped_lock timingLock(timingsMutex);
+   const std::array<double,4> elapsed{ms(finished-started),ms(registered-started),ms(refreshed-registered),ms(finished-refreshed)};
+   for(unsigned i=0;i<totals.size();++i)totals[i]+=elapsed[i];peak=std::max(peak,elapsed[0]);
+   if(++samples==12){
+    log::debug("Background update summary: {} samples, average {:.2f} ms, peak {:.2f} ms (residents {:.2f}, progression {:.2f}, tournaments {:.2f}; {} opponents)",samples,totals[0]/samples,peak,totals[1]/samples,totals[2]/samples,totals[3]/samples,ttcg::opponents.size());
+    totals={};peak=0;samples=0;
+   }
+  }
  }
 }
-RE::Actor* nextMasterPapyrus(RE::StaticFunctionTag*){
- const auto id=masterCandidate.exchange(0);auto actor=id?RE::TESForm::LookupByID<RE::Actor>(id):nullptr;
- SKSE::GetTaskInterface()->AddTask([](){scanMasterApproach();});return actor;
-}
-void masterArrivedPapyrus(RE::StaticFunctionTag*,RE::Actor* actor){
- if(!actor)return;auto handle=actor->GetHandle();
- SKSE::GetTaskInterface()->AddTask([handle](){
-  auto actor=handle.get();if(!actor||approachingMaster!=handle)return;
-  const auto i=campaign::profileIndex(actor.get());
-  if(i<0||i>=int(ttcg::encounterRecords.size())||!worldReady()||!eligible(actor.get())||!campaign::canChallenge(actor.get())){cancelMasterApproach();return;}
-  auto data=RE::TESDataHandler::GetSingleton();auto info=data->LookupForm<RE::TESTopicInfo>(ttcg::encounterRecords[i].master,campaign::plugin);auto gate=data->LookupForm<RE::TESGlobal>(ttcg::encounter_masterGlobal,campaign::plugin);
-  if(!info||!gate){cancelMasterApproach();return;}gate->value=float(i+1);
-  masterPresented=true;if(!actor->SetDialogueWithPlayer(true,true,info))cancelMasterApproach();
+void backgroundUpdatePapyrus(RE::StaticFunctionTag*){
+ // Keep at most one queued refresh. Discard work belonging to an older save.
+ static std::atomic_bool queued{false};
+ if(queued.exchange(true))return;
+ const auto generation=campaign::npcFactionTracking.generation();
+ collectionIntegration::queue([generation](){
+  struct Complete { ~Complete(){queued.store(false);} } complete;
+  if(campaign::npcFactionTracking.current(generation))backgroundUpdate();
  });
+}
+namespace legacyPapyrus {
+// Compatibility for suspended pre-0.28.9 script frames. No task submission,
+// actor changes or maintenance: only BackgroundUpdate owns the periodic work.
+RE::Actor* nextMaster(RE::StaticFunctionTag*){return nullptr;}
+void masterArrived(RE::StaticFunctionTag*,RE::Actor*){}
+void masterResponse(RE::StaticFunctionTag*,RE::Actor*,bool){}
 }
 bool resumeMatch() {
  if(!campaign::interfaceSettings.gamesEnabled||!campaign::recoverSavedMatch())return false;
@@ -401,10 +441,12 @@ bool resumeMatch() {
  const auto* event=ttcg::tournament(campaign::saved,saved.tournament);
  if(!player||player->IsDead()||player->IsInCombat()||!actor||!campaign::actorReadyForCards(actor)||
     (saved.tournament?(!event||campaign::tournamentVenue()!=event->hold):!eligible(actor)))return false;
- if(!api||!domReady||!api->IsValid(view)||(!visible&&api->HasAnyActiveFocus()))return false;
- cancelMasterApproach();campaign::closeShop();
+ if(!api||!uiReady||!api->IsValid(view)||(!visible&&api->HasAnyActiveFocus()))return false;
+ campaign::closeShop();
  campaign::tournamentID=saved.tournament;campaign::sessionRules=saved.table.rules;
  campaign::practice=saved.practice;campaign::competitiveMatch=saved.competitive;campaign::cultureGame=saved.culture;
+ const auto* profile=campaign::profile(actor);
+ campaign::cultureHeldHold=!saved.tournament&&!(profile&&(profile->personalRules||profile->traveller))?campaign::actorHold(actor):0;
  campaign::rivalDeck=saved.originals()[1];campaign::canStake=saved.competitive&&!saved.tournament;
  opponent=actor->GetHandle();opponentName=actor->GetName();match=saved.table;
  // Captures are atomic. Resume the completed position, without replaying an
@@ -424,8 +466,7 @@ void showPanel(RE::Actor* actor,const std::string& requested="lobby") {
  if(target!="album"&&target!="lobby"&&target!="shop")return;
  if(!campaign::interfaceSettings.gamesEnabled&&requested!="album")return;
  if(visible||!player||player->IsDead()||player->IsInCombat()||(actor&&!eligible(actor))||(!actor&&target!="album")) return;
- if(!api||!domReady||!api->IsValid(view)) { RE::SendHUDMessage::ShowHUDMessage(std::format("Tessera: {} is unavailable.",ttcg::ui::name).c_str()); return; }
- cancelMasterApproach();
+ if(!api||!uiReady||!api->IsValid(view)) { RE::SendHUDMessage::ShowHUDMessage(std::format("Tessera: {} is unavailable.",ttcg::ui::name).c_str()); return; }
  if(api->HasAnyActiveFocus()) { RE::SendHUDMessage::ShowHUDMessage("Close the other menu first."); return; }
  campaign::recoverSavedMatch();
  if(campaign::savedMatch.present&&target=="shop"){RE::SendHUDMessage::ShowHUDMessage("Finish your interrupted game before trading cards.");return;}
@@ -489,9 +530,9 @@ void finishAlbumOpen() {
  if(!ui->GameIsPaused()&&!ui->IsMenuOpen(RE::MainMenu::MENU_NAME))showPanel(nullptr,"album");
 }
 void albumPapyrus(RE::StaticFunctionTag*) {
- SKSE::GetTaskInterface()->AddTask([]() {
+ collectionIntegration::queue([]() {
    auto player=RE::PlayerCharacter::GetSingleton();auto ui=RE::UI::GetSingleton();
-   if(visible||pendingAlbum||!campaign::available()||!player||player->IsDead()||player->IsInCombat()||!ui||!domReady||!api||!api->IsValid(view))return;
+   if(visible||pendingAlbum||!campaign::available()||!player||player->IsDead()||player->IsInCombat()||!ui||!uiReady||!api||!api->IsValid(view))return;
    if(!ui->IsMenuOpen(RE::BookMenu::MENU_NAME)||RE::BookMenu::GetTargetForm()!=campaign::albumForm)return;
    pendingAlbum=true;
    auto queue=RE::UIMessageQueue::GetSingleton();if(!queue){pendingAlbum=false;return;}
@@ -519,11 +560,14 @@ void runAI() {
  thinking=true; publish();
  const auto snapshot=match; auto actor=opponent.get();const auto* profile=campaign::profile(actor.get());const int skill=campaign::development.opponentSkill>=0?campaign::development.opponentSkill:profile?profile->skill:campaign::isChild(actor.get())?ttcg::childProfile(campaign::persistentID(actor->GetActorBase())).skill:3; const auto token=epoch.load(); const auto round=session; const auto stateRevision=revision;
  std::thread([snapshot,token,round,stateRevision,skill]() {
+   const bool diagnostics=spdlog::should_log(spdlog::level::debug);
+   const auto started=diagnostics?musicTime():0;
    auto move=ttcg::opponentMove(snapshot,skill,ttcg::matchDecisionSeed(snapshot));
+   if(diagnostics)log::debug("AI decision: session {}, revision {}, placed {}, skill {}, hand {}, square {}, elapsed {} ms",round,stateRevision,snapshot.placed,skill,move.hand,move.square,musicTime()-started);
    // Presentation has acknowledged the previous move before this search starts.
    std::this_thread::sleep_for(std::chrono::milliseconds(300));
    if(epoch.load()!=token) return;
-   SKSE::GetTaskInterface()->AddTask([move,token,round,stateRevision]() {
+   collectionIntegration::queue([move,token,round,stateRevision]() {
      if(epoch.load()!=token||!visible||session!=round||revision!=stateRevision||match.turn!=1) return;
      if(!checkLiveWorld())return;
      thinking=false;
@@ -575,6 +619,10 @@ void command(const char* raw) {
    const auto option=std::find_if(pauseOptions.begin(),pauseOptions.end(),[&](const auto& entry){return entry.command==key;});
    if(key=="rank-finish-reset"&&value==0){
      interfaceNotice=campaign::interfaceSettings.resetRankFinish(persistInterfaceSetting)?"":"Couldn't save every setting.";
+     publish();return;
+   }
+   if(key=="match-appearance-reset"&&value==0){
+     interfaceNotice=campaign::interfaceSettings.resetMatchAppearance(persistInterfaceSetting)?"":"Couldn't save every setting.";
      publish();return;
    }
    if(ttcg::InterfaceSettings::find(key)){
@@ -723,7 +771,7 @@ void command(const char* raw) {
    if((input>>extra)||!active||match.finished())return;
    campaign::savedMatch={};releaseOpponent();
    if(campaign::tournamentID){ttcg::withdrawTournament(campaign::saved,campaign::tournamentID);tournamentBoard();return;}
-   if(!campaign::saved.contract.held)return;
+   if(!campaign::saved.contract.held){close();return;}
    auto& contract=campaign::saved.contract;
    auto actor=opponent.get();campaign::recordGame(actor.get(),1,false);
    contract.forfeit();campaign::finish(1);
@@ -743,11 +791,16 @@ void command(const char* raw) {
    campaign::recover(); publish(); return;
  }
  if(verb=="prepare") {
-   if((input>>extra)||settling||thinking||(active&&!match.finished())||campaign::saved.contract.pending()) return;
+   if(input>>extra)return;
+   log::info("Rematch requested: session {}, revision {}, settling {}, thinking {}, pending {}",session,revision,settling,thinking,campaign::saved.contract.pending());
+   if(settling||thinking||(active&&!match.finished())||campaign::saved.contract.pending()){
+    campaign::notice="The previous game is still finishing.";publish();return;
+   }
    auto actor=opponent.get(); if(!eligible(actor.get())) { close(); return; }
    releaseOpponent();campaign::savedMatch={};
-   if(!campaign::prepare(actor.get(),true)) { publish(); return; }
+   if(!campaign::prepare(actor.get(),true)) { log::warn("Rematch preparation failed: {}",campaign::notice);publish(); return; }
    ++epoch; ++session; revision=0; active=false; lastResult={}; match=ttcg::Match(1,campaign::sessionRules);
+   log::info("Rematch prepared: session {}, opponent {}",session,opponentName);
    updateMusic(); publish(); return;
  }
  if(verb=="deck-manage") {
@@ -773,7 +826,8 @@ void command(const char* raw) {
    auto descriptor=RE::TESDataHandler::GetSingleton()->LookupForm<RE::BGSSoundDescriptorForm>(localID,"Tessera TCG.esp");
    auto audio=RE::BSAudioManager::GetSingleton();
    const bool started=descriptor&&descriptor->soundDescriptor&&audio&&audio->Play(descriptor);
-   log::info("Opening sound {:06X}: playback {}",localID,started?"submitted":"failed");
+   if(started)log::debug("Opening sound {:06X}: playback submitted",localID);
+   else log::warn("Opening sound {:06X}: playback failed",localID);
    return;
  }
  if(verb=="result") {
@@ -784,7 +838,8 @@ void command(const char* raw) {
    auto descriptor=RE::TESDataHandler::GetSingleton()->LookupForm<RE::BGSSoundDescriptorForm>(localID,"Tessera TCG.esp");
    auto audio=RE::BSAudioManager::GetSingleton();
    const bool started=descriptor&&descriptor->soundDescriptor&&audio&&audio->Play(descriptor);
-   log::info("Result sound {:06X}: playback {}",localID,started?"submitted":"failed");
+   if(started)log::debug("Result sound {:06X}: playback submitted",localID);
+   else log::warn("Result sound {:06X}: playback failed",localID);
    return;
  }
  if(verb=="rule") {
@@ -806,6 +861,7 @@ void command(const char* raw) {
  }
  if(verb=="settled") {
    if((input>>extra)||!settling) return;
+   log::debug("Presentation acknowledged: session {}, revision {}, placed {}, turn {}",session,revision,match.placed,match.turn);
    settling=false;
    if(match.redeal()){
      ++revision;lastResult={};settling=true;playedOpeningSound=false;playedRuleSounds=0;
@@ -866,13 +922,6 @@ void command(const char* raw) {
    recordResult(result); publish();
  }
 }
-void masterResponsePapyrus(RE::StaticFunctionTag*,RE::Actor* actor,bool accepted){
- if(!actor)return;auto handle=actor->GetHandle();
- SKSE::GetTaskInterface()->AddTask([handle,accepted](){
-  auto actor=handle.get();if(handle==approachingMaster)cancelMasterApproach();
-  const auto* profile=campaign::profile(actor.get());if(accepted&&actor&&profile&&profile->level==5&&campaign::canChallenge(actor.get())){campaign::acceptChallenge(actor.get());requestPanel(actor.get());}
- });
-}
 int npcAvailabilityPapyrus(RE::StaticFunctionTag*,RE::Actor* actor){
  if(!actor)return -1;std::scoped_lock lock(campaign::npcCacheMutex);const auto it=campaign::npcAvailabilityCache.find(actor->GetFormID());return it==campaign::npcAvailabilityCache.end()?-1:it->second;
 }
@@ -881,12 +930,12 @@ bool npcGrantedPapyrus(RE::StaticFunctionTag*,RE::Actor* actor,RE::BSFixedString
  if(!actor||grant.empty())return false;std::scoped_lock lock(campaign::npcCacheMutex);const auto it=campaign::npcIdentityCache.find(actor->GetFormID());
  return it!=campaign::npcIdentityCache.end()&&campaign::npcGrantedCache.contains("script:"+std::string(grant.c_str())+":"+it->second);
 }
-void npcAddPapyrus(RE::StaticFunctionTag*,RE::Actor* actor){if(!actor)return;const auto handle=actor->GetHandle();SKSE::GetTaskInterface()->AddTask([handle](){auto actor=handle.get();if(actor){const bool added=campaign::registerNpcActor(actor.get(),true);campaign::syncProgression();log::info("NPC enrollment {}: {}",actor->GetName(),added);}});}
-void npcRefreshPapyrus(RE::StaticFunctionTag*,RE::Actor* actor){if(!actor)return;const auto handle=actor->GetHandle();SKSE::GetTaskInterface()->AddTask([handle](){auto actor=handle.get();if(actor){campaign::registerNpcActor(actor.get());campaign::syncProgression();}});}
-void npcEnabledPapyrus(RE::StaticFunctionTag*,RE::Actor* actor,bool enabled){if(!actor)return;const auto handle=actor->GetHandle();SKSE::GetTaskInterface()->AddTask([handle,enabled](){auto actor=handle.get();if(!actor)return;campaign::registerNpcActor(actor.get());const auto base=campaign::persistentID(actor->GetActorBase());if(auto it=campaign::saved.residents.profiles.find(base);it!=campaign::saved.residents.profiles.end())it->second.enabled=enabled;campaign::syncProgression();});}
+void npcAddPapyrus(RE::StaticFunctionTag*,RE::Actor* actor){if(!actor)return;const auto handle=actor->GetHandle();collectionIntegration::queue([handle](){auto actor=handle.get();if(actor){const bool added=campaign::registerNpcActor(actor.get(),true);campaign::syncProgression();log::info("NPC enrollment {}: {}",actor->GetName(),added);}});}
+void npcRefreshPapyrus(RE::StaticFunctionTag*,RE::Actor* actor){if(!actor)return;const auto handle=actor->GetHandle();collectionIntegration::queue([handle](){auto actor=handle.get();if(actor){campaign::registerNpcActor(actor.get());campaign::syncProgression();}});}
+void npcEnabledPapyrus(RE::StaticFunctionTag*,RE::Actor* actor,bool enabled){if(!actor)return;const auto handle=actor->GetHandle();collectionIntegration::queue([handle,enabled](){auto actor=handle.get();if(!actor)return;campaign::registerNpcActor(actor.get());const auto base=campaign::persistentID(actor->GetActorBase());if(auto it=campaign::saved.residents.profiles.find(base);it!=campaign::saved.residents.profiles.end())it->second.enabled=enabled;campaign::syncProgression();});}
 void npcGivePapyrus(RE::StaticFunctionTag*,RE::Actor* actor,RE::BSFixedString card,RE::BSFixedString grant,int quantity,bool foil){
  if(!actor||card.empty()||grant.empty())return;const auto handle=actor->GetHandle();const std::string key=card.c_str(),token=grant.c_str();
- SKSE::GetTaskInterface()->AddTask([handle,key,token,quantity,foil](){auto actor=handle.get();if(!actor||!ttcg::validExpansionKey(key)||!ttcg::validExpansionKey(token)||quantity<1||quantity>99||(campaign::profileIndex(actor.get())<0&&!campaign::registerNpcActor(actor.get(),true))){log::warn("NPC card grant rejected: {}",token);return;}
+ collectionIntegration::queue([handle,key,token,quantity,foil](){auto actor=handle.get();if(!actor||!ttcg::validExpansionKey(key)||!ttcg::validExpansionKey(token)||quantity<1||quantity>99||(campaign::profileIndex(actor.get())<0&&!campaign::registerNpcActor(actor.get(),true))){log::warn("NPC card grant rejected: {}",token);return;}
   campaign::seedOpponent(actor.get());const auto base=campaign::persistentID(actor->GetActorBase());
   const bool given=ttcg::grantNpcCards(campaign::saved,campaign::ledgerKey(actor.get()),"script:"+token+":"+ttcg::worldKey(base),{{key,unsigned(quantity),foil}});
   campaign::syncProgression();log::info("NPC card grant {}: {}",token,given?"delivered":"already delivered or unavailable");
@@ -895,28 +944,15 @@ void npcGivePapyrus(RE::StaticFunctionTag*,RE::Actor* actor,RE::BSFixedString ca
 void beginPapyrus(RE::StaticFunctionTag*,RE::Actor* actor) {
  if(!actor) return;
  auto handle=actor->GetHandle();
- SKSE::GetTaskInterface()->AddTask([handle]() { auto target=handle.get(); if(target){campaign::registerNpcActor(target.get());campaign::syncProgression();}if(target&&campaign::canChallenge(target.get())){campaign::acceptChallenge(target.get());requestPanel(target.get());} });
+ collectionIntegration::queue([handle]() { auto target=handle.get(); if(target){campaign::registerNpcActor(target.get());campaign::syncProgression();}if(target&&campaign::canChallenge(target.get())){campaign::acceptChallenge(target.get());requestPanel(target.get());} });
 }
 void receiveCommand(const char* raw) {
  if(!raw) return;
  std::string text(raw);
  if(!validCommandSize(text)) return;
- // Browser callbacks can run on their UI thread. Game state and audio belong
+ // Native render callbacks run on the render thread. Game state and audio belong
  // to the game task queue; validate session/revision when the task executes.
- SKSE::GetTaskInterface()->AddTask([text=std::move(text)]() { command(text.c_str()); });
-}
-void receiveArtRequest(const char* raw){
- if(!raw)return;
- const auto request=ttcg::parseArtRequest(raw);if(!request)return;
- SKSE::GetTaskInterface()->AddTask([request=*request](){
-  if(!api||!domReady||!api->IsValid(view))return;
-  const auto image=ttcg::readCardArt(request.path);
-  static bool reported=false;static unsigned failures=0;
-  if(!image.data.empty()&&!reported){reported=true;log::info("Artwork fallback active: reading MO2 virtual Data files through TTCG");}
-  if(!image.error.empty()&&failures++<5)log::warn("Artwork fallback: {} ({})",request.path,image.error);
-  const auto response="{\"id\":"+std::to_string(request.id)+",\"data\":"+ttcg::quote(image.data)+"}";
-  api->InteropCall(view,"ttcgArtResult",response.c_str());
- });
+ collectionIntegration::queue([text=std::move(text)]() { command(text.c_str()); });
 }
 RE::TESObjectBOOK* nextTournamentInvitationPapyrus(RE::StaticFunctionTag*){
  const auto request=campaign::tournamentLetterReady.exchange(0);if(!request)return nullptr;
@@ -926,23 +962,23 @@ RE::TESObjectBOOK* nextTournamentInvitationPapyrus(RE::StaticFunctionTag*){
 }
 void tournamentInvitationPapyrus(RE::StaticFunctionTag*,RE::TESObjectBOOK* letter,bool delivered){
  if(!letter)return;const auto form=letter->GetFormID();const auto request=campaign::tournamentLetterInFlight.load();
- SKSE::GetTaskInterface()->AddTask([form,delivered,request](){
+ collectionIntegration::queue([form,delivered,request](){
   if(!delivered&&request&&unsigned(request)==form)campaign::acknowledgeTournamentCourier(request);
   campaign::updateTournaments();
  });
 }
-void tournamentEntryPapyrus(RE::StaticFunctionTag*,RE::Actor* actor){if(actor){const auto handle=actor->GetHandle();SKSE::GetTaskInterface()->AddTask([handle](){if(auto actor=handle.get())requestPanel(actor.get(),"registration");});}}
+void tournamentEntryPapyrus(RE::StaticFunctionTag*,RE::Actor* actor){if(actor){const auto handle=actor->GetHandle();collectionIntegration::queue([handle](){if(auto actor=handle.get())requestPanel(actor.get(),"registration");});}}
 void tournamentPapyrus(RE::StaticFunctionTag*,RE::Actor* actor){
- if(!actor)return;auto handle=actor->GetHandle();SKSE::GetTaskInterface()->AddTask([handle](){if(auto host=handle.get())requestPanel(host.get(),"tournaments");});
+ if(!actor)return;auto handle=actor->GetHandle();collectionIntegration::queue([handle](){if(auto host=handle.get())requestPanel(host.get(),"tournaments");});
 }
 void shopPapyrus(RE::StaticFunctionTag*,RE::Actor* actor){
  if(!actor)return;const auto handle=actor->GetHandle();
- SKSE::GetTaskInterface()->AddTask([handle](){if(auto actor=handle.get())requestPanel(actor.get(),"shop");});
+ collectionIntegration::queue([handle](){if(auto actor=handle.get())requestPanel(actor.get(),"shop");});
 }
 bool expansionLoadedPapyrus(RE::StaticFunctionTag*,RE::BSFixedString key){return ttcg::expansionCardID(key.c_str())!=0;}
 void expansionGivePapyrus(RE::StaticFunctionTag*,RE::BSFixedString key,std::int32_t quantity,bool foil){
  const std::string identity(key.c_str());
- SKSE::GetTaskInterface()->AddTask([identity,quantity,foil](){
+ collectionIntegration::queue([identity,quantity,foil](){
   const bool granted=campaign::available()&&RE::PlayerCharacter::GetSingleton()&&ttcg::grantExpansionCard(campaign::saved,identity,quantity,foil);
   if(granted){log::info("Expansion reward: {} x{}, foil {}",identity,quantity,foil);++revision;publish();}
   else log::warn("Expansion reward rejected: {} x{}, foil {} (unavailable card, duplicate unique, or invalid quantity/state)",identity,quantity,foil);
@@ -951,7 +987,7 @@ void expansionGivePapyrus(RE::StaticFunctionTag*,RE::BSFixedString key,std::int3
 void buyAlbumPapyrus(RE::StaticFunctionTag*,RE::Actor* actor) {
  if(!actor)return;
  const auto handle=actor->GetHandle();
- SKSE::GetTaskInterface()->AddTask([handle](){
+ collectionIntegration::queue([handle](){
    auto merchant=handle.get();if(!merchant)return;
    const bool bought=campaign::buyAlbum(merchant.get());
    const char* message=bought?"Your Tessera Album includes eight starter cards.":
@@ -959,10 +995,12 @@ void buyAlbumPapyrus(RE::StaticFunctionTag*,RE::Actor* actor) {
      campaign::physicalCount(RE::PlayerCharacter::GetSingleton(),campaign::goldForm)<ttcg::albumPrice?"You need 100 gold to buy a Tessera Album.":
      "The album purchase could not be completed.";
    RE::SendHUDMessage::ShowHUDMessage(message);
-   log::info("Album purchase callback: {} ({:08X}), eligible {}, success {}",merchant->GetName(),merchant->GetFormID(),vendors::albumEligible(merchant.get()),bought);
+   if(spdlog::should_log(spdlog::level::debug))log::debug("Album purchase callback: {} ({:08X}), eligible {}, success {}",merchant->GetName(),merchant->GetFormID(),vendors::albumEligible(merchant.get()),bought);
  });
 }
 void logAlbumDialogue() {
+ // These engine queries exist only for diagnosis, not dialogue availability.
+ if(!spdlog::should_log(spdlog::level::debug))return;
  auto manager=RE::MenuTopicManager::GetSingleton();
  auto ref=manager?manager->speaker.get():RE::NiPointer<RE::TESObjectREFR>{};
  auto actor=ref?ref->As<RE::Actor>():nullptr;if(!actor)return;
@@ -970,23 +1008,50 @@ void logAlbumDialogue() {
  auto info=data->LookupForm<RE::TESTopicInfo>(0x832,campaign::plugin);
  auto quest=data->LookupForm<RE::TESQuest>(0x800,campaign::plugin);
  auto player=RE::PlayerCharacter::GetSingleton();
- log::info("Album dialogue: {} ({:08X}), eligible {}, acquired {}, global {}, quest running {}, INFO conditions {}, gold {}",
+ log::debug("Album dialogue: {} ({:08X}), eligible {}, acquired {}, global {}, quest running {}, INFO conditions {}, gold {}",
    actor->GetName(),actor->GetFormID(),vendors::albumEligible(actor),campaign::hasAlbum(),
    campaign::progression?campaign::progression->value:-1,quest&&quest->IsRunning(),
    info&&info->objConditions.IsTrue(actor,player),campaign::physicalCount(player,campaign::goldForm));
 }
 void interruptWorld() {
  const auto token=unpausedWorldEpoch.load();if(!token)return;
- SKSE::GetTaskInterface()->AddTask([token]() {
+ collectionIntegration::queue([token]() {
    if(unpausedWorldEpoch.load()!=token||epoch.load()+1!=token||!visible||!worldFocus.unpaused())return;
    log::info("Closing unpaused Tessera for a world interruption");interruptPanel();
  });
 }
 bool watchedActor(RE::TESObjectREFR* actor){return actor&&(actor->GetFormID()==0x14||actor->GetFormID()==watchedOpponent.load());}
+// Merge requests while a roster refresh is queued or running. SKSE can drain
+// its task queue from different engine threads; claiming a refresh is atomic.
+std::atomic_bool npcRefreshQueued{false};
+void queueNpcRefresh(){
+ if(npcRefreshQueued.exchange(true))return;
+ collectionIntegration::queue([](){
+  if(campaign::available()){
+   static std::atomic_uint profileCount{0};
+   const bool profile=spdlog::should_log(spdlog::level::debug)&&profileCount.fetch_add(1,std::memory_order_relaxed)%12==0;
+   ttcg::NpcSyncTiming syncTiming;
+   const auto started=std::chrono::steady_clock::now();
+   campaign::syncProgression(profile?&syncTiming:nullptr);
+   const auto elapsed=std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-started).count();
+   if(elapsed>=16.0)log::warn("Slow NPC load refresh: {:.1f} ms ({} opponents)",elapsed,ttcg::opponents.size());
+   if(profile)logNpcSyncTiming(syncTiming,"object load");
+  }
+  npcRefreshQueued=false;
+ });
+}
 class Events final: public RE::BSTEventSink<RE::InputEvent*>, public RE::BSTEventSink<RE::MenuOpenCloseEvent>, public RE::BSTEventSink<RE::TESContainerChangedEvent>, public RE::BSTEventSink<RE::TESCombatEvent>, public RE::BSTEventSink<RE::TESHitEvent>, public RE::BSTEventSink<RE::TESDeathEvent>, public RE::BSTEventSink<RE::TESObjectLoadedEvent> {
 public:
  RE::BSEventNotifyControl ProcessEvent(const RE::TESObjectLoadedEvent* event,RE::BSTEventSource<RE::TESObjectLoadedEvent>*) override {
-  if(event&&event->loaded){const auto id=event->formID;SKSE::GetTaskInterface()->AddTask([id](){auto actor=RE::TESForm::LookupByID<RE::Actor>(id);if(actor){campaign::registerNpcActor(actor);if(campaign::profileIndex(actor)>=0||(campaign::npcAvailabilityFaction&&actor->IsInFaction(campaign::npcAvailabilityFaction)))campaign::syncProgression();}});}return RE::BSEventNotifyControl::kContinue;
+  if(event&&event->loaded){const auto id=event->formID;const auto generation=campaign::npcFactionTracking.generation();collectionIntegration::queue([id,generation](){
+   if(!campaign::available()||!campaign::npcFactionTracking.current(generation))return;
+   auto actor=RE::TESForm::LookupByID<RE::Actor>(id);
+   if(actor){
+    campaign::registerNpcActor(actor);
+    const bool tagged=campaign::observeNpcFactions(actor,generation);
+    if(campaign::profileIndex(actor)>=0||tagged)queueNpcRefresh();
+   }
+  });}return RE::BSEventNotifyControl::kContinue;
  }
  RE::BSEventNotifyControl ProcessEvent(const RE::TESCombatEvent* event,RE::BSTEventSource<RE::TESCombatEvent>*) override {
    if(event&&event->newState!=RE::ACTOR_COMBAT_STATE::kNone&&
@@ -1000,7 +1065,7 @@ public:
  RE::BSEventNotifyControl ProcessEvent(const RE::TESDeathEvent* event,RE::BSTEventSource<RE::TESDeathEvent>*) override {
    if(event&&watchedActor(event->actorDying.get()))interruptWorld();
    if(event&&event->actorDying){const auto id=campaign::persistentID(event->actorDying.get());
-    SKSE::GetTaskInterface()->AddTask([id](){if(campaign::savedMatch.present&&campaign::savedMatch.opponent==id&&!active)campaign::recoverSavedMatch();});
+    collectionIntegration::queue([id](){if(campaign::savedMatch.present&&campaign::savedMatch.opponent==id&&!active)campaign::recoverSavedMatch();});
    }
    return RE::BSEventNotifyControl::kContinue;
  }
@@ -1013,7 +1078,7 @@ public:
      // Only a newly added courier copy proves this dispatch. Receiving an
      // older copy of the same BOOK must not acknowledge a new pending request.
      const auto request=!event->oldContainer&&event->newContainer!=0x14?campaign::tournamentLetterInFlight.load():0;
-     SKSE::GetTaskInterface()->AddTask([base,request](){
+     collectionIntegration::queue([base,request](){
        if(!campaign::available())return;
        const auto letter=campaign::tournamentLetterID(RE::TESForm::LookupByID<RE::TESObjectBOOK>(base));if(!letter)return;
        // The observed addition confirms the exact request even if Papyrus's
@@ -1024,7 +1089,7 @@ public:
      });
    }
    if(event&&campaign::albumForm&&event->baseObj==campaign::albumForm->GetFormID()&&event->newContainer==0x14&&event->itemCount>0){
-     SKSE::GetTaskInterface()->AddTask([](){
+     collectionIntegration::queue([](){
        if(campaign::claimAlbum())RE::SendHUDMessage::ShowHUDMessage("Your Tessera Album includes eight starter cards.");
      });
    }
@@ -1032,20 +1097,21 @@ public:
  }
  RE::BSEventNotifyControl ProcessEvent(RE::InputEvent* const* events,RE::BSTEventSource<RE::InputEvent*>*) override {
    if(!events) return RE::BSEventNotifyControl::kContinue;
+   const auto modifiers=heldHotkeyModifiers();
    for(auto event=*events;event;event=event->next) {
      auto button=event->AsButtonEvent(); if(!button||!button->IsDown()) continue;
      const auto code=button->GetIDCode();
-     if(button->GetDevice()==RE::INPUT_DEVICE::kKeyboard&&collectionKey&&code==collectionKey&&!visible) {
-       SKSE::GetTaskInterface()->AddTask([]() {
-         if(visible) { if(api) api->InteropCall(view,"ttcgEscape","native"); return; }
+     if(button->GetDevice()==RE::INPUT_DEVICE::kKeyboard&&ttcg::hotkeyMatches(collectionKey,code,modifiers)&&!visible) {
+       collectionIntegration::queue([]() {
+         if(visible) { if(api) api->Escape(view); return; }
          auto ui=RE::UI::GetSingleton(); if(!ui||ui->GameIsPaused()||ui->IsMenuOpen(RE::MainMenu::MENU_NAME)) return;
          if(campaign::interfaceSettings.gamesEnabled&&!campaign::hasAlbum()){RE::SendHUDMessage::ShowHUDMessage("Buy a Tessera Album from a general-goods merchant.");return;}
          showPanel(nullptr,"album");
        });
      }
-     if(button->GetDevice()==RE::INPUT_DEVICE::kKeyboard&&campaign::interfaceSettings.gamesEnabled&&challengeKey&&code==challengeKey&&!visible) {
-       SKSE::GetTaskInterface()->AddTask([]() {
-         if(visible) { if(api) api->InteropCall(view,"ttcgEscape","native"); return; }
+     if(button->GetDevice()==RE::INPUT_DEVICE::kKeyboard&&campaign::interfaceSettings.gamesEnabled&&ttcg::hotkeyMatches(challengeKey,code,modifiers)&&!visible) {
+       collectionIntegration::queue([]() {
+         if(visible) { if(api) api->Escape(view); return; }
          auto ui=RE::UI::GetSingleton(); if(!ui||ui->GameIsPaused()||ui->IsMenuOpen(RE::MainMenu::MENU_NAME)) return;
          if(!campaign::interfaceSettings.gamesEnabled)return;
          auto pick=RE::CrosshairPickData::GetSingleton();
@@ -1055,17 +1121,14 @@ public:
          requestChallenge(actor);
        });
      }
-     if(button->GetDevice()==RE::INPUT_DEVICE::kKeyboard&&hotkeys.toggleGames&&code==hotkeys.toggleGames&&!visible){
-       SKSE::GetTaskInterface()->AddTask([](){
+     if(button->GetDevice()==RE::INPUT_DEVICE::kKeyboard&&ttcg::hotkeyMatches(hotkeys.toggleGames,code,modifiers)&&!visible){
+       collectionIntegration::queue([](){
          const auto ui=RE::UI::GetSingleton();
          if(visible||!ui||ui->GameIsPaused()||ui->IsMenuOpen(RE::MainMenu::MENU_NAME))return;
          setGamesEnabled(!campaign::interfaceSettings.gamesEnabled);
        });
      }
-     if(visible&&api&&!api->HandlesController()&&button->GetDevice()==RE::INPUT_DEVICE::kGamepad) {
-       const char* key=code==1?"up":code==2?"down":code==4?"left":code==8?"right":code==4096?"confirm":code==8192?"cancel":code==256?"previous":code==512?"next":nullptr;
-       if(key&&api) api->InteropCall(view,"ttcgKey",key);
-     }
+
    }
    return RE::BSEventNotifyControl::kContinue;
  }
@@ -1073,21 +1136,21 @@ public:
    if(!event) return RE::BSEventNotifyControl::kContinue;
    if(event->opening&&event->menuName==RE::DialogueMenu::MENU_NAME){
      interruptWorld();
-     SKSE::GetTaskInterface()->AddTask([](){campaign::registerNearbyNpcs();campaign::syncProgression();campaign::claimAlbum();campaign::updateTournaments();logAlbumDialogue();});
+     collectionIntegration::queue([](){campaign::registerNearbyNpcs();campaign::syncProgression();campaign::claimAlbum();campaign::updateTournaments();logAlbumDialogue();});
    }
    if(event->opening&&event->menuName==RE::BookMenu::MENU_NAME) albumPapyrus(nullptr);
    if(!event->opening&&(event->menuName==RE::BookMenu::MENU_NAME||event->menuName==RE::InventoryMenu::MENU_NAME)) {
-     SKSE::GetTaskInterface()->AddTask([](){finishAlbumOpen();});
+     collectionIntegration::queue([](){finishAlbumOpen();});
    }
    if(event->menuName==RE::DialogueMenu::MENU_NAME&&!event->opening) {
-     cancelMasterApproach();
      const auto handle=pending; const auto requested=pendingScreen; pending={};
-     SKSE::GetTaskInterface()->AddTask([handle,requested]() { auto target=handle.get(); if(target) showPanel(target.get(),requested); });
+     collectionIntegration::queue([handle,requested]() { auto target=handle.get(); if(target) showPanel(target.get(),requested); });
    }
    if(event->opening&&(event->menuName==RE::MainMenu::MENU_NAME||event->menuName==RE::LoadingMenu::MENU_NAME)) {
-     log::info("Menu {}: cleanup begin (visible {}, music owned {})",event->menuName.c_str(),visible,musicPlaying);
+     log::debug("Menu {}: cleanup begin (visible {}, music owned {})",event->menuName.c_str(),visible,musicPlaying);
+     if(event->menuName==RE::MainMenu::MENU_NAME)collectionIntegration::reset();
      close(false);
-     log::info("Menu cleanup complete");
+     log::debug("Menu cleanup complete");
    }
    // Release/reclaim queues a FocusMenu hide/show while the view keeps ownership.
    // Only an actual focus loss interrupts Tessera and preserves its table.
@@ -1102,6 +1165,11 @@ void message(SKSE::MessagingInterface::Message* msg) {
    log::info("{} API acquired at InputLoaded: {}",ttcg::ui::name,api!=nullptr);
  }
  if(msg->type==SKSE::MessagingInterface::kDataLoaded) {
+   const auto data=RE::TESDataHandler::GetSingleton();
+   const auto plugin=data?data->LookupModByName(campaign::plugin):nullptr;
+   const bool pluginLoaded=plugin&&plugin->compileIndex!=0xFF;
+   log::info("Required plugin {} loaded: {} ({} regular, {} light plugins)",campaign::plugin,pluginLoaded,data?data->GetLoadedModCount():0,data?data->GetLoadedLightModCount():0);
+   if(!pluginLoaded)log::error("TTCG.dll requires an enabled Tessera TCG.esp from the matching Main package; check the active load order");
    const auto expansions=ttcg::loadCardExpansions();ttcg::expansionLoadErrors=expansions.errors;
    log::info("Card expansions: {} sets, {} cards loaded",expansions.sets,expansions.cards);
    for(const auto& error:expansions.errors)log::error("Card expansion: {}",error);
@@ -1116,7 +1184,8 @@ void message(SKSE::MessagingInterface::Message* msg) {
      GetPrivateProfileStringW(L"Development",wide.c_str(),L"",value,128,settingsPath.c_str());
      std::string result;for(const auto* c=value;*c;++c)result+=*c<=127?static_cast<char>(*c):'?';return result;
    });
-   log::info("Development: enabled {}, grant {}, foils {}, show players {}, unlock players {}, reveal {}, any NPC {}, rules {}, trade {}, wager {}, skill {}, lesson {}, record results {}, regular tournaments {}, invitational tournaments {}, masters tournaments {}, courier tournament hold {}",
+   if(campaign::development.enabled)log::info("Development mode enabled");
+   log::debug("Development: enabled {}, grant {}, foils {}, show players {}, unlock players {}, reveal {}, any NPC {}, rules {}, trade {}, wager {}, skill {}, lesson {}, record results {}, regular tournaments {}, invitational tournaments {}, masters tournaments {}, courier tournament hold {}",
      campaign::development.enabled,campaign::development.addAllCards,campaign::development.addAllFoils,campaign::development.showAllPlayers,
      campaign::development.unlockAllPlayers,campaign::development.revealAllCards,campaign::development.allowAnyNPC,campaign::development.rules,campaign::development.tradeRule,campaign::development.wager,campaign::development.opponentSkill,campaign::development.ruleLesson,campaign::development.recordResults,campaign::development.regularTournaments,campaign::development.invitationalTournaments,campaign::development.mastersTournaments,campaign::development.tournamentHold);
    campaign::interfaceSettings.load([](const char* section,const char* key,int fallback){
@@ -1143,32 +1212,32 @@ void message(SKSE::MessagingInterface::Message* msg) {
    RE::BSInputDeviceManager::GetSingleton()->AddEventSink(&events);
    RE::UI::GetSingleton()->AddEventSink<RE::MenuOpenCloseEvent>(&events);
    if(!api) { log::error("{} API not found; core remains available",ttcg::ui::name); return; }
-   view=api->CreateView([](ttcg::ui::View ready) {
-     // CEF DOM-ready is not a Skyrim task. Keep native state on the game thread.
-     SKSE::GetTaskInterface()->AddTask([ready]() {
-       if(!api||view!=ready||!api->IsValid(ready)) return;
-       if(!api->RegisterJSListener(ready,"ttcgCommand",receiveCommand)) { log::error("Could not register TTCG bridge"); return; }
-       if(!api->RegisterJSListener(ready,"ttcgReadArt",receiveArtRequest))log::warn("Could not register TTCG artwork fallback");
-       domReady=true;
-       api->EnableController(ready);
-       if(visible) publish(); else api->Hide(ready);
-       log::info("TTCG view ready ({})",ttcg::ui::name);
-     });
-   });
-   if(!view) { log::error("{} could not create TTCG view",ttcg::ui::name); return; }
-   api->Hide(view);
+   api->initialize(receiveCommand,interruptPanel);view=1;uiReady=true;
+   log::info("TTCG interface ready ({})",ttcg::ui::name);
+
  } else if(msg->type==SKSE::MessagingInterface::kPreLoadGame||msg->type==SKSE::MessagingInterface::kNewGame||msg->type==SKSE::MessagingInterface::kPostLoadGame) {
+   if(msg->type!=SKSE::MessagingInterface::kPostLoadGame)collectionIntegration::reset();
    const char* name=msg->type==SKSE::MessagingInterface::kPreLoadGame?"PreLoadGame":msg->type==SKSE::MessagingInterface::kNewGame?"NewGame":"PostLoadGame";
-   log::info("{}: cleanup begin (visible {}, music owned {})",name,visible,musicPlaying);
+   log::debug("{}: cleanup begin (visible {}, music owned {})",name,visible,musicPlaying);
    // Only PreLoad still belongs to the old save. Do not write its table into
    // a newly loaded character after the serialization callbacks have run.
    if(msg->type!=SKSE::MessagingInterface::kPreLoadGame)active=false;
    close(false);campaign::syncGameAvailability();
-   if(msg->type==SKSE::MessagingInterface::kNewGame) SKSE::GetTaskInterface()->AddTask([](){ campaign::recover(); });
-   if(msg->type==SKSE::MessagingInterface::kPostLoadGame) SKSE::GetTaskInterface()->AddTask([](){ releaseSavedOpponent();campaign::recover(); });
-   log::info("{}: cleanup complete",name);
+   if(msg->type!=SKSE::MessagingInterface::kPreLoadGame&&
+      (msg->type==SKSE::MessagingInterface::kNewGame||msg->data!=nullptr)) {
+    // SKSE passes the load result as (void*)result, not a pointer to a bool.
+    const auto generation=collectionIntegration::generation.load();
+    collectionIntegration::queue([generation](){
+     if(generation!=collectionIntegration::generation.load())return;
+     campaign::npcFactionTracking.allowDiscovery();releaseSavedOpponent();campaign::recover();collectionIntegration::activate();
+    });
+   }
+   log::debug("{}: cleanup complete",name);
  }
 }
+}
+extern "C" __declspec(dllexport) const TesseraCollectionAPI* Tessera_GetCollectionAPI(std::uint32_t version) noexcept {
+ return version==TESSERA_COLLECTION_API_VERSION?&ttcg::collectionAPI::api:nullptr;
 }
 extern "C" __declspec(dllexport) constinit auto SKSEPlugin_Version=[]() noexcept {
  SKSE::PluginVersionData data{};
@@ -1183,15 +1252,34 @@ extern "C" __declspec(dllexport) bool SKSEPlugin_Query(const SKSE::QueryInterfac
  return !skse->IsEditor()&&(skse->RuntimeVersion()==SKSE::RUNTIME_VR_1_4_15||skse->RuntimeVersion()>=SKSE::RUNTIME_SSE_1_5_97);
 }
 extern "C" __declspec(dllexport) bool SKSEPlugin_Load(const SKSE::LoadInterface* skse) {
- auto path=SKSE::log::log_directory();
- if(path) {
-   *path/="TTCG.log";
-   auto sink=std::make_shared<spdlog::sinks::basic_file_sink_mt>(path->string(),true);
-   auto logger=std::make_shared<spdlog::logger>("TTCG",sink);
-   spdlog::set_default_logger(logger); spdlog::flush_on(spdlog::level::info);
- }
- SKSE::Init(skse);
+ const bool diagnostics=GetPrivateProfileIntW(L"Diagnostics",L"Enabled",0,settingsPath.c_str())!=0;
+ SKSE::InitInfo initInfo;
+ // CommonLib creates the log and flushes at this level, preserving the last
+ // match/recovery message if Skyrim exits unexpectedly.
+ initInfo.logLevel=diagnostics?spdlog::level::debug:spdlog::level::info;
+ SKSE::Init(skse,initInfo);
+ log::info("Diagnostics: {}",diagnostics?"enabled":"disabled");
  SKSE::GetPapyrusInterface()->Register([](RE::BSScript::IVirtualMachine* vm) {
+   vm->RegisterFunction("GetAPIVersion","Tessera_Collection",collectionIntegration::apiVersion);
+   vm->RegisterFunction("IsReady","Tessera_Collection",collectionIntegration::isReady);
+   vm->RegisterFunction("GetRevision","Tessera_Collection",collectionIntegration::revision);
+   vm->RegisterFunction("GetCardKeys","Tessera_Collection",collectionIntegration::cardKeys);
+   vm->RegisterFunction("IsCardLoaded","Tessera_Collection",collectionIntegration::cardLoaded);
+   vm->RegisterFunction("IsCardPending","Tessera_Collection",collectionIntegration::cardPending);
+   vm->RegisterFunction("GetCardName","Tessera_Collection",collectionIntegration::text<&TesseraCollectionCard::name>);
+   vm->RegisterFunction("GetCardSet","Tessera_Collection",collectionIntegration::text<&TesseraCollectionCard::setID>);
+   vm->RegisterFunction("GetCardTier","Tessera_Collection",collectionIntegration::tier);
+   vm->RegisterFunction("GetCardRarity","Tessera_Collection",collectionIntegration::text<&TesseraCollectionCard::rarity>);
+   vm->RegisterFunction("GetCardGroups","Tessera_Collection",collectionIntegration::strings<&TesseraCollectionCard::groupsJSON>);
+   vm->RegisterFunction("GetCardAffinities","Tessera_Collection",collectionIntegration::strings<&TesseraCollectionCard::affinitiesJSON>);
+   vm->RegisterFunction("GetCardArt","Tessera_Collection",collectionIntegration::text<&TesseraCollectionCard::art>);
+   vm->RegisterFunction("GetCardThumbnail","Tessera_Collection",collectionIntegration::text<&TesseraCollectionCard::thumbnail>);
+   vm->RegisterFunction("GetOwnedCount","Tessera_Collection",collectionIntegration::ownedCount);
+   vm->RegisterFunction("IsDiscovered","Tessera_Collection",collectionIntegration::discovered);
+   vm->RegisterFunction("GetCardTotal","Tessera_Collection",collectionIntegration::cardTotal);
+   vm->RegisterFunction("GetOwnedCardTotal","Tessera_Collection",collectionIntegration::total<collectionIntegration::Total::Owned>);
+   vm->RegisterFunction("GetOwnedCopyTotal","Tessera_Collection",collectionIntegration::total<collectionIntegration::Total::Copies>);
+   vm->RegisterFunction("GetDiscoveredCardTotal","Tessera_Collection",collectionIntegration::discoveredTotal);
    vm->RegisterFunction("IsCardLoaded","TTCG_CardExpansion",expansionLoadedPapyrus);
    vm->RegisterFunction("GiveCard","TTCG_CardExpansion",expansionGivePapyrus);
    vm->RegisterFunction("GetAvailability","TTCG_Opponents",npcAvailabilityPapyrus);
@@ -1202,9 +1290,10 @@ extern "C" __declspec(dllexport) bool SKSEPlugin_Load(const SKSE::LoadInterface*
    vm->RegisterFunction("GiveCard","TTCG_Opponents",npcGivePapyrus);
    vm->RegisterFunction("HasReceivedGrant","TTCG_Opponents",npcGrantedPapyrus);
    vm->RegisterFunction("BeginMatch","TTCG_Native",beginPapyrus);
-   vm->RegisterFunction("NextMaster","TTCG_Native",nextMasterPapyrus);
-   vm->RegisterFunction("MasterArrived","TTCG_Native",masterArrivedPapyrus);
-   vm->RegisterFunction("MasterResponse","TTCG_Native",masterResponsePapyrus);
+   vm->RegisterFunction("BackgroundUpdate","TTCG_Native",backgroundUpdatePapyrus);
+   vm->RegisterFunction("NextMaster","TTCG_Native",legacyPapyrus::nextMaster);
+   vm->RegisterFunction("MasterArrived","TTCG_Native",legacyPapyrus::masterArrived);
+   vm->RegisterFunction("MasterResponse","TTCG_Native",legacyPapyrus::masterResponse);
    vm->RegisterFunction("OpenTournaments","TTCG_Native",tournamentPapyrus);
    vm->RegisterFunction("RegisterTournament","TTCG_Native",tournamentEntryPapyrus);
    vm->RegisterFunction("NextTournamentInvitation","TTCG_Native",nextTournamentInvitationPapyrus);
@@ -1215,7 +1304,10 @@ extern "C" __declspec(dllexport) bool SKSEPlugin_Load(const SKSE::LoadInterface*
    return true;
  });
  auto serial=SKSE::GetSerializationInterface();
- serial->SetUniqueID(0x54544347); serial->SetSaveCallback([](SKSE::SerializationInterface* serial){checkpointMatch();campaign::save(serial);}); serial->SetLoadCallback([](SKSE::SerializationInterface* serial){campaign::load(serial);SKSE::GetTaskInterface()->AddTask([](){cancelMasterApproach();});}); serial->SetRevertCallback(campaign::revert);
+ serial->SetUniqueID(0x54544347); serial->SetSaveCallback([](SKSE::SerializationInterface* serial){checkpointMatch();campaign::save(serial);}); serial->SetLoadCallback([](SKSE::SerializationInterface* serial){collectionIntegration::reset();campaign::load(serial);}); serial->SetRevertCallback([](SKSE::SerializationInterface* serial){collectionIntegration::reset();campaign::revert(serial);});
  SKSE::GetMessagingInterface()->RegisterListener(message);
- log::info("Tessera {} loaded ({} / CommonLibSSE-NG {} / {} / Skyrim {})",TTCG_VERSION,ttcg::ui::name,TTCG_COMMONLIB_VERSION,TTCG_COMMONLIB_COMMIT,REL::Module::get().version().string()); return true;
+ log::info("Tessera {} loaded ({} / CommonLibSSE-NG {} / {} / Skyrim {})",TTCG_VERSION,ttcg::ui::name,TTCG_COMMONLIB_VERSION,TTCG_COMMONLIB_COMMIT,REL::Module::get().version().string());
+ log::info("CommonLib container fix: {}",TTCG_COMMONLIB_HASHMAP_PATCH);
+ if constexpr(sizeof(TTCG_BUILD_LABEL)>1)log::info("Tessera test build: {}",TTCG_BUILD_LABEL);
+ return true;
 }

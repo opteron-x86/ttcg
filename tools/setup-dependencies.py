@@ -50,6 +50,12 @@ def main():
             raise RuntimeError('Host zip archive checksum mismatch')
         with tarfile.open(archive) as tar:
             tar.extractall(host, filter='data')
+    manifest=ROOT/'native/third_party/manifest.json'
+    for library, content in json.loads(manifest.read_text()).items():
+        for name, digest in content['files'].items():
+            path=ROOT/'native/third_party'/library/name
+            if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest()!=digest:
+                raise RuntimeError(f'Native UI dependency changed: {library}/{name}')
     checkout('commonlib')
     checkout('minhook')
     vcpkg = checkout('vcpkg')

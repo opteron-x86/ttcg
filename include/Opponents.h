@@ -17,9 +17,7 @@ struct OpponentProfile {
  std::uint32_t alternateBase=0,alternateReference=0;
  std::uint32_t hold=1; // Permanent Whiterun hold ID.
  unsigned level=0;
- bool college=false,guild=false;
  const char* master="Skyrim.esm";
- bool approaches=true; // Only Masters use this policy.
  bool traveller=false;
  std::uint32_t signature=0,dialogueFaction=0;
  bool dynamic=false,automatic=false,tournamentEligible=true,requiredMaster=true;

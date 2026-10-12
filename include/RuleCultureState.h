@@ -2,12 +2,17 @@
 #include "Match.h"
 #include <map>
 namespace ttcg {
+inline constexpr unsigned regionalRuleProtectionHours=14*24,regionalTradeProtectionHours=30*24;
+inline constexpr unsigned regionalClockLimit=100001080;
 struct SpreadOffer {
  unsigned opponent=0,source=0,carried=0,local=0,rule=0,roll=0,driftRoll=0,driftSeed=0,status=0;
 };
 struct RegionalCulture {
  unsigned abolitionAfter=0,added=0,removed=0,changedAt=0;
  SpreadOffer offer;
+ unsigned nextRuleChange=0,nextTradeChange=0,ruleRandom=0,tradeRandom=0,deferred=0;
+ std::array<unsigned,ruleFlags.size()> ruleProtection{};
+ std::array<unsigned,4> tradeProtection{};
 };
 struct CultureAttempt {
  unsigned kind=0,hold=0,opponent=0,rules=0,rule=0,roll=0,driftRoll=0,driftSeed=0;
@@ -53,6 +58,30 @@ template<class Get> bool decodeRuleCulture(Get get,RuleCultureState& c,bool lega
  if(p.kind>2||p.hold>10||!validRules(p.rules)||p.roll>=100||p.driftRoll>=100||started>1)return false;
  if(p.kind){if(!p.hold||!p.opponent||!singleRule(p.rule)||!(p.rules&p.rule)||!c.regions.contains(p.hold))return false;}
  else if(p.hold||p.opponent||p.rules||p.rule||p.roll||p.driftRoll||p.driftSeed||p.started)return false;
+ return true;
+}
+// Appended in collection format 31; older collections start their calendars
+// on the next world update without altering existing hold terms or trials.
+inline void encodeRegionalCalendars(std::vector<std::uint32_t>& out,const RuleCultureState& c){
+ out.push_back(c.regions.size());
+ for(const auto& [hold,r]:c.regions){
+  for(auto v:{hold,r.nextRuleChange,r.nextTradeChange,r.ruleRandom,r.tradeRandom,r.deferred})out.push_back(v);
+  out.insert(out.end(),r.ruleProtection.begin(),r.ruleProtection.end());
+  out.insert(out.end(),r.tradeProtection.begin(),r.tradeProtection.end());
+ }
+}
+template<class Get> bool decodeRegionalCalendars(Get get,RuleCultureState& c){
+ const auto count=get();if(count!=c.regions.size())return false;
+ unsigned previous=0;
+ for(unsigned n=0;n<count;++n){
+  const auto hold=get();if(hold<=previous||!c.regions.contains(hold))return false;previous=hold;
+  auto& r=c.regions[hold];r.nextRuleChange=get();r.nextTradeChange=get();r.ruleRandom=get();r.tradeRandom=get();r.deferred=get();
+  if(r.nextRuleChange>regionalClockLimit||r.nextTradeChange>regionalClockLimit||r.deferred>3)return false;
+  if(bool(r.nextRuleChange)!=bool(r.nextTradeChange)||bool(r.nextRuleChange)!=bool(r.ruleRandom)||bool(r.nextRuleChange)!=bool(r.tradeRandom))return false;
+  if(r.deferred&&!r.nextRuleChange)return false;
+  for(auto& until:r.ruleProtection){until=get();if(until>regionalClockLimit||(!r.nextRuleChange&&until))return false;}
+  for(auto& until:r.tradeProtection){until=get();if(until>regionalClockLimit||(!r.nextTradeChange&&until))return false;}
+ }
  return true;
 }
 }

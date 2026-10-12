@@ -75,7 +75,7 @@ inline ExpansionDefinition parseExpansion(std::string_view bytes){
    for(const auto& value:affinities){auto name=expansionText(value,32);auto it=std::find(attributeNames.begin(),attributeNames.end(),name);if(it==attributeNames.end())throw std::runtime_error("unknown affinity: "+name);auto bit=1u<<(it-attributeNames.begin());if(c.affinityMask&bit)throw std::runtime_error("duplicate affinity");c.affinityMask|=bit;if(!c.focus.empty())c.focus+=" / ";c.focus+=name;}
    if(c.focus.empty())c.focus="Neutral";
    c.groups=groups.dump();c.affinities=affinities.dump();
-   c.art=entry.contains("art")?expansionArtPath(entry.at("art"),result.id):"backs/mosaic.png";
+   c.art=entry.contains("art")?expansionArtPath(entry.at("art"),result.id):"backs/mosaic.webp";
    c.thumbnail=entry.contains("thumbnail")?expansionArtPath(entry.at("thumbnail"),result.id):c.art;
    if(entry.contains("acquisition")){
     const auto& a=entry.at("acquisition");expansionFields(a,{"standardPacks","tournamentPacks","merchants","tournamentPrizes"});
