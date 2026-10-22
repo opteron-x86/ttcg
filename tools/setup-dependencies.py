@@ -23,9 +23,11 @@ def checkout(name):
     if not (path / '.git').exists():
         path.mkdir(parents=True, exist_ok=True)
         run('git', 'init', path)
+        run('git', 'config', 'core.autocrlf', 'false', cwd=path)
         run('git', 'remote', 'add', 'origin', item['repository'], cwd=path)
         run('git', 'fetch', '--depth', '1', 'origin', item['commit'], cwd=path)
         run('git', 'checkout', '--detach', item['commit'], cwd=path)
+    run('git', 'config', 'core.autocrlf', 'false', cwd=path)
     actual = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=path, text=True).strip()
     if subprocess.check_output(['git', 'diff', 'HEAD', '--'], cwd=path):
         raise RuntimeError(f'{name}: dependency has local source edits')
