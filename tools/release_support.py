@@ -66,10 +66,13 @@ def source_files(root=ROOT):
     if (root / '.git').exists():
         raw = subprocess.check_output(['git', 'ls-files', '-z'], cwd=root)
         names = [n.decode('utf-8') for n in raw.split(b'\0') if n]
+    elif (root / 'SOURCE-FILES.json').is_file():
+        names = json.loads((root / 'SOURCE-FILES.json').read_text(encoding='utf-8'))
     else:
         names = [p.relative_to(root).as_posix() for top in SOURCE_PATHS
                  for p in ((root / top).rglob('*') if (root / top).is_dir() else [root / top])
-                 if p.is_file() and not any(x in p.parts for x in ('__pycache__', 'bin', 'obj'))]
+                 if p.is_file() and not any(x in p.parts for x in ('__pycache__', 'bin', 'obj'))
+                 and not private_asset(p.relative_to(root).as_posix())]
     check_public_files(names)
     files = {}
     for name in names:

@@ -74,8 +74,12 @@ def main():
             raise ValueError('Card art is distributed through Nexus')
         runtime['TesseraUI/INSTALL.txt'] = ROOT / 'docs/INSTALL.txt'
         runtime['licenses/Tessera/LICENSE'] = ROOT / 'LICENSE'
-        sources = {f'Tessera-{label}-source/{name}': path for name, path in source_files().items()}
+        public_source = source_files()
+        file_list = Path(temporary) / 'SOURCE-FILES.json'
+        file_list.write_text(json.dumps(sorted(public_source), indent=2) + '\n', encoding='utf-8')
+        sources = {f'Tessera-{label}-source/{name}': path for name, path in public_source.items()}
         sources[f'Tessera-{label}-source/SOURCE-INFO.json'] = info
+        sources[f'Tessera-{label}-source/SOURCE-FILES.json'] = file_list
         api = {name: ROOT / name for name in (
             'docs/collection-api.md', 'docs/exchange-api.md', 'include/Tessera/CollectionAPI.h',
             'Scripts/Source/Tessera_Collection.psc', 'Scripts/Source/Tessera_Exchange.psc',
