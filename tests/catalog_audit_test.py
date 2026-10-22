@@ -100,7 +100,6 @@ for t in templates:
     else:
         assert t['tiers'] == [9, 10]
         assert all(s['rarity'] == 'Legendary' and s['unique'] for s in t['slots'])
-# Earlier source reviews remain archived, without overriding the imported roster.
 assert not data['proposals']
 # Every bitmap bit must agree with the native-source Python policy, including
 # oriented peak/flank restrictions; budget-only validation is insufficient.
