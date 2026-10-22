@@ -22,6 +22,15 @@ inline std::string captureLabel(unsigned rule){
  for(auto bit:{Plus,FallenAce,Legion,Decimation})if(rule&bit){if(!text.empty())text+=" / ";text+=ruleName(bit);}
  return text;
 }
+// One set of announcements per placement, shared by matches and rule lessons.
+// Passive strength changes are silent; later Combo waves still flip in order.
+struct CaptureAnnouncements {
+ bool combo=false;
+ std::string next(unsigned rule){
+  if(rule==CaptureStage::Combo){if(combo)return {};combo=true;}
+  return captureLabel(rule);
+ }
+};
 inline std::string snapshotJson(const ttcg::Match& match, std::uint64_t session, std::uint64_t revision, const std::string& opponentName, bool active, bool thinking, const Result& lastResult, bool settling, bool musicEnabled=true, bool musicAvailable=false) {
  auto score=match.score();
 
@@ -45,7 +54,7 @@ inline std::string snapshotJson(const ttcg::Match& match, std::uint64_t session,
  data+="],\"modifiers\":[";
  for(int i=0;i<9;++i){if(i)data+=',';data+=std::to_string(match.modifier(match.board[i].card,i));}
  data+="],\"activeGroup\":"+quote(match.activeGroup<0?"":creatureGroups[match.activeGroup])+",\"groupModifier\":"+std::to_string(match.activeGroup<0?0:match.rules&Legion?1:-1)+",\"handModifiers\":[";
- for(int p=0;p<2;++p){if(p)data+=',';data+='[';for(int h=0;h<5;++h){if(h)data+=',';data+=std::to_string(p==1&&(!active||!match.known(p,h,0))?0:match.groupModifier(match.hands[p][h]));}data+=']';}
+ for(int p=0;p<2;++p){if(p)data+=',';data+='[';for(int h=0;h<5;++h){if(h)data+=',';data+=std::to_string(p==1&&(!active||!match.known(p,h,0))?0:match.modifier(match.hands[p][h],-1));}data+=']';}
  data+="],\"hands\":[";
  for(int p=0;p<2;++p) { if(p) data+=','; data+='[';
    for(int h=0;h<5;++h) { if(h) data+=','; data+=match.used[p][h]?"null":((p==1&&(!active||!match.known(p,h,0)))?"-2":std::to_string(match.hands[p][h]+(match.foil(p,h)?int(cards.size()):0))); }
@@ -70,10 +79,11 @@ inline std::string snapshotJson(const ttcg::Match& match, std::uint64_t session,
    data+=b.card<0?"null":std::format("{{\"card\":{},\"owner\":{},\"flip\":{},\"origin\":{}}}",b.card+(b.origin>=0&&match.foilHands[b.origin/5][b.origin%5]?int(cards.size()):0),b.owner,lastResult.flipped[i]?"true":"false",b.origin);
  }
  data+=std::format("],\"rules\":{},\"settling\":{},\"stages\":[",match.rules,settling?"true":"false");
+ CaptureAnnouncements announcements;
  for(std::size_t i=0;i<lastResult.stages.size();++i) {
    if(i) data+=',';
    const auto& stage=lastResult.stages[i];
-   data+=std::format("{{\"label\":{},\"highlights\":{},\"captures\":{}}}",quote(captureLabel(stage.rule)),stage.highlights,stage.captures);
+   data+=std::format("{{\"label\":{},\"highlights\":{},\"captures\":{}}}",quote(announcements.next(stage.rule)),stage.highlights,stage.captures);
    data.pop_back();data+=",\"group\":"+quote(stage.group<0?"":creatureGroups[stage.group])+"}";
  }
  data+=std::format("],\"forcedHand\":{},\"redeals\":{},\"suddenDeath\":{},\"swapped\":[{},{}],\"opening\":{},\"musicEnabled\":{},\"musicAvailable\":{}}}",match.forcedHand,match.redeals,active&&match.suddenDeathPending()?"true":"false",match.swapped[0],match.swapped[1],active&&settling&&match.placed==0?"true":"false",musicEnabled?"true":"false",musicAvailable?"true":"false");

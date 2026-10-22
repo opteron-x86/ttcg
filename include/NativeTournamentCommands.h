@@ -16,7 +16,7 @@ bool prepareTournament(unsigned id){
  if(!e||campaign::tournamentVenue()!=e->hold||!ttcg::tournamentOpen(*e,hour)||!ttcg::tournamentNode(*e))return false;
  ttcg::resolveTournament(saved,*e);const auto base=ttcg::tournamentRival(*e);const int i=ttcg::opponentIndex(base);
  if(!ttcg::tournamentEntrant(saved,i)){ttcg::startTournamentRound(saved,id,hour);++revision;publish();return true;}
- auto actor=campaign::resolveID<RE::Actor>(ttcg::opponents[i].reference);
+ auto actor=campaign::resolveOpponent(ttcg::opponents[i]);
  if((!actor||actor->IsDisabled())&&ttcg::opponents[i].alternateReference)actor=campaign::resolveID<RE::Actor>(ttcg::opponents[i].alternateReference);
  if(!actor||actor->IsDead()||actor->IsDisabled()){campaign::notice="Opponent unavailable.";++revision;publish();return true;}
  campaign::tournamentID=id;if(!campaign::prepare(actor,true)){campaign::tournamentID=0;++revision;publish();return true;}

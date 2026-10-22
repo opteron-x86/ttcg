@@ -14,9 +14,7 @@ inline bool shouldPauseWorld(const WorldPauseSettings& settings,std::string_view
  return true;
 }
 
-// The host's AlreadyFocused result does not change the existing pause mode.
-// Unfocus queues a UI task. Reclaim only after that task has run; an immediate
-// TryFocus would keep the old mode, then lose focus when the release arrives.
+// Reacquire focus after the queued release completes.
 enum class FocusUpdate { Ready, Releasing, Waiting, Lost };
 class WorldFocus {
  std::optional<bool> paused;

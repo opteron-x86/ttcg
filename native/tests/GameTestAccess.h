@@ -3,6 +3,10 @@
 #include <fstream>
 namespace preview {
 struct GameTestAccess {
+    static const auto& themeSurfaces(const GameApp& app){return app.surfaces;}
+    static const auto& boardSurfaces(const GameApp& app){return app.boardSurfaces;}
+    static int theme(const GameApp& app){return app.theme;}
+    static ImFont* interfaceFont(const GameApp& app){return app.font();}
     static void page(GameApp& app,const Options& o){
         if(o.page=="cards")app.tab=0;
         else if(o.page=="decks")app.tab=1;
@@ -30,6 +34,7 @@ struct GameTestAccess {
     static int inspected(const GameApp& app){return app.selected+(app.selectedFoil?app.collection.cards.size():0);}
     static int modifier(const GameApp& app){return app.inspectionModifier;}
     static bool demoSelected(const GameApp& app){return app.demoSelected;}
+    static const Presentation& clock(const GameApp& app){return app.presentation;}
     static void demoStart(GameApp& app){app.demoStep=0;app.demoSelected=false;app.selectedHand=-1;app.demoAnimation={};app.demoIdentity.clear();app.demoPresentation={};}
 };
 }

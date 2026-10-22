@@ -1,10 +1,10 @@
 Scriptname TTCG_EncountersQuest extends Quest
+; Retained for saves made before master approaches were retired. Never used.
 Bool pathing = false
 Event OnInit()
-    RegisterForSingleUpdate(5.0)
+    RegisterForSingleUpdate(30.0)
 EndEvent
 Event OnUpdate()
-    RegisterForSingleUpdate(5.0)
     Quest rescue = Game.GetFormFromFile(0x376EE, "Skyrim.esm") as Quest
     GlobalVariable rescued = Game.GetFormFromFile(0xC20, "Tessera TCG.esp") as GlobalVariable
     if rescue && rescued
@@ -30,12 +30,7 @@ Event OnUpdate()
             TTCG_Native.TournamentInvitation(invitation, false)
         endif
     endif
-    Actor challenger = TTCG_Native.NextMaster()
-    if challenger && !pathing
-        pathing = true
-        challenger.PathToReference(Game.GetPlayer(), 0.6)
-        challenger.EvaluatePackage()
-        TTCG_Native.MasterArrived(challenger)
-        pathing = false
-    endif
+    TTCG_Native.BackgroundUpdate()
+    ; Fallback upkeep; native interaction and actor-load events refresh on demand.
+    RegisterForSingleUpdate(30.0)
 EndEvent

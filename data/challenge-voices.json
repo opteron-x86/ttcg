@@ -1,0 +1,3650 @@
+[
+  {
+    "base": 80803,
+    "name": "Hulda",
+    "voice": "FemaleNord",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalenord\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not my problem.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalenord\\dialoguege_dialoguegeneric_000dba25_1.fuz",
+      "info": "Skyrim.esm:0DBA25",
+      "response": 1
+    }
+  },
+  {
+    "base": 80832,
+    "name": "Lillith Maiden-Loom",
+    "voice": "FemaleOldKindly",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaleoldkindly\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaleoldkindly\\c06_c06sharedinfos_000e4a41_1.fuz",
+      "info": "Skyrim.esm:0E4A41",
+      "response": 1
+    }
+  },
+  {
+    "base": 80811,
+    "name": "Ysolda",
+    "voice": "FemaleYoungEager",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaleyoungeager\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "No.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaleyoungeager\\dialoguewi__0003857e_1.fuz",
+      "info": "Skyrim.esm:03857E",
+      "response": 1
+    }
+  },
+  {
+    "base": 80810,
+    "name": "Amren",
+    "voice": "MaleEvenToned",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleeventoned\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleeventoned\\mq201_mq201malbornpartyblo_0003adb0_1.fuz",
+      "info": "Skyrim.esm:03ADB0",
+      "response": 1
+    }
+  },
+  {
+    "base": 80817,
+    "name": "Jon Battle-Born",
+    "voice": "MaleNord",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malenord\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malenord\\mq104_mq104balgruufblockin_0005dd47_1.fuz",
+      "info": "Skyrim.esm:05DD47",
+      "response": 1
+    }
+  },
+  {
+    "base": 80830,
+    "name": "Ahlam",
+    "voice": "FemaleEvenToned",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaleeventoned\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaleeventoned\\c06_c06sharedinfos_000e4a41_1.fuz",
+      "info": "Skyrim.esm:0E4A41",
+      "response": 1
+    }
+  },
+  {
+    "base": 80831,
+    "name": "Nazeem",
+    "voice": "MaleCondescending",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malecondescending\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Now is not a good time. Leave me alone.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malecondescending\\wisharedin_wisharedinfosto_000adc7e_1.fuz",
+      "info": "Skyrim.esm:0ADC7E",
+      "response": 1
+    }
+  },
+  {
+    "base": 78972,
+    "name": "Gerdur",
+    "voice": "FemaleNord",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalenord\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not my problem.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalenord\\dialoguege_dialoguegeneric_000dba25_1.fuz",
+      "info": "Skyrim.esm:0DBA25",
+      "response": 1
+    }
+  },
+  {
+    "base": 78965,
+    "name": "Alvor",
+    "voice": "MaleNord",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malenord\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malenord\\mq104_mq104balgruufblockin_0005dd47_1.fuz",
+      "info": "Skyrim.esm:05DD47",
+      "response": 1
+    }
+  },
+  {
+    "base": 78970,
+    "name": "Lucan Valerius",
+    "voice": "MaleSlyCynical",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleslycynical\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleslycynical\\ms05_ms05viarmoblowofftopi_000e768e_1.fuz",
+      "info": "Skyrim.esm:0E768E",
+      "response": 1
+    }
+  },
+  {
+    "base": 217255,
+    "name": "Erik",
+    "voice": "MaleYoungEager",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleyoungeager\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "I don't think so.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleyoungeager\\favor013_favor013persuadeb_000ce6f1_1.fuz",
+      "info": "Skyrim.esm:0CE6F1",
+      "response": 1
+    }
+  },
+  {
+    "base": 79542,
+    "name": "Mralki",
+    "voice": "MaleCommonerAccented",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malecommoneraccented\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not right now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malecommoneraccented\\solitudeop_solitudefreefor_000a95fc_1.fuz",
+      "info": "Skyrim.esm:0A95FC",
+      "response": 1
+    }
+  },
+  {
+    "base": 79539,
+    "name": "Jouane Manette",
+    "voice": "MaleOldKindly",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleoldkindly\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not my problem.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleoldkindly\\dialoguege_dialoguegeneric_000dba25_1.fuz",
+      "info": "Skyrim.esm:0DBA25",
+      "response": 1
+    }
+  },
+  {
+    "base": 80825,
+    "name": "Adrianne Avenicci",
+    "voice": "FemaleCommander",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalecommander\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalecommander\\wisharedin_wisharedinfosto_000adc69_1.fuz",
+      "info": "Skyrim.esm:0ADC69",
+      "response": 1
+    }
+  },
+  {
+    "base": 80799,
+    "name": "Ulfberth War-Bear",
+    "voice": "MaleBrute",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malebrute\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malebrute\\c06_c06sharedinfos_000e4a41_1.fuz",
+      "info": "Skyrim.esm:0E4A41",
+      "response": 1
+    }
+  },
+  {
+    "base": 80801,
+    "name": "Belethor",
+    "voice": "MaleSlyCynical",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleslycynical\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleslycynical\\ms05_ms05viarmoblowofftopi_000e768e_1.fuz",
+      "info": "Skyrim.esm:0E768E",
+      "response": 1
+    }
+  },
+  {
+    "base": 80793,
+    "name": "Carlotta Valentia",
+    "voice": "FemaleEvenToned",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaleeventoned\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaleeventoned\\c06_c06sharedinfos_000e4a41_1.fuz",
+      "info": "Skyrim.esm:0E4A41",
+      "response": 1
+    }
+  },
+  {
+    "base": 80791,
+    "name": "Anoriath",
+    "voice": "MaleYoungEager",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleyoungeager\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "I don't think so.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleyoungeager\\favor013_favor013persuadeb_000ce6f1_1.fuz",
+      "info": "Skyrim.esm:0CE6F1",
+      "response": 1
+    }
+  },
+  {
+    "base": 80827,
+    "name": "Farengar Secret-Fire",
+    "voice": "MaleEvenTonedAccented",
+    "accept": {
+      "text": "Certainly.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleeventonedaccented\\freeformri_ffriften15bolli_00055680_1.fuz",
+      "info": "Skyrim.esm:055680",
+      "response": 1
+    },
+    "decline": {
+      "text": "No. Not really.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleeventonedaccented\\dialogueda__000cade2_1.fuz",
+      "info": "Skyrim.esm:0CADE2",
+      "response": 1
+    }
+  },
+  {
+    "base": 108247,
+    "name": "Ria",
+    "voice": "FemaleEvenToned",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaleeventoned\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaleeventoned\\c06_c06sharedinfos_000e4a41_1.fuz",
+      "info": "Skyrim.esm:0E4A41",
+      "response": 1
+    }
+  },
+  {
+    "base": 108251,
+    "name": "Torvar",
+    "voice": "MaleDrunk",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maledrunk\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maledrunk\\c06_c06sharedinfos_000e4a41_1.fuz",
+      "info": "Skyrim.esm:0E4A41",
+      "response": 1
+    }
+  },
+  {
+    "base": 108245,
+    "name": "Athis",
+    "voice": "MaleDarkElf",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maledarkelf\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maledarkelf\\c06_c06sharedinfos_000e4a41_1.fuz",
+      "info": "Skyrim.esm:0E4A41",
+      "response": 1
+    }
+  },
+  {
+    "base": 108249,
+    "name": "Njada Stonearm",
+    "voice": "FemaleCondescending",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalecondescending\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalecondescending\\c06_c06sharedinfos_000e4a41_1.fuz",
+      "info": "Skyrim.esm:0E4A41",
+      "response": 1
+    }
+  },
+  {
+    "base": 108178,
+    "name": "Farkas",
+    "voice": "MaleBrute",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malebrute\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malebrute\\c06_c06sharedinfos_000e4a41_1.fuz",
+      "info": "Skyrim.esm:0E4A41",
+      "response": 1
+    }
+  },
+  {
+    "base": 108180,
+    "name": "Vilkas",
+    "voice": "MaleNord",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malenord\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malenord\\mq104_mq104balgruufblockin_0005dd47_1.fuz",
+      "info": "Skyrim.esm:05DD47",
+      "response": 1
+    }
+  },
+  {
+    "base": 108182,
+    "name": "Aela the Huntress",
+    "voice": "FemaleCommander",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalecommander\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalecommander\\wisharedin_wisharedinfosto_000adc69_1.fuz",
+      "info": "Skyrim.esm:0ADC69",
+      "response": 1
+    }
+  },
+  {
+    "base": 108174,
+    "name": "Kodlak Whitemane",
+    "voice": "MaleUniqueKodlakWhitemane",
+    "accept": {
+      "text": "All right, you want to go?",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleuniquekodlakwhitemane\\companions_companionsbrawl_00087fd6_1.fuz",
+      "info": "Skyrim.esm:087FD6",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleuniquekodlakwhitemane\\c06_c06sharedinfos_000e4a41_1.fuz",
+      "info": "Skyrim.esm:0E4A41",
+      "response": 1
+    }
+  },
+  {
+    "base": 80797,
+    "name": "Eorlund Gray-Mane",
+    "voice": "MaleNordCommander",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malenordcommander\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malenordcommander\\c06_c06sharedinfos_000e4a41_1.fuz",
+      "info": "Skyrim.esm:0E4A41",
+      "response": 1
+    }
+  },
+  {
+    "base": 79444,
+    "name": "Narri",
+    "voice": "FemaleNord",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalenord\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not my problem.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalenord\\dialoguege_dialoguegeneric_000dba25_1.fuz",
+      "info": "Skyrim.esm:0DBA25",
+      "response": 1
+    }
+  },
+  {
+    "base": 79436,
+    "name": "Kust",
+    "voice": "MaleNord",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malenord\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malenord\\mq104_mq104balgruufblockin_0005dd47_1.fuz",
+      "info": "Skyrim.esm:05DD47",
+      "response": 1
+    }
+  },
+  {
+    "base": 79446,
+    "name": "Tekla",
+    "voice": "FemaleCoward",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalecoward\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not my problem.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalecoward\\dialoguege_dialoguegeneric_000dba25_1.fuz",
+      "info": "Skyrim.esm:0DBA25",
+      "response": 1
+    }
+  },
+  {
+    "base": 79445,
+    "name": "Valga Vinicia",
+    "voice": "FemaleCommoner",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalecommoner\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Leave me alone.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalecommoner\\dunnorthwa_dunnorthwatchke_000c1a48_1.fuz",
+      "info": "Skyrim.esm:0C1A48",
+      "response": 1
+    }
+  },
+  {
+    "base": 79442,
+    "name": "Solaf",
+    "voice": "MaleBrute",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malebrute\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malebrute\\c06_c06sharedinfos_000e4a41_1.fuz",
+      "info": "Skyrim.esm:0E4A41",
+      "response": 1
+    }
+  },
+  {
+    "base": 79440,
+    "name": "Lod",
+    "voice": "MaleCommonerAccented",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malecommoneraccented\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not right now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malecommoneraccented\\solitudeop_solitudefreefor_000a95fc_1.fuz",
+      "info": "Skyrim.esm:0A95FC",
+      "response": 1
+    }
+  },
+  {
+    "base": 79441,
+    "name": "Bolund",
+    "voice": "MaleNord",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malenord\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malenord\\mq104_mq104balgruufblockin_0005dd47_1.fuz",
+      "info": "Skyrim.esm:05DD47",
+      "response": 1
+    }
+  },
+  {
+    "base": 237978,
+    "name": "Zaria",
+    "voice": "FemaleCommander",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalecommander\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalecommander\\wisharedin_wisharedinfosto_000adc69_1.fuz",
+      "info": "Skyrim.esm:0ADC69",
+      "response": 1
+    }
+  },
+  {
+    "base": 79449,
+    "name": "Nenya",
+    "voice": "FemaleEvenToned",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaleeventoned\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaleeventoned\\c06_c06sharedinfos_000e4a41_1.fuz",
+      "info": "Skyrim.esm:0E4A41",
+      "response": 1
+    }
+  },
+  {
+    "base": 266682,
+    "name": "Valdr",
+    "voice": "MaleEvenToned",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleeventoned\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleeventoned\\mq201_mq201malbornpartyblo_0003adb0_1.fuz",
+      "info": "Skyrim.esm:03ADB0",
+      "response": 1
+    }
+  },
+  {
+    "base": 79484,
+    "name": "Hert",
+    "voice": "FemaleYoungEager",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaleyoungeager\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "No.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaleyoungeager\\dialoguewi__0003857e_1.fuz",
+      "info": "Skyrim.esm:03857E",
+      "response": 1
+    }
+  },
+  {
+    "base": 79450,
+    "name": "Dengeir of Stuhn",
+    "voice": "MaleOldGrumpy",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleoldgrumpy\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not my problem.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleoldgrumpy\\dialoguege_dialoguegeneric_000dba25_1.fuz",
+      "info": "Skyrim.esm:0DBA25",
+      "response": 1
+    }
+  },
+  {
+    "base": 830255,
+    "name": "Angi",
+    "voice": "FemaleNord",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalenord\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not my problem.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalenord\\dialoguege_dialoguegeneric_000dba25_1.fuz",
+      "info": "Skyrim.esm:0DBA25",
+      "response": 1
+    }
+  },
+  {
+    "base": 79437,
+    "name": "Runil",
+    "voice": "MaleOldKindly",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleoldkindly\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not my problem.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleoldkindly\\dialoguege_dialoguegeneric_000dba25_1.fuz",
+      "info": "Skyrim.esm:0DBA25",
+      "response": 1
+    }
+  },
+  {
+    "base": 79386,
+    "name": "Karita",
+    "voice": "FemaleYoungEager",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaleyoungeager\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "No.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaleyoungeager\\dialoguewi__0003857e_1.fuz",
+      "info": "Skyrim.esm:03857E",
+      "response": 1
+    }
+  },
+  {
+    "base": 79381,
+    "name": "Fruki",
+    "voice": "FemaleNord",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalenord\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not my problem.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalenord\\dialoguege_dialoguegeneric_000dba25_1.fuz",
+      "info": "Skyrim.esm:0DBA25",
+      "response": 1
+    }
+  },
+  {
+    "base": 554831,
+    "name": "Abelone",
+    "voice": "FemaleCommoner",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalecommoner\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Leave me alone.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalecommoner\\dunnorthwa_dunnorthwatchke_000c1a48_1.fuz",
+      "info": "Skyrim.esm:0C1A48",
+      "response": 1
+    }
+  },
+  {
+    "base": 79391,
+    "name": "Seren",
+    "voice": "FemaleEvenToned",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaleeventoned\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaleeventoned\\c06_c06sharedinfos_000e4a41_1.fuz",
+      "info": "Skyrim.esm:0E4A41",
+      "response": 1
+    }
+  },
+  {
+    "base": 79393,
+    "name": "Thoring",
+    "voice": "MaleCommonerAccented",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malecommoneraccented\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not right now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malecommoneraccented\\solitudeop_solitudefreefor_000a95fc_1.fuz",
+      "info": "Skyrim.esm:0A95FC",
+      "response": 1
+    }
+  },
+  {
+    "base": 79390,
+    "name": "Rustleif",
+    "voice": "MaleEvenTonedAccented",
+    "accept": {
+      "text": "Certainly.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleeventonedaccented\\freeformri_ffriften15bolli_00055680_1.fuz",
+      "info": "Skyrim.esm:055680",
+      "response": 1
+    },
+    "decline": {
+      "text": "No. Not really.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleeventonedaccented\\dialogueda__000cade2_1.fuz",
+      "info": "Skyrim.esm:0CADE2",
+      "response": 1
+    }
+  },
+  {
+    "base": 79399,
+    "name": "Hadring",
+    "voice": "MaleNord",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malenord\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malenord\\mq104_mq104balgruufblockin_0005dd47_1.fuz",
+      "info": "Skyrim.esm:05DD47",
+      "response": 1
+    }
+  },
+  {
+    "base": 79371,
+    "name": "Aeri",
+    "voice": "FemaleNord",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalenord\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not my problem.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalenord\\dialoguege_dialoguegeneric_000dba25_1.fuz",
+      "info": "Skyrim.esm:0DBA25",
+      "response": 1
+    }
+  },
+  {
+    "base": 79387,
+    "name": "Leigelf",
+    "voice": "MaleCondescending",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malecondescending\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Now is not a good time. Leave me alone.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malecondescending\\wisharedin_wisharedinfosto_000adc7e_1.fuz",
+      "info": "Skyrim.esm:0ADC7E",
+      "response": 1
+    }
+  },
+  {
+    "base": 79383,
+    "name": "Irgnir",
+    "voice": "FemaleCommoner",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalecommoner\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Leave me alone.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalecommoner\\dunnorthwa_dunnorthwatchke_000c1a48_1.fuz",
+      "info": "Skyrim.esm:0C1A48",
+      "response": 1
+    }
+  },
+  {
+    "base": 108217,
+    "name": "Horik Halfhand",
+    "voice": "MaleNordCommander",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malenordcommander\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malenordcommander\\c06_c06sharedinfos_000e4a41_1.fuz",
+      "info": "Skyrim.esm:0E4A41",
+      "response": 1
+    }
+  },
+  {
+    "base": 79380,
+    "name": "Frida",
+    "voice": "FemaleOldKindly",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaleoldkindly\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaleoldkindly\\c06_c06sharedinfos_000e4a41_1.fuz",
+      "info": "Skyrim.esm:0E4A41",
+      "response": 1
+    }
+  },
+  {
+    "base": 108215,
+    "name": "Brina Merilis",
+    "voice": "FemaleCommander",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalecommander\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalecommander\\wisharedin_wisharedinfosto_000adc69_1.fuz",
+      "info": "Skyrim.esm:0ADC69",
+      "response": 1
+    }
+  },
+  {
+    "base": 148093,
+    "name": "Erandur",
+    "voice": "MaleDarkElf",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maledarkelf\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maledarkelf\\c06_c06sharedinfos_000e4a41_1.fuz",
+      "info": "Skyrim.esm:0E4A41",
+      "response": 1
+    }
+  },
+  {
+    "base": 79389,
+    "name": "Madena",
+    "voice": "FemaleCondescending",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalecondescending\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalecondescending\\c06_c06sharedinfos_000e4a41_1.fuz",
+      "info": "Skyrim.esm:0E4A41",
+      "response": 1
+    }
+  },
+  {
+    "base": 79346,
+    "name": "Thonnir",
+    "voice": "MaleNord",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malenord\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malenord\\mq104_mq104balgruufblockin_0005dd47_1.fuz",
+      "info": "Skyrim.esm:05DD47",
+      "response": 1
+    }
+  },
+  {
+    "base": 109155,
+    "name": "Lurbuk",
+    "voice": "MaleOrc",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleorc\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not my problem.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleorc\\dialoguege_dialoguegeneric_000dba25_1.fuz",
+      "info": "Skyrim.esm:0DBA25",
+      "response": 1
+    }
+  },
+  {
+    "base": 80054,
+    "name": "Jorgen",
+    "voice": "MaleCommonerAccented",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malecommoneraccented\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not right now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malecommoneraccented\\solitudeop_solitudefreefor_000a95fc_1.fuz",
+      "info": "Skyrim.esm:0A95FC",
+      "response": 1
+    }
+  },
+  {
+    "base": 79340,
+    "name": "Idgrod the Younger",
+    "voice": "FemaleYoungEager",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaleyoungeager\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "No.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaleyoungeager\\dialoguewi__0003857e_1.fuz",
+      "info": "Skyrim.esm:03857E",
+      "response": 1
+    }
+  },
+  {
+    "base": 79341,
+    "name": "Jonna",
+    "voice": "FemaleCommoner",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalecommoner\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Leave me alone.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalecommoner\\dunnorthwa_dunnorthwatchke_000c1a48_1.fuz",
+      "info": "Skyrim.esm:0C1A48",
+      "response": 1
+    }
+  },
+  {
+    "base": 79336,
+    "name": "Benor",
+    "voice": "MaleBrute",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malebrute\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malebrute\\c06_c06sharedinfos_000e4a41_1.fuz",
+      "info": "Skyrim.esm:0E4A41",
+      "response": 1
+    }
+  },
+  {
+    "base": 79343,
+    "name": "Lami",
+    "voice": "FemaleNord",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalenord\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not my problem.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalenord\\dialoguege_dialoguegeneric_000dba25_1.fuz",
+      "info": "Skyrim.esm:0DBA25",
+      "response": 1
+    }
+  },
+  {
+    "base": 79365,
+    "name": "Pactur",
+    "voice": "MaleNord",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malenord\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malenord\\mq104_mq104balgruufblockin_0005dd47_1.fuz",
+      "info": "Skyrim.esm:05DD47",
+      "response": 1
+    }
+  },
+  {
+    "base": 79363,
+    "name": "Gestur Rockbreaker",
+    "voice": "MaleEvenTonedAccented",
+    "accept": {
+      "text": "Certainly.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleeventonedaccented\\freeformri_ffriften15bolli_00055680_1.fuz",
+      "info": "Skyrim.esm:055680",
+      "response": 1
+    },
+    "decline": {
+      "text": "No. Not really.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleeventonedaccented\\dialogueda__000cade2_1.fuz",
+      "info": "Skyrim.esm:0CADE2",
+      "response": 1
+    }
+  },
+  {
+    "base": 79366,
+    "name": "Sorli the Builder",
+    "voice": "FemaleCommander",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalecommander\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalecommander\\wisharedin_wisharedinfosto_000adc69_1.fuz",
+      "info": "Skyrim.esm:0ADC69",
+      "response": 1
+    }
+  },
+  {
+    "base": 79335,
+    "name": "Aslfur",
+    "voice": "MaleCommander",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malecommander\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malecommander\\wisharedin_wisharedinfosto_000adc7c_1.fuz",
+      "info": "Skyrim.esm:0ADC7C",
+      "response": 1
+    }
+  },
+  {
+    "base": 79338,
+    "name": "Gorm",
+    "voice": "MaleNord",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malenord\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malenord\\mq104_mq104balgruufblockin_0005dd47_1.fuz",
+      "info": "Skyrim.esm:05DD47",
+      "response": 1
+    }
+  },
+  {
+    "base": 79370,
+    "name": "Teeba-Ei",
+    "voice": "MaleArgonian",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleargonian\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Go away.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleargonian\\wisharedin_wisharedinfosto_000adc79_1.fuz",
+      "info": "Skyrim.esm:0ADC79",
+      "response": 1
+    }
+  },
+  {
+    "base": 79339,
+    "name": "Idgrod Ravencrone",
+    "voice": "FemaleOldGrumpy",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaleoldgrumpy\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not really.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaleoldgrumpy\\ms11_ms11helgirdbodyletske_000d55e8_1.fuz",
+      "info": "Skyrim.esm:0D55E8",
+      "response": 1
+    }
+  },
+  {
+    "base": 79337,
+    "name": "Falion",
+    "voice": "MaleSlyCynical",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleslycynical\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleslycynical\\ms05_ms05viarmoblowofftopi_000e768e_1.fuz",
+      "info": "Skyrim.esm:0E768E",
+      "response": 1
+    }
+  },
+  {
+    "base": 115076,
+    "name": "Haran",
+    "voice": "FemaleCommoner",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalecommoner\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Leave me alone.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalecommoner\\dunnorthwa_dunnorthwatchke_000c1a48_1.fuz",
+      "info": "Skyrim.esm:0C1A48",
+      "response": 1
+    }
+  },
+  {
+    "base": 115081,
+    "name": "Thaena",
+    "voice": "FemaleCommoner",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalecommoner\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Leave me alone.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalecommoner\\dunnorthwa_dunnorthwatchke_000c1a48_1.fuz",
+      "info": "Skyrim.esm:0C1A48",
+      "response": 1
+    }
+  },
+  {
+    "base": 115075,
+    "name": "Dagur",
+    "voice": "MaleCommonerAccented",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malecommoneraccented\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not right now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malecommoneraccented\\solitudeop_solitudefreefor_000a95fc_1.fuz",
+      "info": "Skyrim.esm:0A95FC",
+      "response": 1
+    }
+  },
+  {
+    "base": 115079,
+    "name": "Birna",
+    "voice": "FemaleNord",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalenord\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not my problem.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalenord\\dialoguege_dialoguegeneric_000dba25_1.fuz",
+      "info": "Skyrim.esm:0DBA25",
+      "response": 1
+    }
+  },
+  {
+    "base": 115074,
+    "name": "Malur Seloth",
+    "voice": "MaleDarkElf",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maledarkelf\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maledarkelf\\c06_c06sharedinfos_000e4a41_1.fuz",
+      "info": "Skyrim.esm:0E4A41",
+      "response": 1
+    }
+  },
+  {
+    "base": 115072,
+    "name": "Kraldar",
+    "voice": "MaleNord",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malenord\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malenord\\mq104_mq104balgruufblockin_0005dd47_1.fuz",
+      "info": "Skyrim.esm:05DD47",
+      "response": 1
+    }
+  },
+  {
+    "base": 124885,
+    "name": "Nelacar",
+    "voice": "MaleElfHaughty",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleelfhaughty\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Go, leave me in peace.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleelfhaughty\\tg02_tg02hellos_00056302_1.fuz",
+      "info": "Skyrim.esm:056302",
+      "response": 1
+    }
+  },
+  {
+    "base": 115080,
+    "name": "Korir",
+    "voice": "MaleNord",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malenord\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malenord\\mq104_mq104balgruufblockin_0005dd47_1.fuz",
+      "info": "Skyrim.esm:05DD47",
+      "response": 1
+    }
+  },
+  {
+    "base": 115094,
+    "name": "Brelyna Maryon",
+    "voice": "FemaleYoungEager",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaleyoungeager\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "No.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaleyoungeager\\dialoguewi__0003857e_1.fuz",
+      "info": "Skyrim.esm:03857E",
+      "response": 1
+    }
+  },
+  {
+    "base": 115092,
+    "name": "Onmund",
+    "voice": "MaleYoungEager",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleyoungeager\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "I don't think so.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleyoungeager\\favor013_favor013persuadeb_000ce6f1_1.fuz",
+      "info": "Skyrim.esm:0CE6F1",
+      "response": 1
+    }
+  },
+  {
+    "base": 115093,
+    "name": "J'zargo",
+    "voice": "MaleKhajiit",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malekhajiit\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not possible.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malekhajiit\\dialoguefollower__000d8e10_1.fuz",
+      "info": "Skyrim.esm:0D8E10",
+      "response": 1
+    }
+  },
+  {
+    "base": 115098,
+    "name": "Colette Marence",
+    "voice": "FemaleShrill",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaleshrill\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not my problem.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaleshrill\\dialoguege_dialoguegeneric_000dba25_1.fuz",
+      "info": "Skyrim.esm:0DBA25",
+      "response": 1
+    }
+  },
+  {
+    "base": 115095,
+    "name": "Faralda",
+    "voice": "FemaleSultry",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalesultry\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not my problem.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalesultry\\dialoguege_dialoguegeneric_000dba25_1.fuz",
+      "info": "Skyrim.esm:0DBA25",
+      "response": 1
+    }
+  },
+  {
+    "base": 115100,
+    "name": "Enthir",
+    "voice": "MaleSlyCynical",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleslycynical\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleslycynical\\ms05_ms05viarmoblowofftopi_000e768e_1.fuz",
+      "info": "Skyrim.esm:0E768E",
+      "response": 1
+    }
+  },
+  {
+    "base": 115102,
+    "name": "Tolfdir",
+    "voice": "MaleOldKindly",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleoldkindly\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not my problem.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleoldkindly\\dialoguege_dialoguegeneric_000dba25_1.fuz",
+      "info": "Skyrim.esm:0DBA25",
+      "response": 1
+    }
+  },
+  {
+    "base": 115091,
+    "name": "Urag gro-Shub",
+    "voice": "MaleOrc",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleorc\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not my problem.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleorc\\dialoguege_dialoguegeneric_000dba25_1.fuz",
+      "info": "Skyrim.esm:0DBA25",
+      "response": 1
+    }
+  },
+  {
+    "base": 78707,
+    "name": "Talen-Jei",
+    "voice": "MaleArgonian",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleargonian\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Go away.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleargonian\\wisharedin_wisharedinfosto_000adc79_1.fuz",
+      "info": "Skyrim.esm:0ADC79",
+      "response": 1
+    }
+  },
+  {
+    "base": 78697,
+    "name": "Marise Aravel",
+    "voice": "FemaleDarkElf",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaledarkelf\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaledarkelf\\wisharedin_wisharedinfosto_000adc6d_1.fuz",
+      "info": "Skyrim.esm:0ADC6D",
+      "response": 1
+    }
+  },
+  {
+    "base": 78693,
+    "name": "Keerava",
+    "voice": "FemaleArgonian",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaleargonian\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaleargonian\\wisharedin_wisharedinfosto_000adc67_1.fuz",
+      "info": "Skyrim.esm:0ADC67",
+      "response": 1
+    }
+  },
+  {
+    "base": 78669,
+    "name": "Bersi Honey-Hand",
+    "voice": "MaleNord",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malenord\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malenord\\mq104_mq104balgruufblockin_0005dd47_1.fuz",
+      "info": "Skyrim.esm:05DD47",
+      "response": 1
+    }
+  },
+  {
+    "base": 78668,
+    "name": "Balimund",
+    "voice": "MaleBrute",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malebrute\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malebrute\\c06_c06sharedinfos_000e4a41_1.fuz",
+      "info": "Skyrim.esm:0E4A41",
+      "response": 1
+    }
+  },
+  {
+    "base": 78671,
+    "name": "Brand-Shei",
+    "voice": "MaleDarkElf",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maledarkelf\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maledarkelf\\c06_c06sharedinfos_000e4a41_1.fuz",
+      "info": "Skyrim.esm:0E4A41",
+      "response": 1
+    }
+  },
+  {
+    "base": 79554,
+    "name": "Klimmek",
+    "voice": "MaleBrute",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malebrute\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malebrute\\c06_c06sharedinfos_000e4a41_1.fuz",
+      "info": "Skyrim.esm:0E4A41",
+      "response": 1
+    }
+  },
+  {
+    "base": 415956,
+    "name": "Gwilin",
+    "voice": "MaleYoungEager",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleyoungeager\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "I don't think so.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleyoungeager\\favor013_favor013persuadeb_000ce6f1_1.fuz",
+      "info": "Skyrim.esm:0CE6F1",
+      "response": 1
+    }
+  },
+  {
+    "base": 79547,
+    "name": "Wilhelm",
+    "voice": "MaleNord",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malenord\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malenord\\mq104_mq104balgruufblockin_0005dd47_1.fuz",
+      "info": "Skyrim.esm:05DD47",
+      "response": 1
+    }
+  },
+  {
+    "base": 415954,
+    "name": "Temba Wide-Arm",
+    "voice": "FemaleCondescending",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalecondescending\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalecondescending\\c06_c06sharedinfos_000e4a41_1.fuz",
+      "info": "Skyrim.esm:0E4A41",
+      "response": 1
+    }
+  },
+  {
+    "base": 801343,
+    "name": "Sylgja",
+    "voice": "FemaleYoungEager",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaleyoungeager\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "No.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaleyoungeager\\dialoguewi__0003857e_1.fuz",
+      "info": "Skyrim.esm:03857E",
+      "response": 1
+    }
+  },
+  {
+    "base": 79555,
+    "name": "Filnjar",
+    "voice": "MaleNord",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malenord\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malenord\\mq104_mq104balgruufblockin_0005dd47_1.fuz",
+      "info": "Skyrim.esm:05DD47",
+      "response": 1
+    }
+  },
+  {
+    "base": 79557,
+    "name": "Grelka",
+    "voice": "FemaleCondescending",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalecondescending\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalecondescending\\c06_c06sharedinfos_000e4a41_1.fuz",
+      "info": "Skyrim.esm:0E4A41",
+      "response": 1
+    }
+  },
+  {
+    "base": 78683,
+    "name": "Maramal",
+    "voice": "MaleEvenToned",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleeventoned\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleeventoned\\mq201_mq201malbornpartyblo_0003adb0_1.fuz",
+      "info": "Skyrim.esm:03ADB0",
+      "response": 1
+    }
+  },
+  {
+    "base": 105967,
+    "name": "Wylandriah",
+    "voice": "FemaleEvenToned",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaleeventoned\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaleeventoned\\c06_c06sharedinfos_000e4a41_1.fuz",
+      "info": "Skyrim.esm:0E4A41",
+      "response": 1
+    }
+  },
+  {
+    "base": 78673,
+    "name": "Hofgrir Horse-Crusher",
+    "voice": "MaleBrute",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malebrute\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malebrute\\c06_c06sharedinfos_000e4a41_1.fuz",
+      "info": "Skyrim.esm:0E4A41",
+      "response": 1
+    }
+  },
+  {
+    "base": 78699,
+    "name": "Mjoll the Lioness",
+    "voice": "FemaleNord",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalenord\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not my problem.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalenord\\dialoguege_dialoguegeneric_000dba25_1.fuz",
+      "info": "Skyrim.esm:0DBA25",
+      "response": 1
+    }
+  },
+  {
+    "base": 78674,
+    "name": "Dinya Balu",
+    "voice": "FemaleEvenToned",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaleeventoned\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaleeventoned\\c06_c06sharedinfos_000e4a41_1.fuz",
+      "info": "Skyrim.esm:0E4A41",
+      "response": 1
+    }
+  },
+  {
+    "base": 110706,
+    "name": "Madesi",
+    "voice": "MaleArgonian",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleargonian\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Go away.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleargonian\\wisharedin_wisharedinfosto_000adc79_1.fuz",
+      "info": "Skyrim.esm:0ADC79",
+      "response": 1
+    }
+  },
+  {
+    "base": 118160,
+    "name": "Vex",
+    "voice": "FemaleUniqueVex",
+    "accept": {
+      "text": "Sure, why not.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaleuniquevex\\tgleadership__000e3f59_1.fuz",
+      "info": "Skyrim.esm:0E3F59",
+      "response": 1
+    },
+    "decline": {
+      "text": "I'm busy. Don't you have something to do?",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaleuniquevex\\tgdialogue_tghellos_0003cf40_1.fuz",
+      "info": "Skyrim.esm:03CF40",
+      "response": 1
+    }
+  },
+  {
+    "base": 755751,
+    "name": "Tonilia",
+    "voice": "FemaleCondescending",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalecondescending\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalecondescending\\c06_c06sharedinfos_000e4a41_1.fuz",
+      "info": "Skyrim.esm:0E4A41",
+      "response": 1
+    }
+  },
+  {
+    "base": 117624,
+    "name": "Delvin Mallory",
+    "voice": "MaleUniqueDelvinMallory",
+    "accept": {
+      "text": "Agreed.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleuniquedelvinmallory\\tgleadership__000e3f4e_1.fuz",
+      "info": "Skyrim.esm:0E3F4E",
+      "response": 1
+    },
+    "decline": {
+      "text": "I don't have time for this.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleuniquedelvinmallory\\dialoguege__000a7261_1.fuz",
+      "info": "Skyrim.esm:0A7261",
+      "response": 1
+    }
+  },
+  {
+    "base": 78750,
+    "name": "Hroki",
+    "voice": "FemaleYoungEager",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaleyoungeager\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "No.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaleyoungeager\\dialoguewi__0003857e_1.fuz",
+      "info": "Skyrim.esm:03857E",
+      "response": 1
+    }
+  },
+  {
+    "base": 78773,
+    "name": "Rogatus Salvius",
+    "voice": "MaleOldGrumpy",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleoldgrumpy\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not my problem.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleoldgrumpy\\dialoguege_dialoguegeneric_000dba25_1.fuz",
+      "info": "Skyrim.esm:0DBA25",
+      "response": 1
+    }
+  },
+  {
+    "base": 78769,
+    "name": "Pavo Attius",
+    "voice": "MaleEvenToned",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleeventoned\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleeventoned\\mq201_mq201malbornpartyblo_0003adb0_1.fuz",
+      "info": "Skyrim.esm:03ADB0",
+      "response": 1
+    }
+  },
+  {
+    "base": 81965,
+    "name": "Tacitus Sallustius",
+    "voice": "MaleYoungEager",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleyoungeager\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "I don't think so.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleyoungeager\\favor013_favor013persuadeb_000ce6f1_1.fuz",
+      "info": "Skyrim.esm:0CE6F1",
+      "response": 1
+    }
+  },
+  {
+    "base": 78755,
+    "name": "Kleppr",
+    "voice": "MaleCondescending",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malecondescending\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Now is not a good time. Leave me alone.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malecondescending\\wisharedin_wisharedinfosto_000adc7e_1.fuz",
+      "info": "Skyrim.esm:0ADC7E",
+      "response": 1
+    }
+  },
+  {
+    "base": 78757,
+    "name": "Lisbet",
+    "voice": "FemaleNord",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalenord\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not my problem.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalenord\\dialoguege_dialoguegeneric_000dba25_1.fuz",
+      "info": "Skyrim.esm:0DBA25",
+      "response": 1
+    }
+  },
+  {
+    "base": 760191,
+    "name": "Vorstag",
+    "voice": "MaleEvenTonedAccented",
+    "accept": {
+      "text": "Certainly.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleeventonedaccented\\freeformri_ffriften15bolli_00055680_1.fuz",
+      "info": "Skyrim.esm:055680",
+      "response": 1
+    },
+    "decline": {
+      "text": "No. Not really.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleeventonedaccented\\dialogueda__000cade2_1.fuz",
+      "info": "Skyrim.esm:0CADE2",
+      "response": 1
+    }
+  },
+  {
+    "base": 80759,
+    "name": "Eydis",
+    "voice": "FemaleCommoner",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalecommoner\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Leave me alone.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalecommoner\\dunnorthwa_dunnorthwatchke_000c1a48_1.fuz",
+      "info": "Skyrim.esm:0C1A48",
+      "response": 1
+    }
+  },
+  {
+    "base": 80748,
+    "name": "Enmon",
+    "voice": "MaleYoungEager",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleyoungeager\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "I don't think so.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleyoungeager\\favor013_favor013persuadeb_000ce6f1_1.fuz",
+      "info": "Skyrim.esm:0CE6F1",
+      "response": 1
+    }
+  },
+  {
+    "base": 81966,
+    "name": "Aicantar",
+    "voice": "MaleEvenToned",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleeventoned\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleeventoned\\mq201_mq201malbornpartyblo_0003adb0_1.fuz",
+      "info": "Skyrim.esm:03ADB0",
+      "response": 1
+    }
+  },
+  {
+    "base": 78746,
+    "name": "Ghorza gra-Bagol",
+    "voice": "FemaleOrc",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaleorc\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not my problem.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaleorc\\dialoguege_dialoguegeneric_000dba25_1.fuz",
+      "info": "Skyrim.esm:0DBA25",
+      "response": 1
+    }
+  },
+  {
+    "base": 80745,
+    "name": "Ainethach",
+    "voice": "MaleEvenToned",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleeventoned\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleeventoned\\mq201_mq201malbornpartyblo_0003adb0_1.fuz",
+      "info": "Skyrim.esm:03ADB0",
+      "response": 1
+    }
+  },
+  {
+    "base": 350814,
+    "name": "Moth gro-Bagol",
+    "voice": "MaleOrc",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleorc\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not my problem.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleorc\\dialoguege_dialoguegeneric_000dba25_1.fuz",
+      "info": "Skyrim.esm:0DBA25",
+      "response": 1
+    }
+  },
+  {
+    "base": 78785,
+    "name": "Yngvar the Singer",
+    "voice": "MaleBrute",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malebrute\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malebrute\\c06_c06sharedinfos_000e4a41_1.fuz",
+      "info": "Skyrim.esm:0E4A41",
+      "response": 1
+    }
+  },
+  {
+    "base": 124773,
+    "name": "Hamal",
+    "voice": "FemaleCondescending",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalecondescending\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalecondescending\\c06_c06sharedinfos_000e4a41_1.fuz",
+      "info": "Skyrim.esm:0E4A41",
+      "response": 1
+    }
+  },
+  {
+    "base": 78734,
+    "name": "Calcelmo",
+    "voice": "MaleOldKindly",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleoldkindly\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not my problem.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleoldkindly\\dialoguege_dialoguegeneric_000dba25_1.fuz",
+      "info": "Skyrim.esm:0DBA25",
+      "response": 1
+    }
+  },
+  {
+    "base": 82202,
+    "name": "Shahvee",
+    "voice": "FemaleArgonian",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaleargonian\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaleargonian\\wisharedin_wisharedinfosto_000adc67_1.fuz",
+      "info": "Skyrim.esm:0ADC67",
+      "response": 1
+    }
+  },
+  {
+    "base": 82207,
+    "name": "Hillevi Cruel-Sea",
+    "voice": "FemaleCommoner",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalecommoner\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Leave me alone.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalecommoner\\dunnorthwa_dunnorthwatchke_000c1a48_1.fuz",
+      "info": "Skyrim.esm:0C1A48",
+      "response": 1
+    }
+  },
+  {
+    "base": 82206,
+    "name": "Adisla",
+    "voice": "FemaleCommoner",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalecommoner\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Leave me alone.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalecommoner\\dunnorthwa_dunnorthwatchke_000c1a48_1.fuz",
+      "info": "Skyrim.esm:0C1A48",
+      "response": 1
+    }
+  },
+  {
+    "base": 82242,
+    "name": "Oengul War-Anvil",
+    "voice": "MaleNord",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malenord\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malenord\\mq104_mq104balgruufblockin_0005dd47_1.fuz",
+      "info": "Skyrim.esm:05DD47",
+      "response": 1
+    }
+  },
+  {
+    "base": 82218,
+    "name": "Elda Early-Dawn",
+    "voice": "FemaleShrill",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaleshrill\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not my problem.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaleshrill\\dialoguege_dialoguegeneric_000dba25_1.fuz",
+      "info": "Skyrim.esm:0DBA25",
+      "response": 1
+    }
+  },
+  {
+    "base": 82234,
+    "name": "Revyn Sadri",
+    "voice": "MaleCondescending",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malecondescending\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Now is not a good time. Leave me alone.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malecondescending\\wisharedin_wisharedinfosto_000adc7e_1.fuz",
+      "info": "Skyrim.esm:0ADC7E",
+      "response": 1
+    }
+  },
+  {
+    "base": 82238,
+    "name": "Ambarys Rendar",
+    "voice": "MaleDarkElf",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maledarkelf\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maledarkelf\\c06_c06sharedinfos_000e4a41_1.fuz",
+      "info": "Skyrim.esm:0E4A41",
+      "response": 1
+    }
+  },
+  {
+    "base": 79458,
+    "name": "Iddra",
+    "voice": "FemaleCommoner",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalecommoner\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Leave me alone.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalecommoner\\dunnorthwa_dunnorthwatchke_000c1a48_1.fuz",
+      "info": "Skyrim.esm:0C1A48",
+      "response": 1
+    }
+  },
+  {
+    "base": 79461,
+    "name": "Verner Rock-Chucker",
+    "voice": "MaleCoward",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malecoward\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Leave me alone.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malecoward\\mq202_mq202thalmoragentblo_0006c85e_1.fuz",
+      "info": "Skyrim.esm:06C85E",
+      "response": 1
+    }
+  },
+  {
+    "base": 81982,
+    "name": "Derkeethus",
+    "voice": "MaleArgonian",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleargonian\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Go away.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleargonian\\wisharedin_wisharedinfosto_000adc79_1.fuz",
+      "info": "Skyrim.esm:0ADC79",
+      "response": 1
+    }
+  },
+  {
+    "base": 79467,
+    "name": "Sondas Drenim",
+    "voice": "MaleDarkElf",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maledarkelf\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maledarkelf\\c06_c06sharedinfos_000e4a41_1.fuz",
+      "info": "Skyrim.esm:0E4A41",
+      "response": 1
+    }
+  },
+  {
+    "base": 82222,
+    "name": "Scouts-Many-Marshes",
+    "voice": "MaleArgonian",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleargonian\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Go away.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleargonian\\wisharedin_wisharedinfosto_000adc79_1.fuz",
+      "info": "Skyrim.esm:0ADC79",
+      "response": 1
+    }
+  },
+  {
+    "base": 82252,
+    "name": "Quintus Navale",
+    "voice": "MaleYoungEager",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleyoungeager\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "I don't think so.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleyoungeager\\favor013_favor013persuadeb_000ce6f1_1.fuz",
+      "info": "Skyrim.esm:0CE6F1",
+      "response": 1
+    }
+  },
+  {
+    "base": 79455,
+    "name": "Dravynea the Stoneweaver",
+    "voice": "FemaleDarkElf",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaledarkelf\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaledarkelf\\wisharedin_wisharedinfosto_000adc6d_1.fuz",
+      "info": "Skyrim.esm:0ADC6D",
+      "response": 1
+    }
+  },
+  {
+    "base": 82249,
+    "name": "Brunwulf Free-Winter",
+    "voice": "MaleNord",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malenord\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malenord\\mq104_mq104balgruufblockin_0005dd47_1.fuz",
+      "info": "Skyrim.esm:05DD47",
+      "response": 1
+    }
+  },
+  {
+    "base": 82239,
+    "name": "Torbjorn Shatter-Shield",
+    "voice": "MaleDrunk",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maledrunk\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maledrunk\\c06_c06sharedinfos_000e4a41_1.fuz",
+      "info": "Skyrim.esm:0E4A41",
+      "response": 1
+    }
+  },
+  {
+    "base": 82246,
+    "name": "Wuunferth the Unliving",
+    "voice": "MaleOldGrumpy",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleoldgrumpy\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not my problem.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleoldgrumpy\\dialoguege_dialoguegeneric_000dba25_1.fuz",
+      "info": "Skyrim.esm:0DBA25",
+      "response": 1
+    }
+  },
+  {
+    "base": 78487,
+    "name": "Lisette",
+    "voice": "FemaleEvenToned",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaleeventoned\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaleeventoned\\c06_c06sharedinfos_000e4a41_1.fuz",
+      "info": "Skyrim.esm:0E4A41",
+      "response": 1
+    }
+  },
+  {
+    "base": 78480,
+    "name": "Katla",
+    "voice": "FemaleNord",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalenord\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not my problem.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalenord\\dialoguege_dialoguegeneric_000dba25_1.fuz",
+      "info": "Skyrim.esm:0DBA25",
+      "response": 1
+    }
+  },
+  {
+    "base": 159503,
+    "name": "Julienne Lylvieve",
+    "voice": "FemaleYoungEager",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaleyoungeager\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "No.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaleyoungeager\\dialoguewi__0003857e_1.fuz",
+      "info": "Skyrim.esm:03857E",
+      "response": 1
+    }
+  },
+  {
+    "base": 78465,
+    "name": "Giraud Gemane",
+    "voice": "MaleEvenToned",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleeventoned\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleeventoned\\mq201_mq201malbornpartyblo_0003adb0_1.fuz",
+      "info": "Skyrim.esm:03ADB0",
+      "response": 1
+    }
+  },
+  {
+    "base": 78438,
+    "name": "Corpulus Vinius",
+    "voice": "MaleEvenToned",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleeventoned\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleeventoned\\mq201_mq201malbornpartyblo_0003adb0_1.fuz",
+      "info": "Skyrim.esm:03ADB0",
+      "response": 1
+    }
+  },
+  {
+    "base": 78490,
+    "name": "Sayma",
+    "voice": "FemaleEvenToned",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaleeventoned\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaleeventoned\\c06_c06sharedinfos_000e4a41_1.fuz",
+      "info": "Skyrim.esm:0E4A41",
+      "response": 1
+    }
+  },
+  {
+    "base": 78433,
+    "name": "Beirand",
+    "voice": "MaleNord",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malenord\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malenord\\mq104_mq104balgruufblockin_0005dd47_1.fuz",
+      "info": "Skyrim.esm:05DD47",
+      "response": 1
+    }
+  },
+  {
+    "base": 105000,
+    "name": "Faida",
+    "voice": "FemaleCommoner",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalecommoner\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Leave me alone.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalecommoner\\dunnorthwa_dunnorthwatchke_000c1a48_1.fuz",
+      "info": "Skyrim.esm:0C1A48",
+      "response": 1
+    }
+  },
+  {
+    "base": 104989,
+    "name": "Horgeir",
+    "voice": "MaleCoward",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malecoward\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Leave me alone.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malecoward\\mq202_mq202thalmoragentblo_0006c85e_1.fuz",
+      "info": "Skyrim.esm:06C85E",
+      "response": 1
+    }
+  },
+  {
+    "base": 78431,
+    "name": "Ahtar",
+    "voice": "MaleBrute",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malebrute\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malebrute\\c06_c06sharedinfos_000e4a41_1.fuz",
+      "info": "Skyrim.esm:0E4A41",
+      "response": 1
+    }
+  },
+  {
+    "base": 78493,
+    "name": "Octieve San",
+    "voice": "MaleCoward",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malecoward\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Leave me alone.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malecoward\\mq202_mq202thalmoragentblo_0006c85e_1.fuz",
+      "info": "Skyrim.esm:06C85E",
+      "response": 1
+    }
+  },
+  {
+    "base": 78451,
+    "name": "Evette San",
+    "voice": "FemaleCommoner",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalecommoner\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Leave me alone.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalecommoner\\dunnorthwa_dunnorthwatchke_000c1a48_1.fuz",
+      "info": "Skyrim.esm:0C1A48",
+      "response": 1
+    }
+  },
+  {
+    "base": 78468,
+    "name": "Gulum-Ei",
+    "voice": "MaleArgonian",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleargonian\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Go away.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleargonian\\wisharedin_wisharedinfosto_000adc79_1.fuz",
+      "info": "Skyrim.esm:0ADC79",
+      "response": 1
+    }
+  },
+  {
+    "base": 270264,
+    "name": "Captain Aldis",
+    "voice": "MaleNordCommander",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malenordcommander\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malenordcommander\\c06_c06sharedinfos_000e4a41_1.fuz",
+      "info": "Skyrim.esm:0E4A41",
+      "response": 1
+    }
+  },
+  {
+    "base": 78495,
+    "name": "Pantea Ateia",
+    "voice": "FemaleEvenToned",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaleeventoned\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaleeventoned\\c06_c06sharedinfos_000e4a41_1.fuz",
+      "info": "Skyrim.esm:0E4A41",
+      "response": 1
+    }
+  },
+  {
+    "base": 78507,
+    "name": "Taarie",
+    "voice": "FemaleElfHaughty",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaleelfhaughty\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Now, go away.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaleelfhaughty\\wethalmord_wethalmordialog_000b5e0a_1.fuz",
+      "info": "Skyrim.esm:0B5E0A",
+      "response": 1
+    }
+  },
+  {
+    "base": 78506,
+    "name": "Sybille Stentor",
+    "voice": "FemaleSultry",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalesultry\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not my problem.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalesultry\\dialoguege_dialoguegeneric_000dba25_1.fuz",
+      "info": "Skyrim.esm:0DBA25",
+      "response": 1
+    }
+  },
+  {
+    "base": 78509,
+    "name": "Viarmo",
+    "voice": "MaleSlyCynical",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleslycynical\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleslycynical\\ms05_ms05viarmoblowofftopi_000e768e_1.fuz",
+      "info": "Skyrim.esm:0E768E",
+      "response": 1
+    }
+  },
+  {
+    "base": 3674309268,
+    "name": "Dreyla Alor",
+    "voice": "DLC2FemaleDarkElfCommoner",
+    "accept": {
+      "text": "Yes, sera?",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\dragonborn.esm\\dlc2femaledarkelfcommoner\\dlc2dialog__00033aac_1.fuz",
+      "info": "Dragonborn.esm:033AAC",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not good enough.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\dragonborn.esm\\dlc2femaledarkelfcommoner\\dlc2dialog__00033b0c_1.fuz",
+      "info": "Dragonborn.esm:033B0C",
+      "response": 1
+    }
+  },
+  {
+    "base": 3674306425,
+    "name": "Drovas Relvi",
+    "voice": "MaleDarkElf",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maledarkelf\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maledarkelf\\c06_c06sharedinfos_000e4a41_1.fuz",
+      "info": "Skyrim.esm:0E4A41",
+      "response": 1
+    }
+  },
+  {
+    "base": 3674309281,
+    "name": "Milore Ienth",
+    "voice": "FemaleEvenToned",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaleeventoned\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaleeventoned\\c06_c06sharedinfos_000e4a41_1.fuz",
+      "info": "Skyrim.esm:0E4A41",
+      "response": 1
+    }
+  },
+  {
+    "base": 3674309244,
+    "name": "Aphia Velothi",
+    "voice": "FemaleEvenToned",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaleeventoned\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaleeventoned\\c06_c06sharedinfos_000e4a41_1.fuz",
+      "info": "Skyrim.esm:0E4A41",
+      "response": 1
+    }
+  },
+  {
+    "base": 3674309279,
+    "name": "Garyn Ienth",
+    "voice": "DLC2MaleDarkElfCommoner",
+    "accept": {
+      "text": "Yes, sera?",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\dragonborn.esm\\dlc2maledarkelfcommoner\\dlc2dialog__00033aac_1.fuz",
+      "info": "Dragonborn.esm:033AAC",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not my concern, no sera.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\dragonborn.esm\\dlc2maledarkelfcommoner\\dlc2dialog__00033a8e_1.fuz",
+      "info": "Dragonborn.esm:033A8E",
+      "response": 1
+    }
+  },
+  {
+    "base": 3674309264,
+    "name": "Geldis Sadri",
+    "voice": "MaleDarkElf",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maledarkelf\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maledarkelf\\c06_c06sharedinfos_000e4a41_1.fuz",
+      "info": "Skyrim.esm:0E4A41",
+      "response": 1
+    }
+  },
+  {
+    "base": 3674309266,
+    "name": "Fethis Alor",
+    "voice": "MaleElfHaughty",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleelfhaughty\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Go, leave me in peace.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleelfhaughty\\tg02_tg02hellos_00056302_1.fuz",
+      "info": "Skyrim.esm:056302",
+      "response": 1
+    }
+  },
+  {
+    "base": 3674309240,
+    "name": "Crescius Caerellius",
+    "voice": "MaleOldKindly",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleoldkindly\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not my problem.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleoldkindly\\dialoguege_dialoguegeneric_000dba25_1.fuz",
+      "info": "Skyrim.esm:0DBA25",
+      "response": 1
+    }
+  },
+  {
+    "base": 3674309262,
+    "name": "Glover Mallory",
+    "voice": "MaleBrute",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malebrute\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malebrute\\c06_c06sharedinfos_000e4a41_1.fuz",
+      "info": "Skyrim.esm:0E4A41",
+      "response": 1
+    }
+  },
+  {
+    "base": 3674441056,
+    "name": "Teldryn Sero",
+    "voice": "DLC2MaleDarkElfCynical",
+    "accept": {
+      "text": "Very well.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\dragonborn.esm\\dlc2maledarkelfcynical\\dlc2hireli_dlc2hirelingque_00038b42_1.fuz",
+      "info": "Dragonborn.esm:038B42",
+      "response": 1
+    },
+    "decline": {
+      "text": "Just leave me be.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\dragonborn.esm\\dlc2maledarkelfcynical\\dlc2dunkol_dlc2dunkolbjorn_000275aa_1.fuz",
+      "info": "Dragonborn.esm:0275AA",
+      "response": 1
+    }
+  },
+  {
+    "base": 3674309292,
+    "name": "Captain Veleth",
+    "voice": "DLC2MaleUniqueModyn",
+    "accept": {
+      "text": "Very well.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\dragonborn.esm\\dlc2maleuniquemodyn\\dlc2rr01_dlc2rr01modynretu_0001bfd0_1.fuz",
+      "info": "Dragonborn.esm:01BFD0",
+      "response": 1
+    },
+    "decline": {
+      "text": "I'm sorry, I don't carry coin. Perhaps next time.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\dragonborn.esm\\dlc2maleuniquemodyn\\dlc2rrbeggarscene__00019c24_1.fuz",
+      "info": "Dragonborn.esm:019C24",
+      "response": 1
+    }
+  },
+  {
+    "base": 3674309248,
+    "name": "Adril Arano",
+    "voice": "DLC2MaleUniqueAdril",
+    "accept": {
+      "text": "Good.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\dragonborn.esm\\dlc2maleuniqueadril\\dlc2rr02_dlc2rr02adrilevid_00029267_1.fuz",
+      "info": "Dragonborn.esm:029267",
+      "response": 1
+    },
+    "decline": {
+      "text": "Now that's just ridiculous!",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\dragonborn.esm\\dlc2maleuniqueadril\\dlc2rr02_dlc2rr02adrilintr_0001f2c7_1.fuz",
+      "info": "Dragonborn.esm:01F2C7",
+      "response": 1
+    }
+  },
+  {
+    "base": 3674312617,
+    "name": "Morwen",
+    "voice": "FemaleEvenToned",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaleeventoned\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaleeventoned\\c06_c06sharedinfos_000e4a41_1.fuz",
+      "info": "Skyrim.esm:0E4A41",
+      "response": 1
+    }
+  },
+  {
+    "base": 3674312613,
+    "name": "Deor Woodcutter",
+    "voice": "MaleEvenTonedAccented",
+    "accept": {
+      "text": "Certainly.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleeventonedaccented\\freeformri_ffriften15bolli_00055680_1.fuz",
+      "info": "Skyrim.esm:055680",
+      "response": 1
+    },
+    "decline": {
+      "text": "No. Not really.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleeventonedaccented\\dialogueda__000cade2_1.fuz",
+      "info": "Skyrim.esm:0CADE2",
+      "response": 1
+    }
+  },
+  {
+    "base": 3674312629,
+    "name": "Baldor Iron-Shaper",
+    "voice": "MaleCommonerAccented",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malecommoneraccented\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not right now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malecommoneraccented\\solitudeop_solitudefreefor_000a95fc_1.fuz",
+      "info": "Skyrim.esm:0A95FC",
+      "response": 1
+    }
+  },
+  {
+    "base": 3674312622,
+    "name": "Wulf Wild-Blood",
+    "voice": "MaleNord",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malenord\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malenord\\mq104_mq104balgruufblockin_0005dd47_1.fuz",
+      "info": "Skyrim.esm:05DD47",
+      "response": 1
+    }
+  },
+  {
+    "base": 3674312645,
+    "name": "Fanari Strong-Voice",
+    "voice": "FemaleNord",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalenord\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not my problem.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femalenord\\dialoguege_dialoguegeneric_000dba25_1.fuz",
+      "info": "Skyrim.esm:0DBA25",
+      "response": 1
+    }
+  },
+  {
+    "base": 3674306868,
+    "name": "Frea",
+    "voice": "DLC2FemaleUniqueFrea",
+    "accept": {
+      "text": "Very well.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\dragonborn.esm\\dlc2femaleuniquefrea\\dialoguefo_dialoguefollowe_0002bad2_1.fuz",
+      "info": "Dragonborn.esm:02BAD2",
+      "response": 1
+    },
+    "decline": {
+      "text": "I do not think that is wise.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\dragonborn.esm\\dlc2femaleuniquefrea\\dlc2bookdungeoncontroller__000398d6_1.fuz",
+      "info": "Dragonborn.esm:0398D6",
+      "response": 1
+    }
+  },
+  {
+    "base": 3674306423,
+    "name": "Talvas Fathryon",
+    "voice": "MaleYoungEager",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleyoungeager\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "I don't think so.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleyoungeager\\favor013_favor013persuadeb_000ce6f1_1.fuz",
+      "info": "Skyrim.esm:0CE6F1",
+      "response": 1
+    }
+  },
+  {
+    "base": 3674306424,
+    "name": "Elynea Mothren",
+    "voice": "DLC2FemaleDarkElfCommoner",
+    "accept": {
+      "text": "Yes, sera?",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\dragonborn.esm\\dlc2femaledarkelfcommoner\\dlc2dialog__00033aac_1.fuz",
+      "info": "Dragonborn.esm:033AAC",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not good enough.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\dragonborn.esm\\dlc2femaledarkelfcommoner\\dlc2dialog__00033b0c_1.fuz",
+      "info": "Dragonborn.esm:033B0C",
+      "response": 1
+    }
+  },
+  {
+    "base": 3674306362,
+    "name": "Neloth",
+    "voice": "DLC2MaleUniqueNeloth",
+    "accept": {
+      "text": "Don't be ridiculous. Of course I can.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\dragonborn.esm\\dlc2maleuniqueneloth\\dlc2dialog_dlc2telmithrynn_0002c43a_1.fuz",
+      "info": "Dragonborn.esm:02C43A",
+      "response": 1
+    },
+    "decline": {
+      "text": "I could, but I won't.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\dragonborn.esm\\dlc2maleuniqueneloth\\dlc2dialog_dlc2telmithrynn_0002c43b_1.fuz",
+      "info": "Dragonborn.esm:02C43B",
+      "response": 1
+    }
+  },
+  {
+    "base": 108144,
+    "name": "Mikael",
+    "voice": "MaleYoungEager",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleyoungeager\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "I don't think so.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleyoungeager\\favor013_favor013persuadeb_000ce6f1_1.fuz",
+      "info": "Skyrim.esm:0CE6F1",
+      "response": 1
+    }
+  },
+  {
+    "base": 80814,
+    "name": "Olava the Feeble",
+    "voice": "FemaleOldKindly",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaleoldkindly\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\femaleoldkindly\\c06_c06sharedinfos_000e4a41_1.fuz",
+      "info": "Skyrim.esm:0E4A41",
+      "response": 1
+    }
+  },
+  {
+    "base": 529333,
+    "name": "Sinmir",
+    "voice": "MaleNordCommander",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malenordcommander\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malenordcommander\\c06_c06sharedinfos_000e4a41_1.fuz",
+      "info": "Skyrim.esm:0E4A41",
+      "response": 1
+    }
+  },
+  {
+    "base": 182565,
+    "name": "Severio Pelagia",
+    "voice": "MaleCommander",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malecommander\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malecommander\\wisharedin_wisharedinfosto_000adc7c_1.fuz",
+      "info": "Skyrim.esm:0ADC7C",
+      "response": 1
+    }
+  },
+  {
+    "base": 843122,
+    "name": "Sigurd",
+    "voice": "MaleYoungEager",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleyoungeager\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "I don't think so.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleyoungeager\\favor013_favor013persuadeb_000ce6f1_1.fuz",
+      "info": "Skyrim.esm:0CE6F1",
+      "response": 1
+    }
+  },
+  {
+    "base": 80808,
+    "name": "Andurs",
+    "voice": "MaleSlyCynical",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleslycynical\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maleslycynical\\ms05_ms05viarmoblowofftopi_000e768e_1.fuz",
+      "info": "Skyrim.esm:0E768E",
+      "response": 1
+    }
+  },
+  {
+    "base": 80818,
+    "name": "Idolaf Battle-Born",
+    "voice": "MaleBrute",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malebrute\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malebrute\\c06_c06sharedinfos_000e4a41_1.fuz",
+      "info": "Skyrim.esm:0E4A41",
+      "response": 1
+    }
+  },
+  {
+    "base": 108194,
+    "name": "Brill",
+    "voice": "MaleCommonerAccented",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malecommoneraccented\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not right now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malecommoneraccented\\solitudeop_solitudefreefor_000a95fc_1.fuz",
+      "info": "Skyrim.esm:0A95FC",
+      "response": 1
+    }
+  },
+  {
+    "base": 867961,
+    "name": "Acolyte Jenssen",
+    "voice": "MaleNord",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malenord\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\malenord\\mq104_mq104balgruufblockin_0005dd47_1.fuz",
+      "info": "Skyrim.esm:05DD47",
+      "response": 1
+    }
+  },
+  {
+    "base": 218379,
+    "name": "Embry",
+    "voice": "MaleDrunk",
+    "accept": {
+      "text": "Of course.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maledrunk\\dialoguege_dialoguegeneric_000dba22_1.fuz",
+      "info": "Skyrim.esm:0DBA22",
+      "response": 1
+    },
+    "decline": {
+      "text": "Not now.",
+      "archive": "/mnt/mods/Amaranth/Skyrim Special Edition/Data/Skyrim - Voices_en0.bsa",
+      "path": "sound\\voice\\skyrim.esm\\maledrunk\\c06_c06sharedinfos_000e4a41_1.fuz",
+      "info": "Skyrim.esm:0E4A41",
+      "response": 1
+    }
+  }
+]

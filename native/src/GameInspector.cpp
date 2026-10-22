@@ -8,9 +8,9 @@ void GameApp::nativeInspector(){
     const ImVec2 extent=showTableDetails?ImVec2(700,520+(gallery?44:0))*scale:ImVec2(600,645+(gallery?44:0))*scale;
     ImGui::SetNextWindowPos(frameAt+frameSize*.5f,ImGuiCond_Always,ImVec2(.5f,.5f));ImGui::SetNextWindowSize(extent);
     if(!ImGui::IsPopupOpen("Artwork"))ImGui::OpenPopup("Artwork");
-    if(!ImGui::BeginPopupModal("Artwork",nullptr,ImGuiWindowFlags_NoDecoration|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoSavedSettings|ImGuiWindowFlags_NoScrollbar))return;
+    if(!ImGui::BeginPopupModal("Artwork",nullptr,ImGuiWindowFlags_NoDecoration|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoSavedSettings|ImGuiWindowFlags_NoScrollbar|popupFlags()))return;
     const auto origin=ImGui::GetWindowPos();auto* d=ImGui::GetWindowDrawList();
-    surface(origin,extent);d->AddRect(origin,origin+extent,palette().line);
+    surface(origin,extent);if(palette().frame==FrameStyle::Classic)d->AddRect(origin,origin+extent,palette().line);else panelFrame(origin,extent);
     const bool dismiss=closeButton("close-art",origin+ImVec2(extent.x-42*scale,7*scale));
     if(dismiss||ImGui::IsKeyPressed(ImGuiKey_Escape,false)||ImGui::IsKeyPressed(ImGuiKey_GamepadFaceRight,false)){inspecting=false;ImGui::CloseCurrentPopup();}
     const float h=(showTableDetails?440.f:490.f)*scale,w=h*.75f;

@@ -2,8 +2,8 @@
   "version": 6,
   "configurePresets": [
     {
-      "name": "linux-msvc-meridian",
-      "displayName": "Tessera \u2014 Linux clang-cl, desktop SE/AE",
+      "name": "linux-msvc-tessera",
+      "displayName": "Linux cross build (SE / AE / VR)",
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/build/linux-clangcl",
       "cacheVariables": {
@@ -15,17 +15,57 @@
         "VCPKG_TARGET_TRIPLET": "x64-windows-clangcl",
         "VCPKG_HOST_TRIPLET": "x64-linux",
         "VCPKG_INSTALLED_DIR": "${sourceDir}/build/vcpkg_installed",
-        "TTCG_OUTPUT_MOD_DIR": "${sourceDir}/build/runtime-meridian"
+        "TTCG_OUTPUT_MOD_DIR": "${sourceDir}/build/runtime-tessera"
+      }
+    },
+    {
+      "name": "windows-release",
+      "displayName": "Windows DLL (SE / AE / VR)",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/windows",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_C_COMPILER": "clang-cl",
+        "CMAKE_CXX_COMPILER": "clang-cl",
+        "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/build/deps/vcpkg/scripts/buildsystems/vcpkg.cmake",
+        "VCPKG_TARGET_TRIPLET": "x64-windows-tessera",
+        "VCPKG_OVERLAY_TRIPLETS": "${sourceDir}/cmake/triplets",
+        "VCPKG_OVERLAY_PORTS": "${sourceDir}/cmake/vcpkg-ports"
+      }
+    },
+    {
+      "name": "native",
+      "displayName": "Linux tests and preview",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/native",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
       }
     }
   ],
   "buildPresets": [
     {
-      "name": "linux-msvc-meridian",
-      "configurePreset": "linux-msvc-meridian",
-      "targets": [
-        "TTCG"
-      ]
+      "name": "linux-msvc-tessera",
+      "configurePreset": "linux-msvc-tessera"
+    },
+    {
+      "name": "windows-release",
+      "configurePreset": "windows-release",
+      "jobs": 4
+    },
+    {
+      "name": "native",
+      "configurePreset": "native",
+      "jobs": 2
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "native",
+      "configurePreset": "native",
+      "output": {
+        "outputOnFailure": true
+      }
     }
   ]
 }

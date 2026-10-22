@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Fetch the locked native dependencies and independent Linux cross-build tools."""
 from pathlib import Path
+import argparse
 import hashlib
 import json
 import os
@@ -31,14 +32,39 @@ def checkout(name):
     if actual != item['commit']:
         run('git', 'fetch', item['repository'], item['commit'], cwd=path)
         run('git', 'checkout', '--detach', item['commit'], cwd=path)
-    if name == 'vcpkg' and subprocess.check_output(['git', 'rev-parse', '--is-shallow-repository'], cwd=path, text=True).strip() == 'true':
-        run('git', 'fetch', '--unshallow', 'origin', item['commit'], cwd=path)
     if (path / '.gitmodules').exists():
         run('git', 'submodule', 'update', '--init', '--recursive', '--depth', '1', cwd=path)
     return path
 
 
+def verify_sources():
+    manifest = ROOT / 'native/third_party/manifest.json'
+    count = 0
+    for library, content in json.loads(manifest.read_text(encoding='utf-8')).items():
+        for name, digest in content['files'].items():
+            path = ROOT / 'native/third_party' / library / name
+            if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != digest:
+                raise RuntimeError(f'Dependency differs: {library}/{name}')
+            count += 1
+    print(f'Verified {count} dependency files', flush=True)
+
+
 def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--sources-only', action='store_true', help='Fetch build sources')
+    parser.add_argument('--native', action='store_true', help='Fetch dependencies for Linux tests')
+    args = parser.parse_args()
+    verify_sources()
+    checkout('commonlib')
+    if args.native:
+        return
+    checkout('minhook')
+    vcpkg = checkout('vcpkg')
+    if args.sources_only:
+        return
+    if os.name == 'nt':
+        run(vcpkg / 'bootstrap-vcpkg.bat', '-disableMetrics')
+        return
     host = ROOT / 'build/toolchain/host'
     host.mkdir(parents=True, exist_ok=True)
     os.environ['PATH'] = str(host / 'usr/bin') + os.pathsep + os.environ['PATH']
@@ -50,15 +76,6 @@ def main():
             raise RuntimeError('Host zip archive checksum mismatch')
         with tarfile.open(archive) as tar:
             tar.extractall(host, filter='data')
-    manifest=ROOT/'native/third_party/manifest.json'
-    for library, content in json.loads(manifest.read_text()).items():
-        for name, digest in content['files'].items():
-            path=ROOT/'native/third_party'/library/name
-            if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest()!=digest:
-                raise RuntimeError(f'Native UI dependency changed: {library}/{name}')
-    checkout('commonlib')
-    checkout('minhook')
-    vcpkg = checkout('vcpkg')
     if not (vcpkg / 'vcpkg').is_file():
         run('bash', vcpkg / 'bootstrap-vcpkg.sh', '-disableMetrics')
     toolchain = ROOT / 'build/toolchain'

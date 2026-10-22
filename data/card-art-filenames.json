@@ -1,0 +1,3517 @@
+{
+  "Murkwater Goblin": {
+    "id": "murkwater-goblin",
+    "card": "Murkwater Goblin.webp",
+    "thumbnail": "Murkwater Goblin.webp"
+  },
+  "Frostbite Spider": {
+    "id": "frostbite-spider",
+    "card": "Frostbite Spider.webp",
+    "thumbnail": "Frostbite Spider.webp"
+  },
+  "Septim Guardsman": {
+    "id": "septim-guardsman",
+    "card": "Septim Guardsman.webp",
+    "thumbnail": "Septim Guardsman.webp"
+  },
+  "Imperial Grunt": {
+    "id": "imperial-grunt",
+    "card": "Imperial Grunt.webp",
+    "thumbnail": "Imperial Grunt.webp"
+  },
+  "Sharpshooter Scout": {
+    "id": "sharpshooter-scout",
+    "card": "Sharpshooter Scout.webp",
+    "thumbnail": "Sharpshooter Scout.webp"
+  },
+  "Thieves Guild Recruit": {
+    "id": "thieves-guild-recruit",
+    "card": "Thieves Guild Recruit.webp",
+    "thumbnail": "Thieves Guild Recruit.webp"
+  },
+  "Fighters Guild Recruit": {
+    "id": "fighters-guild-recruit",
+    "card": "Fighters Guild Recruit.webp",
+    "thumbnail": "Fighters Guild Recruit.webp"
+  },
+  "Dwarven Spider": {
+    "id": "dwarven-spider",
+    "card": "Dwarven Spider.webp",
+    "thumbnail": "Dwarven Spider.webp"
+  },
+  "Shrieking Harpy": {
+    "id": "shrieking-harpy",
+    "card": "Shrieking Harpy.webp",
+    "thumbnail": "Shrieking Harpy.webp"
+  },
+  "Kvatch Soldier": {
+    "id": "kvatch-soldier",
+    "card": "Kvatch Soldier.webp",
+    "thumbnail": "Kvatch Soldier.webp"
+  },
+  "Iliac Deckguard": {
+    "id": "camlorn-sentinel",
+    "card": "Iliac Deckguard.webp",
+    "thumbnail": "Iliac Deckguard.webp"
+  },
+  "Rihad Battlemage": {
+    "id": "rihad-battlemage",
+    "card": "Rihad Battlemage.webp",
+    "thumbnail": "Rihad Battlemage.webp"
+  },
+  "Rotting Draugr": {
+    "id": "rotting-draugr",
+    "card": "Rotting Draugr.webp",
+    "thumbnail": "Rotting Draugr.webp"
+  },
+  "Deathless Draugr": {
+    "id": "deathless-draugr",
+    "card": "Deathless Draugr.webp",
+    "thumbnail": "Deathless Draugr.webp"
+  },
+  "Dread Clannfear": {
+    "id": "dread-clannfear",
+    "card": "Dread Clannfear.webp",
+    "thumbnail": "Dread Clannfear.webp"
+  },
+  "Lowland Troll": {
+    "id": "lowland-troll",
+    "card": "Lowland Troll.webp",
+    "thumbnail": "Lowland Troll.webp"
+  },
+  "Guardian Skeever": {
+    "id": "voracious-spriggan",
+    "card": "Guardian Skeever.webp",
+    "thumbnail": "Guardian Skeever.webp"
+  },
+  "Covenant Marauder": {
+    "id": "covenant-marauder",
+    "card": "Covenant Marauder.webp",
+    "thumbnail": "Covenant Marauder.webp"
+  },
+  "Ferocious Dreugh": {
+    "id": "ferocious-dreugh",
+    "card": "Ferocious Dreugh.webp",
+    "thumbnail": "Ferocious Dreugh.webp"
+  },
+  "Alpha Wolf": {
+    "id": "alpha-wolf",
+    "card": "Alpha Wolf.webp",
+    "thumbnail": "Alpha Wolf.webp"
+  },
+  "Dune Stalker": {
+    "id": "dune-stalker",
+    "card": "Dune Stalker.webp",
+    "thumbnail": "Dune Stalker.webp"
+  },
+  "Pit Lion": {
+    "id": "pit-lion",
+    "card": "Pit Lion.webp",
+    "thumbnail": "Pit Lion.webp"
+  },
+  "Brutal Ashlander": {
+    "id": "brutal-ashlander",
+    "card": "Brutal Ashlander.webp",
+    "thumbnail": "Brutal Ashlander.webp"
+  },
+  "Crown Corsair": {
+    "id": "crown-quartermaster",
+    "card": "Crown Corsair.webp",
+    "thumbnail": "Crown Corsair.webp"
+  },
+  "Morthal Watchman": {
+    "id": "morthal-watchman",
+    "card": "Morthal Watchman.webp",
+    "thumbnail": "Morthal Watchman.webp"
+  },
+  "Palace Prowler": {
+    "id": "palace-prowler",
+    "card": "Palace Prowler.webp",
+    "thumbnail": "Palace Prowler.webp"
+  },
+  "Oldgate Warden": {
+    "id": "oldgate-warden",
+    "card": "Oldgate Warden.webp",
+    "thumbnail": "Oldgate Warden.webp"
+  },
+  "Sunhold Medic": {
+    "id": "sunhold-medic",
+    "card": "Sunhold Medic.webp",
+    "thumbnail": "Sunhold Medic.webp"
+  },
+  "Daring Cutpurse": {
+    "id": "daring-cutpurse",
+    "card": "Daring Cutpurse.webp",
+    "thumbnail": "Daring Cutpurse.webp"
+  },
+  "Guar Stablemaster": {
+    "id": "guar-stablemaster",
+    "card": "Guar Stablemaster.webp",
+    "thumbnail": "Guar Stablemaster.webp"
+  },
+  "Orc Clan Captain": {
+    "id": "orc-clan-captain",
+    "card": "Orc Clan Captain.webp",
+    "thumbnail": "Orc Clan Captain.webp"
+  },
+  "Wind Keep Spellsword": {
+    "id": "wind-keep-spellsword",
+    "card": "Wind Keep Spellsword.webp",
+    "thumbnail": "Wind Keep Spellsword.webp"
+  },
+  "Dwarven Sphere": {
+    "id": "dwarven-sphere",
+    "card": "Dwarven Sphere.webp",
+    "thumbnail": "Dwarven Sphere.webp"
+  },
+  "Blue Grummite": {
+    "id": "blue-grummite",
+    "card": "Blue Grummite.webp",
+    "thumbnail": "Blue Grummite.webp"
+  },
+  "Orc Clan Shaman": {
+    "id": "orc-clan-shaman",
+    "card": "Orc Clan Shaman.webp",
+    "thumbnail": "Orc Clan Shaman.webp"
+  },
+  "Renowned Instructor": {
+    "id": "renowned-instructor",
+    "card": "Renowned Instructor.webp",
+    "thumbnail": "Renowned Instructor.webp"
+  },
+  "Skaven Pyromancer": {
+    "id": "skaven-pyromancer",
+    "card": "Skaven Pyromancer.webp",
+    "thumbnail": "Skaven Pyromancer.webp"
+  },
+  "Dwarven Ballista": {
+    "id": "dwarven-ballista",
+    "card": "Dwarven Ballista.webp",
+    "thumbnail": "Dwarven Ballista.webp"
+  },
+  "Guildsworn Spellguard": {
+    "id": "guildsworn-apprentice",
+    "card": "Guildsworn Spellguard.webp",
+    "thumbnail": "Guildsworn Spellguard.webp"
+  },
+  "Abecean Navigator": {
+    "id": "legends-209105",
+    "card": "Abecean Navigator.webp",
+    "thumbnail": "Abecean Navigator.webp"
+  },
+  "Ambitious Hireling": {
+    "id": "legends-253708",
+    "card": "Ambitious Hireling.webp",
+    "thumbnail": "Ambitious Hireling.webp"
+  },
+  "Arcanaeum Librarian": {
+    "id": "legends-246678",
+    "card": "Arcanaeum Librarian.webp",
+    "thumbnail": "Arcanaeum Librarian.webp"
+  },
+  "Baandari Opportunist": {
+    "id": "legends-284079",
+    "card": "Baandari Opportunist.webp",
+    "thumbnail": "Baandari Opportunist.webp"
+  },
+  "Blackreach Rebuilder": {
+    "id": "legends-233990",
+    "card": "Blackreach Rebuilder.webp",
+    "thumbnail": "Blackreach Rebuilder.webp"
+  },
+  "Brotherhood Suspect": {
+    "id": "legends-299014",
+    "card": "Brotherhood Suspect.webp",
+    "thumbnail": "Brotherhood Suspect.webp"
+  },
+  "Bruma Magistrate": {
+    "id": "legends-209055",
+    "card": "Bruma Magistrate.webp",
+    "thumbnail": "Bruma Magistrate.webp"
+  },
+  "City Guard": {
+    "id": "legends-299060",
+    "card": "City Guard.webp",
+    "thumbnail": "City Guard.webp"
+  },
+  "Clannfear Runt": {
+    "id": "legends-299178",
+    "card": "Clannfear Runt.webp",
+    "thumbnail": "Clannfear Runt.webp"
+  },
+  "Clockwork City Pilgrim": {
+    "id": "legends-253741",
+    "card": "Clockwork City Pilgrim.webp",
+    "thumbnail": "Clockwork City Pilgrim.webp"
+  },
+  "Cog Collector": {
+    "id": "legends-246032",
+    "card": "Cog Collector.webp",
+    "thumbnail": "Cog Collector.webp"
+  },
+  "Village Militiaman": {
+    "id": "legends-282540",
+    "card": "Village Militiaman.webp",
+    "thumbnail": "Village Militiaman.webp"
+  },
+  "Corsair": {
+    "id": "legends-230888",
+    "card": "Corsair.webp",
+    "thumbnail": "Corsair.webp"
+  },
+  "Craglorn Scavenger": {
+    "id": "legends-221518",
+    "card": "Craglorn Scavenger.webp",
+    "thumbnail": "Craglorn Scavenger.webp"
+  },
+  "Craven Conscript": {
+    "id": "legends-284073",
+    "card": "Craven Conscript.webp",
+    "thumbnail": "Craven Conscript.webp"
+  },
+  "Crucible Blacksmith": {
+    "id": "legends-276452",
+    "card": "Crucible Blacksmith.webp",
+    "thumbnail": "Crucible Blacksmith.webp"
+  },
+  "Dres Spy": {
+    "id": "legends-253868",
+    "card": "Dres Spy.webp",
+    "thumbnail": "Dres Spy.webp"
+  },
+  "Dust Eater Skirmisher": {
+    "id": "legends-298583",
+    "card": "Dust Eater Skirmisher.webp",
+    "thumbnail": "Dust Eater Skirmisher.webp"
+  },
+  "Elsweyr Lookout": {
+    "id": "legends-224145",
+    "card": "Elsweyr Lookout.webp",
+    "thumbnail": "Elsweyr Lookout.webp"
+  },
+  "Encumbered Explorer": {
+    "id": "legends-233528",
+    "card": "Encumbered Explorer.webp",
+    "thumbnail": "Encumbered Explorer.webp"
+  },
+  "Evermore Steward": {
+    "id": "legends-214282",
+    "card": "Evermore Steward.webp",
+    "thumbnail": "Evermore Steward.webp"
+  },
+  "Feasting Vulture": {
+    "id": "legends-214293",
+    "card": "Feasting Vulture.webp",
+    "thumbnail": "Feasting Vulture.webp"
+  },
+  "Gearwork Spider": {
+    "id": "legends-246465",
+    "card": "Gearwork Spider.webp",
+    "thumbnail": "Gearwork Spider.webp"
+  },
+  "Great Moot Squire": {
+    "id": "legends-284110",
+    "card": "Great Moot Squire.webp",
+    "thumbnail": "Great Moot Squire.webp"
+  },
+  "Hist Speaker": {
+    "id": "legends-209876",
+    "card": "Hist Speaker.webp",
+    "thumbnail": "Hist Speaker.webp"
+  },
+  "Imperial Lackey": {
+    "id": "legends-284352",
+    "card": "Imperial Lackey.webp",
+    "thumbnail": "Imperial Lackey.webp"
+  },
+  "Jerall Forager": {
+    "id": "legends-214319",
+    "card": "Jerall Forager.webp",
+    "thumbnail": "Jerall Forager.webp"
+  },
+  "Karthspire Scout": {
+    "id": "legends-270890",
+    "card": "Karthspire Scout.webp",
+    "thumbnail": "Karthspire Scout.webp"
+  },
+  "Kwama Forager": {
+    "id": "legends-257893",
+    "card": "Kwama Forager.webp",
+    "thumbnail": "Kwama Forager.webp"
+  },
+  "Lower Canton Smith": {
+    "id": "legends-253820",
+    "card": "Lower Canton Smith.webp",
+    "thumbnail": "Lower Canton Smith.webp"
+  },
+  "Mages Guild Recruit": {
+    "id": "legends-253737",
+    "card": "Mages Guild Recruit.webp",
+    "thumbnail": "Mages Guild Recruit.webp"
+  },
+  "Moon Sugar Smuggler": {
+    "id": "legends-253871",
+    "card": "Moon Sugar Smuggler.webp",
+    "thumbnail": "Moon Sugar Smuggler.webp"
+  },
+  "Mudcrab Merchant": {
+    "id": "legends-253949",
+    "card": "Mudcrab Merchant.webp",
+    "thumbnail": "Mudcrab Merchant.webp"
+  },
+  "Niben Bay Cutthroat": {
+    "id": "legends-209283",
+    "card": "Niben Bay Cutthroat.webp",
+    "thumbnail": "Niben Bay Cutthroat.webp"
+  },
+  "Nord Firebrand": {
+    "id": "legends-209286",
+    "card": "Nord Firebrand.webp",
+    "thumbnail": "Nord Firebrand.webp"
+  },
+  "Northpoint Herald": {
+    "id": "legends-220833",
+    "card": "Northpoint Herald.webp",
+    "thumbnail": "Northpoint Herald.webp"
+  },
+  "Ratway Relic Hunter": {
+    "id": "legends-245462",
+    "card": "Ratway Relic Hunter.webp",
+    "thumbnail": "Ratway Relic Hunter.webp"
+  },
+  "Dwarven Architon": {
+    "id": "legends-247820",
+    "card": "Dwarven Architon.webp",
+    "thumbnail": "Dwarven Architon.webp"
+  },
+  "Relic Hunter": {
+    "id": "legends-245453",
+    "card": "Relic Hunter.webp",
+    "thumbnail": "Relic Hunter.webp"
+  },
+  "Risen Dead": {
+    "id": "legends-254986",
+    "card": "Risen Dead.webp",
+    "thumbnail": "Risen Dead.webp"
+  },
+  "Scamp": {
+    "id": "legends-214331",
+    "card": "Scamp.webp",
+    "thumbnail": "Scamp.webp"
+  },
+  "Scroll Seeker": {
+    "id": "legends-246650",
+    "card": "Scroll Seeker.webp",
+    "thumbnail": "Scroll Seeker.webp"
+  },
+  "Bitter Coast Wayfarer": {
+    "id": "legends-253739",
+    "card": "Bitter Coast Wayfarer.webp",
+    "thumbnail": "Bitter Coast Wayfarer.webp"
+  },
+  "Sheepish Dunmer": {
+    "id": "legends-253245",
+    "card": "Sheepish Dunmer.webp",
+    "thumbnail": "Sheepish Dunmer.webp"
+  },
+  "Shimmerene Peddler": {
+    "id": "legends-214291",
+    "card": "Shimmerene Peddler.webp",
+    "thumbnail": "Shimmerene Peddler.webp"
+  },
+  "Skeever": {
+    "id": "legends-231122",
+    "card": "Skeever.webp",
+    "thumbnail": "Skeever.webp"
+  },
+  "Skeleton": {
+    "id": "legends-223709",
+    "card": "Skeleton.webp",
+    "thumbnail": "Skeleton.webp"
+  },
+  "Skilled Blacksmith": {
+    "id": "legends-210108",
+    "card": "Skilled Blacksmith.webp",
+    "thumbnail": "Skilled Blacksmith.webp"
+  },
+  "Sly Marshblade": {
+    "id": "legends-250445",
+    "card": "Sly Marshblade.webp",
+    "thumbnail": "Sly Marshblade.webp"
+  },
+  "Dwarven Sentry": {
+    "id": "legends-209396",
+    "card": "Dwarven Sentry.webp",
+    "thumbnail": "Dwarven Sentry.webp"
+  },
+  "Star-Sung Bard": {
+    "id": "legends-245465",
+    "card": "Star-Sung Bard.webp",
+    "thumbnail": "Star-Sung Bard.webp"
+  },
+  "Suran Pawnbroker": {
+    "id": "legends-253880",
+    "card": "Suran Pawnbroker.webp",
+    "thumbnail": "Suran Pawnbroker.webp"
+  },
+  "Thalmor Soldier": {
+    "id": "legends-234371",
+    "card": "Thalmor Soldier.webp",
+    "thumbnail": "Thalmor Soldier.webp"
+  },
+  "Thieves Guild Fence": {
+    "id": "legends-234220",
+    "card": "Thieves Guild Fence.webp",
+    "thumbnail": "Thieves Guild Fence.webp"
+  },
+  "Wrothgar Artisan": {
+    "id": "legends-209180",
+    "card": "Wrothgar Artisan.webp",
+    "thumbnail": "Wrothgar Artisan.webp"
+  },
+  "Afflicted Alit": {
+    "id": "legends-221480",
+    "card": "Afflicted Alit.webp",
+    "thumbnail": "Afflicted Alit.webp"
+  },
+  "Aldmeri Patriot": {
+    "id": "legends-220789",
+    "card": "Aldmeri Patriot.webp",
+    "thumbnail": "Aldmeri Patriot.webp"
+  },
+  "Alfiq Illusionist": {
+    "id": "legends-291262",
+    "card": "Alfiq Illusionist.webp",
+    "thumbnail": "Alfiq Illusionist.webp"
+  },
+  "Altmer Flameslinger": {
+    "id": "legends-283717",
+    "card": "Altmer Flameslinger.webp",
+    "thumbnail": "Altmer Flameslinger.webp"
+  },
+  "Arenthia Guerrilla": {
+    "id": "legends-299187",
+    "card": "Arenthia Guerrilla.webp",
+    "thumbnail": "Arenthia Guerrilla.webp"
+  },
+  "Arenthia Swindler": {
+    "id": "legends-223299",
+    "card": "Arenthia Swindler.webp",
+    "thumbnail": "Arenthia Swindler.webp"
+  },
+  "Assembled Sentry": {
+    "id": "legends-246783",
+    "card": "Assembled Sentry.webp",
+    "thumbnail": "Assembled Sentry.webp"
+  },
+  "Barded Guar": {
+    "id": "legends-209123",
+    "card": "Barded Guar.webp",
+    "thumbnail": "Barded Guar.webp"
+  },
+  "Bedeviling Scamp": {
+    "id": "legends-276386",
+    "card": "Bedeviling Scamp.webp",
+    "thumbnail": "Bedeviling Scamp.webp"
+  },
+  "Blackrose Herbalist": {
+    "id": "legends-220780",
+    "card": "Blackrose Herbalist.webp",
+    "thumbnail": "Blackrose Herbalist.webp"
+  },
+  "Blind Moth Priest": {
+    "id": "legends-298993",
+    "card": "Blind Moth Priest.webp",
+    "thumbnail": "Blind Moth Priest.webp"
+  },
+  "Blood Sorceress": {
+    "id": "legends-228305",
+    "card": "Blood Sorceress.webp",
+    "thumbnail": "Blood Sorceress.webp"
+  },
+  "Bloody Hand Chef": {
+    "id": "legends-298446",
+    "card": "Bloody Hand Chef.webp",
+    "thumbnail": "Bloody Hand Chef.webp"
+  },
+  "Bruma Armorer": {
+    "id": "legends-220453",
+    "card": "Bruma Armorer.webp",
+    "thumbnail": "Bruma Armorer.webp"
+  },
+  "Caravan Enforcer": {
+    "id": "legends-234135",
+    "card": "Caravan Enforcer.webp",
+    "thumbnail": "Caravan Enforcer.webp"
+  },
+  "Cleric of Kyne": {
+    "id": "legends-234096",
+    "card": "Cleric of Kyne.webp",
+    "thumbnail": "Cleric of Kyne.webp"
+  },
+  "Cliffside Lookout": {
+    "id": "legends-233878",
+    "card": "Cliffside Lookout.webp",
+    "thumbnail": "Cliffside Lookout.webp"
+  },
+  "Colovian Trooper": {
+    "id": "legends-211209",
+    "card": "Colovian Trooper.webp",
+    "thumbnail": "Colovian Trooper.webp"
+  },
+  "Cornerclub Gambler": {
+    "id": "legends-253882",
+    "card": "Cornerclub Gambler.webp",
+    "thumbnail": "Cornerclub Gambler.webp"
+  },
+  "Crazed Hunger": {
+    "id": "legends-275903",
+    "card": "Crazed Hunger.webp",
+    "thumbnail": "Crazed Hunger.webp"
+  },
+  "Dawnstar Healer": {
+    "id": "legends-209155",
+    "card": "Dawnstar Healer.webp",
+    "thumbnail": "Dawnstar Healer.webp"
+  },
+  "Deepwood Trapper": {
+    "id": "legends-234017",
+    "card": "Deepwood Trapper.webp",
+    "thumbnail": "Deepwood Trapper.webp"
+  },
+  "Demented Grummite": {
+    "id": "legends-277251",
+    "card": "Demented Grummite.webp",
+    "thumbnail": "Demented Grummite.webp"
+  },
+  "Draugr Sentry": {
+    "id": "legends-234373",
+    "card": "Draugr Sentry.webp",
+    "thumbnail": "Draugr Sentry.webp"
+  },
+  "Dunmer Nightblade": {
+    "id": "legends-214136",
+    "card": "Dunmer Nightblade.webp",
+    "thumbnail": "Dunmer Nightblade.webp"
+  },
+  "Fharun Defender": {
+    "id": "legends-209203",
+    "card": "Fharun Defender.webp",
+    "thumbnail": "Fharun Defender.webp"
+  },
+  "Fifth Legion Trainer": {
+    "id": "legends-220450",
+    "card": "Fifth Legion Trainer.webp",
+    "thumbnail": "Fifth Legion Trainer.webp"
+  },
+  "Firepot Spider": {
+    "id": "legends-246687",
+    "card": "Firepot Spider.webp",
+    "thumbnail": "Firepot Spider.webp"
+  },
+  "Frenzied Alit": {
+    "id": "legends-272783",
+    "card": "Frenzied Alit.webp",
+    "thumbnail": "Frenzied Alit.webp"
+  },
+  "Gardener of Swords": {
+    "id": "legends-223605",
+    "card": "Gardener of Swords.webp",
+    "thumbnail": "Gardener of Swords.webp"
+  },
+  "Ghost Sea Lookout": {
+    "id": "legends-233869",
+    "card": "Ghost Sea Lookout.webp",
+    "thumbnail": "Ghost Sea Lookout.webp"
+  },
+  "Ghostgate Defender": {
+    "id": "legends-253580",
+    "card": "Ghostgate Defender.webp",
+    "thumbnail": "Ghostgate Defender.webp"
+  },
+  "Giant Bat": {
+    "id": "legends-209054",
+    "card": "Giant Bat.webp",
+    "thumbnail": "Giant Bat.webp"
+  },
+  "Gloomlurker": {
+    "id": "legends-233861",
+    "card": "Gloomlurker.webp",
+    "thumbnail": "Gloomlurker.webp"
+  },
+  "Goblin Skulk": {
+    "id": "legends-213386",
+    "card": "Goblin Skulk.webp",
+    "thumbnail": "Goblin Skulk.webp"
+  },
+  "Wrothgar Stormcaller": {
+    "id": "legends-209882",
+    "card": "Wrothgar Stormcaller.webp",
+    "thumbnail": "Wrothgar Stormcaller.webp"
+  },
+  "Helgen Squad Leader": {
+    "id": "legends-210112",
+    "card": "Helgen Squad Leader.webp",
+    "thumbnail": "Helgen Squad Leader.webp"
+  },
+  "Helstrom Footpad": {
+    "id": "legends-213395",
+    "card": "Helstrom Footpad.webp",
+    "thumbnail": "Helstrom Footpad.webp"
+  },
+  "High Rock Summoner": {
+    "id": "legends-209878",
+    "card": "High Rock Summoner.webp",
+    "thumbnail": "High Rock Summoner.webp"
+  },
+  "Iliac Sorcerer": {
+    "id": "legends-220391",
+    "card": "Iliac Sorcerer.webp",
+    "thumbnail": "Iliac Sorcerer.webp"
+  },
+  "Imperial Legionnaire": {
+    "id": "legends-209233",
+    "card": "Imperial Legionnaire.webp",
+    "thumbnail": "Imperial Legionnaire.webp"
+  },
+  "Imperial Soldier": {
+    "id": "legends-291260",
+    "card": "Imperial Soldier.webp",
+    "thumbnail": "Imperial Soldier.webp"
+  },
+  "Stunted Scamp": {
+    "id": "legends-298694",
+    "card": "Stunted Scamp.webp",
+    "thumbnail": "Stunted Scamp.webp"
+  },
+  "Dremora Archer": {
+    "id": "legends-299013",
+    "card": "Dremora Archer.webp",
+    "thumbnail": "Dremora Archer.webp"
+  },
+  "Morag Tong Aspirant": {
+    "id": "legends-253874",
+    "card": "Morag Tong Aspirant.webp",
+    "thumbnail": "Morag Tong Aspirant.webp"
+  },
+  "Morkul Gatekeeper": {
+    "id": "legends-221487",
+    "card": "Morkul Gatekeeper.webp",
+    "thumbnail": "Morkul Gatekeeper.webp"
+  },
+  "Mournhold Guardian": {
+    "id": "legends-213273",
+    "card": "Mournhold Guardian.webp",
+    "thumbnail": "Mournhold Guardian.webp"
+  },
+  "Murkwater Witch": {
+    "id": "legends-214175",
+    "card": "Murkwater Witch.webp",
+    "thumbnail": "Murkwater Witch.webp"
+  },
+  "Nix-Hound": {
+    "id": "legends-253886",
+    "card": "Nix-Hound.webp",
+    "thumbnail": "Nix-Hound.webp"
+  },
+  "Outland Patrol": {
+    "id": "legends-299192",
+    "card": "Outland Patrol.webp",
+    "thumbnail": "Outland Patrol.webp"
+  },
+  "Poetic Armiger": {
+    "id": "legends-253738",
+    "card": "Poetic Armiger.webp",
+    "thumbnail": "Poetic Armiger.webp"
+  },
+  "Priest of Mara": {
+    "id": "legends-316970",
+    "card": "Priest of Mara.webp",
+    "thumbnail": "Priest of Mara.webp"
+  },
+  "Protector of the Innocent": {
+    "id": "legends-228283",
+    "card": "Protector of the Innocent.webp",
+    "thumbnail": "Protector of the Innocent.webp"
+  },
+  "Raging Horker": {
+    "id": "legends-233903",
+    "card": "Raging Horker.webp",
+    "thumbnail": "Raging Horker.webp"
+  },
+  "Redoran Enforcer": {
+    "id": "legends-214355",
+    "card": "Redoran Enforcer.webp",
+    "thumbnail": "Redoran Enforcer.webp"
+  },
+  "Reflective Automaton": {
+    "id": "legends-246686",
+    "card": "Reflective Automaton.webp",
+    "thumbnail": "Reflective Automaton.webp"
+  },
+  "Rihad Horseman": {
+    "id": "legends-209352",
+    "card": "Rihad Horseman.webp",
+    "thumbnail": "Rihad Horseman.webp"
+  },
+  "Ruin Archaeologist": {
+    "id": "legends-246685",
+    "card": "Ruin Archaeologist.webp",
+    "thumbnail": "Ruin Archaeologist.webp"
+  },
+  "Sentinel Reclaimer": {
+    "id": "legends-293893",
+    "card": "Sentinel Reclaimer.webp",
+    "thumbnail": "Sentinel Reclaimer.webp"
+  },
+  "Shining Saint": {
+    "id": "legends-276873",
+    "card": "Shining Saint.webp",
+    "thumbnail": "Shining Saint.webp"
+  },
+  "Shriveled Mummy": {
+    "id": "legends-232855",
+    "card": "Shriveled Mummy.webp",
+    "thumbnail": "Shriveled Mummy.webp"
+  },
+  "Silvenar Tracker": {
+    "id": "legends-209360",
+    "card": "Silvenar Tracker.webp",
+    "thumbnail": "Silvenar Tracker.webp"
+  },
+  "Skeevaton": {
+    "id": "legends-246681",
+    "card": "Skeevaton.webp",
+    "thumbnail": "Skeevaton.webp"
+  },
+  "Dwarven Scarab": {
+    "id": "legends-251855",
+    "card": "Dwarven Scarab.webp",
+    "thumbnail": "Dwarven Scarab.webp"
+  },
+  "Stoneshard Orc": {
+    "id": "legends-223591",
+    "card": "Stoneshard Orc.webp",
+    "thumbnail": "Stoneshard Orc.webp"
+  },
+  "Windhelm Skirmisher": {
+    "id": "legends-234365",
+    "card": "Windhelm Skirmisher.webp",
+    "thumbnail": "Windhelm Skirmisher.webp"
+  },
+  "Stormhold Henchman": {
+    "id": "legends-213400",
+    "card": "Stormhold Henchman.webp",
+    "thumbnail": "Stormhold Henchman.webp"
+  },
+  "Stronghold Patrol": {
+    "id": "legends-234064",
+    "card": "Stronghold Patrol.webp",
+    "thumbnail": "Stronghold Patrol.webp"
+  },
+  "Summerset Shieldmage": {
+    "id": "legends-209411",
+    "card": "Summerset Shieldmage.webp",
+    "thumbnail": "Summerset Shieldmage.webp"
+  },
+  "Suthay Bootlegger": {
+    "id": "legends-291137",
+    "card": "Suthay Bootlegger.webp",
+    "thumbnail": "Suthay Bootlegger.webp"
+  },
+  "Temple Conjurer": {
+    "id": "legends-253740",
+    "card": "Temple Conjurer.webp",
+    "thumbnail": "Temple Conjurer.webp"
+  },
+  "Thalmor Justiciar": {
+    "id": "legends-234100",
+    "card": "Thalmor Justiciar.webp",
+    "thumbnail": "Thalmor Justiciar.webp"
+  },
+  "Tiny Dragon": {
+    "id": "legends-276326",
+    "card": "Tiny Dragon.webp",
+    "thumbnail": "Tiny Dragon.webp"
+  },
+  "Tree Minder": {
+    "id": "legends-209425",
+    "card": "Tree Minder.webp",
+    "thumbnail": "Tree Minder.webp"
+  },
+  "Twin Lamps Consul": {
+    "id": "legends-253884",
+    "card": "Twin Lamps Consul.webp",
+    "thumbnail": "Twin Lamps Consul.webp"
+  },
+  "Valenwood Huntsman": {
+    "id": "legends-211320",
+    "card": "Valenwood Huntsman.webp",
+    "thumbnail": "Valenwood Huntsman.webp"
+  },
+  "Vampire Fledgling": {
+    "id": "legends-443712",
+    "card": "Vampire Fledgling.webp",
+    "thumbnail": "Vampire Fledgling.webp"
+  },
+  "Verminous Fabricant": {
+    "id": "legends-246641",
+    "card": "Verminous Fabricant.webp",
+    "thumbnail": "Verminous Fabricant.webp"
+  },
+  "Vigilant of Stendarr": {
+    "id": "legends-233891",
+    "card": "Vigilant of Stendarr.webp",
+    "thumbnail": "Vigilant of Stendarr.webp"
+  },
+  "Wardcrafter": {
+    "id": "legends-221516",
+    "card": "Wardcrafter.webp",
+    "thumbnail": "Wardcrafter.webp"
+  },
+  "Yokudan Nightblade": {
+    "id": "legends-340477",
+    "card": "Yokudan Nightblade.webp",
+    "thumbnail": "Yokudan Nightblade.webp"
+  },
+  "Ald'ruhn Arms Master": {
+    "id": "legends-253821",
+    "card": "Ald'ruhn Arms Master.webp",
+    "thumbnail": "Ald'ruhn Arms Master.webp"
+  },
+  "Alik'r Survivalist": {
+    "id": "legends-209111",
+    "card": "Alik'r Survivalist.webp",
+    "thumbnail": "Alik'r Survivalist.webp"
+  },
+  "Altmer Dragonknight": {
+    "id": "legends-271323",
+    "card": "Altmer Dragonknight.webp",
+    "thumbnail": "Altmer Dragonknight.webp"
+  },
+  "Ancestral Dead": {
+    "id": "legends-253918",
+    "card": "Ancestral Dead.webp",
+    "thumbnail": "Ancestral Dead.webp"
+  },
+  "Argonian Veteran": {
+    "id": "legends-220827",
+    "card": "Argonian Veteran.webp",
+    "thumbnail": "Argonian Veteran.webp"
+  },
+  "Artaeum Savant": {
+    "id": "legends-209119",
+    "card": "Artaeum Savant.webp",
+    "thumbnail": "Artaeum Savant.webp"
+  },
+  "Assembled Sanitizer": {
+    "id": "legends-245460",
+    "card": "Assembled Sanitizer.webp",
+    "thumbnail": "Assembled Sanitizer.webp"
+  },
+  "Baandari Bruiser": {
+    "id": "legends-209121",
+    "card": "Baandari Bruiser.webp",
+    "thumbnail": "Baandari Bruiser.webp"
+  },
+  "Barrow Stalker": {
+    "id": "legends-246411",
+    "card": "Barrow Stalker.webp",
+    "thumbnail": "Barrow Stalker.webp"
+  },
+  "Battlerage Orc": {
+    "id": "legends-209126",
+    "card": "Battlerage Orc.webp",
+    "thumbnail": "Battlerage Orc.webp"
+  },
+  "Berserker of the Pale": {
+    "id": "legends-234060",
+    "card": "Berserker of the Pale.webp",
+    "thumbnail": "Berserker of the Pale.webp"
+  },
+  "Black Marsh Warden": {
+    "id": "legends-220787",
+    "card": "Black Marsh Warden.webp",
+    "thumbnail": "Black Marsh Warden.webp"
+  },
+  "Blacksap Protector": {
+    "id": "legends-209881",
+    "card": "Blacksap Protector.webp",
+    "thumbnail": "Blacksap Protector.webp"
+  },
+  "Blackwood Alchemist": {
+    "id": "legends-298994",
+    "card": "Blackwood Alchemist.webp",
+    "thumbnail": "Blackwood Alchemist.webp"
+  },
+  "Blades Defender": {
+    "id": "legends-299176",
+    "card": "Blades Defender.webp",
+    "thumbnail": "Blades Defender.webp"
+  },
+  "Blades Stalwart": {
+    "id": "legends-299057",
+    "card": "Blades Stalwart.webp",
+    "thumbnail": "Blades Stalwart.webp"
+  },
+  "Bonewalker": {
+    "id": "legends-253908",
+    "card": "Bonewalker.webp",
+    "thumbnail": "Bonewalker.webp"
+  },
+  "Brassilisk": {
+    "id": "legends-245633",
+    "card": "Brassilisk.webp",
+    "thumbnail": "Brassilisk.webp"
+  },
+  "Breton Conjurer": {
+    "id": "legends-209131",
+    "card": "Breton Conjurer.webp",
+    "thumbnail": "Breton Conjurer.webp"
+  },
+  "Brotherhood Slayer": {
+    "id": "legends-227920",
+    "card": "Brotherhood Slayer.webp",
+    "thumbnail": "Brotherhood Slayer.webp"
+  },
+  "Iliac Privateer": {
+    "id": "legends-214278",
+    "card": "Iliac Privateer.webp",
+    "thumbnail": "Iliac Privateer.webp"
+  },
+  "Eastmarch Axebearer": {
+    "id": "legends-233890",
+    "card": "Eastmarch Axebearer.webp",
+    "thumbnail": "Eastmarch Axebearer.webp"
+  },
+  "Cartel Arcanist": {
+    "id": "legends-291243",
+    "card": "Cartel Arcanist.webp",
+    "thumbnail": "Cartel Arcanist.webp"
+  },
+  "Chaurus": {
+    "id": "legends-223445",
+    "card": "Chaurus.webp",
+    "thumbnail": "Chaurus.webp"
+  },
+  "Cloudrest Illusionist": {
+    "id": "legends-209144",
+    "card": "Cloudrest Illusionist.webp",
+    "thumbnail": "Cloudrest Illusionist.webp"
+  },
+  "Crystal Tower Crafter": {
+    "id": "legends-209148",
+    "card": "Crystal Tower Crafter.webp",
+    "thumbnail": "Crystal Tower Crafter.webp"
+  },
+  "Telvanni Wardweaver": {
+    "id": "legends-221520",
+    "card": "Telvanni Wardweaver.webp",
+    "thumbnail": "Telvanni Wardweaver.webp"
+  },
+  "Discerning Thief": {
+    "id": "legends-291244",
+    "card": "Discerning Thief.webp",
+    "thumbnail": "Discerning Thief.webp"
+  },
+  "Dragonfire Wizard": {
+    "id": "legends-321209",
+    "card": "Dragonfire Wizard.webp",
+    "thumbnail": "Dragonfire Wizard.webp"
+  },
+  "Dragontail Savior": {
+    "id": "legends-214361",
+    "card": "Dragontail Savior.webp",
+    "thumbnail": "Dragontail Savior.webp"
+  },
+  "Dremora Adept": {
+    "id": "legends-298295",
+    "card": "Dremora Adept.webp",
+    "thumbnail": "Dremora Adept.webp"
+  },
+  "Dremora Vanguard": {
+    "id": "legends-298873",
+    "card": "Dremora Vanguard.webp",
+    "thumbnail": "Dremora Vanguard.webp"
+  },
+  "Dune Smuggler": {
+    "id": "legends-222120",
+    "card": "Dune Smuggler.webp",
+    "thumbnail": "Dune Smuggler.webp"
+  },
+  "Durzog": {
+    "id": "legends-234758",
+    "card": "Durzog.webp",
+    "thumbnail": "Durzog.webp"
+  },
+  "Dushnikh Yal Archer": {
+    "id": "legends-245069",
+    "card": "Dushnikh Yal Archer.webp",
+    "thumbnail": "Dushnikh Yal Archer.webp"
+  },
+  "Earthbone Spinner": {
+    "id": "legends-209063",
+    "card": "Earthbone Spinner.webp",
+    "thumbnail": "Earthbone Spinner.webp"
+  },
+  "Eastmarch Crusader": {
+    "id": "legends-214357",
+    "card": "Eastmarch Crusader.webp",
+    "thumbnail": "Eastmarch Crusader.webp"
+  },
+  "Farsight Nereid": {
+    "id": "legends-214247",
+    "card": "Farsight Nereid.webp",
+    "thumbnail": "Farsight Nereid.webp"
+  },
+  "Fearless Northlander": {
+    "id": "legends-220421",
+    "card": "Fearless Northlander.webp",
+    "thumbnail": "Fearless Northlander.webp"
+  },
+  "Fighters Guild Berserker": {
+    "id": "legends-284124",
+    "card": "Fighters Guild Berserker.webp",
+    "thumbnail": "Fighters Guild Berserker.webp"
+  },
+  "Fighters Guild Steward": {
+    "id": "legends-253824",
+    "card": "Fighters Guild Steward.webp",
+    "thumbnail": "Fighters Guild Steward.webp"
+  },
+  "Flame Atronach": {
+    "id": "legends-229020",
+    "card": "Flame Atronach.webp",
+    "thumbnail": "Flame Atronach.webp"
+  },
+  "Giant Slaughterfish": {
+    "id": "legends-299181",
+    "card": "Giant Slaughterfish.webp",
+    "thumbnail": "Giant Slaughterfish.webp"
+  },
+  "Golden Initiate": {
+    "id": "legends-276448",
+    "card": "Golden Initiate.webp",
+    "thumbnail": "Golden Initiate.webp"
+  },
+  "Goutfang Adept": {
+    "id": "legends-291248",
+    "card": "Goutfang Adept.webp",
+    "thumbnail": "Goutfang Adept.webp"
+  },
+  "Arenthia Bladeforger": {
+    "id": "legends-284046",
+    "card": "Arenthia Bladeforger.webp",
+    "thumbnail": "Arenthia Bladeforger.webp"
+  },
+  "Headless Zombie": {
+    "id": "legends-305338",
+    "card": "Headless Zombie.webp",
+    "thumbnail": "Headless Zombie.webp"
+  },
+  "Hive Defender": {
+    "id": "legends-209222",
+    "card": "Hive Defender.webp",
+    "thumbnail": "Hive Defender.webp"
+  },
+  "Ice Wraith": {
+    "id": "legends-209228",
+    "card": "Ice Wraith.webp",
+    "thumbnail": "Ice Wraith.webp"
+  },
+  "Icy Shambles": {
+    "id": "legends-275908",
+    "card": "Icy Shambles.webp",
+    "thumbnail": "Icy Shambles.webp"
+  },
+  "Indoril Mastermind": {
+    "id": "legends-253902",
+    "card": "Indoril Mastermind.webp",
+    "thumbnail": "Indoril Mastermind.webp"
+  },
+  "Clannfear": {
+    "id": "legends-298805",
+    "card": "Clannfear.webp",
+    "thumbnail": "Clannfear.webp"
+  },
+  "Sentinel Spellweaver": {
+    "id": "legends-221526",
+    "card": "Sentinel Spellweaver.webp",
+    "thumbnail": "Sentinel Spellweaver.webp"
+  },
+  "Knight of Gnisis": {
+    "id": "legends-253124",
+    "card": "Knight of Gnisis.webp",
+    "thumbnail": "Knight of Gnisis.webp"
+  },
+  "Manic Grummite": {
+    "id": "legends-277252",
+    "card": "Manic Grummite.webp",
+    "thumbnail": "Manic Grummite.webp"
+  },
+  "Master Swordsmith": {
+    "id": "legends-233958",
+    "card": "Master Swordsmith.webp",
+    "thumbnail": "Master Swordsmith.webp"
+  },
+  "Mechanical Ally": {
+    "id": "legends-222286",
+    "card": "Mechanical Ally.webp",
+    "thumbnail": "Mechanical Ally.webp"
+  },
+  "Mentor of the Watch": {
+    "id": "legends-233246",
+    "card": "Mentor of the Watch.webp",
+    "thumbnail": "Mentor of the Watch.webp"
+  },
+  "Mistveil Enchanter": {
+    "id": "legends-234082",
+    "card": "Mistveil Enchanter.webp",
+    "thumbnail": "Mistveil Enchanter.webp"
+  },
+  "Mistveil Warden": {
+    "id": "legends-246782",
+    "card": "Mistveil Warden.webp",
+    "thumbnail": "Mistveil Warden.webp"
+  },
+  "Moonlight Werebat": {
+    "id": "legends-208816",
+    "card": "Moonlight Werebat.webp",
+    "thumbnail": "Moonlight Werebat.webp"
+  },
+  "Moonmoth Castellan": {
+    "id": "legends-253717",
+    "card": "Moonmoth Castellan.webp",
+    "thumbnail": "Moonmoth Castellan.webp"
+  },
+  "Morag Tong Assassin": {
+    "id": "legends-253878",
+    "card": "Morag Tong Assassin.webp",
+    "thumbnail": "Morag Tong Assassin.webp"
+  },
+  "Morthal Executioner": {
+    "id": "legends-208811",
+    "card": "Morthal Executioner.webp",
+    "thumbnail": "Morthal Executioner.webp"
+  },
+  "Murkwater Butcher": {
+    "id": "legends-214138",
+    "card": "Murkwater Butcher.webp",
+    "thumbnail": "Murkwater Butcher.webp"
+  },
+  "Murkwater Guide": {
+    "id": "legends-246689",
+    "card": "Murkwater Guide.webp",
+    "thumbnail": "Murkwater Guide.webp"
+  },
+  "Murkwater Savage": {
+    "id": "legends-214287",
+    "card": "Murkwater Savage.webp",
+    "thumbnail": "Murkwater Savage.webp"
+  },
+  "Murkwater Skirmisher": {
+    "id": "legends-209277",
+    "card": "Murkwater Skirmisher.webp",
+    "thumbnail": "Murkwater Skirmisher.webp"
+  },
+  "Nibenese Mercenary": {
+    "id": "legends-291246",
+    "card": "Nibenese Mercenary.webp",
+    "thumbnail": "Nibenese Mercenary.webp"
+  },
+  "Nimble Ally": {
+    "id": "legends-209285",
+    "card": "Nimble Ally.webp",
+    "thumbnail": "Nimble Ally.webp"
+  },
+  "Northpoint Captain": {
+    "id": "legends-209287",
+    "card": "Northpoint Captain.webp",
+    "thumbnail": "Northpoint Captain.webp"
+  },
+  "Ordinator of the Almsivi": {
+    "id": "legends-303510",
+    "card": "Ordinator of the Almsivi.webp",
+    "thumbnail": "Ordinator of the Almsivi.webp"
+  },
+  "Quarra Clan Bloodkin": {
+    "id": "legends-253912",
+    "card": "Quarra Clan Bloodkin.webp",
+    "thumbnail": "Quarra Clan Bloodkin.webp"
+  },
+  "Ravenous Hunger": {
+    "id": "legends-209341",
+    "card": "Ravenous Hunger.webp",
+    "thumbnail": "Ravenous Hunger.webp"
+  },
+  "Redoran Forerunner": {
+    "id": "legends-253936",
+    "card": "Redoran Forerunner.webp",
+    "thumbnail": "Redoran Forerunner.webp"
+  },
+  "Aldmeri Wardbinder": {
+    "id": "legends-209346",
+    "card": "Aldmeri Wardbinder.webp",
+    "thumbnail": "Aldmeri Wardbinder.webp"
+  },
+  "Riften Pickpocket": {
+    "id": "legends-234084",
+    "card": "Riften Pickpocket.webp",
+    "thumbnail": "Riften Pickpocket.webp"
+  },
+  "Riften Pillager": {
+    "id": "legends-220423",
+    "card": "Riften Pillager.webp",
+    "thumbnail": "Riften Pillager.webp"
+  },
+  "Skeletal Hound": {
+    "id": "legends-259603",
+    "card": "Skeletal Hound.webp",
+    "thumbnail": "Skeletal Hound.webp"
+  },
+  "Royal Sage": {
+    "id": "legends-209353",
+    "card": "Royal Sage.webp",
+    "thumbnail": "Royal Sage.webp"
+  },
+  "Shadowmaster": {
+    "id": "legends-234040",
+    "card": "Shadowmaster.webp",
+    "thumbnail": "Shadowmaster.webp"
+  },
+  "Shadowscale Hunter": {
+    "id": "legends-284091",
+    "card": "Shadowscale Hunter.webp",
+    "thumbnail": "Shadowscale Hunter.webp"
+  },
+  "Shadowscale Partisan": {
+    "id": "legends-234138",
+    "card": "Shadowscale Partisan.webp",
+    "thumbnail": "Shadowscale Partisan.webp"
+  },
+  "Shalk Fabricant": {
+    "id": "legends-246666",
+    "card": "Shalk Fabricant.webp",
+    "thumbnail": "Shalk Fabricant.webp"
+  },
+  "Shivering Apothecary": {
+    "id": "legends-223713",
+    "card": "Shivering Apothecary.webp",
+    "thumbnail": "Shivering Apothecary.webp"
+  },
+  "Skeleton Champion": {
+    "id": "legends-253910",
+    "card": "Skeleton Champion.webp",
+    "thumbnail": "Skeleton Champion.webp"
+  },
+  "Sparking Spider": {
+    "id": "legends-209394",
+    "card": "Sparking Spider.webp",
+    "thumbnail": "Sparking Spider.webp"
+  },
+  "Sparksmith": {
+    "id": "legends-283785",
+    "card": "Sparksmith.webp",
+    "thumbnail": "Sparksmith.webp"
+  },
+  "Stalking Shadowscale": {
+    "id": "legends-227995",
+    "card": "Stalking Shadowscale.webp",
+    "thumbnail": "Stalking Shadowscale.webp"
+  },
+  "Black Marsh Shieldmate": {
+    "id": "legends-209398",
+    "card": "Black Marsh Shieldmate.webp",
+    "thumbnail": "Black Marsh Shieldmate.webp"
+  },
+  "Stonetooth Scrapper": {
+    "id": "legends-209404",
+    "card": "Stonetooth Scrapper.webp",
+    "thumbnail": "Stonetooth Scrapper.webp"
+  },
+  "Telvanni Arcanist": {
+    "id": "legends-209416",
+    "card": "Telvanni Arcanist.webp",
+    "thumbnail": "Telvanni Arcanist.webp"
+  },
+  "Whiterun Trooper": {
+    "id": "legends-209433",
+    "card": "Whiterun Trooper.webp",
+    "thumbnail": "Whiterun Trooper.webp"
+  },
+  "Windhelm Gatekeeper": {
+    "id": "legends-284134",
+    "card": "Windhelm Gatekeeper.webp",
+    "thumbnail": "Windhelm Gatekeeper.webp"
+  },
+  "Withered Hand Cultist": {
+    "id": "legends-221490",
+    "card": "Withered Hand Cultist.webp",
+    "thumbnail": "Withered Hand Cultist.webp"
+  },
+  "Wrothgar Kingpin": {
+    "id": "legends-220869",
+    "card": "Wrothgar Kingpin.webp",
+    "thumbnail": "Wrothgar Kingpin.webp"
+  },
+  "Ageless Automaton": {
+    "id": "legends-209106",
+    "card": "Ageless Automaton.webp",
+    "thumbnail": "Ageless Automaton.webp"
+  },
+  "Aldmeri Spellwright": {
+    "id": "legends-303516",
+    "card": "Aldmeri Spellwright.webp",
+    "thumbnail": "Aldmeri Spellwright.webp"
+  },
+  "An-Xileel Invader": {
+    "id": "legends-209113",
+    "card": "An-Xileel Invader.webp",
+    "thumbnail": "An-Xileel Invader.webp"
+  },
+  "Archein Elite": {
+    "id": "legends-213292",
+    "card": "Archein Elite.webp",
+    "thumbnail": "Archein Elite.webp"
+  },
+  "Archein Venomtongue": {
+    "id": "legends-209116",
+    "card": "Archein Venomtongue.webp",
+    "thumbnail": "Archein Venomtongue.webp"
+  },
+  "Armored Troll": {
+    "id": "legends-449029",
+    "card": "Armored Troll.webp",
+    "thumbnail": "Armored Troll.webp"
+  },
+  "Assassin Beetle": {
+    "id": "legends-284135",
+    "card": "Assassin Beetle.webp",
+    "thumbnail": "Assassin Beetle.webp"
+  },
+  "Assembled Conduit": {
+    "id": "legends-246684",
+    "card": "Assembled Conduit.webp",
+    "thumbnail": "Assembled Conduit.webp"
+  },
+  "Aundae Clan Sorcerer": {
+    "id": "legends-253917",
+    "card": "Aundae Clan Sorcerer.webp",
+    "thumbnail": "Aundae Clan Sorcerer.webp"
+  },
+  "Auridon Paladin": {
+    "id": "legends-220784",
+    "card": "Auridon Paladin.webp",
+    "thumbnail": "Auridon Paladin.webp"
+  },
+  "Bal Isra Warrider": {
+    "id": "legends-253915",
+    "card": "Bal Isra Warrider.webp",
+    "thumbnail": "Bal Isra Warrider.webp"
+  },
+  "Bangkorai Butcher": {
+    "id": "legends-221492",
+    "card": "Bangkorai Butcher.webp",
+    "thumbnail": "Bangkorai Butcher.webp"
+  },
+  "Battlefield Scrounger": {
+    "id": "legends-233963",
+    "card": "Battlefield Scrounger.webp",
+    "thumbnail": "Battlefield Scrounger.webp"
+  },
+  "Berne Clan Nightstalker": {
+    "id": "legends-253887",
+    "card": "Berne Clan Nightstalker.webp",
+    "thumbnail": "Berne Clan Nightstalker.webp"
+  },
+  "Black Worm Neophyte": {
+    "id": "legends-289746",
+    "card": "Black Worm Neophyte.webp",
+    "thumbnail": "Black Worm Neophyte.webp"
+  },
+  "Blackwood Distiller": {
+    "id": "legends-259237",
+    "card": "Blackwood Distiller.webp",
+    "thumbnail": "Blackwood Distiller.webp"
+  },
+  "Blades Flanker": {
+    "id": "legends-299177",
+    "card": "Blades Flanker.webp",
+    "thumbnail": "Blades Flanker.webp"
+  },
+  "Blades Guardian": {
+    "id": "legends-298666",
+    "card": "Blades Guardian.webp",
+    "thumbnail": "Blades Guardian.webp"
+  },
+  "Blood-Crazed Daedroth": {
+    "id": "legends-298155",
+    "card": "Blood-Crazed Daedroth.webp",
+    "thumbnail": "Blood-Crazed Daedroth.webp"
+  },
+  "Bog Lurcher": {
+    "id": "legends-209130",
+    "card": "Bog Lurcher.webp",
+    "thumbnail": "Bog Lurcher.webp"
+  },
+  "Camonna Tong Heavy": {
+    "id": "legends-253825",
+    "card": "Camonna Tong Heavy.webp",
+    "thumbnail": "Camonna Tong Heavy.webp"
+  },
+  "Camoran Scout Leader": {
+    "id": "legends-209138",
+    "card": "Camoran Scout Leader.webp",
+    "thumbnail": "Camoran Scout Leader.webp"
+  },
+  "Cartel Bruiser": {
+    "id": "legends-291254",
+    "card": "Cartel Bruiser.webp",
+    "thumbnail": "Cartel Bruiser.webp"
+  },
+  "Cauldron Keeper": {
+    "id": "legends-234047",
+    "card": "Cauldron Keeper.webp",
+    "thumbnail": "Cauldron Keeper.webp"
+  },
+  "Cave Bear": {
+    "id": "legends-233867",
+    "card": "Cave Bear.webp",
+    "thumbnail": "Cave Bear.webp"
+  },
+  "Cliff Racer": {
+    "id": "legends-209143",
+    "card": "Cliff Racer.webp",
+    "thumbnail": "Cliff Racer.webp"
+  },
+  "Clockwork Scorpion": {
+    "id": "legends-246690",
+    "card": "Clockwork Scorpion.webp",
+    "thumbnail": "Clockwork Scorpion.webp"
+  },
+  "Corinthe Brawler": {
+    "id": "legends-291255",
+    "card": "Corinthe Brawler.webp",
+    "thumbnail": "Corinthe Brawler.webp"
+  },
+  "Corrupted Shade": {
+    "id": "legends-234169",
+    "card": "Corrupted Shade.webp",
+    "thumbnail": "Corrupted Shade.webp"
+  },
+  "Court Wizard": {
+    "id": "legends-234086",
+    "card": "Court Wizard.webp",
+    "thumbnail": "Court Wizard.webp"
+  },
+  "Dagi-raht Mystic": {
+    "id": "legends-209152",
+    "card": "Dagi-raht Mystic.webp",
+    "thumbnail": "Dagi-raht Mystic.webp"
+  },
+  "Destruction Tutor": {
+    "id": "legends-271009",
+    "card": "Destruction Tutor.webp",
+    "thumbnail": "Destruction Tutor.webp"
+  },
+  "Dominion Battlereeve": {
+    "id": "legends-283838",
+    "card": "Dominion Battlereeve.webp",
+    "thumbnail": "Dominion Battlereeve.webp"
+  },
+  "Dormant Centurion": {
+    "id": "legends-246683",
+    "card": "Dormant Centurion.webp",
+    "thumbnail": "Dormant Centurion.webp"
+  },
+  "Dragonstar Rider": {
+    "id": "legends-209162",
+    "card": "Dragonstar Rider.webp",
+    "thumbnail": "Dragonstar Rider.webp"
+  },
+  "Dres Renegade": {
+    "id": "legends-209165",
+    "card": "Dres Renegade.webp",
+    "thumbnail": "Dres Renegade.webp"
+  },
+  "Dres Tormentor": {
+    "id": "legends-209166",
+    "card": "Dres Tormentor.webp",
+    "thumbnail": "Dres Tormentor.webp"
+  },
+  "Dwarven Dynamo": {
+    "id": "legends-233853",
+    "card": "Dwarven Dynamo.webp",
+    "thumbnail": "Dwarven Dynamo.webp"
+  },
+  "Elder Centaur": {
+    "id": "legends-223354",
+    "card": "Elder Centaur.webp",
+    "thumbnail": "Elder Centaur.webp"
+  },
+  "Eldergleam Matron": {
+    "id": "legends-233881",
+    "card": "Eldergleam Matron.webp",
+    "thumbnail": "Eldergleam Matron.webp"
+  },
+  "Emperor's Blade": {
+    "id": "legends-242713",
+    "card": "Emperor's Blade.webp",
+    "thumbnail": "Emperor's Blade.webp"
+  },
+  "Fallen Dragon": {
+    "id": "legends-291142",
+    "card": "Fallen Dragon.webp",
+    "thumbnail": "Fallen Dragon.webp"
+  },
+  "Fighters Guild Elite": {
+    "id": "legends-283880",
+    "card": "Fighters Guild Elite.webp",
+    "thumbnail": "Fighters Guild Elite.webp"
+  },
+  "Flamespear Dragon": {
+    "id": "legends-291247",
+    "card": "Flamespear Dragon.webp",
+    "thumbnail": "Flamespear Dragon.webp"
+  },
+  "Fortress Watchman": {
+    "id": "legends-209210",
+    "card": "Fortress Watchman.webp",
+    "thumbnail": "Fortress Watchman.webp"
+  },
+  "Frost Atronach": {
+    "id": "legends-214351",
+    "card": "Frost Atronach.webp",
+    "thumbnail": "Frost Atronach.webp"
+  },
+  "Frost Troll": {
+    "id": "legends-233553",
+    "card": "Frost Troll.webp",
+    "thumbnail": "Frost Troll.webp"
+  },
+  "Giant Snake": {
+    "id": "legends-209211",
+    "card": "Giant Snake.webp",
+    "thumbnail": "Giant Snake.webp"
+  },
+  "Glenumbra Sorceress": {
+    "id": "legends-214145",
+    "card": "Glenumbra Sorceress.webp",
+    "thumbnail": "Glenumbra Sorceress.webp"
+  },
+  "Gnarl Rootbender": {
+    "id": "legends-276872",
+    "card": "Gnarl Rootbender.webp",
+    "thumbnail": "Gnarl Rootbender.webp"
+  },
+  "Grahtwood Ambusher": {
+    "id": "legends-208800",
+    "card": "Grahtwood Ambusher.webp",
+    "thumbnail": "Grahtwood Ambusher.webp"
+  },
+  "Grand Inquisitor": {
+    "id": "legends-253716",
+    "card": "Grand Inquisitor.webp",
+    "thumbnail": "Grand Inquisitor.webp"
+  },
+  "Green Pact Stalker": {
+    "id": "legends-209213",
+    "card": "Green Pact Stalker.webp",
+    "thumbnail": "Green Pact Stalker.webp"
+  },
+  "Greybeard Mentor": {
+    "id": "legends-233529",
+    "card": "Greybeard Mentor.webp",
+    "thumbnail": "Greybeard Mentor.webp"
+  },
+  "Gristlehide Dreugh": {
+    "id": "legends-228476",
+    "card": "Gristlehide Dreugh.webp",
+    "thumbnail": "Gristlehide Dreugh.webp"
+  },
+  "Guildsworn Cavalier": {
+    "id": "legends-284069",
+    "card": "Guildsworn Cavalier.webp",
+    "thumbnail": "Guildsworn Cavalier.webp"
+  },
+  "Haafingar Marauder": {
+    "id": "legends-210111",
+    "card": "Haafingar Marauder.webp",
+    "thumbnail": "Haafingar Marauder.webp"
+  },
+  "Imprisoned Deathlord": {
+    "id": "legends-214360",
+    "card": "Imprisoned Deathlord.webp",
+    "thumbnail": "Imprisoned Deathlord.webp"
+  },
+  "Insightful Scholar": {
+    "id": "legends-234088",
+    "card": "Insightful Scholar.webp",
+    "thumbnail": "Insightful Scholar.webp"
+  },
+  "Kagouti Fabricant": {
+    "id": "legends-245458",
+    "card": "Kagouti Fabricant.webp",
+    "thumbnail": "Kagouti Fabricant.webp"
+  },
+  "Knight of Order": {
+    "id": "legends-276563",
+    "card": "Knight of Order.webp",
+    "thumbnail": "Knight of Order.webp"
+  },
+  "Knight of the Hour": {
+    "id": "legends-228358",
+    "card": "Knight of the Hour.webp",
+    "thumbnail": "Knight of the Hour.webp"
+  },
+  "Kynreeve Champion": {
+    "id": "legends-298807",
+    "card": "Kynreeve Champion.webp",
+    "thumbnail": "Kynreeve Champion.webp"
+  },
+  "Leaflurker": {
+    "id": "legends-209260",
+    "card": "Leaflurker.webp",
+    "thumbnail": "Leaflurker.webp"
+  },
+  "Lillandril Alchemist": {
+    "id": "legends-209241",
+    "card": "Lillandril Alchemist.webp",
+    "thumbnail": "Lillandril Alchemist.webp"
+  },
+  "Lion Guard Strategist": {
+    "id": "legends-220782",
+    "card": "Lion Guard Strategist.webp",
+    "thumbnail": "Lion Guard Strategist.webp"
+  },
+  "Loyal Housecarl": {
+    "id": "legends-209263",
+    "card": "Loyal Housecarl.webp",
+    "thumbnail": "Loyal Housecarl.webp"
+  },
+  "Lumbering Ogrim": {
+    "id": "legends-209264",
+    "card": "Lumbering Ogrim.webp",
+    "thumbnail": "Lumbering Ogrim.webp"
+  },
+  "Marauder Chieftain": {
+    "id": "legends-299051",
+    "card": "Marauder Chieftain.webp",
+    "thumbnail": "Marauder Chieftain.webp"
+  },
+  "Markarth Bannerman": {
+    "id": "legends-209268",
+    "card": "Markarth Bannerman.webp",
+    "thumbnail": "Markarth Bannerman.webp"
+  },
+  "Morag Tong Nightblade": {
+    "id": "legends-253718",
+    "card": "Morag Tong Nightblade.webp",
+    "thumbnail": "Morag Tong Nightblade.webp"
+  },
+  "Murkwater Scourge": {
+    "id": "legends-283470",
+    "card": "Murkwater Scourge.webp",
+    "thumbnail": "Murkwater Scourge.webp"
+  },
+  "Murkwater Shaman": {
+    "id": "legends-209276",
+    "card": "Murkwater Shaman.webp",
+    "thumbnail": "Murkwater Shaman.webp"
+  },
+  "Mystic Dragon": {
+    "id": "legends-233533",
+    "card": "Mystic Dragon.webp",
+    "thumbnail": "Mystic Dragon.webp"
+  },
+  "Nereid Sister": {
+    "id": "legends-284041",
+    "card": "Nereid Sister.webp",
+    "thumbnail": "Nereid Sister.webp"
+  },
+  "Nervous Giant": {
+    "id": "legends-277232",
+    "card": "Nervous Giant.webp",
+    "thumbnail": "Nervous Giant.webp"
+  },
+  "Nix-Hound Fabricant": {
+    "id": "legends-245672",
+    "card": "Nix-Hound Fabricant.webp",
+    "thumbnail": "Nix-Hound Fabricant.webp"
+  },
+  "Occult Ritemaster": {
+    "id": "legends-298988",
+    "card": "Occult Ritemaster.webp",
+    "thumbnail": "Occult Ritemaster.webp"
+  },
+  "Painted Troll": {
+    "id": "legends-298348",
+    "card": "Painted Troll.webp",
+    "thumbnail": "Painted Troll.webp"
+  },
+  "Piercing Twilight": {
+    "id": "legends-270737",
+    "card": "Piercing Twilight.webp",
+    "thumbnail": "Piercing Twilight.webp"
+  },
+  "Preserver of the Root": {
+    "id": "legends-209334",
+    "card": "Preserver of the Root.webp",
+    "thumbnail": "Preserver of the Root.webp"
+  },
+  "Preying Elytra": {
+    "id": "legends-276585",
+    "card": "Preying Elytra.webp",
+    "thumbnail": "Preying Elytra.webp"
+  },
+  "Protector of the Mane": {
+    "id": "legends-231502",
+    "card": "Protector of the Mane.webp",
+    "thumbnail": "Protector of the Mane.webp"
+  },
+  "Rampaging Minotaur": {
+    "id": "legends-209338",
+    "card": "Rampaging Minotaur.webp",
+    "thumbnail": "Rampaging Minotaur.webp"
+  },
+  "Redoran Oathman": {
+    "id": "legends-253911",
+    "card": "Redoran Oathman.webp",
+    "thumbnail": "Redoran Oathman.webp"
+  },
+  "Restoration Tutor": {
+    "id": "legends-233880",
+    "card": "Restoration Tutor.webp",
+    "thumbnail": "Restoration Tutor.webp"
+  },
+  "Riften Lawkeeper": {
+    "id": "legends-246223",
+    "card": "Riften Lawkeeper.webp",
+    "thumbnail": "Riften Lawkeeper.webp"
+  },
+  "Ruin Shambler": {
+    "id": "legends-290671",
+    "card": "Ruin Shambler.webp",
+    "thumbnail": "Ruin Shambler.webp"
+  },
+  "Seasoned Captain": {
+    "id": "legends-285093",
+    "card": "Seasoned Captain.webp",
+    "thumbnail": "Seasoned Captain.webp"
+  },
+  "Serpentine Stalker": {
+    "id": "legends-234221",
+    "card": "Serpentine Stalker.webp",
+    "thumbnail": "Serpentine Stalker.webp"
+  },
+  "Shadowfen Priest": {
+    "id": "legends-213397",
+    "card": "Shadowfen Priest.webp",
+    "thumbnail": "Shadowfen Priest.webp"
+  },
+  "Shornhelm Champion": {
+    "id": "legends-209358",
+    "card": "Shornhelm Champion.webp",
+    "thumbnail": "Shornhelm Champion.webp"
+  },
+  "Sightless Skulk": {
+    "id": "legends-234143",
+    "card": "Sightless Skulk.webp",
+    "thumbnail": "Sightless Skulk.webp"
+  },
+  "Smuggler Underboss": {
+    "id": "legends-303514",
+    "card": "Smuggler Underboss.webp",
+    "thumbnail": "Smuggler Underboss.webp"
+  },
+  "Stoutheart Giant": {
+    "id": "legends-233866",
+    "card": "Stoutheart Giant.webp",
+    "thumbnail": "Stoutheart Giant.webp"
+  },
+  "Tribunal Oathman": {
+    "id": "legends-253746",
+    "card": "Tribunal Oathman.webp",
+    "thumbnail": "Tribunal Oathman.webp"
+  },
+  "Valenwood Sentry": {
+    "id": "legends-284133",
+    "card": "Valenwood Sentry.webp",
+    "thumbnail": "Valenwood Sentry.webp"
+  },
+  "Werewolf Brute": {
+    "id": "legends-449026",
+    "card": "Werewolf Brute.webp",
+    "thumbnail": "Werewolf Brute.webp"
+  },
+  "Widow Daedra": {
+    "id": "legends-298344",
+    "card": "Widow Daedra.webp",
+    "thumbnail": "Widow Daedra.webp"
+  },
+  "Ageless Vampire": {
+    "id": "legends-232866",
+    "card": "Ageless Vampire.webp",
+    "thumbnail": "Ageless Vampire.webp"
+  },
+  "Alfiq Conjurer": {
+    "id": "legends-290672",
+    "card": "Alfiq Conjurer.webp",
+    "thumbnail": "Alfiq Conjurer.webp"
+  },
+  "Apex Wolf": {
+    "id": "legends-270803",
+    "card": "Apex Wolf.webp",
+    "thumbnail": "Apex Wolf.webp"
+  },
+  "Attuned Dremora": {
+    "id": "legends-298769",
+    "card": "Attuned Dremora.webp",
+    "thumbnail": "Attuned Dremora.webp"
+  },
+  "Bandit Ringleader": {
+    "id": "legends-233897",
+    "card": "Bandit Ringleader.webp",
+    "thumbnail": "Bandit Ringleader.webp"
+  },
+  "Battlereeve of Dusk": {
+    "id": "legends-223097",
+    "card": "Battlereeve of Dusk.webp",
+    "thumbnail": "Battlereeve of Dusk.webp"
+  },
+  "Black Marsh Centurion": {
+    "id": "legends-284140",
+    "card": "Black Marsh Centurion.webp",
+    "thumbnail": "Black Marsh Centurion.webp"
+  },
+  "Blastbones": {
+    "id": "legends-291266",
+    "card": "Blastbones.webp",
+    "thumbnail": "Blastbones.webp"
+  },
+  "Blighted Werebat": {
+    "id": "legends-253890",
+    "card": "Blighted Werebat.webp",
+    "thumbnail": "Blighted Werebat.webp"
+  },
+  "Blood Dragon": {
+    "id": "legends-209128",
+    "card": "Blood Dragon.webp",
+    "thumbnail": "Blood Dragon.webp"
+  },
+  "Blueclaw Matron": {
+    "id": "legends-253951",
+    "card": "Blueclaw Matron.webp",
+    "thumbnail": "Blueclaw Matron.webp"
+  },
+  "Brass Arquebus": {
+    "id": "legends-246692",
+    "card": "Brass Arquebus.webp",
+    "thumbnail": "Brass Arquebus.webp"
+  },
+  "Conjuration Scholar": {
+    "id": "legends-234090",
+    "card": "Conjuration Scholar.webp",
+    "thumbnail": "Conjuration Scholar.webp"
+  },
+  "Conjuration Tutor": {
+    "id": "legends-233751",
+    "card": "Conjuration Tutor.webp",
+    "thumbnail": "Conjuration Tutor.webp"
+  },
+  "Cradlecrush Giant": {
+    "id": "legends-250442",
+    "card": "Cradlecrush Giant.webp",
+    "thumbnail": "Cradlecrush Giant.webp"
+  },
+  "Daggerfall Mage": {
+    "id": "legends-209151",
+    "card": "Daggerfall Mage.webp",
+    "thumbnail": "Daggerfall Mage.webp"
+  },
+  "Devious Bandit": {
+    "id": "legends-291257",
+    "card": "Devious Bandit.webp",
+    "thumbnail": "Devious Bandit.webp"
+  },
+  "Dwarven Centurion": {
+    "id": "legends-221542",
+    "card": "Dwarven Centurion.webp",
+    "thumbnail": "Dwarven Centurion.webp"
+  },
+  "Elytra Noble": {
+    "id": "legends-276590",
+    "card": "Elytra Noble.webp",
+    "thumbnail": "Elytra Noble.webp"
+  },
+  "Glacial Dragon": {
+    "id": "legends-290004",
+    "card": "Glacial Dragon.webp",
+    "thumbnail": "Glacial Dragon.webp"
+  },
+  "Golden Saint": {
+    "id": "legends-209070",
+    "card": "Golden Saint.webp",
+    "thumbnail": "Golden Saint.webp"
+  },
+  "Greatwood Elder": {
+    "id": "legends-276454",
+    "card": "Greatwood Elder.webp",
+    "thumbnail": "Greatwood Elder.webp"
+  },
+  "Green-Touched Spriggan": {
+    "id": "legends-209214",
+    "card": "Green-Touched Spriggan.webp",
+    "thumbnail": "Green-Touched Spriggan.webp"
+  },
+  "Grummite Magus": {
+    "id": "legends-275907",
+    "card": "Grummite Magus.webp",
+    "thumbnail": "Grummite Magus.webp"
+  },
+  "Hallowed Deathpriest": {
+    "id": "legends-246067",
+    "card": "Hallowed Deathpriest.webp",
+    "thumbnail": "Hallowed Deathpriest.webp"
+  },
+  "Heretic Conjurer": {
+    "id": "legends-277254",
+    "card": "Heretic Conjurer.webp",
+    "thumbnail": "Heretic Conjurer.webp"
+  },
+  "High Rock Stalwart": {
+    "id": "legends-284141",
+    "card": "High Rock Stalwart.webp",
+    "thumbnail": "High Rock Stalwart.webp"
+  },
+  "Highland Lurcher": {
+    "id": "legends-209221",
+    "card": "Highland Lurcher.webp",
+    "thumbnail": "Highland Lurcher.webp"
+  },
+  "Hulking Fabricant": {
+    "id": "legends-245431",
+    "card": "Hulking Fabricant.webp",
+    "thumbnail": "Hulking Fabricant.webp"
+  },
+  "Hunter-Killers": {
+    "id": "legends-245808",
+    "card": "Hunter-Killers.webp",
+    "thumbnail": "Hunter-Killers.webp"
+  },
+  "Icewing Dragon": {
+    "id": "legends-233865",
+    "card": "Icewing Dragon.webp",
+    "thumbnail": "Icewing Dragon.webp"
+  },
+  "Illicit Butcher": {
+    "id": "legends-291141",
+    "card": "Illicit Butcher.webp",
+    "thumbnail": "Illicit Butcher.webp"
+  },
+  "Karthspire Scourge": {
+    "id": "legends-234130",
+    "card": "Karthspire Scourge.webp",
+    "thumbnail": "Karthspire Scourge.webp"
+  },
+  "Keeper of the Gates": {
+    "id": "legends-298298",
+    "card": "Keeper of the Gates.webp",
+    "thumbnail": "Keeper of the Gates.webp"
+  },
+  "Mages Guild Conjurer": {
+    "id": "legends-284142",
+    "card": "Mages Guild Conjurer.webp",
+    "thumbnail": "Mages Guild Conjurer.webp"
+  },
+  "Master of Arms": {
+    "id": "legends-221532",
+    "card": "Master of Arms.webp",
+    "thumbnail": "Master of Arms.webp"
+  },
+  "Mercenary Captain": {
+    "id": "legends-291131",
+    "card": "Mercenary Captain.webp",
+    "thumbnail": "Mercenary Captain.webp"
+  },
+  "Militant Chieftain": {
+    "id": "legends-209272",
+    "card": "Militant Chieftain.webp",
+    "thumbnail": "Militant Chieftain.webp"
+  },
+  "Miscarcand Lich": {
+    "id": "legends-298569",
+    "card": "Miscarcand Lich.webp",
+    "thumbnail": "Miscarcand Lich.webp"
+  },
+  "Monastic Champion": {
+    "id": "legends-290295",
+    "card": "Monastic Champion.webp",
+    "thumbnail": "Monastic Champion.webp"
+  },
+  "Mountain Giant Tyrant": {
+    "id": "legends-220794",
+    "card": "Mountain Giant Tyrant.webp",
+    "thumbnail": "Mountain Giant Tyrant.webp"
+  },
+  "Nether Lich": {
+    "id": "legends-449030",
+    "card": "Nether Lich.webp",
+    "thumbnail": "Nether Lich.webp"
+  },
+  "Night Predator": {
+    "id": "legends-223568",
+    "card": "Night Predator.webp",
+    "thumbnail": "Night Predator.webp"
+  },
+  "Nightprowler": {
+    "id": "legends-234145",
+    "card": "Nightprowler.webp",
+    "thumbnail": "Nightprowler.webp"
+  },
+  "Odirniran Necromancer": {
+    "id": "legends-253913",
+    "card": "Odirniran Necromancer.webp",
+    "thumbnail": "Odirniran Necromancer.webp"
+  },
+  "Pahmar-raht Renegade": {
+    "id": "legends-209057",
+    "card": "Pahmar-raht Renegade.webp",
+    "thumbnail": "Pahmar-raht Renegade.webp"
+  },
+  "Legion Shocktrooper": {
+    "id": "legends-245870",
+    "card": "Legion Shocktrooper.webp",
+    "thumbnail": "Legion Shocktrooper.webp"
+  },
+  "Pillaging Tribune": {
+    "id": "legends-209291",
+    "card": "Pillaging Tribune.webp",
+    "thumbnail": "Pillaging Tribune.webp"
+  },
+  "Praetorian Commander": {
+    "id": "legends-234045",
+    "card": "Praetorian Commander.webp",
+    "thumbnail": "Praetorian Commander.webp"
+  },
+  "Prankster Mage": {
+    "id": "legends-299213",
+    "card": "Prankster Mage.webp",
+    "thumbnail": "Prankster Mage.webp"
+  },
+  "Renegade Magister": {
+    "id": "legends-277647",
+    "card": "Renegade Magister.webp",
+    "thumbnail": "Renegade Magister.webp"
+  },
+  "Revered Guardian": {
+    "id": "legends-234128",
+    "card": "Revered Guardian.webp",
+    "thumbnail": "Revered Guardian.webp"
+  },
+  "Senche Noble": {
+    "id": "legends-291259",
+    "card": "Senche Noble.webp",
+    "thumbnail": "Senche Noble.webp"
+  },
+  "Senche-Tiger": {
+    "id": "legends-209049",
+    "card": "Senche-Tiger.webp",
+    "thumbnail": "Senche-Tiger.webp"
+  },
+  "Shearpoint Dragon": {
+    "id": "legends-233302",
+    "card": "Shearpoint Dragon.webp",
+    "thumbnail": "Shearpoint Dragon.webp"
+  },
+  "Skar Drillmaster": {
+    "id": "legends-253839",
+    "card": "Skar Drillmaster.webp",
+    "thumbnail": "Skar Drillmaster.webp"
+  },
+  "Skywatch Vindicator": {
+    "id": "legends-209387",
+    "card": "Skywatch Vindicator.webp",
+    "thumbnail": "Skywatch Vindicator.webp"
+  },
+  "Soulrest Marshal": {
+    "id": "legends-209393",
+    "card": "Soulrest Marshal.webp",
+    "thumbnail": "Soulrest Marshal.webp"
+  },
+  "Steelheart Vanquisher": {
+    "id": "legends-233868",
+    "card": "Steelheart Vanquisher.webp",
+    "thumbnail": "Steelheart Vanquisher.webp"
+  },
+  "Storm Atronach": {
+    "id": "legends-230468",
+    "card": "Storm Atronach.webp",
+    "thumbnail": "Storm Atronach.webp"
+  },
+  "Stronghold Eradicator": {
+    "id": "legends-209406",
+    "card": "Stronghold Eradicator.webp",
+    "thumbnail": "Stronghold Eradicator.webp"
+  },
+  "Studium Headmaster": {
+    "id": "legends-221536",
+    "card": "Studium Headmaster.webp",
+    "thumbnail": "Studium Headmaster.webp"
+  },
+  "Temple Patriarch": {
+    "id": "legends-253934",
+    "card": "Temple Patriarch.webp",
+    "thumbnail": "Temple Patriarch.webp"
+  },
+  "Thorn Histmage": {
+    "id": "legends-209421",
+    "card": "Thorn Histmage.webp",
+    "thumbnail": "Thorn Histmage.webp"
+  },
+  "Underworld Vigilante": {
+    "id": "legends-227924",
+    "card": "Underworld Vigilante.webp",
+    "thumbnail": "Underworld Vigilante.webp"
+  },
+  "Whirling Duelist": {
+    "id": "legends-211327",
+    "card": "Whirling Duelist.webp",
+    "thumbnail": "Whirling Duelist.webp"
+  },
+  "Wood Orc Headhunter": {
+    "id": "legends-209436",
+    "card": "Wood Orc Headhunter.webp",
+    "thumbnail": "Wood Orc Headhunter.webp"
+  },
+  "Auroran Sentry": {
+    "id": "legends-222060",
+    "card": "Auroran Sentry.webp",
+    "thumbnail": "Auroran Sentry.webp"
+  },
+  "Awakened Imperfect": {
+    "id": "legends-246693",
+    "card": "Awakened Imperfect.webp",
+    "thumbnail": "Awakened Imperfect.webp"
+  },
+  "Belligerent Giant": {
+    "id": "legends-221508",
+    "card": "Belligerent Giant.webp",
+    "thumbnail": "Belligerent Giant.webp"
+  },
+  "Bloodline Outcast": {
+    "id": "legends-253909",
+    "card": "Bloodline Outcast.webp",
+    "thumbnail": "Bloodline Outcast.webp"
+  },
+  "Bone Colossus": {
+    "id": "legends-223570",
+    "card": "Bone Colossus.webp",
+    "thumbnail": "Bone Colossus.webp"
+  },
+  "Staada": {
+    "id": "legends-277250",
+    "card": "Staada.webp",
+    "thumbnail": "Staada.webp"
+  },
+  "Bringer of Nightmares": {
+    "id": "legends-233961",
+    "card": "Bringer of Nightmares.webp",
+    "thumbnail": "Bringer of Nightmares.webp"
+  },
+  "Champion of the Arena": {
+    "id": "legends-300493",
+    "card": "Champion of the Arena.webp",
+    "thumbnail": "Champion of the Arena.webp"
+  },
+  "Chaurus Reaper": {
+    "id": "legends-209140",
+    "card": "Chaurus Reaper.webp",
+    "thumbnail": "Chaurus Reaper.webp"
+  },
+  "Child of Hircine": {
+    "id": "legends-209142",
+    "card": "Child of Hircine.webp",
+    "thumbnail": "Child of Hircine.webp"
+  },
+  "Daedric Titan": {
+    "id": "legends-284087",
+    "card": "Daedric Titan.webp",
+    "thumbnail": "Daedric Titan.webp"
+  },
+  "Dark Harvester": {
+    "id": "legends-209153",
+    "card": "Dark Harvester.webp",
+    "thumbnail": "Dark Harvester.webp"
+  },
+  "Dark Seducer": {
+    "id": "legends-275904",
+    "card": "Dark Seducer.webp",
+    "thumbnail": "Dark Seducer.webp"
+  },
+  "Eclipse Baroness": {
+    "id": "legends-227993",
+    "card": "Eclipse Baroness.webp",
+    "thumbnail": "Eclipse Baroness.webp"
+  },
+  "Empire Dreadmage": {
+    "id": "legends-284143",
+    "card": "Empire Dreadmage.webp",
+    "thumbnail": "Empire Dreadmage.webp"
+  },
+  "Tideweaver Nereid": {
+    "id": "legends-209201",
+    "card": "Tideweaver Nereid.webp",
+    "thumbnail": "Tideweaver Nereid.webp"
+  },
+  "Frost Giant": {
+    "id": "legends-233924",
+    "card": "Frost Giant.webp",
+    "thumbnail": "Frost Giant.webp"
+  },
+  "Genius Pathmage": {
+    "id": "legends-253750",
+    "card": "Genius Pathmage.webp",
+    "thumbnail": "Genius Pathmage.webp"
+  },
+  "Guildsworn Bloodluster": {
+    "id": "legends-284045",
+    "card": "Guildsworn Bloodluster.webp",
+    "thumbnail": "Guildsworn Bloodluster.webp"
+  },
+  "Guildsworn Honeytongue": {
+    "id": "legends-284144",
+    "card": "Guildsworn Honeytongue.webp",
+    "thumbnail": "Guildsworn Honeytongue.webp"
+  },
+  "Indoril Archmage": {
+    "id": "legends-214239",
+    "card": "Indoril Archmage.webp",
+    "thumbnail": "Indoril Archmage.webp"
+  },
+  "Invoker of the Hist": {
+    "id": "legends-284063",
+    "card": "Invoker of the Hist.webp",
+    "thumbnail": "Invoker of the Hist.webp"
+  },
+  "Ironscale Dragon": {
+    "id": "legends-233874",
+    "card": "Ironscale Dragon.webp",
+    "thumbnail": "Ironscale Dragon.webp"
+  },
+  "Lava Atronach": {
+    "id": "legends-233755",
+    "card": "Lava Atronach.webp",
+    "thumbnail": "Lava Atronach.webp"
+  },
+  "Legion Praefect": {
+    "id": "legends-220786",
+    "card": "Legion Praefect.webp",
+    "thumbnail": "Legion Praefect.webp"
+  },
+  "Nightlord Vampire": {
+    "id": "legends-443713",
+    "card": "Nightlord Vampire.webp",
+    "thumbnail": "Nightlord Vampire.webp"
+  },
+  "Nix-Ox": {
+    "id": "legends-253894",
+    "card": "Nix-Ox.webp",
+    "thumbnail": "Nix-Ox.webp"
+  },
+  "Pouncing Senche": {
+    "id": "legends-290724",
+    "card": "Pouncing Senche.webp",
+    "thumbnail": "Pouncing Senche.webp"
+  },
+  "Pure-Blood Elder": {
+    "id": "legends-236868",
+    "card": "Pure-Blood Elder.webp",
+    "thumbnail": "Pure-Blood Elder.webp"
+  },
+  "Queen's Captain": {
+    "id": "legends-291136",
+    "card": "Queen's Captain.webp",
+    "thumbnail": "Queen's Captain.webp"
+  },
+  "Quin'rawl Burglar": {
+    "id": "legends-209337",
+    "card": "Quin'rawl Burglar.webp",
+    "thumbnail": "Quin'rawl Burglar.webp"
+  },
+  "Renowned Legate": {
+    "id": "legends-222058",
+    "card": "Renowned Legate.webp",
+    "thumbnail": "Renowned Legate.webp"
+  },
+  "Savage Ogre": {
+    "id": "legends-211330",
+    "card": "Savage Ogre.webp",
+    "thumbnail": "Savage Ogre.webp"
+  },
+  "Seducer Darkfire": {
+    "id": "legends-276766",
+    "card": "Seducer Darkfire.webp",
+    "thumbnail": "Seducer Darkfire.webp"
+  },
+  "Senche-raht Graveprowler": {
+    "id": "legends-291258",
+    "card": "Senche-raht Graveprowler.webp",
+    "thumbnail": "Senche-raht Graveprowler.webp"
+  },
+  "Shadowgreen Elder": {
+    "id": "legends-234152",
+    "card": "Shadowgreen Elder.webp",
+    "thumbnail": "Shadowgreen Elder.webp"
+  },
+  "Skeletal Dragon": {
+    "id": "legends-233169",
+    "card": "Skeletal Dragon.webp",
+    "thumbnail": "Skeletal Dragon.webp"
+  },
+  "Skyborn Dragon": {
+    "id": "legends-233962",
+    "card": "Skyborn Dragon.webp",
+    "thumbnail": "Skyborn Dragon.webp"
+  },
+  "Spine of Eldersblood": {
+    "id": "legends-233535",
+    "card": "Spine of Eldersblood.webp",
+    "thumbnail": "Spine of Eldersblood.webp"
+  },
+  "Stealer of Secrets": {
+    "id": "legends-228313",
+    "card": "Stealer of Secrets.webp",
+    "thumbnail": "Stealer of Secrets.webp"
+  },
+  "Dwarven Spearguard": {
+    "id": "legends-209407",
+    "card": "Dwarven Spearguard.webp",
+    "thumbnail": "Dwarven Spearguard.webp"
+  },
+  "Swiftwing Dragon": {
+    "id": "legends-233960",
+    "card": "Swiftwing Dragon.webp",
+    "thumbnail": "Swiftwing Dragon.webp"
+  },
+  "Undying Dragon": {
+    "id": "legends-233536",
+    "card": "Undying Dragon.webp",
+    "thumbnail": "Undying Dragon.webp"
+  },
+  "Guardian Mammoth": {
+    "id": "legends-214134",
+    "card": "Guardian Mammoth.webp",
+    "thumbnail": "Guardian Mammoth.webp"
+  },
+  "Wildfire Dragon": {
+    "id": "legends-233450",
+    "card": "Wildfire Dragon.webp",
+    "thumbnail": "Wildfire Dragon.webp"
+  },
+  "Worm King's Agent": {
+    "id": "legends-246918",
+    "card": "Worm King's Agent.webp",
+    "thumbnail": "Worm King's Agent.webp"
+  },
+  "Xivkyn Banelord": {
+    "id": "legends-284070",
+    "card": "Xivkyn Banelord.webp",
+    "thumbnail": "Xivkyn Banelord.webp"
+  },
+  "Ahnassi": {
+    "id": "legends-209002",
+    "card": "Ahnassi.webp",
+    "thumbnail": "Ahnassi.webp"
+  },
+  "Ancient Giant": {
+    "id": "legends-234767",
+    "card": "Ancient Giant.webp",
+    "thumbnail": "Ancient Giant.webp"
+  },
+  "Anequina Pouncer": {
+    "id": "legends-290722",
+    "card": "Anequina Pouncer.webp",
+    "thumbnail": "Anequina Pouncer.webp"
+  },
+  "Assembled Titan": {
+    "id": "legends-245884",
+    "card": "Assembled Titan.webp",
+    "thumbnail": "Assembled Titan.webp"
+  },
+  "Blood Magic Lord": {
+    "id": "legends-209129",
+    "card": "Blood Magic Lord.webp",
+    "thumbnail": "Blood Magic Lord.webp"
+  },
+  "Bolvyn Venim": {
+    "id": "legends-253938",
+    "card": "Bolvyn Venim.webp",
+    "thumbnail": "Bolvyn Venim.webp"
+  },
+  "Clockwork Apostle": {
+    "id": "legends-246691",
+    "card": "Clockwork Apostle.webp",
+    "thumbnail": "Clockwork Apostle.webp"
+  },
+  "Clockwork Dragon": {
+    "id": "legends-245823",
+    "card": "Clockwork Dragon.webp",
+    "thumbnail": "Clockwork Dragon.webp"
+  },
+  "Death Hound": {
+    "id": "legends-271236",
+    "card": "Death Hound.webp",
+    "thumbnail": "Death Hound.webp"
+  },
+  "Descendant of Alkosh": {
+    "id": "legends-221651",
+    "card": "Descendant of Alkosh.webp",
+    "thumbnail": "Descendant of Alkosh.webp"
+  },
+  "Dovah of the Voice": {
+    "id": "legends-233301",
+    "card": "Dovah of the Voice.webp",
+    "thumbnail": "Dovah of the Voice.webp"
+  },
+  "Dremora Markynaz": {
+    "id": "legends-221447",
+    "card": "Dremora Markynaz.webp",
+    "thumbnail": "Dremora Markynaz.webp"
+  },
+  "Dwarven Colossus": {
+    "id": "legends-245977",
+    "card": "Dwarven Colossus.webp",
+    "thumbnail": "Dwarven Colossus.webp"
+  },
+  "Echo of Akatosh": {
+    "id": "legends-234195",
+    "card": "Echo of Akatosh.webp",
+    "thumbnail": "Echo of Akatosh.webp"
+  },
+  "Enraged Dragonknight": {
+    "id": "legends-291177",
+    "card": "Enraged Dragonknight.webp",
+    "thumbnail": "Enraged Dragonknight.webp"
+  },
+  "Frostscale Dragon": {
+    "id": "legends-253549",
+    "card": "Frostscale Dragon.webp",
+    "thumbnail": "Frostscale Dragon.webp"
+  },
+  "Garnag, Dark Adherent": {
+    "id": "legends-228066",
+    "card": "Garnag, Dark Adherent.webp",
+    "thumbnail": "Garnag, Dark Adherent.webp"
+  },
+  "Hero of Anvil": {
+    "id": "legends-209219",
+    "card": "Hero of Anvil.webp",
+    "thumbnail": "Hero of Anvil.webp"
+  },
+  "Insidious Spirit": {
+    "id": "legends-291176",
+    "card": "Insidious Spirit.webp",
+    "thumbnail": "Insidious Spirit.webp"
+  },
+  "Iron Atronach": {
+    "id": "legends-223575",
+    "card": "Iron Atronach.webp",
+    "thumbnail": "Iron Atronach.webp"
+  },
+  "Lord of the Arena": {
+    "id": "legends-298447",
+    "card": "Lord of the Arena.webp",
+    "thumbnail": "Lord of the Arena.webp"
+  },
+  "Luzrah gro-Shar": {
+    "id": "legends-276922",
+    "card": "Luzrah gro-Shar.webp",
+    "thumbnail": "Luzrah gro-Shar.webp"
+  },
+  "Master of Incunabula": {
+    "id": "legends-284100",
+    "card": "Master of Incunabula.webp",
+    "thumbnail": "Master of Incunabula.webp"
+  },
+  "Modryn Oreyn": {
+    "id": "legends-298819",
+    "card": "Modryn Oreyn.webp",
+    "thumbnail": "Modryn Oreyn.webp"
+  },
+  "Night Talon Lord": {
+    "id": "legends-220816",
+    "card": "Night Talon Lord.webp",
+    "thumbnail": "Night Talon Lord.webp"
+  },
+  "Pact Shieldbearer": {
+    "id": "legends-283891",
+    "card": "Pact Shieldbearer.webp",
+    "thumbnail": "Pact Shieldbearer.webp"
+  },
+  "Sails-Through-Storms": {
+    "id": "legends-246028",
+    "card": "Sails-Through-Storms.webp",
+    "thumbnail": "Sails-Through-Storms.webp"
+  },
+  "Sovngarde Hero": {
+    "id": "legends-234370",
+    "card": "Sovngarde Hero.webp",
+    "thumbnail": "Sovngarde Hero.webp"
+  },
+  "Studious Greybeard": {
+    "id": "legends-233487",
+    "card": "Studious Greybeard.webp",
+    "thumbnail": "Studious Greybeard.webp"
+  },
+  "Supreme Atromancer": {
+    "id": "legends-221546",
+    "card": "Supreme Atromancer.webp",
+    "thumbnail": "Supreme Atromancer.webp"
+  },
+  "Supreme Dragon": {
+    "id": "legends-312269",
+    "card": "Supreme Dragon.webp",
+    "thumbnail": "Supreme Dragon.webp"
+  },
+  "Swims-at-Night": {
+    "id": "legends-214871",
+    "card": "Swims-at-Night.webp",
+    "thumbnail": "Swims-at-Night.webp"
+  },
+  "Tazkad the Packmaster": {
+    "id": "legends-223373",
+    "card": "Tazkad the Packmaster.webp",
+    "thumbnail": "Tazkad the Packmaster.webp"
+  },
+  "Ungolim the Listener": {
+    "id": "legends-218249",
+    "card": "Ungolim the Listener.webp",
+    "thumbnail": "Ungolim the Listener.webp"
+  },
+  "Unstoppable Berserker": {
+    "id": "legends-276374",
+    "card": "Unstoppable Berserker.webp",
+    "thumbnail": "Unstoppable Berserker.webp"
+  },
+  "Voice of Balance": {
+    "id": "legends-250486",
+    "card": "Voice of Balance.webp",
+    "thumbnail": "Voice of Balance.webp"
+  },
+  "Allena Benoch": {
+    "id": "legends-209112",
+    "card": "Allena Benoch.webp",
+    "thumbnail": "Allena Benoch.webp"
+  },
+  "Ayrenn": {
+    "id": "legends-209085",
+    "card": "Ayrenn.webp",
+    "thumbnail": "Ayrenn.webp"
+  },
+  "Caius Cosades": {
+    "id": "legends-253904",
+    "card": "Caius Cosades.webp",
+    "thumbnail": "Caius Cosades.webp"
+  },
+  "Gentleman Jim Stacey": {
+    "id": "legends-253893",
+    "card": "Gentleman Jim Stacey.webp",
+    "thumbnail": "Gentleman Jim Stacey.webp"
+  },
+  "Gortwog gro-Nagorm": {
+    "id": "legends-209212",
+    "card": "Gortwog gro-Nagorm.webp",
+    "thumbnail": "Gortwog gro-Nagorm.webp"
+  },
+  "Hannibal Traven": {
+    "id": "legends-298881",
+    "card": "Hannibal Traven.webp",
+    "thumbnail": "Hannibal Traven.webp"
+  },
+  "High King Emeric": {
+    "id": "legends-209220",
+    "card": "High King Emeric.webp",
+    "thumbnail": "High King Emeric.webp"
+  },
+  "Jauffre": {
+    "id": "legends-298665",
+    "card": "Jauffre.webp",
+    "thumbnail": "Jauffre.webp"
+  },
+  "Kaalgrontiid": {
+    "id": "legends-289743",
+    "card": "Kaalgrontiid.webp",
+    "thumbnail": "Kaalgrontiid.webp"
+  },
+  "Khamira": {
+    "id": "legends-290789",
+    "card": "Khamira.webp",
+    "thumbnail": "Khamira.webp"
+  },
+  "Lyris Titanborn": {
+    "id": "legends-283869",
+    "card": "Lyris Titanborn.webp",
+    "thumbnail": "Lyris Titanborn.webp"
+  },
+  "Mulaamnir": {
+    "id": "legends-290941",
+    "card": "Mulaamnir.webp",
+    "thumbnail": "Mulaamnir.webp"
+  },
+  "Naryu Virian": {
+    "id": "legends-253892",
+    "card": "Naryu Virian.webp",
+    "thumbnail": "Naryu Virian.webp"
+  },
+  "Queen Barenziah": {
+    "id": "legends-209336",
+    "card": "Queen Barenziah.webp",
+    "thumbnail": "Queen Barenziah.webp"
+  },
+  "Razum-Dar": {
+    "id": "legends-290788",
+    "card": "Razum-Dar.webp",
+    "thumbnail": "Razum-Dar.webp"
+  },
+  "Red Bramman": {
+    "id": "legends-209343",
+    "card": "Red Bramman.webp",
+    "thumbnail": "Red Bramman.webp"
+  },
+  "Sai Sahan": {
+    "id": "legends-283896",
+    "card": "Sai Sahan.webp",
+    "thumbnail": "Sai Sahan.webp"
+  },
+  "Saint Jiub": {
+    "id": "legends-253945",
+    "card": "Saint Jiub.webp",
+    "thumbnail": "Saint Jiub.webp"
+  },
+  "Varen Aquilarios": {
+    "id": "legends-284023",
+    "card": "Varen Aquilarios.webp",
+    "thumbnail": "Varen Aquilarios.webp"
+  },
+  "Vastarie": {
+    "id": "legends-291138",
+    "card": "Vastarie.webp",
+    "thumbnail": "Vastarie.webp"
+  },
+  "Zumog Phoom": {
+    "id": "legends-290584",
+    "card": "Zumog Phoom.webp",
+    "thumbnail": "Zumog Phoom.webp"
+  },
+  "Divayth Fyr": {
+    "id": "legends-214243",
+    "card": "Divayth Fyr.webp",
+    "thumbnail": "Divayth Fyr.webp"
+  },
+  "Felldir the Old": {
+    "id": "tessera-felldir-the-old",
+    "card": "Felldir the Old.webp",
+    "thumbnail": "Felldir the Old.webp"
+  },
+  "Frandar Hunding": {
+    "id": "tessera-frandar-hunding",
+    "card": "Frandar Hunding.webp",
+    "thumbnail": "Frandar Hunding.webp"
+  },
+  "Gaiden Shinji": {
+    "id": "tessera-gaiden-shinji",
+    "card": "Gaiden Shinji.webp",
+    "thumbnail": "Gaiden Shinji.webp"
+  },
+  "Gormlaith Golden-Hilt": {
+    "id": "tessera-gormlaith-golden-hilt",
+    "card": "Gormlaith Golden-Hilt.webp",
+    "thumbnail": "Gormlaith Golden-Hilt.webp"
+  },
+  "Hakon One-Eye": {
+    "id": "tessera-hakon-one-eye",
+    "card": "Hakon One-Eye.webp",
+    "thumbnail": "Hakon One-Eye.webp"
+  },
+  "Indoril Nerevar": {
+    "id": "tessera-indoril-nerevar",
+    "card": "Indoril Nerevar.webp",
+    "thumbnail": "Indoril Nerevar.webp"
+  },
+  "Jurgen Windcaller": {
+    "id": "tessera-jurgen-windcaller",
+    "card": "Jurgen Windcaller.webp",
+    "thumbnail": "Jurgen Windcaller.webp"
+  },
+  "Makela Leki": {
+    "id": "tessera-makela-leki",
+    "card": "Makela Leki.webp",
+    "thumbnail": "Makela Leki.webp"
+  },
+  "Martin Septim": {
+    "id": "legends-298991",
+    "card": "Martin Septim.webp",
+    "thumbnail": "Martin Septim.webp"
+  },
+  "Morihaus": {
+    "id": "tessera-morihaus",
+    "card": "Morihaus.webp",
+    "thumbnail": "Morihaus.webp"
+  },
+  "Pelinal Whitestrake": {
+    "id": "tessera-pelinal-whitestrake",
+    "card": "Pelinal Whitestrake.webp",
+    "thumbnail": "Pelinal Whitestrake.webp"
+  },
+  "Reman Cyrodiil": {
+    "id": "tessera-reman-cyrodiil",
+    "card": "Reman Cyrodiil.webp",
+    "thumbnail": "Reman Cyrodiil.webp"
+  },
+  "Rislav the Righteous": {
+    "id": "tessera-rislav-the-righteous",
+    "card": "Rislav the Righteous.webp",
+    "thumbnail": "Rislav the Righteous.webp"
+  },
+  "Saint Alessia": {
+    "id": "tessera-saint-alessia",
+    "card": "Saint Alessia.webp",
+    "thumbnail": "Saint Alessia.webp"
+  },
+  "Vanus Galerion": {
+    "id": "legends-283895",
+    "card": "Vanus Galerion.webp",
+    "thumbnail": "Vanus Galerion.webp"
+  },
+  "Wulfharth": {
+    "id": "tessera-wulfharth",
+    "card": "Wulfharth.webp",
+    "thumbnail": "Wulfharth.webp"
+  },
+  "Ysgramor": {
+    "id": "tessera-ysgramor",
+    "card": "Ysgramor.webp",
+    "thumbnail": "Ysgramor.webp"
+  },
+  "Akatosh": {
+    "id": "tessera-akatosh",
+    "card": "Akatosh.webp",
+    "thumbnail": "Akatosh.webp"
+  },
+  "Almalexia": {
+    "id": "legends-265148",
+    "card": "Almalexia.webp",
+    "thumbnail": "Almalexia.webp"
+  },
+  "Arkay": {
+    "id": "tessera-arkay",
+    "card": "Arkay.webp",
+    "thumbnail": "Arkay.webp"
+  },
+  "Azura": {
+    "id": "tessera-azura",
+    "card": "Azura.webp",
+    "thumbnail": "Azura.webp"
+  },
+  "Boethiah": {
+    "id": "tessera-boethiah",
+    "card": "Boethiah.webp",
+    "thumbnail": "Boethiah.webp"
+  },
+  "Clavicus Vile": {
+    "id": "tessera-clavicus-vile",
+    "card": "Clavicus Vile.webp",
+    "thumbnail": "Clavicus Vile.webp"
+  },
+  "Dagoth Ur": {
+    "id": "legends-253756",
+    "card": "Dagoth Ur.webp",
+    "thumbnail": "Dagoth Ur.webp"
+  },
+  "Dibella": {
+    "id": "tessera-dibella",
+    "card": "Dibella.webp",
+    "thumbnail": "Dibella.webp"
+  },
+  "Hermaeus Mora": {
+    "id": "tessera-hermaeus-mora",
+    "card": "Hermaeus Mora.webp",
+    "thumbnail": "Hermaeus Mora.webp"
+  },
+  "Hircine": {
+    "id": "tessera-hircine",
+    "card": "Hircine.webp",
+    "thumbnail": "Hircine.webp"
+  },
+  "Julianos": {
+    "id": "tessera-julianos",
+    "card": "Julianos.webp",
+    "thumbnail": "Julianos.webp"
+  },
+  "Jyggalag": {
+    "id": "tessera-jyggalag",
+    "card": "Jyggalag.webp",
+    "thumbnail": "Jyggalag.webp"
+  },
+  "Kynareth": {
+    "id": "tessera-kynareth",
+    "card": "Kynareth.webp",
+    "thumbnail": "Kynareth.webp"
+  },
+  "Malacath": {
+    "id": "tessera-malacath",
+    "card": "Malacath.webp",
+    "thumbnail": "Malacath.webp"
+  },
+  "Mara": {
+    "id": "tessera-mara",
+    "card": "Mara.webp",
+    "thumbnail": "Mara.webp"
+  },
+  "Mehrunes Dagon": {
+    "id": "tessera-mehrunes-dagon",
+    "card": "Mehrunes Dagon.webp",
+    "thumbnail": "Mehrunes Dagon.webp"
+  },
+  "Mephala": {
+    "id": "tessera-mephala",
+    "card": "Mephala.webp",
+    "thumbnail": "Mephala.webp"
+  },
+  "Meridia": {
+    "id": "tessera-meridia",
+    "card": "Meridia.webp",
+    "thumbnail": "Meridia.webp"
+  },
+  "Molag Bal": {
+    "id": "tessera-molag-bal",
+    "card": "Molag Bal.webp",
+    "thumbnail": "Molag Bal.webp"
+  },
+  "Namira": {
+    "id": "tessera-namira",
+    "card": "Namira.webp",
+    "thumbnail": "Namira.webp"
+  },
+  "Nocturnal": {
+    "id": "tessera-nocturnal",
+    "card": "Nocturnal.webp",
+    "thumbnail": "Nocturnal.webp"
+  },
+  "Peryite": {
+    "id": "tessera-peryite",
+    "card": "Peryite.webp",
+    "thumbnail": "Peryite.webp"
+  },
+  "Sanguine": {
+    "id": "tessera-sanguine",
+    "card": "Sanguine.webp",
+    "thumbnail": "Sanguine.webp"
+  },
+  "Sheogorath": {
+    "id": "tessera-sheogorath",
+    "card": "Sheogorath.webp",
+    "thumbnail": "Sheogorath.webp"
+  },
+  "Sotha Sil": {
+    "id": "legends-265151",
+    "card": "Sotha Sil.webp",
+    "thumbnail": "Sotha Sil.webp"
+  },
+  "Stendarr": {
+    "id": "tessera-stendarr",
+    "card": "Stendarr.webp",
+    "thumbnail": "Stendarr.webp"
+  },
+  "Talos": {
+    "id": "tessera-talos",
+    "card": "Talos.webp",
+    "thumbnail": "Talos.webp"
+  },
+  "Vaermina": {
+    "id": "tessera-vaermina",
+    "card": "Vaermina.webp",
+    "thumbnail": "Vaermina.webp"
+  },
+  "Vivec": {
+    "id": "legends-253725",
+    "card": "Vivec.webp",
+    "thumbnail": "Vivec.webp"
+  },
+  "Zenithar": {
+    "id": "tessera-zenithar",
+    "card": "Zenithar.webp",
+    "thumbnail": "Zenithar.webp"
+  },
+  "Hist Sap Healer": {
+    "id": "workshop-dced7aab7d244b47b1e4260525419d2f",
+    "card": "Hist Sap Healer.webp",
+    "thumbnail": "Hist Sap Healer.webp"
+  },
+  "Deepmarsh Pathfinder": {
+    "id": "workshop-0b154dda7cd34ab0851138fcaf3c132d",
+    "card": "Deepmarsh Pathfinder.webp",
+    "thumbnail": "Deepmarsh Pathfinder.webp"
+  },
+  "An-Xileel Rootwarden": {
+    "id": "workshop-1a8d2d6d45fd44b68ddded51394eaa46",
+    "card": "An-Xileel Rootwarden.webp",
+    "thumbnail": "An-Xileel Rootwarden.webp"
+  },
+  "Shadowscale Silencer": {
+    "id": "workshop-838352cf6cbd4f57b1aa83eddb350753",
+    "card": "Shadowscale Silencer.webp",
+    "thumbnail": "Shadowscale Silencer.webp"
+  },
+  "Xanmeer Lorekeeper": {
+    "id": "workshop-f7eeb69e9b274af5a54e54d25a37e72a",
+    "card": "Xanmeer Lorekeeper.webp",
+    "thumbnail": "Xanmeer Lorekeeper.webp"
+  },
+  "Sees-All-Colors": {
+    "id": "workshop-1b3309b1a16b42c0adb899781ba64ca0",
+    "card": "Sees-All-Colors.webp",
+    "thumbnail": "Sees-All-Colors.webp"
+  },
+  "Keshu the Black Fin": {
+    "id": "workshop-5b7ec5b5c01443cc9fe87e79fed33b02",
+    "card": "Keshu the Black Fin.webp",
+    "thumbnail": "Keshu the Black Fin.webp"
+  },
+  "Heita-Meen": {
+    "id": "workshop-d0f3db9c23aa47289d35eeb5d1b2e17b",
+    "card": "Heita-Meen.webp",
+    "thumbnail": "Heita-Meen.webp"
+  },
+  "Wayrest Nightblade": {
+    "id": "workshop-d8e35166497544998152e315024c2de1",
+    "card": "Wayrest Nightblade.webp",
+    "thumbnail": "Wayrest Nightblade.webp"
+  },
+  "Wayrest Court Duelist": {
+    "id": "workshop-fc679287c950442dacbff9004a9bffeb",
+    "card": "Wayrest Court Duelist.webp",
+    "thumbnail": "Wayrest Court Duelist.webp"
+  },
+  "Daggerfall Spellknight": {
+    "id": "workshop-67dcd873fb434f1c83ef74ee905aa772",
+    "card": "Daggerfall Spellknight.webp",
+    "thumbnail": "Daggerfall Spellknight.webp"
+  },
+  "Bjoulsae Battlecaller": {
+    "id": "workshop-0f7933221af243d98cd9b8435af5b849",
+    "card": "Bjoulsae Battlecaller.webp",
+    "thumbnail": "Bjoulsae Battlecaller.webp"
+  },
+  "Champion of the Dragon": {
+    "id": "workshop-bba8aa6846b247a5bdcded68bae4d93b",
+    "card": "Champion of the Dragon.webp",
+    "thumbnail": "Champion of the Dragon.webp"
+  },
+  "King Lysandus": {
+    "id": "workshop-08eb0cb6071a4048a9a2a610f4febf73",
+    "card": "King Lysandus.webp",
+    "thumbnail": "King Lysandus.webp"
+  },
+  "Gyron Vardengroet": {
+    "id": "workshop-4c34c32b5e6148c395d78ff220ba5875",
+    "card": "Gyron Vardengroet.webp",
+    "thumbnail": "Gyron Vardengroet.webp"
+  },
+  "Direnni Spellwright": {
+    "id": "workshop-54f7cbf6b6434b3a868620b695bed8d8",
+    "card": "Direnni Spellwright.webp",
+    "thumbnail": "Direnni Spellwright.webp"
+  },
+  "Sapiarch of Warding": {
+    "id": "workshop-d12968b953c34412963db60814d291f5",
+    "card": "Sapiarch of Warding.webp",
+    "thumbnail": "Sapiarch of Warding.webp"
+  },
+  "Psijic Mediator": {
+    "id": "workshop-bc20c37f41474244b7c750a513e1e072",
+    "card": "Psijic Mediator.webp",
+    "thumbnail": "Psijic Mediator.webp"
+  },
+  "Sunhold Spellmarshal": {
+    "id": "workshop-ef294df3b2c34eae9c87126fad34e9d2",
+    "card": "Sunhold Spellmarshal.webp",
+    "thumbnail": "Sunhold Spellmarshal.webp"
+  },
+  "Lillandril Leyweaver": {
+    "id": "workshop-d40aefdcf3ae4261b8fdb8bfc434a5f3",
+    "card": "Lillandril Leyweaver.webp",
+    "thumbnail": "Lillandril Leyweaver.webp"
+  },
+  "Crystal Tower Spellwarden": {
+    "id": "workshop-2b9d63bf36a84222b54518a1b4d466c0",
+    "card": "Crystal Tower Spellwarden.webp",
+    "thumbnail": "Crystal Tower Spellwarden.webp"
+  },
+  "Raven Direnni": {
+    "id": "workshop-2c49f86bf9014f5ea4f1635e4b9cfb32",
+    "card": "Raven Direnni.webp",
+    "thumbnail": "Raven Direnni.webp"
+  },
+  "Ritemaster Iachesis": {
+    "id": "workshop-30e4c010f1484396a8a47ea102bd2a8a",
+    "card": "Ritemaster Iachesis.webp",
+    "thumbnail": "Ritemaster Iachesis.webp"
+  },
+  "Aiden Direnni": {
+    "id": "workshop-a69cbf213f514897b8ab60d4d62ff06a",
+    "card": "Aiden Direnni.webp",
+    "thumbnail": "Aiden Direnni.webp"
+  },
+  "Darloc Brae": {
+    "id": "workshop-f29fac338fe5441993a1489201f135ca",
+    "card": "Darloc Brae.webp",
+    "thumbnail": "Darloc Brae.webp"
+  },
+  "Khunzar-ri": {
+    "id": "workshop-6c7ee36abeca48c984ef06d803fa6e3e",
+    "card": "Khunzar-ri.webp",
+    "thumbnail": "Khunzar-ri.webp"
+  },
+  "Riverwood Woodcutter": {
+    "id": "workshop-a40c6a1459204ef9a9416903ec2353c5",
+    "card": "Riverwood Woodcutter.webp",
+    "thumbnail": "Riverwood Woodcutter.webp"
+  },
+  "Stronghold Provisioner": {
+    "id": "workshop-baa65a0298c246f0a85937396cce7691",
+    "card": "Stronghold Provisioner.webp",
+    "thumbnail": "Stronghold Provisioner.webp"
+  },
+  "Orsinium Shieldbearer": {
+    "id": "workshop-72eba8d676d94b869282dbe6c7f6cf9f",
+    "card": "Orsinium Shieldbearer.webp",
+    "thumbnail": "Orsinium Shieldbearer.webp"
+  },
+  "Orcish Siege Engineer": {
+    "id": "workshop-757cf855211a4ac2a03f854fc3733802",
+    "card": "Orcish Siege Engineer.webp",
+    "thumbnail": "Orcish Siege Engineer.webp"
+  },
+  "Stronghold Wise Woman": {
+    "id": "workshop-e5f11a3e359e43e8a68d022c5f56ca94",
+    "card": "Stronghold Wise Woman.webp",
+    "thumbnail": "Stronghold Wise Woman.webp"
+  },
+  "Orichalcum Forgemaster": {
+    "id": "workshop-e7373e9d48f3420d95c5a3cd94a6f38a",
+    "card": "Orichalcum Forgemaster.webp",
+    "thumbnail": "Orichalcum Forgemaster.webp"
+  },
+  "Malacath's Oathkeeper": {
+    "id": "workshop-c049e96c458d4b6bb43d42928657aae0",
+    "card": "Malacath's Oathkeeper.webp",
+    "thumbnail": "Malacath's Oathkeeper.webp"
+  },
+  "Blood-Price Enforcer": {
+    "id": "workshop-5ca729b4af8840a58fe8d0d2611dbf52",
+    "card": "Blood-Price Enforcer.webp",
+    "thumbnail": "Blood-Price Enforcer.webp"
+  },
+  "Torug gro-Igron": {
+    "id": "workshop-0a885937c60446e4b92ba4dbd5057ca6",
+    "card": "Torug gro-Igron.webp",
+    "thumbnail": "Torug gro-Igron.webp"
+  },
+  "Sentinel Caravan Guard": {
+    "id": "workshop-c5fd10f447eb424f8828d106d188a287",
+    "card": "Sentinel Caravan Guard.webp",
+    "thumbnail": "Sentinel Caravan Guard.webp"
+  },
+  "Hew's Bane Infiltrator": {
+    "id": "workshop-71fb291596b6489f86d87a053c7803bf",
+    "card": "Hew's Bane Infiltrator.webp",
+    "thumbnail": "Hew's Bane Infiltrator.webp"
+  },
+  "Hegathe Shieldbearer": {
+    "id": "workshop-1630defb48e14a56affb631ba4d4d704",
+    "card": "Hegathe Shieldbearer.webp",
+    "thumbnail": "Hegathe Shieldbearer.webp"
+  },
+  "Totambu Battlemage": {
+    "id": "workshop-cc0755cf1b9e4d28805537149b6b9cad",
+    "card": "Totambu Battlemage.webp",
+    "thumbnail": "Totambu Battlemage.webp"
+  },
+  "Order of Diagna Veteran": {
+    "id": "workshop-be761191711e4dec97ab8e4cfdb38018",
+    "card": "Order of Diagna Veteran.webp",
+    "thumbnail": "Order of Diagna Veteran.webp"
+  },
+  "Hallin's Stand Swordmaster": {
+    "id": "workshop-df544fcfe1444c3c8e4bb0799a7c746d",
+    "card": "Hallin's Stand Swordmaster.webp",
+    "thumbnail": "Hallin's Stand Swordmaster.webp"
+  },
+  "Satakalaam War Priest": {
+    "id": "workshop-3ab65aacb7dc478e9ea3e54b81a74be6",
+    "card": "Satakalaam War Priest.webp",
+    "thumbnail": "Satakalaam War Priest.webp"
+  },
+  "Sword-Singer Adept": {
+    "id": "workshop-dd26b4a003b34d3ba5fa8556713cf428",
+    "card": "Sword-Singer Adept.webp",
+    "thumbnail": "Sword-Singer Adept.webp"
+  },
+  "Hammerfell Grand Marshal": {
+    "id": "workshop-14f0c5b798bc44d6b243921366b8119f",
+    "card": "Hammerfell Grand Marshal.webp",
+    "thumbnail": "Hammerfell Grand Marshal.webp"
+  },
+  "Greenheart Oathkeeper": {
+    "id": "workshop-09ff9efc6da64e8e938fb10e3f133202",
+    "card": "Greenheart Oathkeeper.webp",
+    "thumbnail": "Greenheart Oathkeeper.webp"
+  },
+  "Grahtwood Pathwarden": {
+    "id": "workshop-6cdd33b7846a4b7fb30636e394ecab29",
+    "card": "Grahtwood Pathwarden.webp",
+    "thumbnail": "Grahtwood Pathwarden.webp"
+  },
+  "Y'ffre's Storykeeper": {
+    "id": "workshop-4dd6163af1a04fd2926c750490616270",
+    "card": "Y'ffre's Storykeeper.webp",
+    "thumbnail": "Y'ffre's Storykeeper.webp"
+  },
+  "Green Pact Venomkeeper": {
+    "id": "workshop-802322f1271d497cab80202de49fe329",
+    "card": "Green Pact Venomkeeper.webp",
+    "thumbnail": "Green Pact Venomkeeper.webp"
+  },
+  "Valenwood Beastcaller": {
+    "id": "workshop-222183ea5c59494c9bd022f2d123e44c",
+    "card": "Valenwood Beastcaller.webp",
+    "thumbnail": "Valenwood Beastcaller.webp"
+  },
+  "Vinedusk Ranger": {
+    "id": "workshop-3dd08920badd44739bb1c738bf571513",
+    "card": "Vinedusk Ranger.webp",
+    "thumbnail": "Vinedusk Ranger.webp"
+  },
+  "Silvenar Emissary": {
+    "id": "workshop-39ad875108fb447c8f6d8a0d47e7b0f5",
+    "card": "Silvenar Emissary.webp",
+    "thumbnail": "Silvenar Emissary.webp"
+  },
+  "Rootwater Wayfinder": {
+    "id": "workshop-cf1036050f45425fa09d1bca756caed1",
+    "card": "Rootwater Wayfinder.webp",
+    "thumbnail": "Rootwater Wayfinder.webp"
+  },
+  "Spinners' Grove Guardian": {
+    "id": "workshop-fe76465d735a42f3bfdc8b5872f4b055",
+    "card": "Spinners' Grove Guardian.webp",
+    "thumbnail": "Spinners' Grove Guardian.webp"
+  },
+  "Falinesti Wildwarden": {
+    "id": "workshop-a61fed6387c34aaf9098f4d9f192135d",
+    "card": "Falinesti Wildwarden.webp",
+    "thumbnail": "Falinesti Wildwarden.webp"
+  },
+  "Camoran Warleader": {
+    "id": "workshop-de10aed616d14446b5d03a5b29722ef4",
+    "card": "Camoran Warleader.webp",
+    "thumbnail": "Camoran Warleader.webp"
+  },
+  "Valenwood Bonecarver": {
+    "id": "workshop-d0dad43466fd4e53b3affd7fe8736682",
+    "card": "Valenwood Bonecarver.webp",
+    "thumbnail": "Valenwood Bonecarver.webp"
+  },
+  "Y'ffre's Voice": {
+    "id": "workshop-e802866a12a24fd4afec2486c2542903",
+    "card": "Y'ffre's Voice.webp",
+    "thumbnail": "Y'ffre's Voice.webp"
+  },
+  "Silvenar Oathbow": {
+    "id": "workshop-4f51ae8bf9124a37bd65801702b38ffb",
+    "card": "Silvenar Oathbow.webp",
+    "thumbnail": "Silvenar Oathbow.webp"
+  },
+  "Green Lady's Champion": {
+    "id": "workshop-6dc7b02ffac94f438aae158ccdf26132",
+    "card": "Green Lady's Champion.webp",
+    "thumbnail": "Green Lady's Champion.webp"
+  },
+  "King Camoran Aeradan": {
+    "id": "workshop-846f6735b322428db0c842beba74607e",
+    "card": "King Camoran Aeradan.webp",
+    "thumbnail": "King Camoran Aeradan.webp"
+  },
+  "King Eplear": {
+    "id": "workshop-6fa97120f46d45b1b25d324c182e38b9",
+    "card": "King Eplear.webp",
+    "thumbnail": "King Eplear.webp"
+  },
+  "Indaenir, the Silvenar": {
+    "id": "workshop-9ca1aea08d174ae68add30644c199529",
+    "card": "Indaenir, the Silvenar.webp",
+    "thumbnail": "Indaenir, the Silvenar.webp"
+  },
+  "Gwaering, the Green Lady": {
+    "id": "workshop-32d70f766d6945b4a7a5eefe4af00291",
+    "card": "Gwaering, the Green Lady.webp",
+    "thumbnail": "Gwaering, the Green Lady.webp"
+  },
+  "Scamp Forager": {
+    "id": "workshop-860262430f7447b6859fc7d77aff8874",
+    "card": "Scamp Forager.webp",
+    "thumbnail": "Scamp Forager.webp"
+  },
+  "Banekin Sparkcaller": {
+    "id": "workshop-934a0feadb4b4a7493a2fb58aa9d0109",
+    "card": "Banekin Sparkcaller.webp",
+    "thumbnail": "Banekin Sparkcaller.webp"
+  },
+  "Si'ess": {
+    "id": "workshop-11e1d347de5c43de82f66cd55c798036",
+    "card": "Si'ess.webp",
+    "thumbnail": "Si'ess.webp"
+  },
+  "Dylora": {
+    "id": "workshop-4eb69270bc614995bb8f7c3d7a79b014",
+    "card": "Dylora.webp",
+    "thumbnail": "Dylora.webp"
+  },
+  "Lyranth": {
+    "id": "workshop-23cfaeb709bf40cca64ff5ee448ee24d",
+    "card": "Lyranth.webp",
+    "thumbnail": "Lyranth.webp"
+  },
+  "Lord Warden Dusk": {
+    "id": "workshop-99da076a099c473a83537b55d8832309",
+    "card": "Lord Warden Dusk.webp",
+    "thumbnail": "Lord Warden Dusk.webp"
+  },
+  "Domihaus": {
+    "id": "workshop-32fc39fcc6114e0a878e39098edbdf95",
+    "card": "Domihaus.webp",
+    "thumbnail": "Domihaus.webp"
+  },
+  "Sinmur": {
+    "id": "workshop-bce053c64a484cc28b2c9835088cffec",
+    "card": "Sinmur.webp",
+    "thumbnail": "Sinmur.webp"
+  },
+  "Karstaag": {
+    "id": "workshop-2ddf03c1ca1544f3b7f1af48c9ccf48f",
+    "card": "Karstaag.webp",
+    "thumbnail": "Karstaag.webp"
+  },
+  "Belharza the Man-Bull": {
+    "id": "workshop-10dcfc7157e0402e930f61f188cad214",
+    "card": "Belharza the Man-Bull.webp",
+    "thumbnail": "Belharza the Man-Bull.webp"
+  },
+  "Bittergreen the Wild": {
+    "id": "workshop-9bf30e858d5d4743874e0e46d85c882c",
+    "card": "Bittergreen the Wild.webp",
+    "thumbnail": "Bittergreen the Wild.webp"
+  },
+  "Shadowmere": {
+    "id": "workshop-c301277ae1c04850b9ce6b856e739707",
+    "card": "Shadowmere.webp",
+    "thumbnail": "Shadowmere.webp"
+  },
+  "The Uderfrykte Matron": {
+    "id": "workshop-ea2df8fa41634d6fa571454b8d37e371",
+    "card": "The Uderfrykte Matron.webp",
+    "thumbnail": "The Uderfrykte Matron.webp"
+  },
+  "Harcane Grove Unicorn": {
+    "id": "workshop-f686cb6c0e374cbb967e78cab9b17df7",
+    "card": "Harcane Grove Unicorn.webp",
+    "thumbnail": "Harcane Grove Unicorn.webp"
+  },
+  "Guardian Mudcrab": {
+    "id": "workshop-73be5788448c4843afdcc5ff75e26685",
+    "card": "Guardian Mudcrab.webp",
+    "thumbnail": "Guardian Mudcrab.webp"
+  },
+  "Brook Nereid": {
+    "id": "workshop-ee3b304d19f44b6b9df0f53d3fa6c2c6",
+    "card": "Brook Nereid.webp",
+    "thumbnail": "Brook Nereid.webp"
+  },
+  "Guardian Wolf": {
+    "id": "workshop-884a3119fe96487bbfa219cfdacb219d",
+    "card": "Guardian Wolf.webp",
+    "thumbnail": "Guardian Wolf.webp"
+  },
+  "Thornwatch Spriggan": {
+    "id": "workshop-fe55a1db8de24df1a3fbd47d276bc3e5",
+    "card": "Thornwatch Spriggan.webp",
+    "thumbnail": "Thornwatch Spriggan.webp"
+  },
+  "Moonlit Nereid": {
+    "id": "workshop-fb31c5b7f9e440ecb677704c5e60243d",
+    "card": "Moonlit Nereid.webp",
+    "thumbnail": "Moonlit Nereid.webp"
+  },
+  "Gnarl Sapling": {
+    "id": "workshop-80fb3c68fd684ba9b31bd5a6421c5e91",
+    "card": "Gnarl Sapling.webp",
+    "thumbnail": "Gnarl Sapling.webp"
+  },
+  "Cavern Nereid": {
+    "id": "workshop-7ce38ff8659f48a7a28bcb35edd2ea78",
+    "card": "Cavern Nereid.webp",
+    "thumbnail": "Cavern Nereid.webp"
+  },
+  "Riverbank Spriggan": {
+    "id": "workshop-6ff440052b4c4fb9abbedaa9947862f5",
+    "card": "Riverbank Spriggan.webp",
+    "thumbnail": "Riverbank Spriggan.webp"
+  },
+  "Reedfen Lurcher": {
+    "id": "workshop-1dc921df1378490b9144b3bdd07ee1cb",
+    "card": "Reedfen Lurcher.webp",
+    "thumbnail": "Reedfen Lurcher.webp"
+  },
+  "Glenumbra Lurcher": {
+    "id": "workshop-946e603036d34690859cba157c259368",
+    "card": "Glenumbra Lurcher.webp",
+    "thumbnail": "Glenumbra Lurcher.webp"
+  },
+  "Guardian Bear": {
+    "id": "workshop-0efef2fd957c46f28d10230f6bec03dc",
+    "card": "Guardian Bear.webp",
+    "thumbnail": "Guardian Bear.webp"
+  },
+  "Burnt Spriggan": {
+    "id": "workshop-dd3a837e850b4dc5ae1e737559978ba3",
+    "card": "Burnt Spriggan.webp",
+    "thumbnail": "Burnt Spriggan.webp"
+  },
+  "Rimebound Ice Wraith": {
+    "id": "workshop-8432b53ced7240979f0ced76989d086f",
+    "card": "Rimebound Ice Wraith.webp",
+    "thumbnail": "Rimebound Ice Wraith.webp"
+  },
+  "Nereid Tidecaller": {
+    "id": "workshop-d958ed92b96941f79f9dc27317491131",
+    "card": "Nereid Tidecaller.webp",
+    "thumbnail": "Nereid Tidecaller.webp"
+  },
+  "Glacial Ice Wraith": {
+    "id": "workshop-db82a294a580496cb9e2b1d92a9ad1a1",
+    "card": "Glacial Ice Wraith.webp",
+    "thumbnail": "Glacial Ice Wraith.webp"
+  },
+  "Waterfall Nereid": {
+    "id": "workshop-dca26a63a8ec4e6d806e099d6a0eb3ad",
+    "card": "Waterfall Nereid.webp",
+    "thumbnail": "Waterfall Nereid.webp"
+  },
+  "Thornheart Lurcher": {
+    "id": "workshop-b2048c7ad14947739aac9ec802cc3d34",
+    "card": "Thornheart Lurcher.webp",
+    "thumbnail": "Thornheart Lurcher.webp"
+  },
+  "Guardian Sabre Cat": {
+    "id": "workshop-b32f10d4404547879cd2687d8549397e",
+    "card": "Guardian Sabre Cat.webp",
+    "thumbnail": "Guardian Sabre Cat.webp"
+  },
+  "Ancient Gnarl": {
+    "id": "workshop-c55636d70f2247c3bb3c691f12136c06",
+    "card": "Ancient Gnarl.webp",
+    "thumbnail": "Ancient Gnarl.webp"
+  },
+  "Guardian Troll": {
+    "id": "workshop-9001b05eff3640c78c516cfc8273422d",
+    "card": "Guardian Troll.webp",
+    "thumbnail": "Guardian Troll.webp"
+  },
+  "Ancient Spriggan": {
+    "id": "workshop-472c87578fba4301b8d12b456eb079cf",
+    "card": "Ancient Spriggan.webp",
+    "thumbnail": "Ancient Spriggan.webp"
+  },
+  "Nereid Stormsinger": {
+    "id": "workshop-18ac8158f4a5452fa15bd83435f9fed2",
+    "card": "Nereid Stormsinger.webp",
+    "thumbnail": "Nereid Stormsinger.webp"
+  },
+  "Lorelia": {
+    "id": "workshop-21277db5eb244d40afdda0731af64a3d",
+    "card": "Lorelia.webp",
+    "thumbnail": "Lorelia.webp"
+  },
+  "Windsorrow": {
+    "id": "workshop-b871f753976e4b6a88707b85eb173a98",
+    "card": "Windsorrow.webp",
+    "thumbnail": "Windsorrow.webp"
+  },
+  "Brackenleaf": {
+    "id": "workshop-cd578286044440dbba4fc0515d2251aa",
+    "card": "Brackenleaf.webp",
+    "thumbnail": "Brackenleaf.webp"
+  },
+  "Selene": {
+    "id": "workshop-aefcbf4e3e244b2c984a764f62e4aaca",
+    "card": "Selene.webp",
+    "thumbnail": "Selene.webp"
+  },
+  "The Wilderking": {
+    "id": "workshop-3f00f117daf64f928d48c8cb5924d3a9",
+    "card": "The Wilderking.webp",
+    "thumbnail": "The Wilderking.webp"
+  },
+  "The Engine Guardian": {
+    "id": "workshop-74708502575a41a28ac166c4cde57292",
+    "card": "The Engine Guardian.webp",
+    "thumbnail": "The Engine Guardian.webp"
+  },
+  "The Stonekeeper": {
+    "id": "workshop-336e6586c1174c859dfc5877530502f3",
+    "card": "The Stonekeeper.webp",
+    "thumbnail": "The Stonekeeper.webp"
+  },
+  "The Imperfect": {
+    "id": "workshop-65d0ea1c2bfa490da41c39b8ec18b3e7",
+    "card": "The Imperfect.webp",
+    "thumbnail": "The Imperfect.webp"
+  },
+  "Numidium": {
+    "id": "workshop-355ebe1090e64094b42d4da94c2f0dd6",
+    "card": "Numidium.webp",
+    "thumbnail": "Numidium.webp"
+  },
+  "Akulakhan": {
+    "id": "workshop-3b91ebd6b5394156b1f64228ee358f0f",
+    "card": "Akulakhan.webp",
+    "thumbnail": "Akulakhan.webp"
+  },
+  "Lamae Bal": {
+    "id": "workshop-59490f6446944cba962c32433798674d",
+    "card": "Lamae Bal.webp",
+    "thumbnail": "Lamae Bal.webp"
+  },
+  "Morokei": {
+    "id": "workshop-e9ec4055ff264c05b12a3acd10eb66ff",
+    "card": "Morokei.webp",
+    "thumbnail": "Morokei.webp"
+  },
+  "Lady Thorn": {
+    "id": "workshop-ac57fddccbcb4a0590a911856cd95f5c",
+    "card": "Lady Thorn.webp",
+    "thumbnail": "Lady Thorn.webp"
+  },
+  "Mannimarco, King of Worms": {
+    "id": "workshop-6afc0c0c48ed4007b217b465cd603cbb",
+    "card": "Mannimarco, King of Worms.webp",
+    "thumbnail": "Mannimarco, King of Worms.webp"
+  },
+  "M'aiq the Liar": {
+    "id": "maiq-the-liar",
+    "card": "M'aiq the Liar.webp",
+    "thumbnail": "M'aiq the Liar.webp"
+  }
+}

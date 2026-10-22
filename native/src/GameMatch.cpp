@@ -24,8 +24,8 @@ bool GameApp::ruleRequestModal(){
     if(!ImGui::IsPopupOpen("Rule request"))ImGui::OpenPopup("Rule request");
     ImGui::SetNextWindowPos(frameAt+frameSize*.5f,ImGuiCond_Always,ImVec2(.5f,.5f));ImGui::SetNextWindowSize(extent);
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding,ImVec2(32,36)*scale);
-    if(ImGui::BeginPopupModal("Rule request",nullptr,ImGuiWindowFlags_NoDecoration|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoSavedSettings|ImGuiWindowFlags_NoScrollbar)){
-        const auto at=ImGui::GetWindowPos();surface(at,extent);ImGui::GetWindowDrawList()->AddRect(at,at+extent,palette().accent);
+    if(ImGui::BeginPopupModal("Rule request",nullptr,ImGuiWindowFlags_NoDecoration|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoSavedSettings|ImGuiWindowFlags_NoScrollbar|popupFlags())){
+        const auto at=ImGui::GetWindowPos();surface(at,extent);panelFrame(at,extent);
         float y=at.y+36*scale;
         for(const auto& line:speaker){text(ImVec2(at.x+width/2,y),line,26,palette().accent,0,true);y+=32*scale;}y+=18*scale;
         for(const auto& line:message){text(ImVec2(at.x+width/2,y),line,23,palette().ink,0,true);y+=29*scale;}
@@ -36,8 +36,7 @@ bool GameApp::ruleRequestModal(){
         if(button("accept-rule","Yes",buttons,ImVec2(150,42)*scale,true,ready))answer(true);
         if(ImGui::IsWindowAppearing()){ImGui::SetItemDefaultFocus();ImGui::SetNavCursorVisible(true);}
         if(button("decline-rule","No",buttons+ImVec2(170,0)*scale,ImVec2(150,42)*scale,false,ready))answer(false);
-        // Escape leaves the conversation, as in the original dialogue; it is
-        // not an answer to the rule offer. Wait for the backend after a choice.
+        // Close the offer conversation on Escape.
         const bool back=escapeRequested||ImGui::IsKeyPressed(ImGuiKey_Escape,false)||ImGui::IsKeyPressed(ImGuiKey_GamepadFaceRight,false);escapeRequested=false;
         if(back&&ready){send("close");ruleAnswerPending=true;}
         ImGui::EndPopup();
@@ -74,7 +73,7 @@ void GameApp::lobby(ImVec2 at,ImVec2 size){
     const int fixed=number(c,"fixedWager",-1),affordable=std::max(0,std::min({number(c,"gold"),number(c,"rivalGold"),number(c,"maxWager")}));
     if(fixed<0&&(wager>affordable||!flag(c,"canStake")))wager=0;
     if(!tournamentGame&&!casual&&fixed<0&&number(c,"maxWager")){text(footer+ImVec2(size.x-349*scale,33*scale),"Wager",17,palette().muted);ImGui::SetCursorScreenPos(footer+ImVec2(size.x-290*scale,23*scale));ImGui::SetNextItemWidth(110*scale);
-        std::vector<std::string> amounts;std::vector<int> values;int chosen=0;for(int value:{0,5,10,25,50,100,200})if(value<=affordable){if(wager==value)chosen=int(values.size());values.push_back(value);amounts.push_back(std::to_string(value)+" gold");}
+        std::vector<std::string> amounts;std::vector<int> values;int chosen=0;for(int value:ttcg::wagerAmounts)if(value<=affordable){if(wager==value)chosen=int(values.size());values.push_back(value);amounts.push_back(std::to_string(value)+" gold");}
         ImGui::BeginDisabled(!flag(c,"canStake"));if(select("##wager",chosen,amounts,125*scale))wager=values[chosen];ImGui::EndDisabled();}
     else if(!tournamentGame&&!casual&&fixed>0)text(footer+ImVec2(size.x-350*scale,33*scale),"Wager: "+std::to_string(fixed)+" gold",17,palette().muted);
     const bool complete=std::all_of(collection.deck.begin(),collection.deck.end(),[](auto id){return id!=0;});
@@ -96,7 +95,8 @@ void GameApp::place(int hand,int square){
 void GameApp::groupModal(){
     if(groupHand<0)return;if(!ImGui::IsPopupOpen("Choose group"))ImGui::OpenPopup("Choose group");
     ImGui::SetNextWindowPos(ImGui::GetIO().DisplaySize*.5f,ImGuiCond_Always,ImVec2(.5f,.5f));ImGui::SetNextWindowSize(ImVec2(460*scale,0));ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding,ImVec2(25,25)*scale);
-    if(ImGui::BeginPopupModal("Choose group",nullptr,ImGuiWindowFlags_NoDecoration|ImGuiWindowFlags_AlwaysAutoResize)){
+    if(ImGui::BeginPopupModal("Choose group",nullptr,ImGuiWindowFlags_NoDecoration|ImGuiWindowFlags_AlwaysAutoResize|popupFlags())){
+        popupSurface();
         textBlock(number(state,"rules")&128?"Choose the Legion group":"Choose the Decimation group",400*scale,25,palette().accent);ImGui::Dummy(ImVec2(0,15*scale));
         for(int g:groupChoices){auto p=ImGui::GetCursorScreenPos();if(button(("group"+std::to_string(g)).c_str(),ttcg::creatureGroups[g].data(),p,ImVec2(400,40)*scale)){
                 send("play",std::to_string(groupHand)+" "+std::to_string(groupSquare)+" "+std::to_string(g));groupHand=-1;ImGui::CloseCurrentPopup();break;}}
@@ -109,7 +109,8 @@ std::pair<ImVec2,ImVec2> GameApp::table(const Json& data,ImVec2 at,ImVec2 size,b
         if(identity!=demoIdentity||number(demoAnimation,"step",-1)!=number(data,"step")){
             Json next=data;next["session"]=std::hash<std::string>{}(identity);next["revision"]=number(data,"step");next["phase"]="match";
             next["settling"]=identity==demoIdentity&&number(data,"step")==number(demoAnimation,"step",-2)+1;
-            for(auto& stage:next["stages"])stage["label"]=ttcg::captureLabel(number(stage,"rule"));
+            ttcg::CaptureAnnouncements announcements;
+            for(auto& stage:next["stages"])stage["label"]=announcements.next(number(stage,"rule"));
             demoPresentation.begin(next,ImGui::GetTime(),demoAnimation);demoAnimation=std::move(next);demoIdentity=identity;
         }
         if(liveLesson&&demoPresentation.pending(demoAnimation))ruleSounds(demoAnimation,demoPresentation);
@@ -124,7 +125,7 @@ std::pair<ImVec2,ImVec2> GameApp::table(const Json& data,ImVec2 at,ImVec2 size,b
     const bool playerTurn=demo?number(data,"hand",-1)>=0:number(state,"turn")==0;
     const float gap=10*scale,boardH=size.y-55*scale,tileH=(boardH-2*gap-22*scale)/3,tileW=tileH*.75f,boardW=3*tileW+2*gap+22*scale;
     const ImVec2 boardAt=at+ImVec2((size.x-boardW)/2,45*scale);auto* d=ImGui::GetWindowDrawList();
-    const int defaults[]{3,2,5,4,6};const int configuredSurface=std::clamp(number(member(state,"settings"),"boardSurface"),0,6),surface=configuredSurface?configuredSurface:defaults[theme];
+    const int configuredSurface=std::clamp(number(member(state,"settings"),"boardSurface"),0,6),surface=configuredSurface?configuredSurface:ttcg::interfaceThemes[theme].boardSurface;
     struct BoardColours{ImU32 edge,grid,mark,cell;};
     constexpr BoardColours colours[]{
         {IM_COL32(146,151,132,119),IM_COL32(210,216,197,33),IM_COL32(203,209,186,82),IM_COL32(255,255,255,3)},
@@ -134,9 +135,11 @@ std::pair<ImVec2,ImVec2> GameApp::table(const Json& data,ImVec2 at,ImVec2 size,b
         {IM_COL32(169,154,133,130),IM_COL32(201,185,164,43),IM_COL32(186,170,143,82),IM_COL32(10,4,3,16)},
         {IM_COL32(196,158,105,140),IM_COL32(226,193,144,56),IM_COL32(211,182,136,82),IM_COL32(31,17,10,21)}
     };const auto boardColour=colours[surface-1];
-    boardSurface(surface,boardAt,ImVec2(boardW,boardH));d->AddRect(boardAt,boardAt+ImVec2(boardW,boardH),boardColour.edge);d->AddRect(boardAt-ImVec2(5,5)*scale,boardAt+ImVec2(boardW,boardH)+ImVec2(5,5)*scale,boardColour.edge);
+    boardSurface(surface,boardAt,ImVec2(boardW,boardH));d->AddRect(boardAt,boardAt+ImVec2(boardW,boardH),boardColour.edge);
+    if(palette().frame==FrameStyle::Classic)d->AddRect(boardAt-ImVec2(5,5)*scale,boardAt+ImVec2(boardW,boardH)+ImVec2(5,5)*scale,boardColour.edge);
     const char* materials[]{"","","slate","fine","paper","leather","wood"};
     if(surface!=1&&face.grain>0){auto texture=assets.get(std::string("../assets/themes/")+materials[surface]+".png");d->AddImage(texture.id,boardAt,boardAt+ImVec2(boardW,boardH),ImVec2(0,0),ImVec2(1,1),IM_COL32(255,255,255,int(face.grain*255*.75f)));}
+    if(palette().frame!=FrameStyle::Classic)panelFrame(boardAt-ImVec2(5,5)*scale,ImVec2(boardW,boardH)+ImVec2(10,10)*scale);
     const float handArea=(size.x-boardW)/2-30*scale;
     const bool stack=demo;const float hw=std::min(stack?handArea*.70f:(handArea-gap)/2,tileW*.84f),hh=hw/.75f;
     const float handY=at.y+55*scale+(boardH-(stack?hh*2.15f:hh*3+2*gap))*.5f;
@@ -168,8 +171,7 @@ std::pair<ImVec2,ImVec2> GameApp::table(const Json& data,ImVec2 at,ImVec2 size,b
             const int forced=number(data,"forcedHand",-1);const bool selectable=!busy&&player==0&&playerTurn&&(forced<0||forced==h)&&(!demo||staticDemo||number(data,"hand",-1)==h);
             ImGui::PushID(player*5+h);
             ImVec2 hitAt=pos,hitSize(hw,stack&&h<4&&h!=number(data,"hand",-1)?hh*.29f:hh);
-            // The raised tutorial card also owns the covered input area. Merely
-            // drawing it last would leave earlier, hidden cards catching clicks.
+            // Reserve the raised tutorial card’s input area.
             if(stack&&player==0&&target>=0&&h>target){hitAt.y=std::max(pos.y,handY+target*hh*.29f+hh);hitSize.y=pos.y+hitSize.y-hitAt.y;}
             ImGui::SetCursorScreenPos(hitAt);const bool hittable=hitSize.y>0;
             const bool hit=hittable&&ImGui::InvisibleButton("hand",hitSize,ImGuiButtonFlags_EnableNav);

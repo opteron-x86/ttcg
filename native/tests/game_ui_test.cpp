@@ -38,7 +38,37 @@ int main(int argc,char** argv){
       const auto click=[&](std::string label,int ordinal=0,int mouse=0){ImVec2 p;bool found=false;for(const auto& h:hits)if(matches(h,label)&&ordinal--==0){p=h.bounds.GetCenter();found=true;break;}if(!found){for(const auto& h:hits)std::cerr<<h.window<<"/"<<h.label<<'\n';throw std::runtime_error("Missing interactive item: "+label);}
         clickAt(p,mouse);};
       const auto command=[&](std::string prefix){return std::any_of(commands.begin(),commands.end(),[&](const auto& c){return c.starts_with(prefix);});};
-      for(auto page:{"cards","decks","journal","rules","tournaments","appearance","match-appearance","controls","gameplay","developer"}){load(page==std::string("tournaments")?"tournaments":"album",page);for(int theme=0;theme<5;++theme){auto s=app.snapshot();s["settings"]["theme"]=theme;app.receive(s.dump());frame();}}
+      for(auto page:{"cards","decks","journal","rules","tournaments","appearance","match-appearance","controls","gameplay","developer"}){load(page==std::string("tournaments")?"tournaments":"album",page);for(int theme=0;theme<ttcg::interfaceThemeCount;++theme){auto s=app.snapshot();s["settings"]["theme"]=theme;app.receive(s.dump());frame();}}
+      // Theme selection must reach the persisted settings command, not only
+      // change the desktop preview. Each new choice is reached through the menu.
+      for(int theme=5;theme<ttcg::interfaceThemeCount;++theme){
+        load("album","appearance");click("##theme");click(std::string(ttcg::interfaceThemes[theme].name));
+        require(command("settings ")&&commands.back().ends_with("theme "+std::to_string(theme)),"Theme selection did not submit its saved index");
+        auto s=app.snapshot();s["settings"]["theme"]=theme;app.receive(s.dump());frame();frame();
+        require(preview::GameTestAccess::theme(app)==theme,"New theme was clamped to an older theme");
+        for(ImWchar glyph:{0x2190,0x2191,0x2192,0x2193,0x266a})require(preview::GameTestAccess::interfaceFont(app)->IsGlyphInFont(glyph),"Theme font is missing navigation or music symbols");
+      }
+      // Theme backgrounds and board materials have independent caches. Adding
+      // a theme must not overwrite an existing board texture or upload per frame.
+      load("match");
+      for(int theme=0;theme<ttcg::interfaceThemeCount;++theme){
+        auto s=app.snapshot();s["settings"]["theme"]=theme;
+        for(int material=0;material<=6;++material){s["settings"]["boardSurface"]=material;app.receive(s.dump());frame();}
+      }
+      {
+        std::vector<ImTextureID> textures;
+        for(const auto& texture:preview::GameTestAccess::themeSurfaces(app)){
+            require(texture.id&&texture.width==1024&&texture.height==768,"Theme background was replaced by a board material");textures.push_back(texture.id);
+        }
+        for(const auto& texture:preview::GameTestAccess::boardSurfaces(app)){
+            require(texture.id&&texture.width==512&&texture.height==512,"Board material was replaced by a theme background");textures.push_back(texture.id);
+        }
+        std::sort(textures.begin(),textures.end());require(std::adjacent_find(textures.begin(),textures.end())==textures.end(),"Theme and board textures overlap");
+        const auto uploads=renderer.id;frame();frame();require(renderer.id==uploads,"Unchanged theme uploads textures every frame");
+        auto s=app.snapshot();s["settings"]["interfaceFont"]=3;app.receive(s.dump());frame();const auto chosen=preview::GameTestAccess::interfaceFont(app);
+        for(int theme=5;theme<ttcg::interfaceThemeCount;++theme){s["settings"]["theme"]=theme;app.receive(s.dump());frame();require(preview::GameTestAccess::interfaceFont(app)==chosen,"Theme replaces an explicit font choice");}
+        s["settings"]["theme"]=999;app.receive(s.dump());frame();require(preview::GameTestAccess::theme(app)==0,"Invalid theme does not fall back to Tessera");
+      }
       // Saved appearance values flow through the real hand/board renderer.
       load("match");{
         auto s=app.snapshot();s["settings"]["opponentTreatment"]=2;s["settings"]["opponentStrength"]=65;
@@ -272,8 +302,45 @@ int main(int argc,char** argv){
       load("final-c0-r3");click("upgrade");require(command("tournament "),"Foil victory selection unavailable");require(commands.back().find(" foil ")!=std::string::npos,"Wrong reward command");
       load("final-c2-r3");click("leave-tournament");require(!command("tournament "),"Unused foil upgrades forfeited without confirmation");click("cancel");require(!command("tournament "),"Cancel forfeited upgrades");
       load("pack");auto identical=app.snapshot();app.receive(identical.dump());frame();click("pack-continue");frame();app.receive(identical.dump());frame();require(std::none_of(hits.begin(),hits.end(),[](const auto& h){return h.label=="pack-continue";}),"Dismissed pack reopened on identical snapshot");
+      // Preparing a reopened window clears the receipt's cards but keeps the
+      // pack sequence number. It must not turn into an empty receipt after reset.
+      for(const auto* kind:{"standard","tournament"}){
+        auto receipt=read("pack");receipt["collection"]["revealKind"]=kind;
+        app.reset();app.receive(receipt.dump());frame(2.f);frame();
+        require(std::count_if(hits.begin(),hits.end(),[](const auto& h){return h.label=="revealed-card";})==5,"Pack receipt lost its cards");
+        const auto owned=app.snapshot()["collection"]["owned"];
+        click("pack-continue");
+        auto reopened=receipt;reopened["session"]=preview::number(receipt,"session")+1;
+        reopened["collection"]["revealed"]=preview::Json::array();reopened["collection"]["revealKind"]="";
+        for(const auto* screen:{"album","lobby","album"}){
+          reopened["screen"]=screen;app.reset();app.receive(reopened.dump());frame();frame();
+          require(!ImGui::GetTopMostPopupModal(),"Reopening Tessera after a pack creates an empty modal");
+          require(app.snapshot()["collection"]["owned"]==owned,"Dismissing a receipt changes card ownership");
+        }
+        receipt["session"]=reopened["session"];receipt["collection"]["revealID"]=receipt["collection"]["revealID"].get<std::uint64_t>()+1;
+        app.receive(receipt.dump());frame(2.f);frame();
+        require(std::count_if(hits.begin(),hits.end(),[](const auto& h){return h.label=="revealed-card";})==5,"A later pack no longer reveals its cards");
+        app.receive(reopened.dump());frame();frame();
+        require(!ImGui::GetTopMostPopupModal(),"Clearing pack contents leaves an empty modal open");
+      }
       for(auto name:{"opening","multi-1","combo-1","final-c2-r3-animation"}){
         load(name);auto s=app.snapshot();commands.clear();for(int i=0;i<70;++i){if(i==3)app.receive(s.dump());frame(.1f);}int settled=0;for(const auto& c:commands)if(c.starts_with("settled "))++settled;require(settled==1,"Presentation did not acknowledge exactly once");
+      }
+      load("combo-0");{
+        auto next=read("combo-1");commands.clear();app.receive(next.dump());frame();
+        const auto& clock=preview::GameTestAccess::clock(app);
+        require(next["stages"][1]["label"]=="Combo"&&next["stages"][2]["label"]=="","Combo should announce once across both capture waves");
+        require(std::abs(clock.duration-clock.stageStarts[2]-.4)<.001,"A later Combo wave adds an unnecessary announcement pause");
+        for(int i=0;i<50;++i){if(i==5)app.receive(next.dump());frame(.1f);}
+        require(std::count_if(commands.begin(),commands.end(),[](const auto& c){return c.starts_with("rule ")&&c.ends_with(" combo");})==1,"Combo sound repeated across waves or a snapshot refresh");
+        // Passive modifier stages remain in snapshots, with no announcement or
+        // extra delay before the next capture. Capture masks still animate.
+        next["revision"]=preview::number(next,"revision")+1;
+        next["stages"]=preview::Json::array({{{"label",""},{"highlights",16},{"captures",0}},{{"label",""},{"highlights",0},{"captures",16}}});
+        commands.clear();app.receive(next.dump());frame();
+        require(std::abs(preview::GameTestAccess::clock(app).duration-.4)<.001,"A silent strength change delays its capture");
+        for(int i=0;i<10;++i)frame(.1f);
+        require(std::none_of(commands.begin(),commands.end(),[](const auto& c){return c.starts_with("rule ");}),"A silent strength change still announces a sound");
       }
       load("album","rules");std::ifstream rules(o.tesseraRoot/"TesseraUI/rules.json");preview::Json reference;rules>>reference;
       require(!reference.at("demos").contains("hidden"),"Hidden hands must not be a separate rule demonstration");
@@ -302,9 +369,14 @@ int main(int argc,char** argv){
       }
       for(const auto [width,height]:std::array<std::pair<int,int>,4>{{{1280,720},{1440,900},{3440,1440},{3840,2160}}}){
         io.DisplaySize=ImVec2(width,height);
-        for(auto page:{"cards","decks","rules","appearance","match-appearance","journal","tournaments"}){load(page==std::string("tournaments")?"tournaments":"album",page);auto s=app.snapshot();for(int percentage:{60,95,100}){s["settings"]["windowSize"]=percentage;app.receive(s.dump());frame();frame();}}
+        for(auto page:{"cards","decks","rules","appearance","match-appearance","journal","tournaments"}){
+          load(page==std::string("tournaments")?"tournaments":"album",page);auto s=app.snapshot();
+          for(int theme:{0,5,6,7})for(int percentage:{60,95,100}){
+            s["settings"]["theme"]=theme;s["settings"]["windowSize"]=percentage;app.receive(s.dump());frame();frame();
+          }
+        }
         load("opening");for(int i=0;i<60;++i)frame(.1f);load("trade");frame();
-        for(int theme=0;theme<5;++theme){auto s=ruleOffer();s["settings"]["theme"]=theme;app.receive(s.dump());frame();frame();
+        for(int theme=0;theme<ttcg::interfaceThemeCount;++theme){auto s=ruleOffer();s["settings"]["theme"]=theme;app.receive(s.dump());frame();frame();
           const auto* popup=ImGui::GetTopMostPopupModal();require(popup&&ImRect(ImVec2(0,0),io.DisplaySize).Contains(popup->Rect()),"Rule dialogue leaves the viewport");
           for(const auto& h:hits)if(h.window=="Rule request")require(popup->Rect().Contains(h.bounds),"Rule dialogue clips a choice");}
       }
@@ -312,6 +384,6 @@ int main(int argc,char** argv){
       for(const auto& entry:std::filesystem::directory_iterator(argv[2]))if(entry.path().extension()==".json"){load(entry.path().stem().string());frame();}
       require(app.missingAssets()==0,"Native screens reference missing artwork");
     }
-    ImGui::DestroyContext();std::cout<<"PASS: production native screens, five themes, input commands, settings modifiers, tournament victories, pack receipts and revision-bound animation acknowledgements ("<<frames<<" frames)\n";return 0;
+    ImGui::DestroyContext();std::cout<<"PASS: production native screens, eight themes, input commands, settings modifiers, tournament victories, pack receipts and revision-bound animation acknowledgements ("<<frames<<" frames)\n";return 0;
  }catch(const std::exception& e){std::cerr<<"FAIL: "<<e.what()<<'\n';return 1;}
 }

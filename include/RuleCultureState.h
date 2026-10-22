@@ -60,8 +60,7 @@ template<class Get> bool decodeRuleCulture(Get get,RuleCultureState& c,bool lega
  else if(p.hold||p.opponent||p.rules||p.rule||p.roll||p.driftRoll||p.driftSeed||p.started)return false;
  return true;
 }
-// Appended in collection format 31; older collections start their calendars
-// on the next world update without altering existing hold terms or trials.
+// Initialize regional rule calendars when their saved state is empty.
 inline void encodeRegionalCalendars(std::vector<std::uint32_t>& out,const RuleCultureState& c){
  out.push_back(c.regions.size());
  for(const auto& [hold,r]:c.regions){
@@ -70,7 +69,8 @@ inline void encodeRegionalCalendars(std::vector<std::uint32_t>& out,const RuleCu
   out.insert(out.end(),r.tradeProtection.begin(),r.tradeProtection.end());
  }
 }
-template<class Get> bool decodeRegionalCalendars(Get get,RuleCultureState& c){
+template<class Get> bool decodeRegionalCalendars(Get get,RuleCultureState& c,unsigned ruleCount=ruleFlags.size()){
+ if(ruleCount>ruleFlags.size())return false;
  const auto count=get();if(count!=c.regions.size())return false;
  unsigned previous=0;
  for(unsigned n=0;n<count;++n){
@@ -79,7 +79,7 @@ template<class Get> bool decodeRegionalCalendars(Get get,RuleCultureState& c){
   if(r.nextRuleChange>regionalClockLimit||r.nextTradeChange>regionalClockLimit||r.deferred>3)return false;
   if(bool(r.nextRuleChange)!=bool(r.nextTradeChange)||bool(r.nextRuleChange)!=bool(r.ruleRandom)||bool(r.nextRuleChange)!=bool(r.tradeRandom))return false;
   if(r.deferred&&!r.nextRuleChange)return false;
-  for(auto& until:r.ruleProtection){until=get();if(until>regionalClockLimit||(!r.nextRuleChange&&until))return false;}
+  for(unsigned i=0;i<ruleCount;++i){auto& until=r.ruleProtection[i];until=get();if(until>regionalClockLimit||(!r.nextRuleChange&&until))return false;}
   for(auto& until:r.tradeProtection){until=get();if(until>regionalClockLimit||(!r.nextTradeChange&&until))return false;}
  }
  return true;

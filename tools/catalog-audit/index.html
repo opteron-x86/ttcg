@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Tessera catalog audit: creature groups, tiers, rarity, acquisition and card-by-card balance review.">
+<title>Tessera · Catalog audit</title>
+<style>/* AUDIT_CSS */</style>
+</head>
+<body>
+<header class="masthead">
+ <a class="brand" href="card-library.html">TESSERA</a>
+ <span class="edition">CATALOG STUDY <span>01</span></span>
+ <div class="header-actions"><a href="catalog-template-builder.html">Template builder ↗</a><a href="expansion-editor.html">Expansion workshop ↗</a><a href="tournament-and-catalog-plan.md">Development plan ↗</a><button id="export-review">Export review</button><button id="import-review">Import</button><input id="import-file" type="file" accept=".json,application/json" hidden></div>
+</header>
+<main>
+ <section class="intro">
+  <div><p class="eyebrow">Collection &amp; balance</p><h1>Catalog audit</h1><p class="lede">Explore gaps in the collection and review proposed card changes.</p></div>
+  <div class="snapshot"><span class="status-dot"></span> Current catalog <span id="snapshot-id"></span><small>Proposals stay in this review. Card data is unchanged.</small></div>
+ </section>
+ <div id="status" class="notice" role="status" hidden></div>
+ <div class="stats" id="stats"></div>
+ <div class="view-bar">
+  <nav aria-label="Audit views"><button data-view="overview" aria-pressed="true">Overview</button><button data-view="grouping" aria-pressed="false">18-group proposal</button><button data-view="explorer" aria-pressed="false">Card explorer</button><button data-view="notebook" aria-pressed="false">Review notebook <span id="review-count">0</span></button><button data-view="method" aria-pressed="false">How to read this</button></nav>
+  <label class="scope-label">Show <select id="scope" aria-label="Catalog scope"><option value="all">All cards</option><option value="released">Released flag</option><option value="trophy">Tournament trophies</option><option value="standard">Standard pack pool</option><option value="tournament">Tournament pack pool</option><option value="opponent">NPC collections</option><option value="merchant">Card merchant stock</option><option value="pending">Unfinished Dragon / God</option><option value="none">No acquisition route</option></select></label>
+ </div>
+ <section id="overview" class="view">
+  <div class="section-heading"><div><h2>Where to look first</h2><p>Review signals, not automatic balance verdicts.</p></div><span id="scope-count" class="muted"></span></div>
+  <div class="findings" id="findings"></div>
+  <div class="distribution-grid">
+   <section class="panel"><div class="panel-heading"><div><h2>Creature groups × tier</h2><p>Click a count to inspect those cards.</p></div><select id="group-sort" aria-label="Sort creature groups"><option value="size">Largest groups</option><option value="small">Smallest groups</option><option value="name">Alphabetical</option></select></div><div class="heat-scroll" id="group-matrix"></div><p class="footnote">A multi-group card counts in each of its groups. Empty cells can be intentional.</p></section>
+   <section class="panel"><div class="panel-heading"><div><h2>Rarity × tier</h2><p>Distinct identities, not drop rates.</p></div></div><div class="table-scroll" id="rarity-matrix"></div><div class="rarity-legend"><span class="Common">Common</span><span class="Rare">Rare</span><span class="Epic">Epic</span><span class="Legendary">Legendary</span></div></section>
+  </div>
+  <div class="distribution-grid secondary">
+   <section class="panel"><div class="panel-heading"><div><h2>Pack coverage</h2><p>Can each possible roll still produce distinct cards?</p></div><select id="pack-kind" aria-label="Pack type"><option value="tournament">Tournament pack</option><option value="standard">Standard pack</option></select></div><div id="pack-report"></div></section>
+   <section class="panel"><div class="panel-heading"><div><h2>Side-value budgets</h2><p>Current weighted cost by tier.</p></div></div><div id="cost-chart"></div><p class="footnote">Strong edges cost more: 7 → 9, 8 → 13, 9 → 18, A → 24. This is the existing rank policy, not a match win rate.</p></section>
+  </div>
+ </section>
+ <section id="grouping" class="view" hidden>
+  <div class="section-heading"><div><p class="eyebrow">Implemented roster</p><h2>Eighteen groups</h2><p>One gameplay group per card. Ancestry, species and other identities remain descriptive tags.</p></div><a href="catalog-consolidation-proposal.md">Read the proposal ↗</a></div>
+  <p class="grouping-evidence" id="grouping-evidence"></p>
+  <section class="panel"><div class="panel-heading"><div><h2>Groups and current tiers</h2><p>The imported standard rosters and unfinished superior candidates. Click a count to see the artwork.</p></div></div><div class="heat-scroll" id="grouping-matrix"></div><p class="footnote">Targets are working roster ranges. God has no size target. Printed ranks, rarity, tiers and acquisition still show the current catalog.</p></section>
+  <details class="grouping-curves"><summary>Suggested tier and rarity curves</summary><p class="muted">Ordinary groups start with five cards per tier in I–VII: three Common, one Rare, one Epic. VIII–IX hold Legendary uniques. The 40-slot starting template can be edited in the roster workshop. Dragon retains its 18-card curve; God uses Legendary uniques in IX–X. These are roster counts, not pack probabilities.</p><div class="distribution-grid"><section class="panel"><h3>Ordinary group</h3><div class="heat-scroll" id="ordinary-curve"></div></section><section class="panel"><h3>Dragon</h3><div class="heat-scroll" id="dragon-curve"></div></section></div></details>
+  <div class="filters grouping-filters" id="grouping-filters">
+   <label class="search">Find a proposed assignment<input type="search" id="grouping-search" placeholder="Card, subtype or review note" autocomplete="off"></label>
+   <label>Proposed group<select id="grouping-group"><option value="">All groups</option><option value="__none">Unassigned</option></select></label>
+   <label>Review<select id="grouping-action"><option value="changes">Changes and unresolved cases</option><option value="">All cards</option><option value="regroup">Group change</option><option value="rework">Tier / rarity review</option><option value="review">Boundary review</option><option value="retire">Retirement candidate</option><option value="retain">Group retained</option></select></label>
+   <label>Current tier<select id="grouping-tier"><option value="">All tiers</option></select></label>
+  </div>
+  <div class="catalog-toolbar"><span id="grouping-summary"></span><button id="grouping-reset" class="quiet">Reset filters</button><button id="grouping-export" class="quiet">Export selection CSV</button></div>
+  <div id="grouping-grid" class="catalog-grid"></div><p id="grouping-empty" class="empty" hidden>No cards match this proposed assignment.</p>
+  <div class="pagination"><button id="grouping-previous">← Previous</button><span id="grouping-page"></span><button id="grouping-next">Next →</button></div>
+ </section>
+ <section id="explorer" class="view" hidden>
+  <div class="section-heading"><div><h2>Card explorer</h2><p id="explorer-summary"></p></div><button id="export-csv" class="quiet">Export this selection</button></div>
+  <div class="filters">
+   <label class="search">Find a card<input id="search" type="search" placeholder="Name, creature, affinity or opponent…" autocomplete="off"></label>
+   <label>Creature group<select id="group"><option value="">All groups</option></select></label>
+   <label>Tier<select id="tier"><option value="">All tiers</option></select></label>
+   <label>Rarity<select id="rarity"><option value="">All rarities</option></select></label>
+   <label>Review signal<select id="signal"><option value="">All cards</option><option value="no-route">No acquisition route</option><option value="small-group">Small creature group</option><option value="shared-layout">Shared side layout</option><option value="rarity-overlap">Same layout, other rarity</option><option value="stronger-layout">Stronger peer layout</option><option value="pack-shortfall">Sparse pack bucket</option><option value="rank-policy">Outside rank policy</option></select></label>
+  </div>
+  <div class="catalog-toolbar"><button id="reset-filters" class="quiet">Clear filters</button><label class="checkbox"><input id="show-ranks" type="checkbox" checked> Show side values</label><label class="sort-label">Sort <select id="sort"><option value="tier">Tier, then name</option><option value="name">Name</option><option value="cost">Weighted cost ↓</option><option value="basic">Basic edge wins ↓</option><option value="reverse">Reverse edge wins ↓</option><option value="holders">Fewest NPC holders</option></select></label></div>
+  <div id="catalog-grid" class="catalog-grid"></div><p id="empty" class="empty" hidden>No cards match this selection. An empty tier or group can be the gap you came to inspect.</p>
+  <div class="pagination"><button id="previous-page">← Previous</button><span id="page-count"></span><button id="next-page">Next →</button></div>
+ </section>
+ <section id="notebook" class="view" hidden>
+  <div class="section-heading"><div><h2>Your review</h2><p>Saved in this browser. Export a copy to keep or share your proposals.</p></div></div>
+  <div id="review-list"></div>
+  <div class="section-heading brief-heading"><div><p class="eyebrow">Remaining work</p><h2>Superior rosters</h2><p>Dragon and God are preserved for the next workshop pass.</p></div></div>
+  <div id="briefs" class="briefs"></div>
+ </section>
+ <section id="method" class="view reading" hidden>
+  <p class="eyebrow">Reading the evidence</p><h2>What this audit measures</h2>
+  <p>The charts describe the current catalog. Changing the scope changes the distribution charts and explorer. Pack coverage always examines the complete eligible pack pool; filtering the catalog does not change what a pack contains.</p>
+  <h3>Acquisition is separate from the released flag</h3><p>Routes include starter grants, authored NPC collections, standard packs, tournament packs, individual-card merchants and tournament trophy candidacy. Merchants generate ordinary tier I–VII cards; player-sold uniques are resale only. Trophy candidates have the released flag turned off in the catalog but can already be awarded by tournaments. A candidate is not guaranteed to appear: reputation, the event class, world access, deaths and existing ownership can restrict it. NPC collections describe starting ownership, before trades or replenishment.</p>
+  <p>Acquisition prose such as “caravan traders” is displayed as an unimplemented note when it has no corresponding route. Development grants and arbitrary console additions are excluded.</p>
+  <h3>Stronger layouts and shared layouts</h3><p>A stronger peer has the same tier, no lower printed side in any position, and at least one higher side. Cards are not rotated. Creature groups, affinities, rarity and access may make the apparently weaker layout useful; Reverse changes the preference and Same/Plus reward particular numbers. Identical printed layouts do not mean identical cards. These flags are prompts for review, not removal recommendations.</p>
+  <h3>Edge comparisons are not match simulations</h3><p>Each card is compared with every other identity in its tier, over the four opposing directions. Basic counts strictly larger sides, Reverse strictly smaller sides, and equal sides count as neither. All peers, including trophy candidates, are weighted equally. These figures ignore board position, hand construction, starting player, Affinity, Legion, Decimation and combos. They must not be read as game win rates.</p>
+  <p>Same/Plus candidates are shown through their printed layouts and the existing profile roles. Legion and Decimation activate when the third card of a creature group is placed, then modify that group by one. Catalog size measures options, not trigger probability in a played hand. Full-match simulations, including the six planned rules, belong to the later balance phase.</p>
+  <h3>Pack coverage</h3><p>Standard packs contain four Commons and a premium slot. An upgrade can move one slot into tiers IV–VI. Tournament packs roll five tier III–VII identities: 30% Common, 45% Rare and 25% Epic, with a 5% foil chance per card. The standard premium slot is 96.5% Rare and 3.5% Epic. Legendary uniques come from opponents and trophies. Each pack excludes repeated identities. A bucket with fewer identities than the maximum possible draws can run out during generation. The listed average draws are nominal roll expectations before duplicate exclusions and failures, not measured output odds. Unfinished superior candidates are excluded from packs, opponents and trophies.</p>
+  <h3>Review proposals</h3><p>Tier describes a strength band. The roster workshop gives Rare and Epic cards stronger placements, added strength or a standout edge within that band. Creature groups support coherent play; foil is cosmetic. Proposals do not modify the source catalog or recalculate these baseline charts. Exported reviews include the original values and catalog fingerprint. Imports merge proposals, replacing matching card IDs, and reject a different source snapshot so old decisions cannot silently overwrite a changed catalog.</p>
+  <p>The template builder checks ranks against the existing Python validator, including peak-side restrictions, and shows projected roster counts. This audit continues to describe the current catalog. Its review form reports the weighted budget; the Python validator remains authoritative for all profile restrictions.</p>
+  <h3>Sources and rebuild</h3><p><a href="catalog-audit-data.json">Download the audit data</a> · <a href="tournament-and-catalog-plan.md">Development plan</a> · <a href="card-lore-review.md">Lore review</a></p>
+  <p>Rebuild with <code>python3 tools/build-catalog-audit.py</code>. Check freshness with <code>python3 tools/build-catalog-audit.py --check</code>. A change to either pack generator requires a review of the audit formulas before rebuilding. Data, styles and scripts are embedded for offline use; keep this file alongside the repository's artwork folders.</p><ul id="source-list"></ul>
+ </section>
+</main>
+<footer><span>Tessera · Catalog audit</span><span>Development reference</span></footer>
+<aside id="compare-tray" class="compare-tray" aria-label="Pinned cards" hidden><span id="pinned-names"></span><button id="open-compare">Compare cards</button><button id="clear-compare" class="quiet">Clear</button></aside>
+<dialog id="detail-dialog" aria-labelledby="detail-title">
+ <div class="dialog-heading"><div><p class="eyebrow">Card study</p><h2 id="detail-title"></h2></div><button class="close-dialog" data-close="detail-dialog" aria-label="Close card study">×</button></div>
+ <div class="detail-layout"><div><div id="detail-art"></div><a id="full-art" target="_blank" rel="noopener">Open full artwork ↗</a></div><div id="detail-facts"></div></div>
+ <div id="related"></div>
+ <form id="proposal-form" class="proposal">
+  <div class="section-heading"><div><h3>Proposed changes</h3><p>Leave the values as they are to record a keep decision or a note.</p></div></div>
+  <div class="proposal-fields"><label>Decision<select id="proposal-decision"><option value="review">Needs review</option><option value="keep">Keep</option><option value="adjust">Adjust</option><option value="retire">Consider retiring</option></select></label><label>Tier<select id="proposal-tier"></select></label><label>Rarity<select id="proposal-rarity"></select></label><label class="proposal-groups">Creature groups<input id="proposal-groups" placeholder="Separate groups with commas" maxlength="300"></label></div>
+  <fieldset class="side-fields"><legend>Printed sides</legend><label>Top<input id="side-0" type="number" min="1" max="10" required></label><label>Right<input id="side-1" type="number" min="1" max="10" required></label><label>Bottom<input id="side-2" type="number" min="1" max="10" required></label><label>Left<input id="side-3" type="number" min="1" max="10" required></label><output id="draft-cost"></output></fieldset>
+  <label>Reason / acquisition / art notes<textarea id="proposal-note" rows="3" maxlength="6000" placeholder="What would this change improve?"></textarea></label>
+  <div class="proposal-actions"><button type="submit" class="primary">Save to review</button><button id="remove-proposal" type="button" class="quiet">Remove proposal</button><span id="proposal-feedback" role="status"></span></div>
+ </form>
+</dialog>
+<dialog id="compare-dialog" aria-labelledby="compare-title"><div class="dialog-heading"><div><p class="eyebrow">Side by side</p><h2 id="compare-title">Compare cards</h2></div><button class="close-dialog" data-close="compare-dialog" aria-label="Close comparison">×</button></div><p class="muted">Printed ranks and structural comparisons. Different groups and acquisition can change their value.</p><div id="comparison" class="comparison"></div></dialog>
+<script type="application/json" id="audit-data"><!-- AUDIT_DATA --></script>
+<script>/* AUDIT_JS */</script>
+</body>
+</html>

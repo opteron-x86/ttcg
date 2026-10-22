@@ -2,15 +2,18 @@
 #include "Assets.h"
 #include "Model.h"
 #include "MatchAppearance.h"
+#include "InterfaceTheme.h"
 #include <array>
 
 namespace preview {
+enum class FrameStyle { Classic, Oathvein, Veldun, Norden };
 struct Palette {
     const char* name; ImU32 background, centre, ink, muted, accent, line, selection;
     bool sans;
+    FrameStyle frame = FrameStyle::Classic;
 };
 struct Face {
-    bool classic = false, names = true, foil = true;
+    bool classic = false, names = true, groups = false, foil = true;
     int nameplate = 0, lettering = 0, back = 0;
     float shadowBlur=2, shadowOffset=1;
     float shadow = 0.8f, stroke = 0.6f, foilStrength = 0.72f, grain = 0.10f;
@@ -23,8 +26,9 @@ protected:
     Renderer& renderer;
     Options options;
     Assets assets;
-    ImFont *serif = nullptr, *sans = nullptr, *bold = nullptr;
-    std::array<Texture,11> surfaces{};
+    ImFont *serif = nullptr, *sans = nullptr, *bold = nullptr, *jost = nullptr, *lato = nullptr;
+    std::array<Texture,ttcg::interfaceThemeCount> surfaces{};
+    std::array<Texture,6> boardSurfaces{};
     ImFont *preferredFont=nullptr,*cardNameFont=nullptr,*cardValueFont=nullptr;
     std::string customBack="backs/mosaic.webp";
     Filter filter;
@@ -59,7 +63,11 @@ protected:
     void itemTooltip(const std::string& label);
     bool closeButton(const char* id,ImVec2 at);
     void line(ImVec2 a, ImVec2 b, ImU32 colour = 0);
-    void surface(ImVec2 at,ImVec2 size);
+    void surface(ImVec2 at,ImVec2 size,bool main=false);
+    void panelFrame(ImVec2 at,ImVec2 size,bool main=false);
+    void popupSurface();
+    ImGuiWindowFlags popupFlags() const { return palette().frame==FrameStyle::Classic?ImGuiWindowFlags_None:ImGuiWindowFlags_NoBackground; }
+    void controlBorder(ImVec2 at,ImVec2 size,ImU32 colour);
     void boardSurface(int material,ImVec2 at,ImVec2 size);
     ImU32 controlColour(int owner,bool forText=false) const;
     void controlFrame(ImVec2 at,ImVec2 size,int owner);

@@ -4,8 +4,9 @@ Function BuyAlbum(Actor merchant) Global Native
 Function OpenCardShop(Actor merchant) Global Native
 Function OpenTournaments(Actor host) Global Native
 Function OpenAlbum() Global Native
+Function BackgroundUpdate() Global Native
 
-
+; Saved Papyrus stacks may still call these. They do nothing and never scan.
 Actor Function NextMaster() Global Native
 Function MasterArrived(Actor challenger) Global Native
 Function MasterResponse(Actor challenger, Bool accepted) Global Native

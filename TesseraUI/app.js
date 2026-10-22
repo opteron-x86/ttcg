@@ -77,7 +77,7 @@ function reportUIFailure(context,error,snapshot=state) {
 window.addEventListener('error',event=>reportUIFailure('script',event.error||event.message));
 window.addEventListener('unhandledrejection',event=>reportUIFailure('promise',event.reason));
 function tradeRuleText(rule) { return ['None','One','Diff','Direct','All'][rule]||'None'; }
-const ruleDefinitions=[[16,'Open'],[64,'Three Open'],[1,'Same'],[8192,'Same Wall'],[2,'Plus'],[4,'Reverse'],[2048,'Fallen Ace'],[32,'Affinity'],[128,'Legion'],[256,'Decimation'],[512,'Order'],[1024,'Chaos'],[16384,'Swap'],[4096,'Sudden Death']];
+const ruleDefinitions=[[16,'Open'],[64,'Three Open'],[1,'Same'],[8192,'Same Wall'],[2,'Plus'],[4,'Reverse'],[2048,'Fallen Ace'],[32,'Affinity'],[128,'Legion'],[256,'Decimation'],[512,'Order'],[1024,'Chaos'],[16384,'Swap'],[4096,'Sudden Death'],[32768,'Ascension'],[65536,'Descension'],[131072,'Dominion']];
 function rulesText(flags) { return ruleDefinitions.filter(([bit])=>flags&bit).map(([,name])=>name).join(' · '); }
 function playableHand(h){const id=state?.hands?.[0]?.[h];return Number.isInteger(id)&&id>=0&&(state.forcedHand==null||state.forcedHand<0||state.forcedHand===h);}
 function ruleStageLabel(flags){if(flags&8)return 'Combo';return ruleDefinitions.filter(([bit])=>flags&bit).map(([,name])=>name).filter(name=>name!=='Same'||!(flags&8192)).join(' + ');}

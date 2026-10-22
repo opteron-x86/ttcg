@@ -1,0 +1,18 @@
+* text=auto eol=lf
+native/third_party/** -text -whitespace
+*.esp -text
+*.seq -text
+*.pex -text
+*.png -text
+*.jpg -text
+*.webp -text
+*.ttf -text
+*.nif -text
+*.dds -text
+*.wav -text
+*.fuz -text
+*.xwm -text
+cmake/vcpkg-ports/** -whitespace
+docs/licenses/** -whitespace
+native/licenses/** -whitespace
+tests/fixtures/*.txt -whitespace

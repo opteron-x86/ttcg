@@ -37,7 +37,8 @@ void App::packModal() {
     const ImVec2 size(std::min(display.x-68*scale,columns*(232+24)*scale+48*scale),std::min(display.y-90*scale,(rows>1?840:610)*scale));
     ImGui::SetNextWindowPos(display*.5f,ImGuiCond_Always,ImVec2(.5f,.5f));
     ImGui::SetNextWindowSize(size);
-    if(!ImGui::BeginPopupModal("Pack contents",nullptr,ImGuiWindowFlags_NoDecoration|ImGuiWindowFlags_NoMove))return;
+    if(!ImGui::BeginPopupModal("Pack contents",nullptr,ImGuiWindowFlags_NoDecoration|ImGuiWindowFlags_NoMove|popupFlags()))return;
+    popupSurface();
     if(!collection.revealID||!collection.ready){ImGui::CloseCurrentPopup();ImGui::EndPopup();return;}
     const auto at=ImGui::GetWindowPos();
     const float gap=24*scale,w=std::min({232*scale,(size.x-72*scale-(columns-1)*gap)/columns,((size.y-202*scale)/std::max(1,rows)-38*scale)*.75f}),h=w/.75f;

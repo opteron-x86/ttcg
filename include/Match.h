@@ -58,6 +58,24 @@ struct Match {
   selectTurnCard();
  }
  int groupModifier(int card) const {return card>=0&&activeGroup>=0&&(cardGroups[card]&(1ull<<activeGroup))?(rules&Legion?1:rules&Decimation?-1:0):0;}
+ int affinityModifier(int card) const {
+   if(card<0||!(rules&(Ascension|Descension))||!cards[card].affinityMask)return 0;
+   int strongest=0;
+   for(unsigned bit=1;bit<=16;bit<<=1)if(cards[card].affinityMask&bit){
+     int count=0;for(const auto& slot:board)if(slot.card>=0&&(cards[slot.card].affinityMask&bit))++count;
+     strongest=std::max(strongest,std::clamp(count-1,0,2));
+   }
+   return rules&Descension?-strongest:strongest;
+ }
+ int dominionModifier(int card,int square) const {
+   if(card<0||square<0||square>=9||!(rules&Dominion))return 0;
+   const auto own=cardGroups[card];std::uint64_t seen=0;
+   for(int side=0;side<4;++side){const int n=neighbor(square,side);if(n<0||board[n].card<0)continue;
+     const auto outsiders=cardGroups[board[n].card]&~own;
+     if(seen&outsiders)return -1;seen|=outsiders;
+   }
+   return 0;
+ }
  std::vector<int> groupChoices(Move move) const {
    std::vector<int> choices;
    if(activeGroup>=0||!(rules&(Legion|Decimation))||!playableHand(move.hand)||move.square<0||move.square>=9||board[move.square].card>=0)return choices;
@@ -79,8 +97,10 @@ struct Match {
    std::shuffle(tiles.begin(),tiles.end(),rng);
  }
  int modifier(int card,int square) const {
-   if(!(rules&Affinity)||card<0||square<0||square>=9||!tiles[square])return groupModifier(card);
-   return groupModifier(card)+(cards[card].affinityMask&tiles[square]?1:-1);
+   if(card<0)return 0;
+   const int shared=groupModifier(card)+affinityModifier(card)+dominionModifier(card,square);
+   if(!(rules&Affinity)||square<0||square>=9||!tiles[square])return shared;
+   return shared+(cards[card].affinityMask&tiles[square]?1:-1);
  }
  int rank(int card,int square,int side) const { return cards[card].sides[side]+modifier(card,square); }
  explicit Match(std::uint32_t seed=1, unsigned flags=0):rules(flags) {
@@ -158,6 +178,19 @@ struct Match {
    }
    result.legal=true;
    const auto before=board;
+   std::array<int,9> affinityBefore{},dominionBefore{};
+   if(recordStages)for(int s=0;s<9;++s){
+     affinityBefore[s]=affinityModifier(s==m.square?id:board[s].card);
+     dominionBefore[s]=dominionModifier(board[s].card,s);
+   }
+   // The incoming card affects both sides' modifiers before any capture.
+   board[m.square]={id,owner,origins[owner][m.hand]};
+   if(recordStages)for(unsigned rule:{rules&(Ascension|Descension),rules&Dominion})if(rule){
+     CaptureStage stage;stage.rule=rule;
+     for(int s=0;s<9;++s)if(board[s].card>=0&&
+       (rule==Dominion?dominionModifier(board[s].card,s)!=dominionBefore[s]:affinityModifier(board[s].card)!=affinityBefore[s]))stage.highlights|=1u<<s;
+     if(stage.highlights)result.stages.push_back(stage);
+   }
    std::array<bool,9> special{};
    std::array<int,4> neighbors{}, sums{}; neighbors.fill(-1); sums.fill(-1);
    std::array<bool,4> equal{};
@@ -179,7 +212,7 @@ struct Match {
        if(other!=side&&sums[other]==sums[side]) { special[n]=true; result.plus=true; }
    }
    result.sameWall=result.same&&wallMatch;
-   board[m.square]={id,owner,origins[owner][m.hand]};publicOrigins|=1u<<origins[owner][m.hand];used[owner][m.hand]=true; ++placed;
+   publicOrigins|=1u<<origins[owner][m.hand];used[owner][m.hand]=true; ++placed;
    std::vector<int> queue;
    std::array<int,9> depth{};
    CaptureStage normal, specialStage;

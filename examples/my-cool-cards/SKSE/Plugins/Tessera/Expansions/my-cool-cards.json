@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "setId": "my-cool-cards",
+  "name": "My Cool Cards",
+  "cards": [
+    {
+      "id": "high-elf-waifu",
+      "name": "High Elf Waifu",
+      "tier": 2,
+      "rarity": "Rare",
+      "sides": [
+        1,
+        3,
+        5,
+        2
+      ],
+      "groups": [
+        "High Elf"
+      ],
+      "affinities": [
+        "Agility"
+      ],
+      "unique": false,
+      "art": "expansions/my-cool-cards/high-elf-waifu.jpg",
+      "thumbnail": "expansions/my-cool-cards/high-elf-waifu-thumb.webp",
+      "acquisition": {
+        "standardPacks": true,
+        "tournamentPacks": true,
+        "merchants": "all"
+      }
+    },
+    {
+      "id": "dark-elf-waifu",
+      "name": "Dark Elf Waifu",
+      "tier": 3,
+      "rarity": "Epic",
+      "sides": [
+        6,
+        2,
+        4,
+        4
+      ],
+      "groups": [
+        "Dark Elf"
+      ],
+      "affinities": [
+        "Willpower"
+      ],
+      "unique": false,
+      "art": "expansions/my-cool-cards/dark-elf-waifu.jpg",
+      "thumbnail": "expansions/my-cool-cards/dark-elf-waifu-thumb.webp",
+      "acquisition": {
+        "standardPacks": true,
+        "tournamentPacks": true,
+        "merchants": "specialist"
+      }
+    },
+    {
+      "id": "ultimate-waifu",
+      "name": "Ultimate Waifu",
+      "tier": 10,
+      "rarity": "Legendary",
+      "sides": [
+        10,
+        10,
+        10,
+        10
+      ],
+      "groups": [
+        "God"
+      ],
+      "affinities": [
+        "Endurance"
+      ],
+      "unique": true,
+      "art": "expansions/my-cool-cards/ultimate-waifu.jpg",
+      "thumbnail": "expansions/my-cool-cards/ultimate-thumb.webp",
+      "acquisition": {
+        "standardPacks": false,
+        "tournamentPacks": false,
+        "merchants": "none",
+        "tournamentPrizes": ["masters"]
+      }
+    }
+  ]
+}

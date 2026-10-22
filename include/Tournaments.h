@@ -58,9 +58,7 @@ inline unsigned recordTournamentInvitation(CollectionSave& s,unsigned letter,boo
  return 0;
 }
 inline std::vector<unsigned> recoverTournamentInvitations(CollectionSave& s,unsigned letter,unsigned carried,unsigned courierCopies,unsigned hour){
- // Older saves may contain a delivered note whose Papyrus callback failed.
- // Only recover copies missing from the courier's outstanding deliveries;
- // keeping an old invitation must not unlock the next event before delivery.
+ // Reconcile delivered notes with outstanding courier requests.
  const unsigned pending=std::count_if(s.tournaments.events.begin(),s.tournaments.events.end(),[&](const auto& e){return tournamentLetter(e)==letter&&e.invitation==2;});
  unsigned received=std::min(carried,pending>courierCopies?pending-courierCopies:0u);
  std::vector<unsigned> result;
@@ -74,9 +72,6 @@ inline std::vector<unsigned> reconcileTournamentInvitations(CollectionSave& s,un
  for(auto& e:s.tournaments.events)if(e.invitation==1&&tournamentLetter(e)==letter&&courierCopies>queued){
   if(recordTournamentInvitation(s,letter,false,hour,e.id))++queued;
  }
- // Repair the first development invitation stranded by the old clock guard:
- // the note was delivered after time moved back, so dispatch never persisted.
- // A later event sharing this BOOK must still receive its own courier copy.
  if(carried&&!courierCopies&&!queued)for(auto& e:s.tournaments.events){
   if(e.development&&e.invitation==1&&e.announced>hour&&tournamentLetter(e)==letter&&
      std::none_of(s.tournaments.events.begin(),s.tournaments.events.end(),[&](const auto& old){return old.id<e.id&&tournamentLetter(old)==letter;})){
@@ -249,8 +244,7 @@ inline void selectTournamentReward(CollectionSave& s,Tournament& e,std::mt19937&
  }
 }
 inline void refreshTournamentRewards(CollectionSave& s){
- // Reapply the current prize policy to unentered offers from development
- // builds. Keep the event, courier invitation and draw intact.
+ // Update prizes on unentered tournament offers.
  for(auto& e:s.tournaments.events){
   if(e.joined||e.awarded)continue;
   const bool valid=e.reward==Trophy?e.circuit&&cardIndex(e.trophy)>=0&&tournamentTrophy(cards[cardIndex(e.trophy)],e.circuit)&&e.quantity==1:

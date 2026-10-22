@@ -10,8 +10,6 @@ inline void gradientLine(ImDrawList* d,ImVec2 at,float width,ImU32 colour,float 
     d->AddRectFilledMultiColor(at,middle,clear,colour,colour,clear);
     d->AddRectFilledMultiColor(ImVec2(middle.x,at.y),at+ImVec2(width,thickness),colour,clear,clear,colour);
 }
-// Same short directional ornament as .starter-mark: rest at the centre, extend
-// toward the chosen player, then fade before the first-turn announcement.
 inline void drawStarter(ImDrawList* d,ImVec2 at,ImVec2 size,float scale,float progress,int player){
     const float opacity=smooth(progress/.18f)*(1-smooth((progress-.84f)/.16f));
     const float travel=1-std::pow(1-std::clamp((progress-.24f)/.52f,0.f,1.f),3);

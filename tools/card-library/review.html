@@ -1,0 +1,15 @@
+<details class="foil-review" id="foil-review">
+ <summary>Foil review <span>Three finishes · one moving light</span></summary>
+ <div class="review-body">
+  <p class="review-intro">Compare the approved Prismatic finish with two alternatives. Move across any card to tilt all three together, or let the light turn. Try the same finish on dark, bright, and colourful artwork.</p>
+  <div class="review-controls">
+   <label class="review-art-control">Artwork<select id="review-art" aria-label="Artwork for foil comparison"></select></label>
+   <label><span>Foil strength <output id="review-strength-value" for="review-strength">72%</output></span><input id="review-strength" type="range" min="0" max="100" step="1" value="72"></label>
+   <label>Light angle<input id="review-angle" type="range" min="0" max="360" step="1" value="45"></label>
+   <label class="review-details-control"><input id="review-details" type="checkbox" checked>Show card details</label>
+   <button id="review-motion" type="button" aria-pressed="false">Turn light</button>
+  </div>
+  <div class="review-grid" id="review-grid" aria-label="Foil finish comparisons"></div>
+  <div class="review-footer"><p>Tessera · Prismatic is the in-game finish. Use arrow keys on a card to adjust the light; Home restores the starting angle.</p><button id="review-reset" type="button">Reset view</button></div>
+ </div>
+</details>

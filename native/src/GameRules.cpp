@@ -32,7 +32,8 @@ void GameApp::rulesModal(){
     if(!showRuleReference)return;if(!ImGui::IsPopupOpen("Rules"))ImGui::OpenPopup("Rules");
     const auto display=ImGui::GetIO().DisplaySize;const ImVec2 extent=ImVec2(std::min(display.x-35*scale,1260*scale),std::min(display.y-35*scale,880*scale));
     ImGui::SetNextWindowPos(display*.5f,ImGuiCond_Always,ImVec2(.5f,.5f));ImGui::SetNextWindowSize(extent);
-    if(ImGui::BeginPopupModal("Rules",nullptr,ImGuiWindowFlags_NoDecoration)){
+    if(ImGui::BeginPopupModal("Rules",nullptr,ImGuiWindowFlags_NoDecoration|popupFlags())){
+        popupSurface();
         const auto at=ImGui::GetWindowPos()+ImVec2(25,22)*scale;text(at,"Rules",25,palette().accent);
         if(button("close-rules","×",at+ImVec2(extent.x-85*scale,-6*scale),ImVec2(35,36)*scale)||ImGui::IsKeyPressed(ImGuiKey_Escape,false)||ImGui::IsKeyPressed(ImGuiKey_GamepadFaceRight,false)){showRuleReference=false;ImGui::CloseCurrentPopup();}
         line(at+ImVec2(0,41*scale),at+ImVec2(extent.x-50*scale,41*scale));rules(at+ImVec2(0,61)*scale,extent-ImVec2(50,110)*scale);ImGui::EndPopup();

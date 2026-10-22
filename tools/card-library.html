@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Browse the Tessera card library: artwork, ranks, affinities, creature groups and acquisition availability across tiers I–X.">
+<title>Tessera · Card Library</title>
+<style>
+:root{color-scheme:dark;--bg:#111b17;--panel:#1b2821;--ink:#eae2d1;--muted:#b6b3a2;--gold:#d2b77e;--line:#3b4a3e;font-family:system-ui,sans-serif;background:var(--bg);color:var(--ink)}
+*{box-sizing:border-box}body{margin:0}a{color:var(--gold);text-underline-offset:4px}button,input,select{font:inherit;color:inherit;background:var(--panel);border:1px solid #5b6757;border-radius:4px;padding:10px 12px}button{cursor:pointer}button:hover{border-color:var(--gold)}button:disabled{opacity:.4;cursor:default}:focus-visible{outline:2px solid var(--gold);outline-offset:4px}button[aria-pressed=true]{background:#374331;border-color:var(--gold);color:#f5dfad}[hidden]{display:none!important}
+header,main,footer{max-width:1500px;margin:auto;padding:0 32px}header{padding-top:42px;padding-bottom:26px;border-bottom:1px solid var(--line)}.eyebrow{letter-spacing:.26em;text-transform:uppercase;font-size:12px;color:var(--gold);margin:0 0 12px}h1,h2{font-family:Georgia,serif;font-weight:normal}h1{font-size:clamp(36px,5vw,60px);margin:0 0 14px}h2{font-size:30px;margin:0 0 12px}.intro{max-width:740px;color:var(--muted);line-height:1.6;margin:0}nav{display:flex;flex-wrap:wrap;gap:20px;margin-top:22px;font-size:14px}.stats{display:flex;flex-wrap:wrap;gap:28px;margin-top:24px;font-size:13px;color:var(--muted)}.stats strong{color:var(--ink);font-size:20px;font-weight:500;margin-right:5px}
+.filters{display:grid;grid-template-columns:minmax(240px,2fr) repeat(3,minmax(130px,1fr));gap:14px;margin:26px 0 18px}.filters label{display:grid;gap:6px;font-size:12px;color:var(--muted)}input,select{width:100%;min-width:0;font-size:14px}.toolbar,.pagination{display:flex;gap:12px;align-items:center;flex-wrap:wrap;font-size:14px}.toolbar{margin-bottom:22px}.toolbar p{margin:0 auto 0 0;color:var(--muted)}.view-controls{display:flex;gap:5px}.pagination{justify-content:center;padding:30px 0}.pagination span{min-width:110px;text-align:center;color:var(--muted)}#empty{padding:70px 10px;text-align:center;color:var(--muted)}
+.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:24px 20px}.entry{padding:0;border:0;background:transparent;text-align:left;min-width:0}.entry:hover .card{border-color:var(--gold);transform:translateY(-3px)}.card{position:relative;aspect-ratio:3/4;overflow:hidden;border:1px solid #81704e;border-radius:6px;background:#26332b;transition:transform .15s,border-color .15s;font-family:Georgia,serif;isolation:isolate}.card img{width:100%;height:100%;object-fit:cover;display:block}.card::after{content:'';position:absolute;inset:0;box-shadow:inset 0 0 0 4px #151f1799,inset 0 0 28px #0008;pointer-events:none}.rank{position:absolute;font-weight:bold;font-size:clamp(23px,2.5vw,32px);line-height:1;text-shadow:0 2px 3px #000,0 0 5px #000;color:#fff5d9;transform:translate(-50%,-50%);z-index:1}.top{top:9%;left:50%}.right{top:46%;left:90%}.bottom{top:78%;left:50%}.left{top:46%;left:10%}.card-name{position:absolute;bottom:0;left:0;right:0;padding:19px 7px 10px;background:linear-gradient(transparent,#101910 36%);font-size:16px;text-align:center;line-height:1.2;font-variant:small-caps;color:#f1e6c9}.tier-badge{position:absolute;top:7px;left:7px;border:1px solid currentColor;border-radius:50%;width:29px;height:29px;display:grid;place-items:center;font-size:12px;background:#152119e8;z-index:1}.Common{color:#e2dfd2}.Rare{color:#56dfff}.Epic{color:#d684fa}.Legendary{color:#edca70}.entry-meta{display:flex;justify-content:space-between;gap:8px;font-size:12px;margin-top:9px}.reserved{color:#cfb881}.groups{font-size:12px;color:var(--muted);line-height:1.5;margin-top:5px}.unique{color:var(--gold)}
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:4px}table{width:100%;border-collapse:collapse;font-size:14px;white-space:nowrap}th,td{padding:13px 16px;text-align:left;border-bottom:1px solid var(--line)}th{background:var(--panel);font-size:12px;color:var(--muted);font-weight:500}.name-button{background:none;border:0;padding:0;color:var(--gold);text-align:left}tbody tr:hover{background:#1b2821}.table-groups{white-space:normal;min-width:150px}.rank-list{font-variant-numeric:tabular-nums;font-family:Georgia,serif;font-size:18px}
+footer{color:var(--muted);font-size:12px;line-height:1.7;padding-top:18px;padding-bottom:32px;border-top:1px solid var(--line)}footer p{margin:6px 0}dialog{width:min(900px,94vw);max-height:92vh;overflow:auto;background:var(--panel);color:var(--ink);border:1px solid #8f7d54;border-radius:8px;padding:28px}dialog::backdrop{background:#030a07dd}.detail-header{display:flex;justify-content:space-between;align-items:start;gap:15px;margin-bottom:20px}.detail-header h2{margin:0}.detail-layout{display:grid;grid-template-columns:minmax(230px,320px) 1fr;gap:30px}.detail-layout .card{width:100%}.detail-layout .rank{font-size:40px}.detail-layout .card-name{font-size:23px}.detail-layout .tier-badge{width:34px;height:34px;font-size:15px}.detail-copy{font-size:14px;line-height:1.65}.detail-copy h3{font-size:14px;margin:20px 0 6px;color:var(--gold)}.detail-copy p{margin:0 0 10px}.detail-copy dl{display:grid;grid-template-columns:95px 1fr;gap:9px 15px;margin:16px 0}.detail-copy dt{color:var(--muted)}.detail-copy dd{margin:0}.detail-copy ul{padding-left:20px}summary{cursor:pointer;color:var(--gold)}.detail-note{color:var(--muted);font-size:12px}#full-art{display:inline-block;margin-top:12px}.detail-navigation{display:flex;justify-content:space-between;gap:12px;margin-top:24px}
+@media(max-width:900px){.filters{grid-template-columns:repeat(3,minmax(0,1fr))}.search-label{grid-column:span 3}}@media(max-width:600px){header,main,footer{padding-left:18px;padding-right:18px}header{padding-top:26px}.stats{gap:16px}.filters{grid-template-columns:repeat(2,minmax(0,1fr))}.search-label{grid-column:span 2}.gallery{grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 12px}.card-name{font-size:14px}.rank{font-size:25px}.toolbar p{flex-basis:100%}dialog{padding:20px}.detail-layout{grid-template-columns:1fr}.detail-layout .card{max-width:300px;margin:auto}.detail-header h2{font-size:25px}.entry-meta{flex-wrap:wrap}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}@media print{header nav,.filters,.toolbar,.pagination,dialog{display:none!important}.gallery{grid-template-columns:repeat(4,1fr)}.entry{break-inside:avoid}body{background:white;color:black}footer{color:black}}
+/* RUNTIME_FOIL_CSS */
+
+/* LIBRARY_FINISHES_CSS */
+/* FOIL_REVIEW_CSS */
+</style>
+</head>
+<body>
+<svg aria-hidden="true" focusable="false" style="position:absolute;width:0;height:0;overflow:hidden">
+<filter id="foil-normals" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB" primitiveUnits="objectBoundingBox">
+ <feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  .2126 .7152 .0722 0 0" result="height"/>
+ <feGaussianBlur in="height" stdDeviation=".002" result="smooth"/>
+ <feSpecularLighting in="smooth" surfaceScale=".8" specularConstant=".85" specularExponent="22" lighting-color="#e8efff"><fePointLight id="foil-spec" x=".5" y=".38" z=".55"/></feSpecularLighting>
+ <feComponentTransfer><feFuncR type="linear" slope="2" intercept="-.3"/><feFuncG type="linear" slope="2" intercept="-.3"/><feFuncB type="linear" slope="2" intercept="-.3"/></feComponentTransfer>
+</filter>
+<filter id="foil-normals-static" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB" primitiveUnits="objectBoundingBox">
+ <feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  .2126 .7152 .0722 0 0" result="height"/>
+ <feGaussianBlur in="height" stdDeviation=".002" result="smooth"/>
+ <feSpecularLighting in="smooth" surfaceScale=".8" specularConstant=".85" specularExponent="22" lighting-color="#e8efff"><fePointLight x=".5" y=".38" z=".55"/></feSpecularLighting>
+ <feComponentTransfer><feFuncR type="linear" slope="2" intercept="-.3"/><feFuncG type="linear" slope="2" intercept="-.3"/><feFuncB type="linear" slope="2" intercept="-.3"/></feComponentTransfer>
+</filter>
+</svg>
+<header>
+<p class="eyebrow">Tessera Trading Card Game</p><h1>The card library</h1>
+<p class="intro">Browse the artwork, compare ranks, and find each card’s collection sources. Open a card for a closer look, or compare foil finishes under a moving light.</p>
+<nav aria-label="Documentation"><a href="#foil-review">Review foil finishes</a><a href="reference-guide.md">Reference guide</a><a href="card-library.csv" download>Download CSV</a><a href="card-art-replacers.md">Replace card art</a></nav>
+<div class="stats"><span><strong><!-- CARD_COUNT --></strong>cards</span><span><strong><!-- AVAILABLE_COUNT --></strong>obtainable</span><span><strong><!-- RESERVED_COUNT --></strong>trophies</span><span><strong>I–X</strong>tiers</span></div>
+</header>
+<main>
+<!-- FOIL_REVIEW_HTML -->
+<form class="filters" id="filters" role="search" aria-label="Filter the library">
+<label class="search-label">Search<input id="search" type="search" placeholder="Card name, creature group, affinity…" autocomplete="off"></label>
+<label>Tier<select id="tier"><option value="">All tiers</option></select></label>
+<label>Rarity<select id="rarity"><option value="">All rarities</option></select></label>
+<label>Availability<select id="availability"><option value="">All cards</option><option value="available">Obtainable</option><option value="reserved">Tournament trophies</option><option value="pending">Unfinished superior cards</option><option value="starter">Starter cards</option><option value="unique">Unique cards</option></select></label>
+<label>Creature group<select id="group"><option value="">All groups</option></select></label>
+<label>Affinity<select id="affinity"><option value="">All affinities</option><option value="neutral">Neutral</option></select></label>
+<label>Sort by<select id="sort"><option value="tier">Tier · ascending</option><option value="name">Name · A–Z</option><option value="rarity">Rarity</option><option value="total">Rank total · descending</option></select></label>
+<label>Finish<select id="finish"></select></label>
+</form>
+<div class="toolbar"><p id="count" role="status" aria-live="polite"></p><button id="reset" type="button">Reset filters</button><div class="view-controls" role="group" aria-label="Library view"><button id="cards-view" type="button" aria-pressed="true">Cards</button><button id="table-view" type="button" aria-pressed="false">Table</button></div></div>
+<div id="gallery" class="gallery" aria-label="Cards"></div>
+<div id="table-wrap" class="table-wrap" hidden><table><thead><tr><th scope="col">Card</th><th scope="col">Tier</th><th scope="col">Rarity</th><th scope="col">Top</th><th scope="col">Right</th><th scope="col">Bottom</th><th scope="col">Left</th><th scope="col">Groups</th><th scope="col">Availability</th></tr></thead><tbody id="rows"></tbody></table></div>
+<p id="empty" hidden>No cards match these filters. Try a different search or reset the filters.</p>
+<div class="pagination"><button id="previous" type="button">← Previous</button><span id="page-number"></span><button id="next" type="button">Next →</button></div>
+<noscript><p>Enable JavaScript to browse the library, or use the <a href="card-library.csv">CSV card list</a>.</p></noscript>
+</main>
+<footer><p>Ranks are shown in top, right, bottom, left order. A means 10. Rank total is a comparison aid; placement and rules also determine a card’s strength.</p><p>Normal and foil copies share artwork and ranks. Unique cards have a one-copy deck limit; other identities allow two copies across finishes. Reserved unique cards can be awarded as tournament trophies. Unfinished Dragon and God candidates remain outside normal acquisition.</p><p>Finish is a library preview. Tessera uses the approved Prismatic finish at 72%. The game and this library share its renderer. The previous Tessera finish, Satin, Engraved and earlier experiments remain available for comparison. Visual inspiration: <a href="https://github.com/simeydotme/pokemon-cards-css">Simon Goellner’s holographic cards</a>.</p><p>This page opens offline alongside Tessera’s artwork folders. Regenerate it with <code>python3 tools/build-card-library.py</code> after changing the catalog or artwork.</p></footer>
+<dialog id="detail" aria-labelledby="detail-title"><div class="detail-header"><h2 id="detail-title"></h2><button id="close" type="button" aria-label="Close card details">Close ×</button></div><div class="detail-layout"><div><div id="detail-art"></div><a id="full-art" target="_blank" rel="noopener">Open full artwork ↗</a></div><div class="detail-copy"><p id="detail-status"></p><dl id="detail-facts"></dl><h3>Where to find it</h3><div id="acquisition"></div></div></div>
+<div class="finish-panel"><h3>Foil finishes</h3><p class="detail-note">Click a treatment to apply it to the library. Move across the large card to tilt it and shift the reflection.</p><div id="finish-compare" class="finish-compare"></div></div>
+<div class="detail-navigation"><button id="detail-previous" type="button">← Previous card</button><button id="detail-next" type="button">Next card →</button></div></dialog>
+<script id="card-data" type="application/json"><!-- CARD_DATA --></script>
+<script>
+'use strict';
+const cards=JSON.parse(document.getElementById('card-data').textContent),$=id=>document.getElementById(id);
+const roman=['','I','II','III','IV','V','VI','VII','VIII','IX','X'],rarities=['Common','Rare','Epic','Legendary'];
+const finishes=[['none','None'],['current','Tessera · Prismatic'],['satin','Satin'],['engraved','Engraved'],['holo','Holo'],['reverse','Reverse'],['cosmos','Cosmos'],['rainbow','Rainbow'],['texture','Texture'],['relief','Relief'],['secret','Secret'],['radiant','Radiant']];
+const affinityPigment={Strength:'#b63c33',Intelligence:'#3879b4',Willpower:'#d7a631',Agility:'#55913c',Endurance:'#79459c'};
+function foilKind(c){
+ const god=c.groups.includes('God')||c.subtypes.includes('Divine')||c.subtypes.includes('God')||c.subtypes.includes('Demigod');
+ if(god)return {kind:'god',a:'#f0d48a',b:'#fff6d4'};
+ const a=c.affinities[0],b=c.affinities[1]||a;
+ if(!a)return {kind:'neutral',a:'#c5c1b2',b:'#8a8680'};
+ return {kind:a.toLowerCase(),a:affinityPigment[a]||'#c5c1b2',b:affinityPigment[b]||affinityPigment[a]||'#8a8680'};
+}
+const rank=n=>n===10?'A':String(n),total=c=>c.sides.reduce((a,b)=>a+b,0),pageSize=60;
+let filtered=cards,page=0,view='cards',detailIndex=-1,finish='none';
+try{finish=localStorage.getItem('tessera-library-finish')||'none';}catch(err){}
+if(finish==='prismatic')finish='current';
+if(!finishes.some(([id])=>id===finish))finish='none';
+for(const [id,label] of finishes)$('finish').add(new Option(label,id));
+$('finish').value=finish;
+const el=(tag,text,className)=>{const node=document.createElement(tag);if(text!==undefined)node.textContent=text;if(className)node.className=className;return node;};
+for(let i=1;i<=10;i++)$('tier').add(new Option('Tier '+roman[i],String(i)));
+for(const rarity of rarities)$('rarity').add(new Option(rarity,rarity));
+for(const group of [...new Set(cards.flatMap(c=>c.groups))].sort())$('group').add(new Option(group,group));
+for(const affinity of ['Strength','Intelligence','Willpower','Agility','Endurance'])$('affinity').add(new Option(affinity,affinity));
+/* FOIL_MATERIAL_JS */
+function cardArt(c,full=false,finishStyle){
+ const art=el('div',undefined,'card'),portrait=el('div',undefined,'portrait'),img=el('img');
+ const style=finishStyle===undefined?finish:finishStyle;
+ const foil=foilKind(c);
+ img.src=full?c.art:c.thumbnail;img.alt=c.name;img.loading=full?'eager':'lazy';img.decoding='async';img.style.objectPosition=c.focus;
+ if(!full)img.onerror=()=>{img.onerror=null;img.src=c.art;};
+ portrait.append(img);
+ if(style&&style!=='none'){
+  art.classList.add('foil','finish-'+style);art.dataset.foil=foil.kind;
+  art.style.setProperty('--foil-a',foil.a);art.style.setProperty('--foil-b',foil.b);
+  for(const name of ['film','grain','glare','motif'])portrait.append(el('span',undefined,'foil-'+name));
+  if(style==='relief'){
+   const bump=el('img');bump.className='foil-bump';bump.alt='';bump.src=img.src;bump.decoding='async';bump.style.objectPosition=c.focus;bump.loading=img.loading;
+   if(!full)bump.onerror=()=>{bump.onerror=null;bump.src=c.art;};portrait.append(bump);
+  }
+ }
+ art.append(portrait,el('span',roman[c.tier],'tier-badge '+c.rarity));
+ ['top','right','bottom','left'].forEach((side,i)=>{const n=el('span',rank(c.sides[i]),'rank '+side);n.setAttribute('aria-hidden','true');art.append(n);});art.append(el('span',c.name,'card-name'));
+ if(foilMaterial.supports(style))foilMaterial.attach(art,style);
+ return art;
+}
+/* FOIL_MOTION_JS */
+function setFinish(value){
+ finish=value;$('finish').value=value;try{localStorage.setItem('tessera-library-finish',value);}catch(err){}
+ render();if($('detail').open)showDetail(detailIndex);
+}
+function render(){
+ stopFoil();
+ const query=$('search').value.trim().toLocaleLowerCase(),tier=$('tier').value,rarity=$('rarity').value,availability=$('availability').value,group=$('group').value,affinity=$('affinity').value;
+ filtered=cards.filter(c=>(!query||[c.name,...c.groups,...c.affinities,...c.subtypes].join(' ').toLocaleLowerCase().includes(query))&&(!tier||c.tier===Number(tier))&&(!rarity||c.rarity===rarity)&&(!group||c.groups.includes(group))&&(!affinity||(affinity==='neutral'?!c.affinities.length:c.affinities.includes(affinity)))&&(!availability||(availability==='available'?c.obtainable:availability==='reserved'?!c.available&&!c.pending:availability==='pending'?c.pending:availability==='starter'?c.starter:c.unique)));
+ const sort=$('sort').value;filtered.sort((a,b)=>(sort==='tier'?a.tier-b.tier:sort==='rarity'?rarities.indexOf(a.rarity)-rarities.indexOf(b.rarity):sort==='total'?total(b)-total(a):0)||a.name.localeCompare(b.name));
+ const pages=Math.max(1,Math.ceil(filtered.length/pageSize));page=Math.min(page,pages-1);const start=page*pageSize,visible=filtered.slice(start,start+pageSize);
+ $('count').textContent=filtered.length?`${filtered.length} of ${cards.length} cards · Showing ${start+1}–${start+visible.length}`:`0 of ${cards.length} cards`;
+ $('page-number').textContent=`Page ${page+1} of ${pages}`;$('previous').disabled=page===0;$('next').disabled=page+1>=pages;$('empty').hidden=filtered.length!==0;
+ $('gallery').hidden=view!=='cards'||!filtered.length;$('table-wrap').hidden=view!=='table'||!filtered.length;$('gallery').replaceChildren();$('rows').replaceChildren();foilMaterial.prune();
+ $('cards-view').setAttribute('aria-pressed',String(view==='cards'));$('table-view').setAttribute('aria-pressed',String(view==='table'));
+ visible.forEach((c,i)=>{
+  if(view==='cards'){
+   const button=el('button',undefined,'entry');button.type='button';button.setAttribute('aria-label',`${c.name}, tier ${roman[c.tier]}, ${c.rarity}${c.unique?', Unique':''}, ranks ${c.sides.join(', ')}, ${c.obtainable?'obtainable':c.available?'no current route':'reserved'}`);button.append(cardArt(c));
+   const meta=el('div',undefined,'entry-meta');meta.append(el('span',c.rarity+(c.unique?' · Unique':''),c.rarity),el('span',c.pending?'Unfinished':c.obtainable?'Obtainable':c.available?'No current route':'Tournament trophy',c.available?'':'reserved'));button.append(meta,el('div',c.groups.join(' · ')||'No creature group','groups'));button.onclick=()=>showDetail(start+i);$('gallery').append(button);
+  }else{
+   const row=el('tr'),name=el('td'),button=el('button',c.name+(c.unique?' ★':''),'name-button');button.type='button';button.onclick=()=>showDetail(start+i);name.append(button);row.append(name,el('td',roman[c.tier]),el('td',c.rarity,c.rarity));for(const side of c.sides)row.append(el('td',rank(side),'rank-list'));row.append(el('td',c.groups.join(' · '),'table-groups'),el('td',c.pending?'Unfinished':c.obtainable?'Obtainable':c.available?'No current route':'Tournament trophy'));$('rows').append(row);
+  }
+ });
+}
+function showDetail(index){
+ stopFoil();
+ const c=filtered[index];if(!c)return;detailIndex=index;$('detail-title').textContent=c.name;$('detail-art').replaceChildren(cardArt(c,true));$('full-art').href=c.art;
+ $('detail-status').textContent=c.pending?'Unfinished superior roster':c.obtainable?'Obtainable in the current game':c.available?'Released · acquisition route not assigned':'Tournament trophy';$('detail-status').className=c.available?'':'reserved';
+ const facts=$('detail-facts');facts.replaceChildren();
+ for(const [key,value] of [['Tier',roman[c.tier]],['Rarity',c.rarity],['Ranks',c.sides.map(rank).join(' / ')+' (top / right / bottom / left)'],['Rank total',total(c)],['Groups',c.groups.join(' · ')||'None'],['Subtypes',c.subtypes.join(' · ')||'None'],['Affinities',c.affinities.join(' · ')||'Neutral'],['Deck limit',c.unique?'1 copy · Unique':'2 copies across finishes']])facts.append(el('dt',key),el('dd',String(value)));
+ const sources=$('acquisition');sources.replaceChildren();
+ if(c.pending)sources.append(el('p','Preserved for workshop editing. Available through development grants while the superior roster is unfinished.'));
+ else if(!c.available)sources.append(el('p','Awarded as a tournament trophy.'));
+ else{
+  if(c.starter)sources.append(el('p','Included in the starter collection.'));
+  if(c.packs)sources.append(el('p','May be found in merchant packs.'));
+  if(c.tournamentPacks)sources.append(el('p','May be found in tournament packs.'));
+  if(c.opponents.length){const d=el('details'),names=el('p',c.opponents.join(' · '));d.append(el('summary',`Starting collections · ${c.opponents.length} ${c.opponents.length===1?'opponent':'opponents'}`),names);sources.append(d,el('p','These are initial playing collections. Cards won, lost, or replenished can change an opponent’s holdings.','detail-note'));}
+  if(!c.starter&&!c.packs&&!c.tournamentPacks&&!c.opponents.length)sources.append(el('p','No current acquisition route is assigned.'));
+ }
+ const compare=$('finish-compare');compare.replaceChildren();
+ for(const [id,label] of finishes){
+  const button=el('button',undefined,'finish-sample');button.type='button';button.setAttribute('aria-pressed',String(id===finish));
+  const sample=cardArt(c,false,id);sample.querySelectorAll('.rank,.tier-badge,.card-name').forEach(n=>n.remove());
+  button.append(sample,el('span',label));button.onclick=()=>setFinish(id);compare.append(button);
+ }
+ $('detail-previous').disabled=index===0;$('detail-next').disabled=index===filtered.length-1;
+ foilMaterial.prune();
+ if(!$('detail').open)$('detail').showModal();
+}
+$('filters').onsubmit=e=>e.preventDefault();
+for(const control of $('filters').elements)control.addEventListener(control.id==='search'?'input':'change',()=>{if(control.id==='finish'){setFinish(control.value);return;}page=0;render();});
+$('reset').onclick=()=>{$('filters').reset();setFinish('none');};
+$('gallery').addEventListener('pointermove',foilPointer);
+$('detail-art').addEventListener('pointermove',foilPointer);
+$('finish-compare').addEventListener('pointermove',foilPointer);
+for(const mode of ['cards','table'])$(mode+'-view').onclick=()=>{view=mode;render();};
+function changePage(step){page+=step;render();$('count').scrollIntoView({block:'start',behavior:'instant'});}
+$('previous').onclick=()=>changePage(-1);$('next').onclick=()=>changePage(1);
+$('close').onclick=()=>$('detail').close();$('detail-previous').onclick=()=>showDetail(detailIndex-1);$('detail-next').onclick=()=>showDetail(detailIndex+1);
+$('detail').addEventListener('keydown',e=>{if(e.key==='ArrowLeft'&&detailIndex>0){e.preventDefault();showDetail(detailIndex-1);}if(e.key==='ArrowRight'&&detailIndex+1<filtered.length){e.preventDefault();showDetail(detailIndex+1);}});
+/* FOIL_REVIEW_JS */
+render();
+</script>
+</body>
+</html>

@@ -23,7 +23,7 @@ inline unsigned tournamentChampionships(const CollectionSave& s,unsigned circuit
 }
 inline unsigned widerRenown(const CollectionSave& s){
  unsigned total=0;for(const auto& r:s.tournamentReputation)total+=r.renownQuarters;
- for(const auto& p:opponents)if(p.traveller&&!p.dynamic)if(auto it=s.reputation.find(p.base);it!=s.reputation.end()&&it->second.wins)total+=32;
+ for(const auto& p:opponents)if(isMaiq(p))if(auto it=s.reputation.find(p.base);it!=s.reputation.end()&&it->second.wins)total+=32;
  return total;
 }
 struct LocalReputation {

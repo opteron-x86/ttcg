@@ -1,0 +1,6887 @@
+{
+  "version": 1,
+  "plugin": "Tessera Completionist.esp",
+  "set": "tessera",
+  "pages": [
+    {
+      "nameKey": "Tessera_Cards_Page",
+      "translation": "Tessera_Cards.txt",
+      "number": 1,
+      "entries": [
+        {
+          "key": "tessera:legends-209105",
+          "form": 2126,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-291262",
+          "form": 3020,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-253708",
+          "form": 2722,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-246678",
+          "form": 2674,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-223299",
+          "form": 2434,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209119",
+          "form": 2138,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-934a0feadb4b4a7493a2fb58aa9d0109",
+          "form": 3366,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-298446",
+          "form": 3036,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-ee3b304d19f44b6b9df0f53d3fa6c2c6",
+          "form": 3452,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-220453",
+          "form": 2370,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209055",
+          "form": 2116,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-253825",
+          "form": 2754,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-299178",
+          "form": 3084,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-253741",
+          "form": 2740,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-246032",
+          "form": 2658,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-253882",
+          "form": 2768,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-230888",
+          "form": 2482,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-221518",
+          "form": 2408,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-284073",
+          "form": 2924,
+          "foil": false
+        },
+        {
+          "key": "tessera:crown-quartermaster",
+          "form": 2074,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-276452",
+          "form": 2860,
+          "foil": false
+        },
+        {
+          "key": "tessera:deathless-draugr",
+          "form": 2078,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-222120",
+          "form": 2428,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-251855",
+          "form": 2712,
+          "foil": false
+        },
+        {
+          "key": "tessera:dwarven-spider",
+          "form": 2088,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-233528",
+          "form": 2504,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-214282",
+          "form": 2336,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-214293",
+          "form": 2342,
+          "foil": false
+        },
+        {
+          "key": "tessera:fighters-guild-recruit",
+          "form": 2092,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-246687",
+          "form": 2686,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209054",
+          "form": 2114,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-299181",
+          "form": 3086,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-80fb3c68fd684ba9b31bd5a6421c5e91",
+          "form": 3352,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-213386",
+          "form": 2310,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-284110",
+          "form": 2934,
+          "foil": false
+        },
+        {
+          "key": "tessera:guar-stablemaster",
+          "form": 2096,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-73be5788448c4843afdcc5ff75e26685",
+          "form": 3342,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-305338",
+          "form": 3102,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209876",
+          "form": 2284,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-291141",
+          "form": 2990,
+          "foil": false
+        },
+        {
+          "key": "tessera:imperial-grunt",
+          "form": 2100,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-234088",
+          "form": 2582,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-214319",
+          "form": 2344,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-270890",
+          "form": 2834,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-257893",
+          "form": 2820,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-253820",
+          "form": 2748,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-253737",
+          "form": 2732,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-222286",
+          "form": 2430,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-253871",
+          "form": 2760,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-fb31c5b7f9e440ecb677704c5e60243d",
+          "form": 3462,
+          "foil": false
+        },
+        {
+          "key": "tessera:murkwater-goblin",
+          "form": 3128,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-246689",
+          "form": 2688,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209283",
+          "form": 2224,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-220833",
+          "form": 2390,
+          "foil": false
+        },
+        {
+          "key": "tessera:oldgate-warden",
+          "form": 3130,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-316970",
+          "form": 3106,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-228283",
+          "form": 2468,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-245462",
+          "form": 2638,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209341",
+          "form": 2242,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-245453",
+          "form": 2632,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-a40c6a1459204ef9a9416903ec2353c5",
+          "form": 3376,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-860262430f7447b6859fc7d77aff8874",
+          "form": 3360,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-246650",
+          "form": 2670,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-253245",
+          "form": 2716,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-214291",
+          "form": 2340,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-232855",
+          "form": 2488,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-234143",
+          "form": 2598,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-246681",
+          "form": 2676,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-231122",
+          "form": 2484,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-223709",
+          "form": 2452,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-210108",
+          "form": 2292,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-245465",
+          "form": 2640,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-298694",
+          "form": 3048,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-253880",
+          "form": 2766,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-221520",
+          "form": 2410,
+          "foil": false
+        },
+        {
+          "key": "tessera:thieves-guild-recruit",
+          "form": 3238,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-fe55a1db8de24df1a3fbd47d276bc3e5",
+          "form": 3466,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-443712",
+          "form": 3112,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-282540",
+          "form": 2890,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209180",
+          "form": 2180,
+          "foil": false
+        }
+      ]
+    },
+    {
+      "nameKey": "Tessera_Cards_Page",
+      "translation": "Tessera_Cards.txt",
+      "number": 2,
+      "entries": [
+        {
+          "key": "tessera:legends-303516",
+          "form": 3100,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209346",
+          "form": 2246,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-290672",
+          "form": 2970,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209111",
+          "form": 2130,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-284046",
+          "form": 2916,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-284079",
+          "form": 2926,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209123",
+          "form": 2142,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-276386",
+          "form": 2856,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-253739",
+          "form": 2736,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209398",
+          "form": 2264,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-233990",
+          "form": 2562,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209881",
+          "form": 2288,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-259237",
+          "form": 2822,
+          "foil": false
+        },
+        {
+          "key": "tessera:blue-grummite",
+          "form": 2066,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209130",
+          "form": 2150,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-245633",
+          "form": 2642,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-234047",
+          "form": 2570,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-7ce38ff8659f48a7a28bcb35edd2ea78",
+          "form": 3348,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-298805",
+          "form": 3052,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-234096",
+          "form": 2586,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-233878",
+          "form": 2536,
+          "foil": false
+        },
+        {
+          "key": "tessera:covenant-marauder",
+          "form": 2072,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-275903",
+          "form": 2844,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-234017",
+          "form": 2564,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-234373",
+          "form": 2618,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209166",
+          "form": 2178,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-298583",
+          "form": 3042,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209396",
+          "form": 2262,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209063",
+          "form": 2120,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-233890",
+          "form": 2542,
+          "foil": false
+        },
+        {
+          "key": "tessera:ferocious-dreugh",
+          "form": 2090,
+          "foil": false
+        },
+        {
+          "key": "tessera:frostbite-spider",
+          "form": 2094,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-233869",
+          "form": 2532,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209211",
+          "form": 2188,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209213",
+          "form": 2192,
+          "foil": false
+        },
+        {
+          "key": "tessera:voracious-spriggan",
+          "form": 3240,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-213395",
+          "form": 2312,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209228",
+          "form": 2204,
+          "foil": false
+        },
+        {
+          "key": "tessera:camlorn-sentinel",
+          "form": 2070,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-220391",
+          "form": 2362,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-284352",
+          "form": 2954,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-253902",
+          "form": 2784,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-291176",
+          "form": 2994,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209241",
+          "form": 2208,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209264",
+          "form": 2214,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-221487",
+          "form": 2398,
+          "foil": false
+        },
+        {
+          "key": "tessera:morthal-watchman",
+          "form": 3126,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-253949",
+          "form": 2814,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-214287",
+          "form": 2338,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209285",
+          "form": 2226,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-253886",
+          "form": 2772,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-299192",
+          "form": 3090,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209291",
+          "form": 2232,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-299213",
+          "form": 3092,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-233880",
+          "form": 2538,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-234084",
+          "form": 2578,
+          "foil": false
+        },
+        {
+          "key": "tessera:rihad-battlemage",
+          "form": 3142,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209352",
+          "form": 2248,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-254986",
+          "form": 2818,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-6ff440052b4c4fb9abbedaa9947862f5",
+          "form": 3336,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-246685",
+          "form": 2682,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-290671",
+          "form": 2968,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-211330",
+          "form": 2304,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-214331",
+          "form": 2346,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209049",
+          "form": 2112,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-c5fd10f447eb424f8828d106d188a287",
+          "form": 3408,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-246666",
+          "form": 2672,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-259603",
+          "form": 2824,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-213400",
+          "form": 2316,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-234064",
+          "form": 2574,
+          "foil": false
+        },
+        {
+          "key": "tessera:sunhold-medic",
+          "form": 3154,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-291137",
+          "form": 2986,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209425",
+          "form": 2278,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-276374",
+          "form": 2854,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-246641",
+          "form": 2668,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-221516",
+          "form": 2406,
+          "foil": false
+        },
+        {
+          "key": "tessera:wind-keep-spellsword",
+          "form": 3242,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209436",
+          "form": 2282,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209882",
+          "form": 2290,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-340477",
+          "form": 3110,
+          "foil": false
+        }
+      ]
+    },
+    {
+      "nameKey": "Tessera_Cards_Page",
+      "translation": "Tessera_Cards.txt",
+      "number": 3,
+      "entries": [
+        {
+          "key": "tessera:legends-221480",
+          "form": 2396,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-220789",
+          "form": 2382,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-253918",
+          "form": 2804,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-299187",
+          "form": 3088,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-220827",
+          "form": 2388,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-284135",
+          "form": 2942,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-246783",
+          "form": 2700,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-246411",
+          "form": 2664,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209126",
+          "form": 2144,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-289746",
+          "form": 2960,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-220780",
+          "form": 2372,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-298994",
+          "form": 3068,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-299176",
+          "form": 3080,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-299057",
+          "form": 3076,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-298993",
+          "form": 3066,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-228305",
+          "form": 2470,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-253909",
+          "form": 2790,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-253908",
+          "form": 2788,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-227920",
+          "form": 2458,
+          "foil": false
+        },
+        {
+          "key": "tessera:brutal-ashlander",
+          "form": 2068,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209138",
+          "form": 2154,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-233867",
+          "form": 2528,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-299060",
+          "form": 3078,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-246690",
+          "form": 2690,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209148",
+          "form": 2164,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209153",
+          "form": 2170,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209155",
+          "form": 2172,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-271009",
+          "form": 2836,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-291257",
+          "form": 3012,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-291244",
+          "form": 3000,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-299013",
+          "form": 3070,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209165",
+          "form": 2176,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-253868",
+          "form": 2758,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-224145",
+          "form": 2456,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-214247",
+          "form": 2332,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209203",
+          "form": 2184,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-229020",
+          "form": 2478,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-214351",
+          "form": 2348,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-223605",
+          "form": 2450,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-246465",
+          "form": 2666,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-208800",
+          "form": 2104,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209214",
+          "form": 2194,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-275907",
+          "form": 2848,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-884a3119fe96487bbfa219cfdacb219d",
+          "form": 3362,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-284144",
+          "form": 2952,
+          "foil": false
+        },
+        {
+          "key": "tessera:guildsworn-apprentice",
+          "form": 2098,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-71fb291596b6489f86d87a053c7803bf",
+          "form": 3338,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-214278",
+          "form": 2334,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-245458",
+          "form": 2634,
+          "foil": false
+        },
+        {
+          "key": "tessera:kvatch-soldier",
+          "form": 2102,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-277252",
+          "form": 2884,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-234082",
+          "form": 2576,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-253874",
+          "form": 2762,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-208811",
+          "form": 2106,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-214138",
+          "form": 2322,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-214175",
+          "form": 2326,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-284041",
+          "form": 2912,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-245672",
+          "form": 2644,
+          "foil": false
+        },
+        {
+          "key": "tessera:orc-clan-captain",
+          "form": 3132,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-298348",
+          "form": 3034,
+          "foil": false
+        },
+        {
+          "key": "tessera:palace-prowler",
+          "form": 3136,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-270737",
+          "form": 2830,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-233903",
+          "form": 2548,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-253936",
+          "form": 2808,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-1dc921df1378490b9144b3bdd07ee1cb",
+          "form": 3270,
+          "foil": false
+        },
+        {
+          "key": "tessera:rotting-draugr",
+          "form": 3144,
+          "foil": false
+        },
+        {
+          "key": "tessera:sharpshooter-scout",
+          "form": 3148,
+          "foil": false
+        },
+        {
+          "key": "tessera:skaven-pyromancer",
+          "form": 3152,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-250445",
+          "form": 2708,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209404",
+          "form": 2266,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-230468",
+          "form": 2480,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-baa65a0298c246f0a85937396cce7691",
+          "form": 3392,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-233487",
+          "form": 2502,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209411",
+          "form": 2272,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-234371",
+          "form": 2616,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-234220",
+          "form": 2608,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-233891",
+          "form": 2544,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209433",
+          "form": 2280,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-234365",
+          "form": 2612,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-221490",
+          "form": 2400,
+          "foil": false
+        }
+      ]
+    },
+    {
+      "nameKey": "Tessera_Cards_Page",
+      "translation": "Tessera_Cards.txt",
+      "number": 4,
+      "entries": [
+        {
+          "key": "tessera:legends-232866",
+          "form": 2490,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-253821",
+          "form": 2750,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-283717",
+          "form": 2894,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209113",
+          "form": 2134,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-270803",
+          "form": 2832,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-246684",
+          "form": 2680,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-253917",
+          "form": 2802,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-220784",
+          "form": 2376,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-253915",
+          "form": 2800,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-233897",
+          "form": 2546,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-221492",
+          "form": 2402,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-233963",
+          "form": 2560,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-234060",
+          "form": 2572,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-298666",
+          "form": 3046,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-299014",
+          "form": 3072,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-dd3a837e850b4dc5ae1e737559978ba3",
+          "form": 3436,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-291254",
+          "form": 3008,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209143",
+          "form": 2160,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209144",
+          "form": 2162,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-211209",
+          "form": 2298,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-234169",
+          "form": 2604,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-234086",
+          "form": 2580,
+          "foil": false
+        },
+        {
+          "key": "tessera:daring-cutpurse",
+          "form": 2076,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-271236",
+          "form": 2838,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-277251",
+          "form": 2882,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-321209",
+          "form": 3108,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209162",
+          "form": 2174,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-214361",
+          "form": 2356,
+          "foil": false
+        },
+        {
+          "key": "tessera:dread-clannfear",
+          "form": 2080,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-298295",
+          "form": 3028,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-298873",
+          "form": 3058,
+          "foil": false
+        },
+        {
+          "key": "tessera:dune-stalker",
+          "form": 2082,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-214136",
+          "form": 2320,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-245069",
+          "form": 2628,
+          "foil": false
+        },
+        {
+          "key": "tessera:dwarven-ballista",
+          "form": 2084,
+          "foil": false
+        },
+        {
+          "key": "tessera:dwarven-sphere",
+          "form": 2086,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209210",
+          "form": 2186,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-233553",
+          "form": 2514,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-946e603036d34690859cba157c259368",
+          "form": 3368,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-233861",
+          "form": 2522,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-276872",
+          "form": 2872,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-276448",
+          "form": 2858,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-09ff9efc6da64e8e938fb10e3f133202",
+          "form": 3246,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-228476",
+          "form": 2476,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-0efef2fd957c46f28d10230f6bec03dc",
+          "form": 3252,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-284069",
+          "form": 2920,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-277254",
+          "form": 2886,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209878",
+          "form": 2286,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-291260",
+          "form": 3018,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-284063",
+          "form": 2918,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-223575",
+          "form": 2446,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209260",
+          "form": 2210,
+          "foil": false
+        },
+        {
+          "key": "tessera:lowland-troll",
+          "form": 3122,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-291131",
+          "form": 2982,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-290295",
+          "form": 2964,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209277",
+          "form": 2222,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-291246",
+          "form": 3002,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209287",
+          "form": 2230,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-276585",
+          "form": 2866,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-214355",
+          "form": 2350,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-246686",
+          "form": 2684,
+          "foil": false
+        },
+        {
+          "key": "tessera:renowned-instructor",
+          "form": 3140,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-246223",
+          "form": 2662,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-8432b53ced7240979f0ced76989d086f",
+          "form": 3356,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-223713",
+          "form": 2454,
+          "foil": false
+        },
+        {
+          "key": "tessera:shrieking-harpy",
+          "form": 3150,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209360",
+          "form": 2254,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-253910",
+          "form": 2792,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209394",
+          "form": 2260,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-283785",
+          "form": 2896,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209416",
+          "form": 2274,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-234100",
+          "form": 2588,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209421",
+          "form": 2276,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-253746",
+          "form": 2742,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-253884",
+          "form": 2770,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-211320",
+          "form": 2300,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-284133",
+          "form": 2938,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-d8e35166497544998152e315024c2de1",
+          "form": 3424,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-284134",
+          "form": 2940,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-220869",
+          "form": 2392,
+          "foil": false
+        }
+      ]
+    },
+    {
+      "nameKey": "Tessera_Cards_Page",
+      "translation": "Tessera_Cards.txt",
+      "number": 5,
+      "entries": [
+        {
+          "key": "tessera:legends-209106",
+          "form": 2128,
+          "foil": false
+        },
+        {
+          "key": "tessera:alpha-wolf",
+          "form": 2064,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-271323",
+          "form": 2840,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-245460",
+          "form": 2636,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-298769",
+          "form": 3050,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-222060",
+          "form": 2426,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209121",
+          "form": 2140,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-221508",
+          "form": 2404,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-253887",
+          "form": 2774,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-298155",
+          "form": 3026,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-223570",
+          "form": 2444,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209131",
+          "form": 2152,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-291243",
+          "form": 2998,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-223445",
+          "form": 2440,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-246691",
+          "form": 2692,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-234090",
+          "form": 2584,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-283838",
+          "form": 2898,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-246683",
+          "form": 2678,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-221447",
+          "form": 2394,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-234758",
+          "form": 2620,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-247820",
+          "form": 2704,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-214357",
+          "form": 2352,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-233881",
+          "form": 2540,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-242713",
+          "form": 2626,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-220450",
+          "form": 2368,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-253824",
+          "form": 2752,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-272783",
+          "form": 2842,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-214145",
+          "form": 2324,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-291248",
+          "form": 3006,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-6cdd33b7846a4b7fb30636e394ecab29",
+          "form": 3330,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-276454",
+          "form": 2862,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-802322f1271d497cab80202de49fe329",
+          "form": 3350,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-214134",
+          "form": 2318,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-210111",
+          "form": 2294,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-246067",
+          "form": 2660,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-210112",
+          "form": 2296,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-284141",
+          "form": 2946,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209221",
+          "form": 2200,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-245431",
+          "form": 2630,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209233",
+          "form": 2206,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-214360",
+          "form": 2354,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-298807",
+          "form": 3054,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-220782",
+          "form": 2374,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-284100",
+          "form": 2932,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-233958",
+          "form": 2552,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-233246",
+          "form": 2494,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-208816",
+          "form": 2108,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-253878",
+          "form": 2764,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-213273",
+          "form": 2306,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-283470",
+          "form": 2892,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-d958ed92b96941f79f9dc27317491131",
+          "form": 3426,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-277232",
+          "form": 2878,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-220816",
+          "form": 2386,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-234145",
+          "form": 2600,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209286",
+          "form": 2228,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-298988",
+          "form": 3062,
+          "foil": false
+        },
+        {
+          "key": "tessera:orc-clan-shaman",
+          "form": 3134,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-72eba8d676d94b869282dbe6c7f6cf9f",
+          "form": 3340,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-290724",
+          "form": 2974,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209334",
+          "form": 2234,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209338",
+          "form": 2240,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-277647",
+          "form": 2888,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-285093",
+          "form": 2956,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-291258",
+          "form": 3014,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-293893",
+          "form": 3024,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-221526",
+          "form": 2412,
+          "foil": false
+        },
+        {
+          "key": "tessera:septim-guardsman",
+          "form": 3146,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-213397",
+          "form": 2314,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-284091",
+          "form": 2930,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-234138",
+          "form": 2596,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209358",
+          "form": 2252,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209387",
+          "form": 2256,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-227995",
+          "form": 2464,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-223591",
+          "form": 2448,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-253740",
+          "form": 2738,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-253934",
+          "form": 2806,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-227924",
+          "form": 2460,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-222183ea5c59494c9bd022f2d123e44c",
+          "form": 3274,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-fc679287c950442dacbff9004a9bffeb",
+          "form": 3464,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-4dd6163af1a04fd2926c750490616270",
+          "form": 3308,
+          "foil": false
+        }
+      ]
+    },
+    {
+      "nameKey": "Tessera_Cards_Page",
+      "translation": "Tessera_Cards.txt",
+      "number": 6,
+      "entries": [
+        {
+          "key": "tessera:legends-209116",
+          "form": 2136,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-245884",
+          "form": 2652,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-246693",
+          "form": 2696,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-220787",
+          "form": 2380,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-291266",
+          "form": 3022,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-253890",
+          "form": 2776,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209129",
+          "form": 2148,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-233961",
+          "form": 2556,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-234135",
+          "form": 2594,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209140",
+          "form": 2156,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-233751",
+          "form": 2516,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-291255",
+          "form": 3010,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-250442",
+          "form": 2706,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-67dcd873fb434f1c83ef74ee905aa772",
+          "form": 3324,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209152",
+          "form": 2168,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-275904",
+          "form": 2846,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-0b154dda7cd34ab0851138fcaf3c132d",
+          "form": 3250,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-54f7cbf6b6434b3a868620b695bed8d8",
+          "form": 3314,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-221542",
+          "form": 2418,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-233853",
+          "form": 2520,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209407",
+          "form": 2270,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-276590",
+          "form": 2868,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-284143",
+          "form": 2950,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-a61fed6387c34aaf9098f4d9f192135d",
+          "form": 3378,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-220421",
+          "form": 2364,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-233924",
+          "form": 2550,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-253580",
+          "form": 2720,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-db82a294a580496cb9e2b1d92a9ad1a1",
+          "form": 3428,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209070",
+          "form": 2122,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-253716",
+          "form": 2724,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-b32f10d4404547879cd2687d8549397e",
+          "form": 3388,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-1630defb48e14a56affb631ba4d4d704",
+          "form": 3262,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-dced7aab7d244b47b1e4260525419d2f",
+          "form": 3432,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-275908",
+          "form": 2850,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-298298",
+          "form": 3030,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-253124",
+          "form": 2714,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-233755",
+          "form": 2518,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-220786",
+          "form": 2378,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-245870",
+          "form": 2650,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-298447",
+          "form": 3038,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-284142",
+          "form": 2948,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209268",
+          "form": 2216,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209272",
+          "form": 2218,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-246782",
+          "form": 2698,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-253717",
+          "form": 2726,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209276",
+          "form": 2220,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-449030",
+          "form": 3120,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-443713",
+          "form": 3114,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-253894",
+          "form": 2782,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-253913",
+          "form": 2798,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-757cf855211a4ac2a03f854fc3733802",
+          "form": 3346,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-be761191711e4dec97ab8e4cfdb38018",
+          "form": 3400,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-e7373e9d48f3420d95c5a3cd94a6f38a",
+          "form": 3444,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209057",
+          "form": 2118,
+          "foil": false
+        },
+        {
+          "key": "tessera:pit-lion",
+          "form": 3138,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-253911",
+          "form": 2794,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-220423",
+          "form": 2366,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-cf1036050f45425fa09d1bca756caed1",
+          "form": 3414,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209353",
+          "form": 2250,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-d12968b953c34412963db60814d291f5",
+          "form": 3420,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-291259",
+          "form": 3016,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-234040",
+          "form": 2566,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-39ad875108fb447c8f6d8a0d47e7b0f5",
+          "form": 3294,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-253839",
+          "form": 2756,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-303514",
+          "form": 3098,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209393",
+          "form": 2258,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-fe76465d735a42f3bfdc8b5872f4b055",
+          "form": 3468,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-228313",
+          "form": 2472,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-233868",
+          "form": 2530,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-e5f11a3e359e43e8a68d022c5f56ca94",
+          "form": 3442,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-221536",
+          "form": 2416,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-b2048c7ad14947739aac9ec802cc3d34",
+          "form": 3386,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209201",
+          "form": 2182,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-cc0755cf1b9e4d28805537149b6b9cad",
+          "form": 3410,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-3dd08920badd44739bb1c738bf571513",
+          "form": 3300,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-250486",
+          "form": 2710,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-dca26a63a8ec4e6d806e099d6a0eb3ad",
+          "form": 3430,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-211327",
+          "form": 2302,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-298344",
+          "form": 3032,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-246918",
+          "form": 2702,
+          "foil": false
+        }
+      ]
+    },
+    {
+      "nameKey": "Tessera_Cards_Page",
+      "translation": "Tessera_Cards.txt",
+      "number": 7,
+      "entries": [
+        {
+          "key": "tessera:workshop-1a8d2d6d45fd44b68ddded51394eaa46",
+          "form": 3266,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-234767",
+          "form": 2622,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-c55636d70f2247c3bb3c691f12136c06",
+          "form": 3406,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-472c87578fba4301b8d12b456eb079cf",
+          "form": 3304,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-290722",
+          "form": 2972,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-213292",
+          "form": 2308,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-449029",
+          "form": 3118,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-223097",
+          "form": 2432,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-0f7933221af243d98cd9b8435af5b849",
+          "form": 3254,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-284140",
+          "form": 2944,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-299177",
+          "form": 3082,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-5ca729b4af8840a58fe8d0d2611dbf52",
+          "form": 3320,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-253951",
+          "form": 2816,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-246692",
+          "form": 2694,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-de10aed616d14446b5d03a5b29722ef4",
+          "form": 3438,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-300493",
+          "form": 3094,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-bba8aa6846b247a5bdcded68bae4d93b",
+          "form": 3394,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209142",
+          "form": 2158,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-245823",
+          "form": 2648,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-2b9d63bf36a84222b54518a1b4d466c0",
+          "form": 3278,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-284087",
+          "form": 2928,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209151",
+          "form": 2166,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-221651",
+          "form": 2422,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-245977",
+          "form": 2654,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-227993",
+          "form": 2462,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-223354",
+          "form": 2436,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-291177",
+          "form": 2996,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-284124",
+          "form": 2936,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-283880",
+          "form": 2902,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-253750",
+          "form": 2744,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-6dc7b02ffac94f438aae158ccdf26132",
+          "form": 3332,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-233529",
+          "form": 2506,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-9001b05eff3640c78c516cfc8273422d",
+          "form": 3364,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-284045",
+          "form": 2914,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-df544fcfe1444c3c8e4bb0799a7c746d",
+          "form": 3440,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-14f0c5b798bc44d6b243921366b8119f",
+          "form": 3260,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209219",
+          "form": 2196,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209222",
+          "form": 2202,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-245808",
+          "form": 2646,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-214239",
+          "form": 2328,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-276563",
+          "form": 2864,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-228358",
+          "form": 2474,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-d40aefdcf3ae4261b8fdb8bfc434a5f3",
+          "form": 3422,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209263",
+          "form": 2212,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-c049e96c458d4b6bb43d42928657aae0",
+          "form": 3402,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-299051",
+          "form": 3074,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-221532",
+          "form": 2414,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-298569",
+          "form": 3040,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-253718",
+          "form": 2728,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-220794",
+          "form": 2384,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-18ac8158f4a5452fa15bd83435f9fed2",
+          "form": 3264,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-223568",
+          "form": 2442,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-303510",
+          "form": 3096,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-283891",
+          "form": 2904,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-253738",
+          "form": 2734,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-234045",
+          "form": 2568,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-231502",
+          "form": 2486,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-bc20c37f41474244b7c750a513e1e072",
+          "form": 3396,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-236868",
+          "form": 2624,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-253912",
+          "form": 2796,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-291136",
+          "form": 2984,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209337",
+          "form": 2238,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-222058",
+          "form": 2424,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-3ab65aacb7dc478e9ea3e54b81a74be6",
+          "form": 3296,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-276766",
+          "form": 2870,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-234152",
+          "form": 2602,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-838352cf6cbd4f57b1aa83eddb350753",
+          "form": 3354,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-276873",
+          "form": 2874,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-4f51ae8bf9124a37bd65801702b38ffb",
+          "form": 3312,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-234370",
+          "form": 2614,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-233866",
+          "form": 2526,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209406",
+          "form": 2268,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-ef294df3b2c34eae9c87126fad34e9d2",
+          "form": 3454,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-221546",
+          "form": 2420,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-dd26b4a003b34d3ba5fa8556713cf428",
+          "form": 3434,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-d0dad43466fd4e53b3affd7fe8736682",
+          "form": 3416,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-449026",
+          "form": 3116,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-f7eeb69e9b274af5a54e54d25a37e72a",
+          "form": 3460,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-284070",
+          "form": 2922,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-e802866a12a24fd4afec2486c2542903",
+          "form": 3446,
+          "foil": false
+        }
+      ]
+    },
+    {
+      "nameKey": "Tessera_Cards_Page",
+      "translation": "Tessera_Cards.txt",
+      "number": 8,
+      "entries": [
+        {
+          "key": "tessera:legends-209002",
+          "form": 2110,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209112",
+          "form": 2132,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-9bf30e858d5d4743874e0e46d85c882c",
+          "form": 3372,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-253938",
+          "form": 2810,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-cd578286044440dbba4fc0515d2251aa",
+          "form": 3412,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-253904",
+          "form": 2786,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-32fc39fcc6114e0a878e39098edbdf95",
+          "form": 3288,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-4eb69270bc614995bb8f7c3d7a79b014",
+          "form": 3310,
+          "foil": false
+        },
+        {
+          "key": "tessera:tessera-felldir-the-old",
+          "form": 3168,
+          "foil": false
+        },
+        {
+          "key": "tessera:tessera-gaiden-shinji",
+          "form": 3172,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-228066",
+          "form": 2466,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-253893",
+          "form": 2780,
+          "foil": false
+        },
+        {
+          "key": "tessera:tessera-gormlaith-golden-hilt",
+          "form": 3174,
+          "foil": false
+        },
+        {
+          "key": "tessera:tessera-hakon-one-eye",
+          "form": 3176,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-298881",
+          "form": 3060,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-298665",
+          "form": 3044,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-290789",
+          "form": 2978,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-846f6735b322428db0c842beba74607e",
+          "form": 3358,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-08eb0cb6071a4048a9a2a610f4febf73",
+          "form": 3244,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-59490f6446944cba962c32433798674d",
+          "form": 3316,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-21277db5eb244d40afdda0731af64a3d",
+          "form": 3272,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-276922",
+          "form": 2876,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-283869",
+          "form": 2900,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-298991",
+          "form": 3064,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-298819",
+          "form": 3056,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-e9ec4055ff264c05b12a3acd10eb66ff",
+          "form": 3448,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-253892",
+          "form": 2778,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209336",
+          "form": 2236,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-2c49f86bf9014f5ea4f1635e4b9cfb32",
+          "form": 3280,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-290788",
+          "form": 2976,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209343",
+          "form": 2244,
+          "foil": false
+        },
+        {
+          "key": "tessera:tessera-rislav-the-righteous",
+          "form": 3218,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-30e4c010f1484396a8a47ea102bd2a8a",
+          "form": 3284,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-283896",
+          "form": 2908,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-246028",
+          "form": 2656,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-253945",
+          "form": 2812,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-1b3309b1a16b42c0adb899781ba64ca0",
+          "form": 3268,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-c301277ae1c04850b9ce6b856e739707",
+          "form": 3404,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-11e1d347de5c43de82f66cd55c798036",
+          "form": 3258,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-bce053c64a484cc28b2c9835088cffec",
+          "form": 3398,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-277250",
+          "form": 2880,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-214871",
+          "form": 2358,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-223373",
+          "form": 2438,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-74708502575a41a28ac166c4cde57292",
+          "form": 3344,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-65d0ea1c2bfa490da41c39b8ec18b3e7",
+          "form": 3322,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-336e6586c1174c859dfc5877530502f3",
+          "form": 3290,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-218249",
+          "form": 2360,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-283895",
+          "form": 2906,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-284023",
+          "form": 2910,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-291138",
+          "form": 2988,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-b871f753976e4b6a88707b85eb173a98",
+          "form": 3390,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-290584",
+          "form": 2966,
+          "foil": false
+        }
+      ]
+    },
+    {
+      "nameKey": "Tessera_Cards_Page",
+      "translation": "Tessera_Cards.txt",
+      "number": 9,
+      "entries": [
+        {
+          "key": "tessera:workshop-a69cbf213f514897b8ab60d4d62ff06a",
+          "form": 3380,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-3b91ebd6b5394156b1f64228ee358f0f",
+          "form": 3298,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209085",
+          "form": 2124,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-10dcfc7157e0402e930f61f188cad214",
+          "form": 3256,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-f29fac338fe5441993a1489201f135ca",
+          "form": 3456,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-214243",
+          "form": 2330,
+          "foil": false
+        },
+        {
+          "key": "tessera:tessera-frandar-hunding",
+          "form": 3170,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209212",
+          "form": 2190,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-32d70f766d6945b4a7a5eefe4af00291",
+          "form": 3286,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-4c34c32b5e6148c395d78ff220ba5875",
+          "form": 3306,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-f686cb6c0e374cbb967e78cab9b17df7",
+          "form": 3458,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-d0f3db9c23aa47289d35eeb5d1b2e17b",
+          "form": 3418,
+          "foil": false
+        },
+        {
+          "key": "tessera:legends-209220",
+          "form": 2198,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-9ca1aea08d174ae68add30644c199529",
+          "form": 3374,
+          "foil": false
+        },
+        {
+          "key": "tessera:tessera-indoril-nerevar",
+          "form": 3182,
+          "foil": false
+        },
+        {
+          "key": "tessera:tessera-jurgen-windcaller",
+          "form": 3186,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-2ddf03c1ca1544f3b7f1af48c9ccf48f",
+          "form": 3282,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-5b7ec5b5c01443cc9fe87e79fed33b02",
+          "form": 3318,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-6c7ee36abeca48c984ef06d803fa6e3e",
+          "form": 3328,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-6fa97120f46d45b1b25d324c182e38b9",
+          "form": 3334,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-ac57fddccbcb4a0590a911856cd95f5c",
+          "form": 3382,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-99da076a099c473a83537b55d8832309",
+          "form": 3370,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-23cfaeb709bf40cca64ff5ee448ee24d",
+          "form": 3276,
+          "foil": false
+        },
+        {
+          "key": "tessera:maiq-the-liar",
+          "form": 3124,
+          "foil": false
+        },
+        {
+          "key": "tessera:tessera-makela-leki",
+          "form": 3192,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-6afc0c0c48ed4007b217b465cd603cbb",
+          "form": 3326,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-355ebe1090e64094b42d4da94c2f0dd6",
+          "form": 3292,
+          "foil": false
+        },
+        {
+          "key": "tessera:tessera-pelinal-whitestrake",
+          "form": 3212,
+          "foil": false
+        },
+        {
+          "key": "tessera:tessera-reman-cyrodiil",
+          "form": 3216,
+          "foil": false
+        },
+        {
+          "key": "tessera:tessera-saint-alessia",
+          "form": 3220,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-aefcbf4e3e244b2c984a764f62e4aaca",
+          "form": 3384,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-ea2df8fa41634d6fa571454b8d37e371",
+          "form": 3450,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-3f00f117daf64f928d48c8cb5924d3a9",
+          "form": 3302,
+          "foil": false
+        },
+        {
+          "key": "tessera:workshop-0a885937c60446e4b92ba4dbd5057ca6",
+          "form": 3248,
+          "foil": false
+        },
+        {
+          "key": "tessera:tessera-wulfharth",
+          "form": 3232,
+          "foil": false
+        },
+        {
+          "key": "tessera:tessera-ysgramor",
+          "form": 3234,
+          "foil": false
+        }
+      ]
+    },
+    {
+      "nameKey": "Tessera_Cards_Page",
+      "translation": "Tessera_Cards.txt",
+      "number": 10,
+      "entries": [
+        {
+          "key": "tessera:tessera-akatosh",
+          "form": 3156,
+          "foil": false
+        },
+        {
+          "key": "tessera:tessera-arkay",
+          "form": 3158,
+          "foil": false
+        },
+        {
+          "key": "tessera:tessera-azura",
+          "form": 3160,
+          "foil": false
+        },
+        {
+          "key": "tessera:tessera-boethiah",
+          "form": 3162,
+          "foil": false
+        },
+        {
+          "key": "tessera:tessera-clavicus-vile",
+          "form": 3164,
+          "foil": false
+        },
+        {
+          "key": "tessera:tessera-dibella",
+          "form": 3166,
+          "foil": false
+        },
+        {
+          "key": "tessera:tessera-hermaeus-mora",
+          "form": 3178,
+          "foil": false
+        },
+        {
+          "key": "tessera:tessera-hircine",
+          "form": 3180,
+          "foil": false
+        },
+        {
+          "key": "tessera:tessera-julianos",
+          "form": 3184,
+          "foil": false
+        },
+        {
+          "key": "tessera:tessera-jyggalag",
+          "form": 3188,
+          "foil": false
+        },
+        {
+          "key": "tessera:tessera-kynareth",
+          "form": 3190,
+          "foil": false
+        },
+        {
+          "key": "tessera:tessera-malacath",
+          "form": 3194,
+          "foil": false
+        },
+        {
+          "key": "tessera:tessera-mara",
+          "form": 3196,
+          "foil": false
+        },
+        {
+          "key": "tessera:tessera-mehrunes-dagon",
+          "form": 3198,
+          "foil": false
+        },
+        {
+          "key": "tessera:tessera-mephala",
+          "form": 3200,
+          "foil": false
+        },
+        {
+          "key": "tessera:tessera-meridia",
+          "form": 3202,
+          "foil": false
+        },
+        {
+          "key": "tessera:tessera-molag-bal",
+          "form": 3204,
+          "foil": false
+        },
+        {
+          "key": "tessera:tessera-namira",
+          "form": 3208,
+          "foil": false
+        },
+        {
+          "key": "tessera:tessera-nocturnal",
+          "form": 3210,
+          "foil": false
+        },
+        {
+          "key": "tessera:tessera-peryite",
+          "form": 3214,
+          "foil": false
+        },
+        {
+          "key": "tessera:tessera-sanguine",
+          "form": 3222,
+          "foil": false
+        },
+        {
+          "key": "tessera:tessera-sheogorath",
+          "form": 3224,
+          "foil": false
+        },
+        {
+          "key": "tessera:tessera-stendarr",
+          "form": 3226,
+          "foil": false
+        },
+        {
+          "key": "tessera:tessera-talos",
+          "form": 3228,
+          "foil": false
+        },
+        {
+          "key": "tessera:tessera-vaermina",
+          "form": 3230,
+          "foil": false
+        },
+        {
+          "key": "tessera:tessera-zenithar",
+          "form": 3236,
+          "foil": false
+        }
+      ]
+    },
+    {
+      "nameKey": "Tessera_Foils_Page",
+      "translation": "Tessera_Foils.txt",
+      "number": 1,
+      "entries": [
+        {
+          "key": "tessera:legends-209105",
+          "form": 2127,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-291262",
+          "form": 3021,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-253708",
+          "form": 2723,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-246678",
+          "form": 2675,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-223299",
+          "form": 2435,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209119",
+          "form": 2139,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-934a0feadb4b4a7493a2fb58aa9d0109",
+          "form": 3367,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-298446",
+          "form": 3037,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-ee3b304d19f44b6b9df0f53d3fa6c2c6",
+          "form": 3453,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-220453",
+          "form": 2371,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209055",
+          "form": 2117,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-253825",
+          "form": 2755,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-299178",
+          "form": 3085,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-253741",
+          "form": 2741,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-246032",
+          "form": 2659,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-253882",
+          "form": 2769,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-230888",
+          "form": 2483,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-221518",
+          "form": 2409,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-284073",
+          "form": 2925,
+          "foil": true
+        },
+        {
+          "key": "tessera:crown-quartermaster",
+          "form": 2075,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-276452",
+          "form": 2861,
+          "foil": true
+        },
+        {
+          "key": "tessera:deathless-draugr",
+          "form": 2079,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-222120",
+          "form": 2429,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-251855",
+          "form": 2713,
+          "foil": true
+        },
+        {
+          "key": "tessera:dwarven-spider",
+          "form": 2089,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-233528",
+          "form": 2505,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-214282",
+          "form": 2337,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-214293",
+          "form": 2343,
+          "foil": true
+        },
+        {
+          "key": "tessera:fighters-guild-recruit",
+          "form": 2093,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-246687",
+          "form": 2687,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209054",
+          "form": 2115,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-299181",
+          "form": 3087,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-80fb3c68fd684ba9b31bd5a6421c5e91",
+          "form": 3353,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-213386",
+          "form": 2311,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-284110",
+          "form": 2935,
+          "foil": true
+        },
+        {
+          "key": "tessera:guar-stablemaster",
+          "form": 2097,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-73be5788448c4843afdcc5ff75e26685",
+          "form": 3343,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-305338",
+          "form": 3103,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209876",
+          "form": 2285,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-291141",
+          "form": 2991,
+          "foil": true
+        },
+        {
+          "key": "tessera:imperial-grunt",
+          "form": 2101,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-234088",
+          "form": 2583,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-214319",
+          "form": 2345,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-270890",
+          "form": 2835,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-257893",
+          "form": 2821,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-253820",
+          "form": 2749,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-253737",
+          "form": 2733,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-222286",
+          "form": 2431,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-253871",
+          "form": 2761,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-fb31c5b7f9e440ecb677704c5e60243d",
+          "form": 3463,
+          "foil": true
+        },
+        {
+          "key": "tessera:murkwater-goblin",
+          "form": 3129,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-246689",
+          "form": 2689,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209283",
+          "form": 2225,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-220833",
+          "form": 2391,
+          "foil": true
+        },
+        {
+          "key": "tessera:oldgate-warden",
+          "form": 3131,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-316970",
+          "form": 3107,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-228283",
+          "form": 2469,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-245462",
+          "form": 2639,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209341",
+          "form": 2243,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-245453",
+          "form": 2633,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-a40c6a1459204ef9a9416903ec2353c5",
+          "form": 3377,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-860262430f7447b6859fc7d77aff8874",
+          "form": 3361,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-246650",
+          "form": 2671,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-253245",
+          "form": 2717,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-214291",
+          "form": 2341,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-232855",
+          "form": 2489,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-234143",
+          "form": 2599,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-246681",
+          "form": 2677,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-231122",
+          "form": 2485,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-223709",
+          "form": 2453,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-210108",
+          "form": 2293,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-245465",
+          "form": 2641,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-298694",
+          "form": 3049,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-253880",
+          "form": 2767,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-221520",
+          "form": 2411,
+          "foil": true
+        },
+        {
+          "key": "tessera:thieves-guild-recruit",
+          "form": 3239,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-fe55a1db8de24df1a3fbd47d276bc3e5",
+          "form": 3467,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-443712",
+          "form": 3113,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-282540",
+          "form": 2891,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209180",
+          "form": 2181,
+          "foil": true
+        }
+      ]
+    },
+    {
+      "nameKey": "Tessera_Foils_Page",
+      "translation": "Tessera_Foils.txt",
+      "number": 2,
+      "entries": [
+        {
+          "key": "tessera:legends-303516",
+          "form": 3101,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209346",
+          "form": 2247,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-290672",
+          "form": 2971,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209111",
+          "form": 2131,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-284046",
+          "form": 2917,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-284079",
+          "form": 2927,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209123",
+          "form": 2143,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-276386",
+          "form": 2857,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-253739",
+          "form": 2737,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209398",
+          "form": 2265,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-233990",
+          "form": 2563,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209881",
+          "form": 2289,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-259237",
+          "form": 2823,
+          "foil": true
+        },
+        {
+          "key": "tessera:blue-grummite",
+          "form": 2067,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209130",
+          "form": 2151,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-245633",
+          "form": 2643,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-234047",
+          "form": 2571,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-7ce38ff8659f48a7a28bcb35edd2ea78",
+          "form": 3349,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-298805",
+          "form": 3053,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-234096",
+          "form": 2587,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-233878",
+          "form": 2537,
+          "foil": true
+        },
+        {
+          "key": "tessera:covenant-marauder",
+          "form": 2073,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-275903",
+          "form": 2845,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-234017",
+          "form": 2565,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-234373",
+          "form": 2619,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209166",
+          "form": 2179,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-298583",
+          "form": 3043,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209396",
+          "form": 2263,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209063",
+          "form": 2121,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-233890",
+          "form": 2543,
+          "foil": true
+        },
+        {
+          "key": "tessera:ferocious-dreugh",
+          "form": 2091,
+          "foil": true
+        },
+        {
+          "key": "tessera:frostbite-spider",
+          "form": 2095,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-233869",
+          "form": 2533,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209211",
+          "form": 2189,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209213",
+          "form": 2193,
+          "foil": true
+        },
+        {
+          "key": "tessera:voracious-spriggan",
+          "form": 3241,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-213395",
+          "form": 2313,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209228",
+          "form": 2205,
+          "foil": true
+        },
+        {
+          "key": "tessera:camlorn-sentinel",
+          "form": 2071,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-220391",
+          "form": 2363,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-284352",
+          "form": 2955,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-253902",
+          "form": 2785,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-291176",
+          "form": 2995,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209241",
+          "form": 2209,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209264",
+          "form": 2215,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-221487",
+          "form": 2399,
+          "foil": true
+        },
+        {
+          "key": "tessera:morthal-watchman",
+          "form": 3127,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-253949",
+          "form": 2815,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-214287",
+          "form": 2339,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209285",
+          "form": 2227,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-253886",
+          "form": 2773,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-299192",
+          "form": 3091,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209291",
+          "form": 2233,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-299213",
+          "form": 3093,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-233880",
+          "form": 2539,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-234084",
+          "form": 2579,
+          "foil": true
+        },
+        {
+          "key": "tessera:rihad-battlemage",
+          "form": 3143,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209352",
+          "form": 2249,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-254986",
+          "form": 2819,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-6ff440052b4c4fb9abbedaa9947862f5",
+          "form": 3337,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-246685",
+          "form": 2683,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-290671",
+          "form": 2969,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-211330",
+          "form": 2305,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-214331",
+          "form": 2347,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209049",
+          "form": 2113,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-c5fd10f447eb424f8828d106d188a287",
+          "form": 3409,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-246666",
+          "form": 2673,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-259603",
+          "form": 2825,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-213400",
+          "form": 2317,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-234064",
+          "form": 2575,
+          "foil": true
+        },
+        {
+          "key": "tessera:sunhold-medic",
+          "form": 3155,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-291137",
+          "form": 2987,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209425",
+          "form": 2279,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-276374",
+          "form": 2855,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-246641",
+          "form": 2669,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-221516",
+          "form": 2407,
+          "foil": true
+        },
+        {
+          "key": "tessera:wind-keep-spellsword",
+          "form": 3243,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209436",
+          "form": 2283,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209882",
+          "form": 2291,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-340477",
+          "form": 3111,
+          "foil": true
+        }
+      ]
+    },
+    {
+      "nameKey": "Tessera_Foils_Page",
+      "translation": "Tessera_Foils.txt",
+      "number": 3,
+      "entries": [
+        {
+          "key": "tessera:legends-221480",
+          "form": 2397,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-220789",
+          "form": 2383,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-253918",
+          "form": 2805,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-299187",
+          "form": 3089,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-220827",
+          "form": 2389,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-284135",
+          "form": 2943,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-246783",
+          "form": 2701,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-246411",
+          "form": 2665,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209126",
+          "form": 2145,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-289746",
+          "form": 2961,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-220780",
+          "form": 2373,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-298994",
+          "form": 3069,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-299176",
+          "form": 3081,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-299057",
+          "form": 3077,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-298993",
+          "form": 3067,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-228305",
+          "form": 2471,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-253909",
+          "form": 2791,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-253908",
+          "form": 2789,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-227920",
+          "form": 2459,
+          "foil": true
+        },
+        {
+          "key": "tessera:brutal-ashlander",
+          "form": 2069,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209138",
+          "form": 2155,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-233867",
+          "form": 2529,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-299060",
+          "form": 3079,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-246690",
+          "form": 2691,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209148",
+          "form": 2165,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209153",
+          "form": 2171,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209155",
+          "form": 2173,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-271009",
+          "form": 2837,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-291257",
+          "form": 3013,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-291244",
+          "form": 3001,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-299013",
+          "form": 3071,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209165",
+          "form": 2177,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-253868",
+          "form": 2759,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-224145",
+          "form": 2457,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-214247",
+          "form": 2333,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209203",
+          "form": 2185,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-229020",
+          "form": 2479,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-214351",
+          "form": 2349,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-223605",
+          "form": 2451,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-246465",
+          "form": 2667,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-208800",
+          "form": 2105,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209214",
+          "form": 2195,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-275907",
+          "form": 2849,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-884a3119fe96487bbfa219cfdacb219d",
+          "form": 3363,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-284144",
+          "form": 2953,
+          "foil": true
+        },
+        {
+          "key": "tessera:guildsworn-apprentice",
+          "form": 2099,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-71fb291596b6489f86d87a053c7803bf",
+          "form": 3339,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-214278",
+          "form": 2335,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-245458",
+          "form": 2635,
+          "foil": true
+        },
+        {
+          "key": "tessera:kvatch-soldier",
+          "form": 2103,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-277252",
+          "form": 2885,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-234082",
+          "form": 2577,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-253874",
+          "form": 2763,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-208811",
+          "form": 2107,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-214138",
+          "form": 2323,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-214175",
+          "form": 2327,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-284041",
+          "form": 2913,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-245672",
+          "form": 2645,
+          "foil": true
+        },
+        {
+          "key": "tessera:orc-clan-captain",
+          "form": 3133,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-298348",
+          "form": 3035,
+          "foil": true
+        },
+        {
+          "key": "tessera:palace-prowler",
+          "form": 3137,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-270737",
+          "form": 2831,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-233903",
+          "form": 2549,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-253936",
+          "form": 2809,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-1dc921df1378490b9144b3bdd07ee1cb",
+          "form": 3271,
+          "foil": true
+        },
+        {
+          "key": "tessera:rotting-draugr",
+          "form": 3145,
+          "foil": true
+        },
+        {
+          "key": "tessera:sharpshooter-scout",
+          "form": 3149,
+          "foil": true
+        },
+        {
+          "key": "tessera:skaven-pyromancer",
+          "form": 3153,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-250445",
+          "form": 2709,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209404",
+          "form": 2267,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-230468",
+          "form": 2481,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-baa65a0298c246f0a85937396cce7691",
+          "form": 3393,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-233487",
+          "form": 2503,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209411",
+          "form": 2273,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-234371",
+          "form": 2617,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-234220",
+          "form": 2609,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-233891",
+          "form": 2545,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209433",
+          "form": 2281,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-234365",
+          "form": 2613,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-221490",
+          "form": 2401,
+          "foil": true
+        }
+      ]
+    },
+    {
+      "nameKey": "Tessera_Foils_Page",
+      "translation": "Tessera_Foils.txt",
+      "number": 4,
+      "entries": [
+        {
+          "key": "tessera:legends-232866",
+          "form": 2491,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-253821",
+          "form": 2751,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-283717",
+          "form": 2895,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209113",
+          "form": 2135,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-270803",
+          "form": 2833,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-246684",
+          "form": 2681,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-253917",
+          "form": 2803,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-220784",
+          "form": 2377,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-253915",
+          "form": 2801,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-233897",
+          "form": 2547,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-221492",
+          "form": 2403,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-233963",
+          "form": 2561,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-234060",
+          "form": 2573,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-298666",
+          "form": 3047,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-299014",
+          "form": 3073,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-dd3a837e850b4dc5ae1e737559978ba3",
+          "form": 3437,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-291254",
+          "form": 3009,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209143",
+          "form": 2161,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209144",
+          "form": 2163,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-211209",
+          "form": 2299,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-234169",
+          "form": 2605,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-234086",
+          "form": 2581,
+          "foil": true
+        },
+        {
+          "key": "tessera:daring-cutpurse",
+          "form": 2077,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-271236",
+          "form": 2839,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-277251",
+          "form": 2883,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-321209",
+          "form": 3109,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209162",
+          "form": 2175,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-214361",
+          "form": 2357,
+          "foil": true
+        },
+        {
+          "key": "tessera:dread-clannfear",
+          "form": 2081,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-298295",
+          "form": 3029,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-298873",
+          "form": 3059,
+          "foil": true
+        },
+        {
+          "key": "tessera:dune-stalker",
+          "form": 2083,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-214136",
+          "form": 2321,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-245069",
+          "form": 2629,
+          "foil": true
+        },
+        {
+          "key": "tessera:dwarven-ballista",
+          "form": 2085,
+          "foil": true
+        },
+        {
+          "key": "tessera:dwarven-sphere",
+          "form": 2087,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209210",
+          "form": 2187,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-233553",
+          "form": 2515,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-946e603036d34690859cba157c259368",
+          "form": 3369,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-233861",
+          "form": 2523,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-276872",
+          "form": 2873,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-276448",
+          "form": 2859,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-09ff9efc6da64e8e938fb10e3f133202",
+          "form": 3247,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-228476",
+          "form": 2477,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-0efef2fd957c46f28d10230f6bec03dc",
+          "form": 3253,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-284069",
+          "form": 2921,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-277254",
+          "form": 2887,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209878",
+          "form": 2287,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-291260",
+          "form": 3019,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-284063",
+          "form": 2919,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-223575",
+          "form": 2447,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209260",
+          "form": 2211,
+          "foil": true
+        },
+        {
+          "key": "tessera:lowland-troll",
+          "form": 3123,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-291131",
+          "form": 2983,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-290295",
+          "form": 2965,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209277",
+          "form": 2223,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-291246",
+          "form": 3003,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209287",
+          "form": 2231,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-276585",
+          "form": 2867,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-214355",
+          "form": 2351,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-246686",
+          "form": 2685,
+          "foil": true
+        },
+        {
+          "key": "tessera:renowned-instructor",
+          "form": 3141,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-246223",
+          "form": 2663,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-8432b53ced7240979f0ced76989d086f",
+          "form": 3357,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-223713",
+          "form": 2455,
+          "foil": true
+        },
+        {
+          "key": "tessera:shrieking-harpy",
+          "form": 3151,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209360",
+          "form": 2255,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-253910",
+          "form": 2793,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209394",
+          "form": 2261,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-283785",
+          "form": 2897,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209416",
+          "form": 2275,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-234100",
+          "form": 2589,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209421",
+          "form": 2277,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-253746",
+          "form": 2743,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-253884",
+          "form": 2771,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-211320",
+          "form": 2301,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-284133",
+          "form": 2939,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-d8e35166497544998152e315024c2de1",
+          "form": 3425,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-284134",
+          "form": 2941,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-220869",
+          "form": 2393,
+          "foil": true
+        }
+      ]
+    },
+    {
+      "nameKey": "Tessera_Foils_Page",
+      "translation": "Tessera_Foils.txt",
+      "number": 5,
+      "entries": [
+        {
+          "key": "tessera:legends-209106",
+          "form": 2129,
+          "foil": true
+        },
+        {
+          "key": "tessera:alpha-wolf",
+          "form": 2065,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-271323",
+          "form": 2841,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-245460",
+          "form": 2637,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-298769",
+          "form": 3051,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-222060",
+          "form": 2427,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209121",
+          "form": 2141,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-221508",
+          "form": 2405,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-253887",
+          "form": 2775,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-298155",
+          "form": 3027,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-223570",
+          "form": 2445,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209131",
+          "form": 2153,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-291243",
+          "form": 2999,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-223445",
+          "form": 2441,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-246691",
+          "form": 2693,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-234090",
+          "form": 2585,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-283838",
+          "form": 2899,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-246683",
+          "form": 2679,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-221447",
+          "form": 2395,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-234758",
+          "form": 2621,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-247820",
+          "form": 2705,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-214357",
+          "form": 2353,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-233881",
+          "form": 2541,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-242713",
+          "form": 2627,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-220450",
+          "form": 2369,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-253824",
+          "form": 2753,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-272783",
+          "form": 2843,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-214145",
+          "form": 2325,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-291248",
+          "form": 3007,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-6cdd33b7846a4b7fb30636e394ecab29",
+          "form": 3331,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-276454",
+          "form": 2863,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-802322f1271d497cab80202de49fe329",
+          "form": 3351,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-214134",
+          "form": 2319,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-210111",
+          "form": 2295,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-246067",
+          "form": 2661,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-210112",
+          "form": 2297,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-284141",
+          "form": 2947,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209221",
+          "form": 2201,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-245431",
+          "form": 2631,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209233",
+          "form": 2207,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-214360",
+          "form": 2355,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-298807",
+          "form": 3055,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-220782",
+          "form": 2375,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-284100",
+          "form": 2933,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-233958",
+          "form": 2553,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-233246",
+          "form": 2495,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-208816",
+          "form": 2109,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-253878",
+          "form": 2765,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-213273",
+          "form": 2307,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-283470",
+          "form": 2893,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-d958ed92b96941f79f9dc27317491131",
+          "form": 3427,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-277232",
+          "form": 2879,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-220816",
+          "form": 2387,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-234145",
+          "form": 2601,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209286",
+          "form": 2229,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-298988",
+          "form": 3063,
+          "foil": true
+        },
+        {
+          "key": "tessera:orc-clan-shaman",
+          "form": 3135,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-72eba8d676d94b869282dbe6c7f6cf9f",
+          "form": 3341,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-290724",
+          "form": 2975,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209334",
+          "form": 2235,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209338",
+          "form": 2241,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-277647",
+          "form": 2889,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-285093",
+          "form": 2957,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-291258",
+          "form": 3015,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-293893",
+          "form": 3025,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-221526",
+          "form": 2413,
+          "foil": true
+        },
+        {
+          "key": "tessera:septim-guardsman",
+          "form": 3147,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-213397",
+          "form": 2315,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-284091",
+          "form": 2931,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-234138",
+          "form": 2597,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209358",
+          "form": 2253,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209387",
+          "form": 2257,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-227995",
+          "form": 2465,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-223591",
+          "form": 2449,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-253740",
+          "form": 2739,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-253934",
+          "form": 2807,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-227924",
+          "form": 2461,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-222183ea5c59494c9bd022f2d123e44c",
+          "form": 3275,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-fc679287c950442dacbff9004a9bffeb",
+          "form": 3465,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-4dd6163af1a04fd2926c750490616270",
+          "form": 3309,
+          "foil": true
+        }
+      ]
+    },
+    {
+      "nameKey": "Tessera_Foils_Page",
+      "translation": "Tessera_Foils.txt",
+      "number": 6,
+      "entries": [
+        {
+          "key": "tessera:legends-209116",
+          "form": 2137,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-245884",
+          "form": 2653,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-246693",
+          "form": 2697,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-220787",
+          "form": 2381,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-291266",
+          "form": 3023,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-253890",
+          "form": 2777,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209129",
+          "form": 2149,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-233961",
+          "form": 2557,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-234135",
+          "form": 2595,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209140",
+          "form": 2157,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-233751",
+          "form": 2517,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-291255",
+          "form": 3011,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-250442",
+          "form": 2707,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-67dcd873fb434f1c83ef74ee905aa772",
+          "form": 3325,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209152",
+          "form": 2169,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-275904",
+          "form": 2847,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-0b154dda7cd34ab0851138fcaf3c132d",
+          "form": 3251,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-54f7cbf6b6434b3a868620b695bed8d8",
+          "form": 3315,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-221542",
+          "form": 2419,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-233853",
+          "form": 2521,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209407",
+          "form": 2271,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-276590",
+          "form": 2869,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-284143",
+          "form": 2951,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-a61fed6387c34aaf9098f4d9f192135d",
+          "form": 3379,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-220421",
+          "form": 2365,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-233924",
+          "form": 2551,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-253580",
+          "form": 2721,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-db82a294a580496cb9e2b1d92a9ad1a1",
+          "form": 3429,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209070",
+          "form": 2123,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-253716",
+          "form": 2725,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-b32f10d4404547879cd2687d8549397e",
+          "form": 3389,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-1630defb48e14a56affb631ba4d4d704",
+          "form": 3263,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-dced7aab7d244b47b1e4260525419d2f",
+          "form": 3433,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-275908",
+          "form": 2851,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-298298",
+          "form": 3031,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-253124",
+          "form": 2715,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-233755",
+          "form": 2519,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-220786",
+          "form": 2379,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-245870",
+          "form": 2651,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-298447",
+          "form": 3039,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-284142",
+          "form": 2949,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209268",
+          "form": 2217,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209272",
+          "form": 2219,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-246782",
+          "form": 2699,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-253717",
+          "form": 2727,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209276",
+          "form": 2221,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-449030",
+          "form": 3121,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-443713",
+          "form": 3115,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-253894",
+          "form": 2783,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-253913",
+          "form": 2799,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-757cf855211a4ac2a03f854fc3733802",
+          "form": 3347,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-be761191711e4dec97ab8e4cfdb38018",
+          "form": 3401,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-e7373e9d48f3420d95c5a3cd94a6f38a",
+          "form": 3445,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209057",
+          "form": 2119,
+          "foil": true
+        },
+        {
+          "key": "tessera:pit-lion",
+          "form": 3139,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-253911",
+          "form": 2795,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-220423",
+          "form": 2367,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-cf1036050f45425fa09d1bca756caed1",
+          "form": 3415,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209353",
+          "form": 2251,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-d12968b953c34412963db60814d291f5",
+          "form": 3421,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-291259",
+          "form": 3017,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-234040",
+          "form": 2567,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-39ad875108fb447c8f6d8a0d47e7b0f5",
+          "form": 3295,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-253839",
+          "form": 2757,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-303514",
+          "form": 3099,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209393",
+          "form": 2259,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-fe76465d735a42f3bfdc8b5872f4b055",
+          "form": 3469,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-228313",
+          "form": 2473,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-233868",
+          "form": 2531,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-e5f11a3e359e43e8a68d022c5f56ca94",
+          "form": 3443,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-221536",
+          "form": 2417,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-b2048c7ad14947739aac9ec802cc3d34",
+          "form": 3387,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209201",
+          "form": 2183,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-cc0755cf1b9e4d28805537149b6b9cad",
+          "form": 3411,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-3dd08920badd44739bb1c738bf571513",
+          "form": 3301,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-250486",
+          "form": 2711,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-dca26a63a8ec4e6d806e099d6a0eb3ad",
+          "form": 3431,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-211327",
+          "form": 2303,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-298344",
+          "form": 3033,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-246918",
+          "form": 2703,
+          "foil": true
+        }
+      ]
+    },
+    {
+      "nameKey": "Tessera_Foils_Page",
+      "translation": "Tessera_Foils.txt",
+      "number": 7,
+      "entries": [
+        {
+          "key": "tessera:workshop-1a8d2d6d45fd44b68ddded51394eaa46",
+          "form": 3267,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-234767",
+          "form": 2623,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-c55636d70f2247c3bb3c691f12136c06",
+          "form": 3407,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-472c87578fba4301b8d12b456eb079cf",
+          "form": 3305,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-290722",
+          "form": 2973,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-213292",
+          "form": 2309,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-449029",
+          "form": 3119,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-223097",
+          "form": 2433,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-0f7933221af243d98cd9b8435af5b849",
+          "form": 3255,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-284140",
+          "form": 2945,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-299177",
+          "form": 3083,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-5ca729b4af8840a58fe8d0d2611dbf52",
+          "form": 3321,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-253951",
+          "form": 2817,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-246692",
+          "form": 2695,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-de10aed616d14446b5d03a5b29722ef4",
+          "form": 3439,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-300493",
+          "form": 3095,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-bba8aa6846b247a5bdcded68bae4d93b",
+          "form": 3395,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209142",
+          "form": 2159,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-245823",
+          "form": 2649,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-2b9d63bf36a84222b54518a1b4d466c0",
+          "form": 3279,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-284087",
+          "form": 2929,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209151",
+          "form": 2167,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-221651",
+          "form": 2423,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-245977",
+          "form": 2655,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-227993",
+          "form": 2463,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-223354",
+          "form": 2437,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-291177",
+          "form": 2997,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-284124",
+          "form": 2937,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-283880",
+          "form": 2903,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-253750",
+          "form": 2745,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-6dc7b02ffac94f438aae158ccdf26132",
+          "form": 3333,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-233529",
+          "form": 2507,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-9001b05eff3640c78c516cfc8273422d",
+          "form": 3365,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-284045",
+          "form": 2915,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-df544fcfe1444c3c8e4bb0799a7c746d",
+          "form": 3441,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-14f0c5b798bc44d6b243921366b8119f",
+          "form": 3261,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209219",
+          "form": 2197,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209222",
+          "form": 2203,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-245808",
+          "form": 2647,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-214239",
+          "form": 2329,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-276563",
+          "form": 2865,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-228358",
+          "form": 2475,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-d40aefdcf3ae4261b8fdb8bfc434a5f3",
+          "form": 3423,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209263",
+          "form": 2213,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-c049e96c458d4b6bb43d42928657aae0",
+          "form": 3403,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-299051",
+          "form": 3075,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-221532",
+          "form": 2415,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-298569",
+          "form": 3041,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-253718",
+          "form": 2729,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-220794",
+          "form": 2385,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-18ac8158f4a5452fa15bd83435f9fed2",
+          "form": 3265,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-223568",
+          "form": 2443,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-303510",
+          "form": 3097,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-283891",
+          "form": 2905,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-253738",
+          "form": 2735,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-234045",
+          "form": 2569,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-231502",
+          "form": 2487,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-bc20c37f41474244b7c750a513e1e072",
+          "form": 3397,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-236868",
+          "form": 2625,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-253912",
+          "form": 2797,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-291136",
+          "form": 2985,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209337",
+          "form": 2239,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-222058",
+          "form": 2425,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-3ab65aacb7dc478e9ea3e54b81a74be6",
+          "form": 3297,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-276766",
+          "form": 2871,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-234152",
+          "form": 2603,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-838352cf6cbd4f57b1aa83eddb350753",
+          "form": 3355,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-276873",
+          "form": 2875,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-4f51ae8bf9124a37bd65801702b38ffb",
+          "form": 3313,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-234370",
+          "form": 2615,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-233866",
+          "form": 2527,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209406",
+          "form": 2269,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-ef294df3b2c34eae9c87126fad34e9d2",
+          "form": 3455,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-221546",
+          "form": 2421,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-dd26b4a003b34d3ba5fa8556713cf428",
+          "form": 3435,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-d0dad43466fd4e53b3affd7fe8736682",
+          "form": 3417,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-449026",
+          "form": 3117,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-f7eeb69e9b274af5a54e54d25a37e72a",
+          "form": 3461,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-284070",
+          "form": 2923,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-e802866a12a24fd4afec2486c2542903",
+          "form": 3447,
+          "foil": true
+        }
+      ]
+    },
+    {
+      "nameKey": "Tessera_Foils_Page",
+      "translation": "Tessera_Foils.txt",
+      "number": 8,
+      "entries": [
+        {
+          "key": "tessera:legends-209002",
+          "form": 2111,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209112",
+          "form": 2133,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-9bf30e858d5d4743874e0e46d85c882c",
+          "form": 3373,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-253938",
+          "form": 2811,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-cd578286044440dbba4fc0515d2251aa",
+          "form": 3413,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-253904",
+          "form": 2787,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-32fc39fcc6114e0a878e39098edbdf95",
+          "form": 3289,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-4eb69270bc614995bb8f7c3d7a79b014",
+          "form": 3311,
+          "foil": true
+        },
+        {
+          "key": "tessera:tessera-felldir-the-old",
+          "form": 3169,
+          "foil": true
+        },
+        {
+          "key": "tessera:tessera-gaiden-shinji",
+          "form": 3173,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-228066",
+          "form": 2467,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-253893",
+          "form": 2781,
+          "foil": true
+        },
+        {
+          "key": "tessera:tessera-gormlaith-golden-hilt",
+          "form": 3175,
+          "foil": true
+        },
+        {
+          "key": "tessera:tessera-hakon-one-eye",
+          "form": 3177,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-298881",
+          "form": 3061,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-298665",
+          "form": 3045,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-290789",
+          "form": 2979,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-846f6735b322428db0c842beba74607e",
+          "form": 3359,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-08eb0cb6071a4048a9a2a610f4febf73",
+          "form": 3245,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-59490f6446944cba962c32433798674d",
+          "form": 3317,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-21277db5eb244d40afdda0731af64a3d",
+          "form": 3273,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-276922",
+          "form": 2877,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-283869",
+          "form": 2901,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-298991",
+          "form": 3065,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-298819",
+          "form": 3057,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-e9ec4055ff264c05b12a3acd10eb66ff",
+          "form": 3449,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-253892",
+          "form": 2779,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209336",
+          "form": 2237,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-2c49f86bf9014f5ea4f1635e4b9cfb32",
+          "form": 3281,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-290788",
+          "form": 2977,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209343",
+          "form": 2245,
+          "foil": true
+        },
+        {
+          "key": "tessera:tessera-rislav-the-righteous",
+          "form": 3219,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-30e4c010f1484396a8a47ea102bd2a8a",
+          "form": 3285,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-283896",
+          "form": 2909,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-246028",
+          "form": 2657,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-253945",
+          "form": 2813,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-1b3309b1a16b42c0adb899781ba64ca0",
+          "form": 3269,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-c301277ae1c04850b9ce6b856e739707",
+          "form": 3405,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-11e1d347de5c43de82f66cd55c798036",
+          "form": 3259,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-bce053c64a484cc28b2c9835088cffec",
+          "form": 3399,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-277250",
+          "form": 2881,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-214871",
+          "form": 2359,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-223373",
+          "form": 2439,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-74708502575a41a28ac166c4cde57292",
+          "form": 3345,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-65d0ea1c2bfa490da41c39b8ec18b3e7",
+          "form": 3323,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-336e6586c1174c859dfc5877530502f3",
+          "form": 3291,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-218249",
+          "form": 2361,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-283895",
+          "form": 2907,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-284023",
+          "form": 2911,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-291138",
+          "form": 2989,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-b871f753976e4b6a88707b85eb173a98",
+          "form": 3391,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-290584",
+          "form": 2967,
+          "foil": true
+        }
+      ]
+    },
+    {
+      "nameKey": "Tessera_Foils_Page",
+      "translation": "Tessera_Foils.txt",
+      "number": 9,
+      "entries": [
+        {
+          "key": "tessera:workshop-a69cbf213f514897b8ab60d4d62ff06a",
+          "form": 3381,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-3b91ebd6b5394156b1f64228ee358f0f",
+          "form": 3299,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209085",
+          "form": 2125,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-10dcfc7157e0402e930f61f188cad214",
+          "form": 3257,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-f29fac338fe5441993a1489201f135ca",
+          "form": 3457,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-214243",
+          "form": 2331,
+          "foil": true
+        },
+        {
+          "key": "tessera:tessera-frandar-hunding",
+          "form": 3171,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209212",
+          "form": 2191,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-32d70f766d6945b4a7a5eefe4af00291",
+          "form": 3287,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-4c34c32b5e6148c395d78ff220ba5875",
+          "form": 3307,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-f686cb6c0e374cbb967e78cab9b17df7",
+          "form": 3459,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-d0f3db9c23aa47289d35eeb5d1b2e17b",
+          "form": 3419,
+          "foil": true
+        },
+        {
+          "key": "tessera:legends-209220",
+          "form": 2199,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-9ca1aea08d174ae68add30644c199529",
+          "form": 3375,
+          "foil": true
+        },
+        {
+          "key": "tessera:tessera-indoril-nerevar",
+          "form": 3183,
+          "foil": true
+        },
+        {
+          "key": "tessera:tessera-jurgen-windcaller",
+          "form": 3187,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-2ddf03c1ca1544f3b7f1af48c9ccf48f",
+          "form": 3283,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-5b7ec5b5c01443cc9fe87e79fed33b02",
+          "form": 3319,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-6c7ee36abeca48c984ef06d803fa6e3e",
+          "form": 3329,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-6fa97120f46d45b1b25d324c182e38b9",
+          "form": 3335,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-ac57fddccbcb4a0590a911856cd95f5c",
+          "form": 3383,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-99da076a099c473a83537b55d8832309",
+          "form": 3371,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-23cfaeb709bf40cca64ff5ee448ee24d",
+          "form": 3277,
+          "foil": true
+        },
+        {
+          "key": "tessera:maiq-the-liar",
+          "form": 3125,
+          "foil": true
+        },
+        {
+          "key": "tessera:tessera-makela-leki",
+          "form": 3193,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-6afc0c0c48ed4007b217b465cd603cbb",
+          "form": 3327,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-355ebe1090e64094b42d4da94c2f0dd6",
+          "form": 3293,
+          "foil": true
+        },
+        {
+          "key": "tessera:tessera-pelinal-whitestrake",
+          "form": 3213,
+          "foil": true
+        },
+        {
+          "key": "tessera:tessera-reman-cyrodiil",
+          "form": 3217,
+          "foil": true
+        },
+        {
+          "key": "tessera:tessera-saint-alessia",
+          "form": 3221,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-aefcbf4e3e244b2c984a764f62e4aaca",
+          "form": 3385,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-ea2df8fa41634d6fa571454b8d37e371",
+          "form": 3451,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-3f00f117daf64f928d48c8cb5924d3a9",
+          "form": 3303,
+          "foil": true
+        },
+        {
+          "key": "tessera:workshop-0a885937c60446e4b92ba4dbd5057ca6",
+          "form": 3249,
+          "foil": true
+        },
+        {
+          "key": "tessera:tessera-wulfharth",
+          "form": 3233,
+          "foil": true
+        },
+        {
+          "key": "tessera:tessera-ysgramor",
+          "form": 3235,
+          "foil": true
+        }
+      ]
+    },
+    {
+      "nameKey": "Tessera_Foils_Page",
+      "translation": "Tessera_Foils.txt",
+      "number": 10,
+      "entries": [
+        {
+          "key": "tessera:tessera-akatosh",
+          "form": 3157,
+          "foil": true
+        },
+        {
+          "key": "tessera:tessera-arkay",
+          "form": 3159,
+          "foil": true
+        },
+        {
+          "key": "tessera:tessera-azura",
+          "form": 3161,
+          "foil": true
+        },
+        {
+          "key": "tessera:tessera-boethiah",
+          "form": 3163,
+          "foil": true
+        },
+        {
+          "key": "tessera:tessera-clavicus-vile",
+          "form": 3165,
+          "foil": true
+        },
+        {
+          "key": "tessera:tessera-dibella",
+          "form": 3167,
+          "foil": true
+        },
+        {
+          "key": "tessera:tessera-hermaeus-mora",
+          "form": 3179,
+          "foil": true
+        },
+        {
+          "key": "tessera:tessera-hircine",
+          "form": 3181,
+          "foil": true
+        },
+        {
+          "key": "tessera:tessera-julianos",
+          "form": 3185,
+          "foil": true
+        },
+        {
+          "key": "tessera:tessera-jyggalag",
+          "form": 3189,
+          "foil": true
+        },
+        {
+          "key": "tessera:tessera-kynareth",
+          "form": 3191,
+          "foil": true
+        },
+        {
+          "key": "tessera:tessera-malacath",
+          "form": 3195,
+          "foil": true
+        },
+        {
+          "key": "tessera:tessera-mara",
+          "form": 3197,
+          "foil": true
+        },
+        {
+          "key": "tessera:tessera-mehrunes-dagon",
+          "form": 3199,
+          "foil": true
+        },
+        {
+          "key": "tessera:tessera-mephala",
+          "form": 3201,
+          "foil": true
+        },
+        {
+          "key": "tessera:tessera-meridia",
+          "form": 3203,
+          "foil": true
+        },
+        {
+          "key": "tessera:tessera-molag-bal",
+          "form": 3205,
+          "foil": true
+        },
+        {
+          "key": "tessera:tessera-namira",
+          "form": 3209,
+          "foil": true
+        },
+        {
+          "key": "tessera:tessera-nocturnal",
+          "form": 3211,
+          "foil": true
+        },
+        {
+          "key": "tessera:tessera-peryite",
+          "form": 3215,
+          "foil": true
+        },
+        {
+          "key": "tessera:tessera-sanguine",
+          "form": 3223,
+          "foil": true
+        },
+        {
+          "key": "tessera:tessera-sheogorath",
+          "form": 3225,
+          "foil": true
+        },
+        {
+          "key": "tessera:tessera-stendarr",
+          "form": 3227,
+          "foil": true
+        },
+        {
+          "key": "tessera:tessera-talos",
+          "form": 3229,
+          "foil": true
+        },
+        {
+          "key": "tessera:tessera-vaermina",
+          "form": 3231,
+          "foil": true
+        },
+        {
+          "key": "tessera:tessera-zenithar",
+          "form": 3237,
+          "foil": true
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+Tessera Trading Card Game
+
+Install Main and Card Art through your mod manager, then enable Tessera TCG.esp.
+Card Art: https://www.nexusmods.com/skyrimspecialedition/mods/193442?tab=files
+
+Requires SKSE and the Address Library for your game version. Runtimes before
+1.6.1130 also need Backported Extended ESL Support.
+
+Buy an album from a general-goods merchant for 100 gold. Open it with F7.
+Challenge another player through dialogue or F8. Change shortcuts in Settings.

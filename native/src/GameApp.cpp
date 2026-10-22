@@ -47,8 +47,8 @@ void GameApp::receive(std::string_view raw){
     applySettings();filterDirty=true;refreshFilter();
 }
 void GameApp::applySettings(){
-    const auto& c=member(state,"settings");theme=std::clamp(number(c,"theme"),0,4);
-    face.classic=number(c,"rankLayout")==1;face.names=flag(c,"showCardNames",true);face.nameplate=number(c,"nameplateStyle");face.lettering=number(c,"nameCase");
+    const auto& c=member(state,"settings");theme=ttcg::interfaceThemeIndex(number(c,"theme"));
+    face.classic=number(c,"rankLayout")==1;face.names=flag(c,"showCardNames",true);face.groups=flag(c,"showCardGroups");face.nameplate=number(c,"nameplateStyle");face.lettering=number(c,"nameCase");
     face.shadow=number(c,"rankShadowOpacity",100)/100.f;face.stroke=flag(c,"rankStroke")?number(c,"rankStrokeWeight",10)/10.f:0;face.grain=number(c,"boardTexture",10)/100.f;
     face.shadowBlur=float(number(c,"rankShadowBlur",2));face.shadowOffset=float(number(c,"rankShadowOffset",1));
     matchAppearance.treatment=std::clamp(number(c,"opponentTreatment"),0,3);
@@ -57,11 +57,15 @@ void GameApp::applySettings(){
     matchAppearance.palette=std::clamp(number(c,"controlPalette"),0,4);
     matchAppearance.playerColour=std::clamp(number(c,"playerColour",0x87c4dd),0,0xffffff);
     matchAppearance.opponentColour=std::clamp(number(c,"opponentColour",0xdf9585),0,0xffffff);
-    matchAppearance.borderStyle=std::clamp(number(c,"controlBorderStyle"),0,3);
+    matchAppearance.borderStyle=std::clamp(number(c,"controlBorderStyle"),0,4);
     matchAppearance.borderWidth=std::clamp(number(c,"controlBorderWidth",12),0,40)/10.f;
     matchAppearance.borderOpacity=std::clamp(number(c,"controlBorderOpacity",100),0,100)/100.f;
     matchAppearance.marker=flag(c,"controlMarker");
     preferredFont=interfaceFonts[std::clamp(number(c,"interfaceFont")?number(c,"interfaceFont"):((theme==1||theme==2)?3:1),0,4)];
+    if(!number(c,"interfaceFont")){
+        if(palette().frame==FrameStyle::Veldun)preferredFont=lato;
+        else if(palette().frame!=FrameStyle::Classic)preferredFont=jost;
+    }
     cardNameFont=nameFonts[std::clamp(number(c,"cardNameFont",1)?number(c,"cardNameFont"):1,0,4)];
     cardValueFont=valueFonts[std::clamp(number(c,"cardValueFont",1)?number(c,"cardValueFont"):1,0,4)];
     customBack=label(state,"cardBack","backs/mosaic.webp");
@@ -94,7 +98,8 @@ void GameApp::confirmation(){
     if(!ImGui::IsPopupOpen("Confirm"))ImGui::OpenPopup("Confirm");
     ImGui::SetNextWindowPos(ImGui::GetIO().DisplaySize*.5f,ImGuiCond_Always,ImVec2(.5f,.5f));ImGui::SetNextWindowSize(ImVec2(550*scale,0));
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding,ImVec2(30,28)*scale);
-    if(ImGui::BeginPopupModal("Confirm",nullptr,ImGuiWindowFlags_NoDecoration|ImGuiWindowFlags_AlwaysAutoResize)){
+    if(ImGui::BeginPopupModal("Confirm",nullptr,ImGuiWindowFlags_NoDecoration|ImGuiWindowFlags_AlwaysAutoResize|popupFlags())){
+        popupSurface();
         textBlock(confirmationTitle,490*scale,27,palette().accent);
         if(!confirmationCopy.empty()){ImGui::Dummy(ImVec2(0,14*scale));textBlock(confirmationCopy,490*scale);}
         ImGui::Dummy(ImVec2(0,24*scale));auto p=ImGui::GetCursorScreenPos();
@@ -221,6 +226,12 @@ void GameApp::closeView(){
     send("close");
 }
 void GameApp::header(ImVec2 at,ImVec2 size){
+    if(palette().frame!=FrameStyle::Classic){
+        auto* d=ImGui::GetWindowDrawList();
+        const auto colour=(palette().frame==FrameStyle::Oathvein?palette().selection:palette().accent)&0xffffff;
+        const auto start=at-ImVec2(18,12)*scale,end=at+ImVec2(size.x+18*scale,45*scale);
+        d->AddRectFilledMultiColor(start,end,colour|0x18000000,colour|0x05000000,colour,colour);
+    }
     text(at,"T E S S E R A",22,palette().accent);
     if(flag(state,"musicAvailable")&&(flag(state,"matchContext")||label(state,"screen")=="lobby"))
         if(button("music",flag(state,"musicEnabled")?"♪":"♪ ×",at+ImVec2(size.x-265*scale,-3*scale),ImVec2(45,36)*scale))send("music",flag(state,"musicEnabled")?"0":"1",false);
@@ -242,9 +253,8 @@ void GameApp::draw(){
     if(ruleRequestModal()){ImGui::PopFont();tickPresentation();return;}
     ImGui::SetNextWindowPos(frameAt);ImGui::SetNextWindowSize(frameSize);
     ImGui::Begin("Tessera",nullptr,ImGuiWindowFlags_NoDecoration|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoSavedSettings|ImGuiWindowFlags_NoBackground|ImGuiWindowFlags_NoBringToFrontOnFocus|ImGuiWindowFlags_NoScrollWithMouse|ImGuiWindowFlags_NoScrollbar);
-    auto* d=ImGui::GetWindowDrawList();d->PushClipRect(frameAt,frameAt+frameSize,false);surface(frameAt,frameSize);
-    d->AddRect(frameAt+ImVec2(1,1),frameAt+frameSize-ImVec2(1,1),palette().accent);
-    if(theme>0){for(int i=0;i<4;++i){const ImVec2 p=frameAt+ImVec2(i%2?frameSize.x-8*scale:8*scale,i/2?frameSize.y-8*scale:8*scale);const float sx=i%2?-1.f:1.f,sy=i/2?-1.f:1.f;line(p,p+ImVec2(32*sx,0)*scale);line(p,p+ImVec2(0,32*sy)*scale);}}
+    auto* d=ImGui::GetWindowDrawList();d->PushClipRect(frameAt,frameAt+frameSize,false);surface(frameAt,frameSize,true);
+    panelFrame(frameAt,frameSize,true);
     d->PopClipRect();
     const auto at=frameAt+ImVec2(28,21)*scale;const float width=frameSize.x-56*scale;header(at,ImVec2(width,46*scale));
     const bool back=escapeRequested||ImGui::IsKeyPressed(ImGuiKey_Escape,false)||ImGui::IsKeyPressed(ImGuiKey_GamepadFaceRight,false);escapeRequested=false;

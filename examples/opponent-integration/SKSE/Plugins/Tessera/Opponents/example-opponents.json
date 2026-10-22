@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "id": "my-cool-cards-opponents",
+  "grants": [{
+    "id": "hulda-my-cool-cards",
+    "actorBase": {"plugin": "Skyrim.esm", "formId": "013BA3"},
+    "cards": [
+      {"card": "my-cool-cards:high-elf-waifu", "quantity": 2},
+      {"card": "my-cool-cards:dark-elf-waifu", "foil": true}
+    ]
+  }]
+}

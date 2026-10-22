@@ -1,6 +1,7 @@
 #pragma once
 #include "CollectionAPIService.h"
 #include <nlohmann/json.hpp>
+namespace exchangeIntegration {void reset();void publish();}
 
 namespace collectionIntegration {
 inline std::atomic_bool ready{false};
@@ -16,11 +17,13 @@ inline void notify(bool available) {
 }
 inline void reset() {
     ready=false;++generation;
+    exchangeIntegration::reset();
     if(ttcg::collectionAPI::store.reset())notify(false);
 }
 inline void publish() {
     if(!ready)return;
     if(!campaign::saveValid){reset();return;}
+    exchangeIntegration::publish();
     if(ttcg::collectionAPI::store.refresh(campaign::saved))notify(true);
 }
 inline void activate() {ready=campaign::available();publish();}

@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Tessera · Expansion Workshop</title>
+<style>/* EDITOR_CSS */</style></head>
+<body>
+<header class="masthead"><div><span class="brand">TESSERA</span><span class="edition">Expansion Workshop</span></div>
+ <nav aria-label="Project"><button id="new-project">New</button><button id="open-project">Open…</button><button id="save-project">Save project</button><button id="help">Guide</button><button id="export" class="primary">Export expansion</button></nav>
+</header>
+<div class="project-bar">
+ <label class="project-name">Expansion name<input id="set-name" placeholder="Your expansion" maxlength="96" autocomplete="off"></label>
+ <label class="project-id">Set ID<input id="set-id" placeholder="your-expansion" maxlength="64" spellcheck="false" autocomplete="off"></label>
+ <label>Strength policy<select id="balance"><option value="tessera">Tessera tier rules</option><option value="custom">Custom values</option></select></label>
+ <div class="project-status"><span id="save-status" role="status">Opening draft…</span><button id="review" class="text-button">Review</button></div>
+</div>
+<div id="message" role="status" hidden></div>
+<main class="workspace">
+ <aside class="art-panel" aria-label="Artwork library">
+  <div class="panel-title"><h1>Artwork</h1><span id="art-count">0 images</span></div>
+  <div id="art-drop" class="drop-zone"><span class="drop-symbol" aria-hidden="true">◇</span><p>Drop your illustrations here</p><div class="button-row"><button id="add-art">Add images</button><button id="add-folder">Choose folder</button></div><small>PNG · JPG · WebP</small></div>
+  <input id="art-search" type="search" placeholder="Find artwork" aria-label="Find artwork">
+  <div class="art-actions"><button id="match-art" class="text-button">Match names</button><button id="clear-art-selection" class="text-button" hidden>Cancel selection</button></div>
+  <p class="hint" id="art-hint">Drag an image onto a slot, or select an image and then a slot.</p>
+  <div id="art-list" class="art-list" tabindex="0" role="region" aria-label="Imported artwork"></div>
+ </aside>
+ <section class="roster-panel" aria-label="Expansion roster">
+  <div class="roster-toolbar"><div><h1>Roster</h1><span id="roster-count" class="muted">0 cards</span></div><div class="button-row"><button id="undo" title="Undo (Ctrl+Z)">↶<span class="sr-only"> Undo</span></button><button id="redo" title="Redo (Ctrl+Shift+Z)">↷<span class="sr-only"> Redo</span></button><button id="remove-empty" hidden>Remove empty slots</button><button id="add-card" class="primary">Add card</button></div></div>
+  <div class="roster-filters"><input id="card-search" type="search" placeholder="Find cards" aria-label="Find cards"><select id="group-filter" aria-label="Card group"></select><select id="tier-filter" aria-label="Filter tier"><option value="">All tiers</option></select></div>
+  <div id="roster" class="roster"></div>
+ </section>
+ <aside id="inspector" class="inspector" aria-label="Card editor"><div class="empty-inspector"><span class="drop-symbol">◇</span><h2>Select a card</h2><p>Choose a slot to edit its name, sides, affinity and acquisition.</p></div></aside>
+</main>
+<footer><span id="summary">Drop artwork onto a tier to add a card.</span><span>Drafts stay in this browser. Save a project to keep a portable copy.</span></footer>
+<input id="art-files" type="file" accept="image/png,image/jpeg,image/webp" multiple hidden>
+<input id="art-folder" type="file" webkitdirectory multiple hidden>
+<input id="project-files" type="file" accept=".zip,.json" hidden>
+<input id="expansion-folder" type="file" webkitdirectory multiple hidden>
+<dialog id="modal"><div class="dialog-header"><h2 id="modal-title"></h2><button id="close-modal" aria-label="Close dialog">×</button></div><div id="modal-body"></div></dialog>
+<div id="busy" hidden role="status"><div><span class="brand">TESSERA</span><p id="busy-label">Working…</p><progress id="busy-progress"></progress></div></div>
+<script type="application/json" id="editor-data"><!-- EDITOR_DATA --></script>
+<script>/* ZIP_JS */</script><script>/* RANK_JS */</script><script>/* CORE_JS */</script><script>/* FILES_JS */</script><script>/* AFFINITY_JS */</script><script>/* APP_JS */</script>
+</body></html>

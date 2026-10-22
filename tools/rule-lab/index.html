@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en" data-theme="tessera" data-surface="felt" data-rank-layout="classic" data-card-names="shown" data-nameplate="band" data-name-case="small-caps">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark light">
+  <title>Tessera · Rule Table</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="../../TesseraUI/style.css">
+  <link rel="stylesheet" href="../../TesseraUI/card-faces.css">
+  <link rel="stylesheet" href="../../TesseraUI/themes.css">
+  <link rel="stylesheet" href="lab.css">
+</head>
+<body>
+<main id="table" class="lab">
+  <header class="lab-header">
+    <a class="brand" href="./">TESSERA</a><span class="study-title">Rule table</span>
+    <div class="header-actions">
+      <label class="theme-label"><span class="sr-only">Theme</span><select id="theme"><option value="tessera">Tessera</option><option value="charcoal">Charcoal</option><option value="oxblood">Oxblood</option><option value="parchment">Parchment</option><option value="umber">Umber</option></select></label>
+      <button id="help" class="text-button">How to play</button>
+    </div>
+  </header>
+  <div class="lab-layout">
+    <aside class="setup" aria-label="Match setup">
+      <h1>Match setup</h1>
+      <label class="field">Affinity rule<select id="affinity"><option value="ascension">Ascension</option><option value="descension">Descension</option><option value="off">Off</option></select></label>
+      <label class="switch"><span>Dominion</span><input id="dominion" type="checkbox" checked><span class="switch-mark" aria-hidden="true"></span></label>
+      <label class="switch"><span>Reverse</span><input id="reverse" type="checkbox"><span class="switch-mark" aria-hidden="true"></span></label>
+      <details class="more-rules"><summary>Same &amp; Plus</summary><label class="switch"><span>Same</span><input id="same" type="checkbox"><span class="switch-mark" aria-hidden="true"></span></label><label class="switch"><span>Plus</span><input id="plus" type="checkbox"><span class="switch-mark" aria-hidden="true"></span></label></details>
+      <div class="setup-section">
+        <label class="field">Your deck<select id="your-deck"></select></label>
+        <label class="field">Opponent’s deck<select id="rival-deck"></select></label>
+        <label class="field">Opponent<select id="mode"><option value="ai">Computer</option><option value="both">Play both hands</option></select></label>
+        <label class="field">First turn<select id="first"><option value="0">You</option><option value="1">Opponent</option><option value="random">Random</option></select></label>
+      </div>
+      <div class="deal-actions"><p id="pending" hidden>Ready for the next deal.</p><button id="deal" class="primary">Deal cards</button></div>
+      <div class="setup-section scenarios"><span class="field-label">Try a matchup</span><button data-scenario="affinity">Affinity duel <span>↗</span></button><button data-scenario="neutral">Constructs &amp; Descension <span>↗</span></button><button data-scenario="dominion">Dominion formations <span>↗</span></button></div>
+    </aside>
+    <section class="game-space" aria-label="Game table">
+      <div class="game-toolbar"><div id="active-rules"></div><div class="game-actions"><label class="values-label">Values<select id="values"><option value="effective">Effective</option><option value="printed">Printed</option></select></label><button id="undo" class="text-button" disabled>↶ Undo</button><button id="replay" class="text-button">Replay deal</button></div></div>
+      <div class="match-heading"><div class="score-panel player"><span>You</span><strong id="player-score">5</strong></div><div class="turn-panel"><span id="turn" role="status" aria-live="polite">Your turn</span><span id="progress">0 / 9</span></div><div class="score-panel rival"><strong id="rival-score">5</strong><span>Opponent</span></div></div>
+      <div class="arena">
+        <div id="player-hand" class="lab-hand" aria-label="Your cards"></div>
+        <div class="board-wrap"><div id="board" aria-label="Three by three game board"></div><div id="affinity-counts" aria-label="Affinity counts"></div></div>
+        <div id="rival-hand" class="lab-hand" aria-label="Opponent’s cards"></div>
+      </div>
+      <div class="match-bottom">
+        <div class="move-readout"><span id="readout-title">Choose a card</span><p id="readout-detail">Select a card, then a square. Right-click any card to inspect it.</p></div>
+        <button id="inspect" class="text-button" disabled>Inspect card</button>
+      </div>
+      <details class="move-history"><summary>Moves <span id="history-count">0</span></summary><ol id="history"></ol></details>
+    </section>
+  </div>
+</main>
+<dialog id="help-dialog" class="lab-dialog">
+  <div class="dialog-top"><h2>The rules</h2><button data-close="help-dialog" class="close-dialog" aria-label="Close rules">×</button></div>
+  <p>Place one card each turn. A higher facing value captures an adjacent opponent’s card. After nine placements, the player controlling more cards wins; the last card in hand also counts.</p>
+  <section><h3>Ascension / Descension</h3><p>Count each affinity across both players’ placed cards. Matching cards in both hands and on the board gain or lose 1 per card, up to 3. Neutral cards are unaffected. A card with multiple affinities uses its largest matching count once.</p></section>
+  <section><h3>Dominion</h3><p>A card loses 1 from all sides when at least two adjacent cards belong to the same group and it does not belong to that group. One Nord and one Khajiit do not weaken an Orc; two Nords do. Only touching sides count.</p><div class="dominion-example"><span>Nord <b>0</b></span><i>—</i><span class="weakened">Orc <b>−1</b></span><i>—</i><span>Nord <b>0</b></span></div><p>Every group can do this from the start. Both players’ cards count, including your own. The penalty is always −1, even beside more cards or two qualifying groups. Capturing a card does not change its group.</p></section>
+  <section><h3>Timing &amp; other rules</h3><p>The new card counts before captures resolve. Changing values never flips unrelated cards by itself. Values can go below 1 or above A. Reverse makes lower values win. Same and Plus use printed values; their Combo captures use effective values.</p></section>
+  <section><h3>At the table</h3><p>Hover over an empty square after selecting a card to preview the move. Outlined targets would be captured. Effective values include every modifier; Printed shows the original card values. Undo takes back your turn and the computer’s reply. Play both hands gives you control of both sides.</p></section>
+  <p class="dialog-note">This browser table tries the proposed rules. It does not change your Skyrim games or collection.</p>
+</dialog>
+<dialog id="inspect-dialog" class="lab-dialog card-dialog">
+  <div class="dialog-top"><h2 id="inspect-name"></h2><button data-close="inspect-dialog" class="close-dialog" aria-label="Close card">×</button></div>
+  <div class="inspect-layout"><div id="inspect-art"></div><div class="inspect-info"><p id="inspect-group"></p><p id="inspect-affinity"></p><p id="inspect-tier"></p><table class="ranks-table"><thead><tr><th>Side</th><th>Printed</th><th>Effective</th></tr></thead><tbody id="inspect-ranks"></tbody></table><div id="inspect-effects"></div></div></div>
+</dialog>
+<script src="../../build/rule-lab/card-data.js"></script>
+<script src="../../build/rule-lab/card-renderer.js"></script>
+<script type="module" src="app.mjs"></script>
+</body>
+</html>

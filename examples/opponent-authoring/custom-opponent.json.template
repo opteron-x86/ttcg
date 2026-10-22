@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "id": "my-follower-tessera",
+  "opponents": [{
+    "id": "companion",
+    "actorBase": {"plugin": "MyFollower.esp", "formId": "800"},
+    "reference": {"plugin": "MyFollower.esp", "formId": "801"},
+    "skill": "Expert",
+    "homeRegion": "Whiterun",
+    "reputation": "Unknown",
+    "tournaments": false,
+    "enabled": true,
+    "collection": {"mode": "generated", "theme": "Breton", "restock": true},
+    "availability": [{"quest": {"plugin": "MyFollower.esp", "formId": "900"}, "stageDone": 20}],
+    "dialogue": {
+      "mode": "custom",
+      "accept": {"plugin": "MyFollower.esp", "formId": "A00"},
+      "decline": {"plugin": "MyFollower.esp", "formId": "A01"},
+      "noCards": {"plugin": "MyFollower.esp", "formId": "A02"}
+    }
+  }]
+}

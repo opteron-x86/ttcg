@@ -26,8 +26,7 @@ inline unsigned tagAlbumSellers(){
  }
  return count;
 }
-// Remove stock injected by versions 0.23.1/0.23.2 when loading an existing save.
-// Albums are now sold exclusively by dialogue; never remove the player's book.
+// Remove albums from merchant stock.
 template<class Count,class Change> unsigned removeLegacyAlbums(Count count,Change change){
  unsigned changed=0;
  for(auto container:albumContainers){const int have=count(container);if(have>0&&change(container,-have))++changed;}

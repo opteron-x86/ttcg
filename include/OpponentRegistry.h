@@ -9,7 +9,7 @@ struct OpponentCardGrant {std::string card;unsigned quantity=1;bool foil=false;}
 struct OpponentDefinition {
  std::string key;WorldForm actor,reference;unsigned level=2,hold=0;bool traveller=false,tournaments=false,requiredMaster=false;
  bool generated=true,restock=true,enabled=true,customDialogue=false,personalRules=false;
- unsigned rules=Open,trade=TradeOne,wager=50;int reputationGate=-1;
+ unsigned rules=Open,trade=TradeOne,wager=100;int reputationGate=-1;
  std::string theme;std::vector<OpponentCardGrant> cards;std::vector<OpponentGate> gates;
  WorldForm accept,decline,noCards;
 };
@@ -58,7 +58,7 @@ inline int registerResident(std::uint32_t base,ResidentRecord& record,const Oppo
  residentStrings().push_back({record.name,record.location,record.traveller?"Travellers":holdName(record.hold)});auto& text=residentStrings().back();
  OpponentProfile p{};p.base=base;p.reference=record.reference;p.name=text.name.c_str();p.location=text.location.c_str();p.region=text.region.c_str();
  p.level=record.level;p.skill=record.level<2?0:record.level<4?1:record.level==4?2:3;p.skillName=opponentSkillNames[record.level];p.hold=record.hold;p.traveller=record.traveller;
- p.wager=std::array{10,25,50,75,100,200}[record.level];p.dynamic=true;p.automatic=record.source==0;p.tournamentEligible=record.source!=2&&record.hold!=0;p.requiredMaster=false;
+ p.wager=100;p.dynamic=true;p.automatic=record.source==0;p.tournamentEligible=record.source!=2&&record.hold!=0;p.requiredMaster=false;
  // Travellers and unaffiliated residents have no regional entry gate.
  p.reputationGate=record.hold&&!record.traveller?-1:0;
  if(definition){p.wager=definition->wager;p.tournamentEligible=definition->tournaments;p.requiredMaster=definition->requiredMaster;p.personalRules=definition->personalRules;p.rules=definition->rules;p.personalTrade=definition->trade;p.reputationGate=definition->reputationGate;p.restock=definition->restock;}

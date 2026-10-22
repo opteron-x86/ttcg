@@ -1,0 +1,18 @@
+using Mutagen.Bethesda;
+using Mutagen.Bethesda.Plugins;
+using Mutagen.Bethesda.Skyrim;
+var path = args[0];
+var mod = SkyrimMod.CreateFromBinary(path, SkyrimRelease.SkyrimSE);
+var records = mod.EnumerateMajorRecords().ToList();
+if (mod.MiscItems.Count != 1348 || mod.Quests.Count != 1 || records.Count != 1349) throw new Exception("Unexpected records");
+var quest = mod.Quests.Single();
+var vm = quest.VirtualMachineAdapter!;
+if (vm.Scripts.Single().Name != "Tessera_CompletionistQuest" || vm.Fragments.Count != 0 || vm.Aliases.Count != 1) throw new Exception("Invalid quest attachment");
+if (vm.Aliases.Single().Scripts.Single().Name != "Tessera_CompletionistPlayer" || quest.Aliases.Count != 1) throw new Exception("Invalid player alias");
+if (records.Any(r => r.FormKey.ModKey != mod.ModKey || r.FormKey.ID < 0x800 || r.FormKey.ID >= 0x1000)) throw new Exception("Invalid ESL identity or override");
+var destination = Path.Combine(Path.GetDirectoryName(path)!, "roundtrip", Path.GetFileName(path));
+Directory.CreateDirectory(Path.GetDirectoryName(destination)!);
+mod.WriteToBinary(destination);
+var restored = SkyrimMod.CreateFromBinary(destination, SkyrimRelease.SkyrimSE);
+if (!records.Select(r => r.FormKey).ToHashSet().SetEquals(restored.EnumerateMajorRecords().Select(r => r.FormKey))) throw new Exception("Roundtrip changed identities");
+Console.WriteLine("Mutagen: 1348 checklist markers, one start quest/player alias, ESL identities and read/write/read passed");

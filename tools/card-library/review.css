@@ -1,0 +1,40 @@
+/* Review finishes: CSS fallbacks also remain usable without WebGL. */
+.foil-material{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;mix-blend-mode:screen;opacity:var(--foil-strength);display:none}
+.material-ready .foil-material{display:block}
+.material-ready .foil-film,.material-ready .foil-grain,.material-ready .foil-glare,.material-ready .foil-motif{display:none}
+:is(.finish-satin,.finish-engraved) .foil-grain{opacity:calc(var(--foil-strength)*.2)}
+:is(.finish-satin,.finish-engraved) .foil-glare{opacity:calc(var(--foil-strength)*.4)}
+.finish-satin .foil-film{background-image:linear-gradient(118deg,transparent 20%,#b9bace33 33%,#e8e4d455 46%,#a2caca33 60%,transparent 76%);background-size:220% 220%;mix-blend-mode:screen;opacity:var(--foil-strength)}
+.finish-engraved .foil-film{background-image:repeating-linear-gradient(45deg,#d1dccc44 0 1px,transparent 1px 15px),repeating-linear-gradient(-45deg,#aeacd644 0 1px,transparent 1px 15px);background-size:100% 100%;background-position:center;mix-blend-mode:screen;opacity:var(--foil-strength)}
+.foil-review{margin:28px 0 32px;scroll-margin-top:18px;border:1px solid #76674980;background:radial-gradient(ellipse at 35% 0%,#26372d,#17231e 75%)}
+.foil-review>summary{padding:20px 24px;list-style:none;display:flex;align-items:center;gap:14px;font:25px Georgia,serif;color:var(--gold)}
+.foil-review>summary::-webkit-details-marker{display:none}
+.foil-review>summary::before{content:'+';font-size:24px;width:20px;text-align:center;color:#b4a17a}
+.foil-review[open]>summary::before{content:'−'}
+.foil-review>summary span{margin-left:auto;font:13px system-ui,sans-serif;letter-spacing:.02em;color:var(--muted)}
+.review-body{padding:0 26px 26px}
+.review-intro{margin:0 0 23px;max-width:800px;color:#c1c1ae;font-size:14px;line-height:1.6}
+.review-controls{display:flex;gap:16px 24px;align-items:end;flex-wrap:wrap;padding:18px 0;border-top:1px solid #8b78514d;border-bottom:1px solid #8b78514d}
+.review-controls label{display:grid;gap:8px;font-size:12px;color:var(--muted)}
+.review-controls output{float:right;color:var(--ink);font-variant-numeric:tabular-nums}
+.review-controls .review-art-control{min-width:210px;flex:1}
+.review-controls input[type=range]{width:150px;height:36px;padding:0;accent-color:#caa56a;background:none;border:0;cursor:pointer}
+.review-controls input[type=checkbox]{width:16px;height:16px;accent-color:#caa56a}
+.review-controls .review-details-control{display:flex;align-items:center;gap:8px;min-height:40px;color:var(--ink);white-space:nowrap}
+.review-controls button{min-height:40px;min-width:112px}
+.review-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;padding:30px 0 16px}
+.review-sample{margin:0;min-width:0}
+.review-sample h3{margin:0 0 6px;color:#e2c798;font:22px Georgia,serif;font-weight:400}
+.review-sample p{margin:0 0 18px;min-height:20px;color:var(--muted);font-size:12px;line-height:1.5}
+.review-card-holder{position:relative;perspective:1000px;outline:0;border-radius:5px;touch-action:pan-y}
+.review-card-holder:focus-visible{outline:2px solid #d2b77e;outline-offset:5px}
+.review-card-holder .card{border-radius:3px;cursor:crosshair;will-change:auto;box-shadow:0 8px 24px #0005}
+.review-card-holder .rank{font-size:clamp(24px,2.5vw,37px)}
+.review-card-holder .card-name{font-size:clamp(16px,1.4vw,22px);padding-bottom:14px;min-height:16%;display:flex;justify-content:center;align-items:center}
+.review-grid.art-only .rank,.review-grid.art-only .tier-badge,.review-grid.art-only .card-name{display:none}
+.review-footer{display:flex;justify-content:space-between;gap:16px;align-items:center;border-top:1px solid #8b78514d;padding-top:18px;color:var(--muted);font-size:12px;line-height:1.65}
+.review-footer p{margin:0}.review-footer button{font-size:12px;white-space:nowrap}
+#compare-card{margin-top:14px;font-size:13px}
+@media(max-width:1000px){.review-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:28px}.review-card-holder .rank{font-size:32px}.review-card-holder .card-name{font-size:21px}}
+@media(max-width:600px){.foil-review>summary{padding:18px 16px;font-size:23px}.foil-review>summary span{display:none}.review-body{padding:0 16px 20px}.review-controls{gap:14px}.review-controls .review-art-control{min-width:100%;width:100%}.review-controls input[type=range]{width:130px}.review-grid{gap:24px 12px;padding-top:24px}.review-sample h3{font-size:19px}.review-sample p{font-size:11px;min-height:32px;margin-bottom:9px}.review-card-holder .rank{font-size:23px}.review-card-holder .card-name{font-size:13px;padding:8px 3px}.review-card-holder .tier-badge{width:22px;height:22px;font-size:10px;left:5px;top:5px}.review-footer{align-items:start;flex-direction:column}}
+@media(prefers-reduced-motion:reduce){.review-card-holder .card{transform:none!important}}

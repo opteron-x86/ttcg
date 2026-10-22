@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+ <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+ <title>Tessera — Theme studies</title>
+ <link rel="stylesheet" href="review.css">
+</head>
+<body>
+ <header class="review-header"><a class="wordmark" href="index.html">TESSERA</a><span class="review-title">Theme studies</span><a class="sheet-link" href="comparison.png" target="_blank">Comparison sheet ↗</a><span class="preview-label">Design preview</span></header>
+ <aside class="review-sidebar">
+  <h1>Window theme</h1>
+  <nav id="theme-options" aria-label="Window theme">
+   <button data-theme="charcoal" aria-pressed="false"><span class="swatch charcoal"></span><span>Charcoal<small>Charcoal & silver</small></span><span class="number">01</span></button>
+   <button data-theme="oxblood" aria-pressed="true"><span class="swatch oxblood"></span><span>Oxblood<small>Ivory & oxblood</small></span><span class="number">02</span></button>
+   <button data-theme="parchment" aria-pressed="false"><span class="swatch parchment"></span><span>Parchment<small>Paper & dark ink</small></span><span class="number">03</span></button>
+   <button data-theme="umber" aria-pressed="false"><span class="swatch umber"></span><span>Umber<small>Umber & aged brass</small></span><span class="number">04</span></button>
+   <button data-theme="tessera" aria-pressed="false"><span class="swatch tessera"></span><span>Tessera<small>Green & gold</small></span><span class="number">—</span></button>
+  </nav>
+  <section class="surface-controls"><h2>Board surface</h2>
+   <label class="sr-only" for="surface">Board surface</label>
+   <select id="surface"><option value="theme">Suggested for theme</option><option value="plain">Plain</option><option value="slate">Slate</option><option value="felt">Green felt</option><option value="parchment">Parchment</option><option value="leather">Dark leather</option><option value="walnut">Walnut</option></select>
+   <label class="range-label" for="grain">Texture strength <output id="grain-value">10%</output></label><input id="grain" type="range" min="0" max="100" value="10">
+   <button id="board-toggle" class="text-button" aria-pressed="false">Show board detail ↗</button><a class="surface-sheet" href="surfaces.png" target="_blank">Compare surfaces ↗</a>
+  </section>
+  <section class="view-controls"><h2>View</h2><label><input id="empty-board" type="checkbox"> Empty board</label><label><input id="large-window" type="checkbox"> Fullscreen window</label></section>
+  <p class="review-note">Try the menus, select a card, or open Settings. Themes and surfaces can be mixed freely.</p>
+  <p class="review-footnote">Browser samples only.<br>Selections here stay in this page.</p>
+ </aside>
+ <main class="review-main">
+  <div class="scene-toolbar"><div><span id="theme-title">Oxblood</span><p id="theme-copy">Matte charcoal, muted red selections, and fine ivory borders.</p></div><nav id="scene-options" aria-label="Preview screen"><button data-scene="match" aria-pressed="true">Match</button><button data-scene="album" aria-pressed="false">Album</button><button data-scene="lobby" aria-pressed="false">Setup</button><button data-scene="settings" aria-pressed="false">Settings</button></nav></div>
+  <div class="preview-stage"><iframe id="preview" title="Interactive Tessera theme preview" src="frame.html?theme=oxblood&scene=match"></iframe></div>
+  <footer class="review-footer"><span id="surface-note">Suggested board: dark leather</span><span>Ownership and rarity colors retain their meaning in every theme.</span><a id="screenshot-link" href="oxblood-match.png" target="_blank">Default screenshot ↗</a></footer>
+ </main>
+ <script src="review.js"></script>
+</body>
+</html>

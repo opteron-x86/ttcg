@@ -79,7 +79,7 @@ Texture Assets::back(int index) {
     return get(std::string("backs/") + names[std::clamp(index, 0, 2)] + ".webp");
 }
 Texture Assets::pack(unsigned kind) {
-    // Existing rendered pack images ship in Tessera Main, next to art/.
+    // Pack images are included in Main.
     return get(kind?"../assets/packs/tournament.png":"../assets/packs/standard.png");
 }
 }

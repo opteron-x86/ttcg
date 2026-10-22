@@ -1,0 +1,342 @@
+{
+  "version": 2,
+  "status": "Discussion draft — proposed assignments, not catalog changes",
+  "groups": [
+    {
+      "name": "Argonian",
+      "target": [
+        40,
+        40
+      ]
+    },
+    {
+      "name": "Breton",
+      "target": [
+        40,
+        40
+      ]
+    },
+    {
+      "name": "Dark Elf",
+      "target": [
+        40,
+        40
+      ]
+    },
+    {
+      "name": "High Elf",
+      "target": [
+        40,
+        40
+      ]
+    },
+    {
+      "name": "Imperial",
+      "target": [
+        40,
+        40
+      ]
+    },
+    {
+      "name": "Khajiit",
+      "target": [
+        40,
+        40
+      ]
+    },
+    {
+      "name": "Nord",
+      "target": [
+        40,
+        40
+      ]
+    },
+    {
+      "name": "Orc",
+      "target": [
+        40,
+        40
+      ]
+    },
+    {
+      "name": "Redguard",
+      "target": [
+        40,
+        40
+      ]
+    },
+    {
+      "name": "Wood Elf",
+      "target": [
+        40,
+        40
+      ]
+    },
+    {
+      "name": "Daedra",
+      "target": [
+        40,
+        40
+      ]
+    },
+    {
+      "name": "Beastfolk",
+      "target": [
+        40,
+        40
+      ]
+    },
+    {
+      "name": "Beast",
+      "target": [
+        40,
+        40
+      ]
+    },
+    {
+      "name": "Spirit",
+      "target": [
+        40,
+        40
+      ]
+    },
+    {
+      "name": "Construct",
+      "target": [
+        40,
+        40
+      ]
+    },
+    {
+      "name": "Undead",
+      "target": [
+        40,
+        40
+      ]
+    },
+    {
+      "name": "Dragon",
+      "target": [
+        16,
+        20
+      ]
+    },
+    {
+      "name": "God",
+      "target": null
+    }
+  ],
+  "group_map": {
+    "Argonian": "Argonian",
+    "Breton": "Breton",
+    "Dark Elf": "Dark Elf",
+    "High Elf": "High Elf",
+    "Imperial": "Imperial",
+    "Khajiit": "Khajiit",
+    "Nord": "Nord",
+    "Orc": "Orc",
+    "Redguard": "Redguard",
+    "Wood Elf": "Wood Elf",
+    "Daedra": "Daedra",
+    "Beast": "Beast",
+    "Undead": "Undead",
+    "Dragon": "Dragon",
+    "God": "God",
+    "Goblin": "Beastfolk",
+    "Giant": "Beastfolk",
+    "Grummite": "Beastfolk",
+    "Dreugh": "Beastfolk",
+    "Falmer": "Beastfolk",
+    "Harpy": "Beastfolk",
+    "Centaur": "Beastfolk",
+    "Ogre": "Beastfolk",
+    "Automata": "Construct",
+    "Spriggan": "Spirit",
+    "Nereid": "Spirit",
+    "Wamasu": "Beast",
+    "Chimer": "Dark Elf",
+    "Nede": "Imperial",
+    "Hero": "Imperial",
+    "Reachman": null,
+    "Ash Creature": null,
+    "Imp": null,
+    "Gargoyle": null,
+    "Defense": null,
+    "Ayleid": null
+  },
+  "group_notes": {
+    "Falmer": "Proposed Beastfolk gameplay convention; preserve Falmer ancestry in descriptive tags.",
+    "Giant": "Propose ordinary giants alongside Frost Giants in Beastfolk; retain the specific kind as a tag.",
+    "Chimer": "Proposed explicit historical exception: the Dark Elf collection includes Nerevar and Veloth, still tagged Chimer.",
+    "Nede": "Proposed explicit cultural exception: Alessia belongs to the Imperial collection, still tagged Nede.",
+    "Hero": "Proposed explicit cultural exception: Pelinal belongs to the Imperial collection; Hero is descriptive, not a group.",
+    "Reachman": "Review the five Reachfolk subjects individually. Do not automatically relabel a distinct people Breton or Beastfolk.",
+    "Ash Creature": "Review the depicted subject: ash-spawn, corprus and Sixth House servants cannot all inherit one replacement group.",
+    "Imp": "Confirm the intended creature and its source before choosing Spirit or Daedra.",
+    "Gargoyle": "Confirm the depicted gargoyle's nature before choosing Construct or another group.",
+    "Ayleid": "Decide whether Umaril has a defensible place in this taxonomy or should be replaced; no automatic High Elf assignment."
+  },
+  "subtype_map": {
+    "Daedric Prince": "God",
+    "Lurcher": "Spirit",
+    "Minotaur": "Beastfolk",
+    "Mantikora": "Beastfolk"
+  },
+  "overrides": {
+    "legends-253948": {
+      "group": null,
+      "action": "retire",
+      "note": "Yagrum Bagarn: proposed retirement with Dwemer people; he is not a Construct."
+    },
+    "tessera-dumac-dwarfking": {
+      "group": null,
+      "action": "retire",
+      "note": "Dumac: proposed retirement with Dwemer people; he is not a Construct."
+    },
+    "tessera-kagrenac": {
+      "group": null,
+      "action": "retire",
+      "note": "Kagrenac: the same proposed retirement as Yagrum and Dumac. Preserve the machine subjects."
+    },
+    "legends-246681": {
+      "group": "Construct",
+      "action": "regroup",
+      "note": "Skeevaton: mechanical form takes precedence over the animal it resembles."
+    },
+    "legends-245823": {
+      "group": "Construct",
+      "action": "review",
+      "note": "Clockwork Dragon: proposed Construct; confirm the subject and art before removing Dragon."
+    },
+    "legends-304376": {
+      "group": "Construct",
+      "action": "review",
+      "note": "Ayleid Guardian: proposed Construct; inspect the animated guardian depicted. Defense is a source-game role."
+    },
+    "legends-283869": {
+      "group": "Nord",
+      "action": "regroup",
+      "note": "Lyris Titanborn: propose Nord as her sole gameplay group; retain Giant ancestry as a descriptive tag."
+    },
+    "legends-298299": {
+      "group": null,
+      "action": "review",
+      "note": "Mankar Camoran: the current High Elf / Wood Elf split needs a deliberate depiction and identity decision."
+    },
+    "legends-298871": {
+      "group": null,
+      "action": "review",
+      "note": "The Gray Fox: decide whether the card depicts a particular bearer or the anonymous legend before assigning a race."
+    },
+    "legends-276326": {
+      "group": null,
+      "action": "review",
+      "note": "Tiny Dragon: replace or redesign for a verified Dragonling / folkloric subject; do not raise its stats to tier VI just to satisfy the Dragon range."
+    },
+    "legends-276314": {
+      "group": null,
+      "action": "review",
+      "note": "Baliwog: check the source relationship to Grummites before inheriting Beastfolk from the old group."
+    },
+    "legends-276445": {
+      "group": null,
+      "action": "review",
+      "note": "Baliwog Tidecrawlers: check the source relationship to Grummites before inheriting Beastfolk from the old group."
+    },
+    "legends-276320": {
+      "group": null,
+      "action": "review",
+      "note": "Hulking Scalon: review independently; the old Grummite label does not establish its proposed group."
+    },
+    "legends-209049": {
+      "group": "Khajiit",
+      "action": "review",
+      "note": "Senche-Tiger: proposed Khajiit only if the intended subject is the furstock. Verify the art and naming rather than treating every tiger as Khajiit."
+    },
+    "legends-209228": {
+      "group": "Spirit",
+      "action": "review",
+      "note": "Ice Wraith: proposed Spirit; confirm the creature's nature rather than inferring undeath from the name."
+    },
+    "wispmother": {
+      "group": null,
+      "action": "review",
+      "note": "Wispmother: review Spirit versus Undead without presenting an uncertain origin as settled lore."
+    },
+    "legends-289870": {
+      "group": "Daedra",
+      "action": "review",
+      "note": "Dro-m'Athra Reaper: proposed Daedra; resolve the cosmological case explicitly rather than inheriting Khajiit / Undead."
+    },
+    "legends-291138": {
+      "group": "Undead",
+      "action": "review",
+      "note": "Vastarie: review the lich depiction for Undead; High Elf remains descriptive ancestry."
+    },
+    "legends-283628": {
+      "group": null,
+      "action": "review",
+      "note": "Mannimarco: establish whether this is a mortal, lich or deified depiction before choosing High Elf, Undead or God."
+    },
+    "legends-291229": {
+      "group": null,
+      "action": "review",
+      "note": "Cadwell: resolve the Soul Shriven depiction rather than treating the existing Imperial tag as a complete classification."
+    },
+    "legends-276699": {
+      "group": null,
+      "action": "review",
+      "note": "Haskill: resolve the intended depiction and nature before confirming Breton or another group."
+    },
+    "legends-223563": {
+      "group": null,
+      "action": "review",
+      "note": "Flesh Atronach: check the specific source's animating nature; Atronach in Legends does not settle Daedra, Construct or Undead."
+    },
+    "legends-277257": {
+      "group": null,
+      "action": "review",
+      "note": "Seething Flesh Golem: check the depicted creature's creation and animating nature before assigning a group."
+    },
+    "legends-253826": {
+      "group": null,
+      "action": "review",
+      "note": "Fetcherfly Golem: review source and art; do not map every golem to Construct or inherit Daedra blindly."
+    },
+    "legends-276308": {
+      "group": null,
+      "action": "review",
+      "note": "The Gatekeeper: confirm the treatment of this specific created being before choosing Daedra or Construct."
+    }
+  },
+  "dragon_curve": [
+    {
+      "tier": 6,
+      "Common": 0,
+      "Rare": 4,
+      "Epic": 0,
+      "Legendary": 0
+    },
+    {
+      "tier": 7,
+      "Common": 0,
+      "Rare": 4,
+      "Epic": 2,
+      "Legendary": 0
+    },
+    {
+      "tier": 8,
+      "Common": 0,
+      "Rare": 0,
+      "Epic": 4,
+      "Legendary": 2
+    },
+    {
+      "tier": 9,
+      "Common": 0,
+      "Rare": 0,
+      "Epic": 0,
+      "Legendary": 2
+    }
+  ]
+}

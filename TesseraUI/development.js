@@ -29,7 +29,7 @@ for(const [flag,name] of ruleDefinitions){
  const button=document.createElement('button');button.textContent=name;button.dataset.rule=flag;
  button.onclick=()=>{
   let flags=developmentSettings().Rules^flag;
-  if(flags&flag){for(const [a,b] of [[16,64],[128,256],[512,1024]]){if(flag===a)flags&=~b;if(flag===b)flags&=~a;}if(flag===8192)flags|=1;}
+  if(flags&flag){for(const [a,b] of [[16,64],[128,256],[512,1024],[32768,65536]]){if(flag===a)flags&=~b;if(flag===b)flags&=~a;}if(flag===8192)flags|=1;}
   if(!(flags&1))flags&=~8192;
   developmentCommand(`set Rules ${flags}`);
  };

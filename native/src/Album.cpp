@@ -216,7 +216,8 @@ void App::deckModal() {
     ImGui::SetNextWindowPos(ImGui::GetIO().DisplaySize*.5f,ImGuiCond_Always,ImVec2(.5f,.5f));
     ImGui::SetNextWindowSize(ImVec2(470,210)*scale);
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding,ImVec2(24,24)*scale);
-    if(ImGui::BeginPopupModal("Deck",nullptr,ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoTitleBar)) {
+    if(ImGui::BeginPopupModal("Deck",nullptr,ImGuiWindowFlags_NoResize|ImGuiWindowFlags_NoTitleBar|popupFlags())) {
+        popupSurface();
         const bool remove=deckDialog=="delete";
         ImGui::TextUnformatted(remove?"Delete this saved deck?":deckDialog=="new"?"New deck":deckDialog=="copy"?"Copy deck":"Rename deck");
         ImGui::Dummy(ImVec2(1,14*scale));

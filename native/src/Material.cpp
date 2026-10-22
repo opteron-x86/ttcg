@@ -1,8 +1,6 @@
 #include "Renderer.h"
 
 namespace preview {
-// The approved Prismatic finish, shared by the OpenGL and D3D11 backends.
-// Grain is fixed in card coordinates; rotation moves the light, never the grain.
 static const char* materialBody = R"SHADER(
 float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1,311.7)))*43758.5453); }
 float bell(float d, float width) { return exp(-d*d/(width*width)); }

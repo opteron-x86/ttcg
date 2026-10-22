@@ -1,11 +1,6 @@
 #pragma once
 #include "FreePlay.h"
 namespace ttcg {
-inline unsigned conflictingRules(unsigned rule){
- return rule==Open?ThreeOpen:rule==ThreeOpen?Open:rule==Legion?Decimation:rule==Decimation?Legion:rule==Order?Chaos:rule==Chaos?Order:0u;
-}
-inline unsigned withSpreadRule(unsigned rules,unsigned rule){return (rules&~conflictingRules(rule))|rule|(rule==SameWall?Same:0u);}
-inline unsigned withoutCultureRule(unsigned rules,unsigned rule){return rules&~(rule|(rule==Same?SameWall:0u));}
 inline const RegionalCulture& regionalCulture(const CollectionSave& s,unsigned hold){
  static const RegionalCulture empty{};auto it=s.culture.regions.find(hold);return it==s.culture.regions.end()?empty:it->second;
 }

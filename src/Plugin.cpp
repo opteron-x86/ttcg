@@ -10,6 +10,7 @@
 #include "UIHost.h"
 #include "WorldFocus.h"
 #include "PresentationWait.h"
+#include "PanelOpenRequest.h"
 #include "Match.h"
 #include "Presentation.h"
 #include "ExpansionLoader.h"
@@ -22,6 +23,7 @@
 #endif
 #include "NativeCollection.h"
 #include "NativeCollectionAPI.h"
+#include "NativeExchange.h"
 #include "NativeShop.h"
 #include "DevelopmentPresentation.h"
 #include "EncounterRecords.h"
@@ -34,6 +36,9 @@ bool uiReady=false, visible=false, active=false, thinking=false, settling=false;
 std::uint64_t session=0, revision=0;
 std::atomic<std::uint64_t> epoch{0};
 RE::ActorHandle opponent, pending, enrollmentTarget;
+ttcg::PanelOpenRequest panelOpenRequest;
+std::string panelWaitReason;
+void cancelPanelRequest(){panelOpenRequest.cancel();pending={};panelWaitReason.clear();}
 std::string albumSection;
 std::string opponentName,screen="lobby",pendingScreen="lobby";
 ttcg::HotkeyBindings hotkeys;
@@ -333,7 +338,7 @@ void close(bool unwind) {
  if(unwind&&!campaign::savedMatch.present){ttcg::abandonRuleCulture(campaign::saved,campaign::gameHour());campaign::recover();}
  campaign::cultureGame=false;
  stopMusic();
- ++epoch; ++session; revision=0; pending={}; opponent={};
+ ++epoch; ++session; revision=0; cancelPanelRequest(); opponent={};
  visible=false; active=false; thinking=false; settling=false; screen="lobby"; pendingScreen="lobby";worldFocus.reset();
  if(api&&api->IsValid(view)) { if(uiReady) api->Reset(view); if(api->HasFocus(view)) api->Unfocus(view); api->Hide(view); }
  collectionIntegration::publish();
@@ -360,7 +365,7 @@ bool setGamesEnabled(bool enabled){
  }
  interfaceNotice.clear();campaign::syncGameAvailability();
  if(!enabled){
-  pending={};
+  cancelPanelRequest();
   if(active){
    close(false);RE::SendHUDMessage::ShowHUDMessage("Tessera disabled. Your game is saved to resume later.");return true;
   }
@@ -418,7 +423,7 @@ void backgroundUpdate(){
  }
 }
 void backgroundUpdatePapyrus(RE::StaticFunctionTag*){
- // Keep at most one queued refresh. Discard work belonging to an older save.
+ // Queue one refresh for the current save.
  static std::atomic_bool queued{false};
  if(queued.exchange(true))return;
  const auto generation=campaign::npcFactionTracking.generation();
@@ -428,8 +433,6 @@ void backgroundUpdatePapyrus(RE::StaticFunctionTag*){
  });
 }
 namespace legacyPapyrus {
-// Compatibility for suspended pre-0.28.9 script frames. No task submission,
-// actor changes or maintenance: only BackgroundUpdate owns the periodic work.
 RE::Actor* nextMaster(RE::StaticFunctionTag*){return nullptr;}
 void masterArrived(RE::StaticFunctionTag*,RE::Actor*){}
 void masterResponse(RE::StaticFunctionTag*,RE::Actor*,bool){}
@@ -449,8 +452,7 @@ bool resumeMatch() {
  campaign::cultureHeldHold=!saved.tournament&&!(profile&&(profile->personalRules||profile->traveller))?campaign::actorHold(actor):0;
  campaign::rivalDeck=saved.originals()[1];campaign::canStake=saved.competitive&&!saved.tournament;
  opponent=actor->GetHandle();opponentName=actor->GetName();match=saved.table;
- // Captures are atomic. Resume the completed position, without replaying an
- // old capture or choosing another Chaos card. Only a pending redeal advances.
+ // Resume the settled board and advance a pending redeal.
  const bool redealt=match.redeal();
  active=true;visible=true;thinking=false;settling=match.finished()||redealt;
  lastResult={};playedRuleSounds=0;playedResultSound=false;playedOpeningSound=false;
@@ -485,6 +487,7 @@ void showPanel(RE::Actor* actor,const std::string& requested="lobby") {
  if(target=="lobby"&&!campaign::canChallenge(actor)) {
    RE::SendHUDMessage::ShowHUDMessage(campaign::hasAlbum()?"They are unavailable for a game.":"Buy a Tessera Album from a general-goods merchant.");return;
  }
+ if(target=="lobby")campaign::acceptChallenge(actor);
  campaign::updateTournaments();
  if(requested=="tournaments")ttcg::discoverAllTournaments(campaign::saved,campaign::gameHour());
  if(!campaign::prepare(target=="lobby"?actor:nullptr,true)) { RE::SendHUDMessage::ShowHUDMessage(campaign::notice.c_str()); return; }
@@ -498,10 +501,96 @@ void showPanel(RE::Actor* actor,const std::string& requested="lobby") {
  updateMusic(); publish();
  log::info("TTCG {}: {}",screen,opponentName);
 }
+void logPanelFailure(RE::Actor* actor,const std::string& requested,std::uint64_t elapsed,const char* reason) {
+ const auto scene=actor?actor->GetCurrentScene():nullptr;
+ const auto package=actor?actor->GetCurrentPackage():nullptr;
+ const auto player=RE::PlayerCharacter::GetSingleton();const auto playerScene=player?player->GetCurrentScene():nullptr;
+ log::warn("Panel request {} for {} ({:08X}) failed after {} ms: {}; scene {:08X} (playing {}, stopping {}), quest {:08X}, package {:08X} (type {}), player scene {:08X}",
+  requested,actor?actor->GetName():"unavailable NPC",actor?actor->GetFormID():0,elapsed,reason,
+  scene?scene->GetFormID():0,scene?scene->isPlaying:false,scene?scene->isShuttingDown:0,
+  scene&&scene->parentQuest?scene->parentQuest->GetFormID():0,package?package->GetFormID():0,package?int(package->packData.packType.underlying()):-1,playerScene?playerScene->GetFormID():0);
+}
+void finishPanelRequest(std::uint64_t token) {
+ if(!panelOpenRequest.active(token))return;
+ auto actor=pending.get();auto player=RE::PlayerCharacter::GetSingleton();auto ui=RE::UI::GetSingleton();
+ const auto now=musicTime(),elapsed=panelOpenRequest.elapsed(now);
+ auto reject=[&](const char* reason,const char* message){
+  logPanelFailure(actor.get(),pendingScreen,elapsed,reason);cancelPanelRequest();
+  if(message)RE::SendHUDMessage::ShowHUDMessage(message);
+ };
+ if(visible||!campaign::interfaceSettings.gamesEnabled){cancelPanelRequest();return;}
+ if(!player||!ui||!campaign::available()||ui->IsMenuOpen(RE::MainMenu::MENU_NAME)||ui->IsMenuOpen(RE::LoadingMenu::MENU_NAME)){
+  cancelPanelRequest();return;
+ }
+ if(!actor||actor.get()==player||player->IsDead()||player->IsInCombat()){
+  reject("player or NPC unavailable","Tessera is unavailable right now.");return;
+ }
+ if(actor->GetParentCell()!=player->GetParentCell()||actor->GetPosition().GetDistance(player->GetPosition())>=600.f){
+  reject("NPC moved out of reach","They are too far away. Speak to them again.");return;
+ }
+ const auto actorBlock=campaign::actorCardBlock(actor.get());
+ if(actorBlock!=campaign::ActorCardBlock::None&&actorBlock!=campaign::ActorCardBlock::Scene){
+  const char* reason=actorBlock==campaign::ActorCardBlock::Combat?"NPC in combat":
+   actorBlock==campaign::ActorCardBlock::Hostile?"NPC hostile":
+   actorBlock==campaign::ActorCardBlock::Dead?"NPC dead":
+   actorBlock==campaign::ActorCardBlock::Disabled?"NPC disabled":
+   actorBlock==campaign::ActorCardBlock::ChildDialogue?"child dialogue/quest gate":"ineligible actor";
+  reject(reason,"They are unavailable for Tessera right now.");return;
+ }
+ if(!api||!uiReady||!api->IsValid(view)){
+  reject("native UI unavailable","Tessera's interface is unavailable.");return;
+ }
+ std::string reason;
+ if(ui->IsMenuOpen(RE::DialogueMenu::MENU_NAME)){
+  const auto manager=RE::MenuTopicManager::GetSingleton();
+  if(manager&&manager->speaker&&manager->speaker!=actor->GetHandle()){
+   reject("another conversation started",nullptr);return;
+  }
+  reason="dialogue closing";
+ }else if(actorBlock==campaign::ActorCardBlock::Scene)reason="NPC scene";
+ else if(player->GetCurrentScene())reason="player scene";
+ else if(ui->GameIsPaused()||api->HasAnyActiveFocus())reason="another menu still owns focus";
+ if(reason!=panelWaitReason){
+  panelWaitReason=reason;
+  log::debug("Panel request {} for {}: {}",pendingScreen,actor->GetName(),reason.empty()?"ready; waiting for menu state to settle":reason);
+ }
+ const auto step=panelOpenRequest.poll(token,now,!reason.empty());
+ if(step==ttcg::PanelOpenRequest::Step::Expired){
+  reject(reason.empty()?"menu transition timed out":reason.c_str(),
+   reason=="NPC scene"||reason=="player scene"?"They are busy. Try speaking to them again in a moment.":"Tessera couldn't open. Please try again.");return;
+ }
+ if(step!=ttcg::PanelOpenRequest::Step::Open)return;
+ const auto requested=pendingScreen;cancelPanelRequest();
+ showPanel(actor.get(),requested);
+ collectionIntegration::publish();
+ if(!visible)logPanelFailure(actor.get(),requested,elapsed,"opening rejected; see in-game message");
+ else log::debug("Panel request {} for {} opened after {} ms",requested,actor->GetName(),elapsed);
+}
 void requestPanel(RE::Actor* actor,const std::string& requested="lobby") {
- if(!campaign::interfaceSettings.gamesEnabled||!eligible(actor)||visible) return;
- if(RE::UI::GetSingleton()->IsMenuOpen(RE::DialogueMenu::MENU_NAME)) { pending=actor->GetHandle(); pendingScreen=requested; }
- else showPanel(actor,requested);
+ if(!actor||visible||!campaign::interfaceSettings.gamesEnabled)return;
+ pending=actor->GetHandle();pendingScreen=requested;panelWaitReason.clear();
+ const auto token=panelOpenRequest.begin(musicTime());
+ log::info("Panel requested: {} for {} ({:08X})",requested,actor->GetName(),actor->GetFormID());
+ finishPanelRequest(token);
+ if(!panelOpenRequest.current(token))return;
+ auto queued=std::make_shared<std::atomic_bool>(false);
+ std::thread([token,queued](){
+  while(panelOpenRequest.current(token)){
+   std::this_thread::sleep_for(std::chrono::milliseconds(ttcg::PanelOpenRequest::retryMs));
+   if(!panelOpenRequest.current(token))break;
+   if(queued->exchange(true))continue;
+   // Publish the collection once the menu opens.
+   SKSE::GetTaskInterface()->AddTask([token,queued](){queued->store(false);finishPanelRequest(token);});
+  }
+ }).detach();
+}
+void queuePanelRequest(RE::Actor* actor,std::string requested) {
+ if(!actor)return;
+ const auto handle=actor->GetHandle();const auto generation=collectionIntegration::generation.load();
+ collectionIntegration::queue([handle,generation,requested=std::move(requested)](){
+  if(generation!=collectionIntegration::generation.load())return;
+  if(auto actor=handle.get())requestPanel(actor.get(),requested);
+ });
 }
 void requestChallenge(RE::Actor* actor) {
  campaign::registerNpcActor(actor);
@@ -514,7 +603,7 @@ void requestChallenge(RE::Actor* actor) {
   const int ready=campaign::npcAvailability(actor);if(!ready){RE::SendHUDMessage::ShowHUDMessage("They are unavailable for a game.");return;}
   auto info=campaign::npcResponse(actor,ready);
   if(info){if(info->objConditions.IsTrue(actor,RE::PlayerCharacter::GetSingleton()))actor->SetDialogueWithPlayer(true,true,info);else RE::SendHUDMessage::ShowHUDMessage("They are unavailable for a game.");return;}
-  if(ready==1){campaign::acceptChallenge(actor);requestPanel(actor);}else RE::SendHUDMessage::ShowHUDMessage(ready==3?"They don't have enough cards for a game.":"They don't want to play right now.");return;
+  if(ready==1){requestPanel(actor);}else RE::SendHUDMessage::ShowHUDMessage(ready==3?"They don't have enough cards for a game.":"They don't want to play right now.");return;
  }
  const bool accepted=campaign::resumingWith(actor)||i<0||(ttcg::opponentHasCards(campaign::saved,i)&&(campaign::development.unlockAllPlayers||ttcg::willingToPlay(campaign::saved,i,campaign::gameHour())));
  const bool alternate=i>=0&&ttcg::opponents[i].alternateBase&&campaign::persistentID(actor->GetActorBase())==ttcg::opponents[i].alternateBase;
@@ -597,7 +686,7 @@ void command(const char* raw) {
   }
   return;
  }
- // The toggle remains available during play; it checkpoints instead of forfeiting.
+ // Checkpoint a match when toggling games off.
  if(verb=="settings"){
   const auto position=input.tellg();std::string key;int value=-1;
   if(!(input>>key>>value)||(input>>extra)||value<0||!bindingCapture.empty())return;
@@ -896,7 +985,12 @@ void command(const char* raw) {
    campaign::Bank bank(campaign::persistentID(actor.get()));
    if(tradeRule||wager) {
      if(!campaign::canStake||!ttcg::validHand(campaign::rivalDeck,campaign::inventory(actor.get()))) { campaign::notice="They don't have enough cards for a game."; publish(); return; }
-     if(!campaign::saved.contract.reserve(bank,{deck,campaign::rivalDeck},static_cast<unsigned>(tradeRule),wager,campaign::persistentID(actor.get()))) { campaign::notice="Cards or gold unavailable."; publish(); return; }
+     if(!campaign::saved.contract.reserve(bank,{deck,campaign::rivalDeck},static_cast<unsigned>(tradeRule),wager,campaign::persistentID(actor.get()))) {
+       log::warn("Match stakes unavailable: {} ({:08X}), actor resolved {}, ledger {:08X}, trade {}, wager {}, gold {}/{}, cards valid {}/{}, transfer pending {}",
+         actor->GetName(),actor->GetFormID(),bank.actors[1]!=nullptr,bank.rival,tradeRule,wager,bank.count(0,0),bank.count(1,0),
+         ttcg::validHand(deck,campaign::inventory(RE::PlayerCharacter::GetSingleton())),ttcg::validHand(campaign::rivalDeck,campaign::inventory(actor.get())),campaign::saved.contract.pending());
+       campaign::notice="Cards or gold unavailable."; publish(); return;
+     }
    } else campaign::saved.contract={};
    campaign::cultureGame=campaign::cultureEnabled(actor.get())&&(tradeRule||wager);
    if(campaign::cultureGame)ttcg::startCultureMatch(campaign::saved,campaign::profileIndex(actor.get()),rules);
@@ -942,9 +1036,7 @@ void npcGivePapyrus(RE::StaticFunctionTag*,RE::Actor* actor,RE::BSFixedString ca
  });
 }
 void beginPapyrus(RE::StaticFunctionTag*,RE::Actor* actor) {
- if(!actor) return;
- auto handle=actor->GetHandle();
- collectionIntegration::queue([handle]() { auto target=handle.get(); if(target){campaign::registerNpcActor(target.get());campaign::syncProgression();}if(target&&campaign::canChallenge(target.get())){campaign::acceptChallenge(target.get());requestPanel(target.get());} });
+ queuePanelRequest(actor,"lobby");
 }
 void receiveCommand(const char* raw) {
  if(!raw) return;
@@ -967,13 +1059,12 @@ void tournamentInvitationPapyrus(RE::StaticFunctionTag*,RE::TESObjectBOOK* lette
   campaign::updateTournaments();
  });
 }
-void tournamentEntryPapyrus(RE::StaticFunctionTag*,RE::Actor* actor){if(actor){const auto handle=actor->GetHandle();collectionIntegration::queue([handle](){if(auto actor=handle.get())requestPanel(actor.get(),"registration");});}}
+void tournamentEntryPapyrus(RE::StaticFunctionTag*,RE::Actor* actor){queuePanelRequest(actor,"registration");}
 void tournamentPapyrus(RE::StaticFunctionTag*,RE::Actor* actor){
- if(!actor)return;auto handle=actor->GetHandle();collectionIntegration::queue([handle](){if(auto host=handle.get())requestPanel(host.get(),"tournaments");});
+ queuePanelRequest(actor,"tournaments");
 }
 void shopPapyrus(RE::StaticFunctionTag*,RE::Actor* actor){
- if(!actor)return;const auto handle=actor->GetHandle();
- collectionIntegration::queue([handle](){if(auto actor=handle.get())requestPanel(actor.get(),"shop");});
+ queuePanelRequest(actor,"shop");
 }
 bool expansionLoadedPapyrus(RE::StaticFunctionTag*,RE::BSFixedString key){return ttcg::expansionCardID(key.c_str())!=0;}
 void expansionGivePapyrus(RE::StaticFunctionTag*,RE::BSFixedString key,std::int32_t quantity,bool foil){
@@ -1075,15 +1166,12 @@ public:
    if(event&&event->itemCount>0&&
       ((event->newContainer==0x14&&(event->oldContainer==0x39FB9||event->oldContainer==0x39FB7))||event->newContainer==0x39FB9||event->newContainer==0x39FB7)){
      const auto base=event->baseObj;
-     // Only a newly added courier copy proves this dispatch. Receiving an
-     // older copy of the same BOOK must not acknowledge a new pending request.
+     // A newly delivered copy confirms this invitation request.
      const auto request=!event->oldContainer&&event->newContainer!=0x14?campaign::tournamentLetterInFlight.load():0;
      collectionIntegration::queue([base,request](){
        if(!campaign::available())return;
        const auto letter=campaign::tournamentLetterID(RE::TESForm::LookupByID<RE::TESObjectBOOK>(base));if(!letter)return;
-       // The observed addition confirms the exact request even if Papyrus's
-       // acknowledgement fails or delivery beats it. A late event cannot
-       // accidentally acknowledge the next invitation sharing this BOOK.
+       // Confirm the matching request when its letter arrives.
        if(request&&unsigned(request)==base)campaign::acknowledgeTournamentCourier(request);
        campaign::updateTournaments();
      });
@@ -1143,8 +1231,8 @@ public:
      collectionIntegration::queue([](){finishAlbumOpen();});
    }
    if(event->menuName==RE::DialogueMenu::MENU_NAME&&!event->opening) {
-     const auto handle=pending; const auto requested=pendingScreen; pending={};
-     collectionIntegration::queue([handle,requested]() { auto target=handle.get(); if(target) showPanel(target.get(),requested); });
+     const auto token=panelOpenRequest.token();
+     SKSE::GetTaskInterface()->AddTask([token]() { finishPanelRequest(token); });
    }
    if(event->opening&&(event->menuName==RE::MainMenu::MENU_NAME||event->menuName==RE::LoadingMenu::MENU_NAME)) {
      log::debug("Menu {}: cleanup begin (visible {}, music owned {})",event->menuName.c_str(),visible,musicPlaying);
@@ -1219,8 +1307,7 @@ void message(SKSE::MessagingInterface::Message* msg) {
    if(msg->type!=SKSE::MessagingInterface::kPostLoadGame)collectionIntegration::reset();
    const char* name=msg->type==SKSE::MessagingInterface::kPreLoadGame?"PreLoadGame":msg->type==SKSE::MessagingInterface::kNewGame?"NewGame":"PostLoadGame";
    log::debug("{}: cleanup begin (visible {}, music owned {})",name,visible,musicPlaying);
-   // Only PreLoad still belongs to the old save. Do not write its table into
-   // a newly loaded character after the serialization callbacks have run.
+   // Checkpoint the active character before loading another save.
    if(msg->type!=SKSE::MessagingInterface::kPreLoadGame)active=false;
    close(false);campaign::syncGameAvailability();
    if(msg->type!=SKSE::MessagingInterface::kPreLoadGame&&
@@ -1242,7 +1329,7 @@ extern "C" __declspec(dllexport) const TesseraCollectionAPI* Tessera_GetCollecti
 extern "C" __declspec(dllexport) constinit auto SKSEPlugin_Version=[]() noexcept {
  SKSE::PluginVersionData data{};
  data.PluginName("TTCG"); data.AuthorName("TTCG"); data.PluginVersion(REL::Version(TTCG_VERSION_MAJOR,TTCG_VERSION_MINOR,TTCG_VERSION_PATCH,0));
- // CommonLib selects engine layouts at runtime; this DLL has no fixed-layout overrides.
+ // CommonLib selects engine layouts at runtime.
  data.UsesAddressLibrary(); data.UsesNoStructs();
  return data;
 }();
@@ -1260,6 +1347,7 @@ extern "C" __declspec(dllexport) bool SKSEPlugin_Load(const SKSE::LoadInterface*
  SKSE::Init(skse,initInfo);
  log::info("Diagnostics: {}",diagnostics?"enabled":"disabled");
  SKSE::GetPapyrusInterface()->Register([](RE::BSScript::IVirtualMachine* vm) {
+   exchangeIntegration::bind(vm);
    vm->RegisterFunction("GetAPIVersion","Tessera_Collection",collectionIntegration::apiVersion);
    vm->RegisterFunction("IsReady","Tessera_Collection",collectionIntegration::isReady);
    vm->RegisterFunction("GetRevision","Tessera_Collection",collectionIntegration::revision);

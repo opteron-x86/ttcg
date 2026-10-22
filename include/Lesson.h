@@ -90,7 +90,7 @@ struct Lesson {
    out+="],\"riftTour\":"+std::string(riftTour?"true":"false")+",\"affinityTour\":"+std::string(affinityTour?"true":"false")+",\"workshopRule\":"+std::to_string(workshopRule)+",\"rules\":"+std::to_string(match.rules)+",\"activeGroup\":"+quote(match.activeGroup<0?"":creatureGroups[match.activeGroup])+",\"tiles\":[";
    for(int i=0;i<9;++i){if(i)out+=',';out+=std::to_string(match.tiles[i]);}out+="],\"modifiers\":[";
    for(int i=0;i<9;++i){if(i)out+=',';out+=std::to_string(match.modifier(match.board[i].card,i));}out+="],\"handModifiers\":[";
-   for(int p=0;p<2;++p){if(p)out+=',';out+='[';for(int h=0;h<5;++h){if(h)out+=',';out+=std::to_string(p==1&&!match.known(p,h,0)?0:match.groupModifier(match.hands[p][h]));}out+=']';}
+   for(int p=0;p<2;++p){if(p)out+=',';out+='[';for(int h=0;h<5;++h){if(h)out+=',';out+=std::to_string(p==1&&!match.known(p,h,0)?0:match.modifier(match.hands[p][h],-1));}out+=']';}
    return out+"]}";
  }
  std::string framesJson() const {
@@ -109,7 +109,34 @@ inline Lesson ruleExample(unsigned rule){
  Lesson d;d.workshopRule=rule;
  d.match=Match(d.match.hands[0],d.match.hands[1],37,Open|(rule==SameWall?Same|SameWall:rule==Swap?Basic:rule));
  d.match.turn=0;d.match.selectTurnCard();
- if(rule==Order||rule==Chaos){
+ if(rule==Ascension||rule==Descension){
+   std::vector<int> strength,neutral;
+   for(int i=0;i<int(cards.size());++i)if(!cards[i].pending&&cards[i].tier<=3&&!cards[i].unique){
+     if(cards[i].affinityMask==1)strength.push_back(i);else if(!cards[i].affinityMask)neutral.push_back(i);
+   }
+   if(strength.size()<7||neutral.size()<3)throw std::invalid_argument("Missing affinity-count example cards");
+   d.match=Match({strength[0],strength[1],strength[2],strength[3],neutral[0]},
+     {strength[4],neutral[1],strength[5],strength[6],neutral[2]},37,Open|rule);d.match.turn=0;
+   d.exampleMoves={{0,0},{0,8},{1,2},{1,4},{2,6}};
+   const std::string first=rule==Ascension?"+1":"−1",cap=rule==Ascension?"+2":"−2";
+   d.captions={"Play a Strength card. The first matching card has no effect.",
+     "One Strength card is on the board. Your opponent will add a second.",
+     "Both players’ Strength cards now have "+first+", including cards still in hand. Add a third.",
+     "Three Strength cards bring the modifier to "+cap+". Your opponent will play a Neutral card.",
+     "Neutral cards are unaffected. Play another Strength card to test the limit.",
+     "The modifier stays at "+cap+". Each affinity counts separately; Same and Plus still use printed values."};
+ }else if(rule==Dominion){
+   const auto findGroup=[](std::string_view name){for(int i=0;i<int(cards.size());++i)if(!cards[i].pending&&cards[i].tier<=3&&!cards[i].unique&&std::string_view(cards[i].groups)=="[\""+std::string(name)+"\"]")return i;throw std::invalid_argument("Missing Dominion example cards");};
+   const int orc=findGroup("Orc"),nord=findGroup("Nord"),khajiit=findGroup("Khajiit");
+   d.match=Match({orc,khajiit,nord,d.match.hands[0][3],d.match.hands[0][4]},
+     {nord,nord,d.match.hands[1][2],d.match.hands[1][3],d.match.hands[1][4]},37,Open|Dominion);d.match.turn=0;
+   d.exampleMoves={{0,4},{0,3},{1,1},{1,5},{2,7}};
+   d.captions={"Place the Orc in the centre.","Your opponent will place a Nord beside it.",
+     "One adjacent Nord does not weaken the Orc. Place the Khajiit above it.",
+     "One Nord and one Khajiit still do not qualify. Your opponent will add a second Nord.",
+     "The Orc now has −1 on all sides: two adjacent Nords share a group it lacks. Add a third Nord.",
+     "The penalty stays at −1, regardless of ownership. Diagonal cards do not count. Modifier changes alone never flip a card."};
+ }else if(rule==Order||rule==Chaos){
    auto preview=d.match;
    for(int square:{0,4,8,2}){
      const auto move=Move{preview.forcedHand,square};
@@ -161,7 +188,7 @@ inline std::string allRuleDemosJson(){
  add("affinity",Lesson::affinityLesson());
  add("legion",Lesson::workshop(Legion));
  add("decimation",Lesson::workshop(Decimation));
- for(const auto& [key,rule]:std::array<std::pair<const char*,unsigned>,6>{{{"order",Order},{"chaos",Chaos},{"fallenace",FallenAce},{"suddenDeath",SuddenDeath},{"samewall",SameWall},{"swap",Swap}}})add(key,ruleExample(rule));
+ for(const auto& [key,rule]:std::array<std::pair<const char*,unsigned>,9>{{{"order",Order},{"chaos",Chaos},{"fallenace",FallenAce},{"suddenDeath",SuddenDeath},{"samewall",SameWall},{"swap",Swap},{"ascension",Ascension},{"descension",Descension},{"dominion",Dominion}}})add(key,ruleExample(rule));
  return out+"}";
 }
 }

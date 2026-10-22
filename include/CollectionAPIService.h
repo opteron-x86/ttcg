@@ -41,8 +41,7 @@ inline SnapshotPtr makeSnapshot(const Stock& owned,const Stock& discovered,unsig
     auto& summary=result->summary;summary.size=sizeof(summary);summary.revision=revision;
     result->rows.reserve(cards.size());
     for(const auto& card:cards) {
-        // Match the album's full catalog. Pool eligibility is not ownership:
-        // special rewards and cards retained from older saves still count.
+        // Include the full album catalog, including special rewards.
         auto& row=result->rows.emplace_back();auto& value=row.value;
         row.key=namedCardKey(card.form);row.name=card.name;row.rarity=card.rarity;
         row.groups=card.groups;row.affinities=card.affinities;
@@ -60,8 +59,7 @@ inline SnapshotPtr makeSnapshot(const Stock& owned,const Stock& discovered,unsig
         summary.standardCopies+=value.standardCount;summary.foilCopies+=value.foilCount;
         result->indices.emplace(row.key,result->rows.size()-1);
     }
-    // Bind only after the vector is final: short strings must never move after
-    // exposing their addresses to a consumer in another DLL.
+    // Bind string pointers after the snapshot reaches its final size.
     for(auto& row:result->rows)row.bind();
     return result;
 }
@@ -82,8 +80,7 @@ public:
         previousOwned.clear();previousDiscovered.clear();previousPlayer.clear();previousEscrow.clear();previousCredits.clear();
         previousHeld=false;previousPaying=false;previousCatalogSize=0;nextRevision();return true;
     }
-    // Called at completed game-thread operations, never from Papyrus readers.
-    // Unchanged collections allocate no snapshot and send no notification.
+    // Publish a snapshot after a completed collection operation.
     bool refresh(const CollectionSave& save) {
         std::scoped_lock lock(writer);
         const bool hasSnapshot=bool(current.load());

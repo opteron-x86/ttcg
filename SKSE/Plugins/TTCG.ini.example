@@ -1,0 +1,144 @@
+[Diagnostics]
+; Detailed logs and sampled NPC profiling for troubleshooting only. Restart after changing.
+; Independent of Development mode; this does not change gameplay.
+Enabled=0
+
+[Development]
+; All switches below require Enabled=1. Restart Skyrim after editing this file.
+; Enabled=1 reveals the Developer section in the album Settings tab. Those changes apply immediately.
+; Settings also has Add all cards / Add all foils buttons to refill missing copies.
+Enabled=0
+; Add one copy of every catalog identity once per saved character, including reserved uniques.
+; Later library updates add newly introduced undiscovered identities. Supplies the album.
+AddAllCards=0
+; Grant every foil once per character; separate from normal copies.
+AddAllFoils=0
+; Reveal the roster without changing discoveries or challenge willingness.
+ShowAllPlayers=0
+; Allow challenges against undiscovered/locked roster opponents. Also bypasses the album gate.
+UnlockAllPlayers=0
+; Preview unowned cards in the album without owning them.
+RevealAllCards=0
+; Allow the challenge hotkey on other eligible NPCs with a persistent common collection and regional trade terms.
+AllowAnyNPC=0
+; 0 disables all match records and reputation, including tournaments. Scores/prizes still settle.
+RecordResults=1
+; Keep a regular tournament ready at whichever supported inn you visit. No courier.
+; Unentered regular tests move with you; joined tournaments and results are retained.
+RegularTournaments=0
+; Each enabled higher circuit sends a real courier invitation, regardless of reputation.
+; Receive the letter, then speak to its host at the inn to enter. Seven days from delivery.
+InvitationalTournaments=0
+MastersTournaments=0
+; Host for both courier tests: 1 Whiterun, 2 Falkreath, 3 Haafingar, 4 Hjaalmarch,
+; 5 Pale, 6 Rift, 7 Winterhold, 8 Eastmarch, 9 Reach, 10 Solstheim.
+TournamentHold=1
+; Test entry is free. Finish/leave the results to get another test; no ID increments.
+; These switches replace scheduled announcements for their circuits while enabled.
+; Tournament rules, zero trades and zero wagers override the settings below.
+; -1 uses hold rules. Sum: Same=1, Plus=2, Reverse=4, Open=16, Affinity=32,
+; Three Open=64, Legion=128, Decimation=256, Order=512, Chaos=1024,
+; Fallen Ace=2048, Sudden Death=4096, Same Wall=8192, Swap=16384.
+; Do not combine Open/Three Open, Legion/Decimation or Order/Chaos.
+; Same Wall requires Same. Combo is not a separate flag.
+; 0 = hidden hands; 16 = Open only; 19 = Open + Same + Plus; 51 adds Affinity.
+Rules=-1
+; -1 inherits; 0 = None; 1 = One; 2 = Diff; 3 = Direct; 4 = All.
+; Games with children always use None.
+TradeRule=-1
+; -1 lets the player choose the normal wager. Otherwise 0, 5, 10, 25, 50, 100 or 200.
+; Games with children always use 0; both players must afford a fixed wager.
+Wager=-1
+; -1 uses NPC skill. 0 = Beginner, 1 = Regular, 2 = Experienced, 3 = Expert.
+OpponentSkill=-1
+; Borrowed-card demo: 0 = off; 1 = Three Open; 2 = Legion; 3 = Decimation; 4 = Affinity.
+RuleLesson=0
+
+[Input]
+; Decimal DirectInput scan codes: 65 = F7, 66 = F8. 0 disables a shortcut.
+; Optional modifiers: add LShift=256, RShift=512, LCtrl=1024, RCtrl=2048,
+; LAlt=4096, RAlt=8192 to the key code. Example: LShift + F7 = 321.
+; Multiple modifiers can be added together. Only the exact combination activates.
+; Settings > Controls captures combinations and saves the value for you.
+CollectionKey=65
+ChallengeKey=66
+; Optional enable/disable toggle. Unbound by default; configurable in Settings.
+ToggleGamesKey=0
+
+[Gameplay]
+; Mod-added residents: 0 off, 1 select 60% of eligible NPCs, 2 all eligible.
+Residents=1
+; Generated/manual residents must use a vanilla or DLC voice. Authored profiles are exempt.
+VanillaVoicesOnly=1
+; Also available in Settings. Hides ALL Tessera dialogue and blocks challenges.
+; The album remains accessible. Disabling during a match preserves it to resume.
+Enabled=1
+
+[Audio]
+; Match music only; rule and result sounds remain enabled.
+Enabled=1
+
+[Interface]
+; Also available in Settings; changes apply immediately and persist across characters.
+; 1 pauses the world in that screen; 0 keeps it running. All four default to 1.
+; Album applies even when browsing or editing a deck from match setup.
+PauseWorldInAlbum=1
+; EXPERIMENTAL: unpaused shops, match setup and matches.
+; Keep these at 1 for normal play. At 0, NPC movement can interrupt the session.
+PauseWorldInShops=1
+PauseWorldInMatchSetup=1
+; Interrupted matches can be resumed with the same opponent (or tournament inn).
+PauseWorldDuringMatches=1
+
+[Appearance]
+; Window theme: 0 Tessera, 1 Charcoal, 2 Oxblood, 3 Parchment, 4 Umber.
+Theme=0
+; Board: 0 match theme, 1 plain, 2 slate, 3 green felt, 4 parchment, 5 dark leather, 6 walnut.
+BoardSurface=0
+; Board texture strength, 0-100. Saved independently of the window theme.
+BoardTexture=10
+; Choose a card back in Tessera Settings. Saved across characters and restarts.
+; Built-ins: mosaic, dragon, celestial. Custom images go in TesseraUI/art/backs/custom/.
+CardBack=mosaic
+; 0 = values on the edges (default); 1 = classic upper-left diamond.
+RankLayout=0
+; Hide card names on faces while retaining hover names and inspection.
+ShowCardNames=1
+; Show group names beneath the nameplate. Also works with card names hidden.
+ShowCardGroups=0
+; Nameplate: 0 shaded band, 1 soft fade, 2 text only.
+NameplateStyle=0
+; Lettering: 0 small caps, 1 title case, 2 uppercase.
+NameCase=0
+; Fonts: 0 theme default, 1 Georgia, 2 Times New Roman, 3 Arial, 4 Verdana.
+; Each can be chosen independently in Appearance. Missing fonts use local fallbacks.
+InterfaceFont=0
+CardNameFont=0
+CardValueFont=0
+; Card value shadow strength (0-100), softness (0-8), distance (0-6).
+RankShadowOpacity=100
+RankShadowBlur=2
+RankShadowOffset=1
+; Outline on/off and weight (0-30). Weight 10 is 1px at a 32px value size.
+; Shadow and outline scale with the card. Reset in Appearance restores these five settings.
+RankStroke=0
+RankStrokeWeight=10
+; Opponent artwork: 0 original, 1 muted, 2 grayscale, 3 sepia.
+; Only the illustration changes. Card values and icons keep their colours.
+OpponentTreatment=0
+; Where to apply it: 0 hand, 1 board, 2 both. Strength is 0-100.
+OpponentScope=2
+OpponentStrength=100
+; Control colours: 0 Tessera, 1 blue/amber, 2 violet/mint, 3 ivory/slate, 4 custom.
+ControlPalette=0
+; Custom RGB colours stored as decimal numbers. Use the colour picker in Settings.
+PlayerColour=8897757
+OpponentColour=14652805
+; Border: 0 single line, 1 double line, 2 clipped corners, 3 corner brackets,
+; 4 original Tessera (thicker top-left and bottom-right corners).
+ControlBorderStyle=0
+; Thickness in tenths of a pixel (0-40); opacity 0-100.
+ControlBorderWidth=12
+ControlBorderOpacity=100
+; A filled diamond marks your cards; an outline marks the opponent's cards.
+ControlMarker=0

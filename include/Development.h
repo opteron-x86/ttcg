@@ -24,7 +24,7 @@ struct DevelopmentSettings {
    else if(key=="RuleLesson"&&value>=0&&value<=4)ruleLesson=value;
    else if(key=="Rules"&&(value==-1||(value>=0&&validRules(value))))rules=value;
    else if(key=="TradeRule"&&value>=-1&&value<=4)tradeRule=value;
-   else if(key=="Wager"&&(value==-1||value==0||value==5||value==10||value==25||value==50||value==100||value==200))wager=value;
+   else if(key=="Wager"&&(value==-1||offeredWager(value)))wager=value;
    else if(key=="OpponentSkill"&&value>=-1&&value<=3)opponentSkill=value;
    else return false;
    return true;
@@ -47,7 +47,7 @@ struct DevelopmentSettings {
    auto lesson=integer("RuleLesson",0);if(lesson>=0&&lesson<=4)d.ruleLesson=lesson;
    auto value=integer("Rules",-1);if(value>=0&&validRules(value))d.rules=value;
    value=integer("TradeRule",-1);if(value>=0&&value<=4)d.tradeRule=value;
-   value=integer("Wager",-1);if(value==0||value==5||value==10||value==25||value==50||value==100||value==200)d.wager=value;
+   value=integer("Wager",-1);if(offeredWager(value))d.wager=value;
    value=integer("OpponentSkill",-1);if(value>=0&&value<=3)d.opponentSkill=value;
    return d;
  }

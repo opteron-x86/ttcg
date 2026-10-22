@@ -1,0 +1,171 @@
+{
+  "schema_version": 2,
+  "status": "active",
+  "authority": "Approved roster workshop, 2026-09-27. Per-card workshop assignments override this source-type glossary.",
+  "groups": [
+    {
+      "name": "Argonian",
+      "source_types": [
+        "Argonian"
+      ]
+    },
+    {
+      "name": "Breton",
+      "source_types": [
+        "Breton"
+      ]
+    },
+    {
+      "name": "Dark Elf",
+      "source_types": [
+        "Dark Elf"
+      ]
+    },
+    {
+      "name": "High Elf",
+      "source_types": [
+        "High Elf"
+      ]
+    },
+    {
+      "name": "Imperial",
+      "source_types": [
+        "Imperial"
+      ]
+    },
+    {
+      "name": "Khajiit",
+      "source_types": [
+        "Khajiit"
+      ]
+    },
+    {
+      "name": "Nord",
+      "source_types": [
+        "Nord"
+      ]
+    },
+    {
+      "name": "Orc",
+      "source_types": [
+        "Orc"
+      ]
+    },
+    {
+      "name": "Redguard",
+      "source_types": [
+        "Redguard"
+      ]
+    },
+    {
+      "name": "Wood Elf",
+      "source_types": [
+        "Wood Elf"
+      ]
+    },
+    {
+      "name": "Daedra",
+      "source_types": [
+        "Daedra",
+        "Atronach",
+        "Dremora",
+        "Scamp"
+      ]
+    },
+    {
+      "name": "Beastfolk",
+      "source_types": [
+        "Goblin",
+        "Falmer",
+        "Minotaur",
+        "Centaur",
+        "Dreugh",
+        "Grummite",
+        "Harpy",
+        "Lamia",
+        "Giant",
+        "Sload"
+      ]
+    },
+    {
+      "name": "Beast",
+      "source_types": [
+        "Animal",
+        "Beast",
+        "Fish",
+        "Mammoth",
+        "Mudcrab",
+        "Netch",
+        "Reptile",
+        "Spider",
+        "Skeever",
+        "Wolf",
+        "Chaurus",
+        "Elytra",
+        "Insect",
+        "Kwama",
+        "Lurcher",
+        "Mantikora",
+        "Minotaur",
+        "Troll",
+        "Werewolf"
+      ]
+    },
+    {
+      "name": "Spirit",
+      "source_types": [
+        "Spriggan",
+        "Lurcher",
+        "Nereid",
+        "Hist",
+        "Nymph"
+      ]
+    },
+    {
+      "name": "Construct",
+      "source_types": [
+        "Automaton",
+        "Fabricant",
+        "Factotum"
+      ]
+    },
+    {
+      "name": "Undead",
+      "source_types": [
+        "Undead",
+        "Skeleton",
+        "Spirit",
+        "Ghost",
+        "Vampire",
+        "Wraith",
+        "Mummy",
+        "Draugr",
+        "Lich",
+        "Zombie",
+        "Revenant"
+      ]
+    },
+    {
+      "name": "Dragon",
+      "source_types": [
+        "Dragon"
+      ]
+    },
+    {
+      "name": "God",
+      "source_types": [
+        "God",
+        "Daedric Prince"
+      ]
+    }
+  ],
+  "aliases": {
+    "Altmer": "High Elf",
+    "Bosmer": "Wood Elf",
+    "Dunmer": "Dark Elf",
+    "Orsimer": "Orc",
+    "Mudcrap": "Mudcrab"
+  },
+  "unmatched_policy": "Keep unresolved source subjects for review; do not create new gameplay groups.",
+  "multiple_group_policy": "Exactly one gameplay group per active card, assigned by the roster workshop. Preserve ancestry and species as descriptive subtypes."
+}

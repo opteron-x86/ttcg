@@ -3,8 +3,7 @@
 #include "Tournaments.h"
 
 namespace preview {
-// Disposable desktop inventory. Production uses campaign::openPack and
-// campaign::openTournamentPack directly; no test inventory reaches Skyrim.
+// Provide a disposable pack inventory for the desktop preview.
 struct PackFixture {
     std::array<int,2> inventory{1,1};
     unsigned consumed=0,seed=621;

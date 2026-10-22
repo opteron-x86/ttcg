@@ -3,6 +3,8 @@
 #include "TournamentState.h"
 #include "OpponentState.h"
 #include "Match.h"
+#include "Wagers.h"
+#include "ExchangeState.h"
 #include <bit>
 #include <algorithm>
 #include <array>
@@ -22,7 +24,6 @@ using Stock=std::map<CardID,int>;
 inline constexpr CardID foilFlag=0x80000000u;
 inline CardID baseCardID(CardID id){return id&~foilFlag;}
 inline bool isFoil(CardID id){return (id&foilFlag)!=0;}
-inline constexpr int maximumWager=200;
 inline int cardIndex(CardID id) {
  id=baseCardID(id);
  // The built-in prefix is immutable; expansions append contiguous session IDs.
@@ -97,6 +98,7 @@ struct Contract {
  bool held=false, paying=false;
  int wager=0, outcome=-2;
  std::uint32_t opponent=0;
+ std::uint32_t wagerLedger=0;
  std::array<Hand,2> hands{};
  std::array<Stock,2> escrow{}, credits{};
  unsigned trade=0,selected=0;
@@ -181,6 +183,7 @@ struct Contract {
      for(auto [id,n]:need[p])if(bank.count(p,id)<n)return false;
    }
    *this={};hands=decks;trade=kind;wager=gold;opponent=actor;held=true;
+   if constexpr(requires{bank.wagerLedger();})wagerLedger=bank.wagerLedger();
    for(int p=0;p<2;++p)for(auto [id,n]:need[p]) {
      int taken=std::clamp(-bank.change(p,id,-n),0,n);escrow[p][id]+=taken;
      if(taken!=n){settleSelection(bank,-1,0);return false;}
@@ -225,7 +228,8 @@ struct MerchantStock {
  unsigned restockAt=0, generation=0;
  int goldCredit=0;
 };
-inline constexpr unsigned collectionFormat=31;
+inline constexpr unsigned collectionFormat=33;
+inline constexpr bool supportedCollectionFormat(unsigned version){return version==20||version==21||(version>=26&&version<=collectionFormat);}
 struct CollectionSave {
  ResidentState residents;
  std::map<std::uint32_t,std::uint32_t> loadedWorldRemap;
@@ -240,7 +244,11 @@ struct CollectionSave {
  Contract contract;
  Stock player,discovered;
  std::map<std::uint32_t,Stock> opponents;
+ std::map<std::uint32_t,BettingPurse> bettingPurses;
  std::map<std::uint32_t,MerchantStock> merchants;
+ // One current offer per owning quest. A terminal offer retains its serial so
+ // a delayed callback cannot complete or cancel the next offer in that slot.
+ std::map<std::uint32_t,CardExchange> exchanges;
  int goldCredit=0;
  unsigned encounteredRules=0;
  std::map<std::uint32_t,PlayerRecord> players;
@@ -253,7 +261,6 @@ struct CollectionSave {
  bool valdrRescued=false,erandurReady=false;
  std::set<std::uint32_t> accessBlocked;
  std::set<std::uint32_t> tournamentBlocked; // Rebuilt from current world state, not serialized.
- // Membership bits remain in the save format; they no longer gate opponents.
  bool guildMember=false,brandSheiJailed=false,collegeMember=false;
  std::array<unsigned,2> dealReveals{};
  std::vector<SavedDeck> decks;
@@ -309,20 +316,19 @@ inline void retainDealVisibility(CollectionSave& save,Match& match){
  if(!(match.rules&ThreeOpen))return;
  if(save.dealReveals==std::array<unsigned,2>{})save.dealReveals=match.reveals;else match.reveals=save.dealReveals;
 }
-// The same visitor is used by portable identity restoration and the native
-// migration of old load-order-based saves. Region IDs and card IDs are separate.
 template<class Remap> bool remapWorldState(CollectionSave& s,Remap remap){
  bool ok=true;
  auto id=[&](auto& v){if(v){auto mapped=remap(v);if(!mapped)ok=false;else v=mapped;}};
  auto map=[&](auto& values){auto old=std::move(values);values={};for(auto& [key,value]:old){auto target=key;id(target);if(!values.emplace(target,std::move(value)).second)ok=false;}};
  auto set=[&](auto& values){auto old=std::move(values);values={};for(auto value:old){id(value);if(!values.insert(value).second)ok=false;}};
- id(s.contract.opponent);map(s.opponents);map(s.merchants);map(s.players);map(s.childHolds);
+ id(s.contract.opponent);id(s.contract.wagerLedger);map(s.opponents);map(s.bettingPurses);map(s.merchants);map(s.players);map(s.childHolds);
  map(s.reputation);map(s.invitations);map(s.encounterAfter);
  set(s.deadPlayers);set(s.accessBlocked);set(s.tournamentBlocked);
  for(auto& r:s.tournamentReputation)map(r.opponents);
  map(s.tournaments.npcGold);for(auto& e:s.tournaments.events)for(auto& base:e.bracket)if(base!=tournamentPlayer)id(base);
  for(auto& base:s.culture.asked)id(base);id(s.culture.pending.opponent);for(auto& [hold,r]:s.culture.regions)id(r.offer.opponent);
  map(s.residents.profiles);for(auto& [base,p]:s.residents.profiles)id(p.reference);
+ map(s.exchanges);for(auto& [owner,e]:s.exchanges){id(e.collector);id(e.ledger);}
  return ok;
 }
 inline std::vector<std::uint32_t> encodeCollection(const CollectionSave& s) {
@@ -336,6 +342,7 @@ inline std::vector<std::uint32_t> encodeCollection(const CollectionSave& s) {
  for(const auto& [id,m]:s.merchants){keepStock(m.stock);keepStock(m.resale);}
  for(auto id:s.tournaments.trophies)keep(id);for(const auto& e:s.tournaments.events)keep(e.trophy);
  for(const auto& [base,p]:s.residents.profiles)for(auto id:p.starting)keep(id);
+ for(const auto& [owner,e]:s.exchanges){keep(e.requested);if(e.reward)keep(e.reward);}
  for(const auto& [key,id]:expansionKeys)identities[id]=key;
  std::vector<std::uint32_t> out{static_cast<unsigned>(worldForms().size())};
  for(const auto& [id,form]:worldForms()){out.push_back(id);writeIdentityText(out,form.plugin);out.push_back(form.local);}
@@ -403,16 +410,18 @@ inline std::vector<std::uint32_t> encodeCollection(const CollectionSave& s) {
  for(const auto& [key,m]:s.merchants){out.push_back(key);stock(m.stock);stock(m.resale);out.push_back(m.restockAt);out.push_back(m.generation);out.push_back(m.goldCredit);}
  encodeResidents(out,s.residents);
  encodeRegionalCalendars(out,s.culture);
+ out.push_back(c.wagerLedger);out.push_back(s.bettingPurses.size());
+ for(const auto& [id,p]:s.bettingPurses){out.push_back(id);out.push_back(p.gold);out.push_back(p.restockAt);}
+ out.push_back(s.exchanges.size());
+ for(const auto& [owner,e]:s.exchanges)out.insert(out.end(),{owner,e.serial,e.collector,e.ledger,e.requested,e.reward,e.gold,unsigned(e.status)});
  return out;
 }
 inline bool decodeCollection(const std::vector<std::uint32_t>& in,CollectionSave& saved,unsigned version=collectionFormat) {
- if(version!=20&&version!=21&&version!=26&&version!=27&&version!=28&&version!=29&&version!=30&&version!=collectionFormat)return false;
+ if(!supportedCollectionFormat(version))return false;
  const bool legacy=version==20;
  CollectionSave s; std::size_t at=0; bool ok=true;
  auto get=[&]() { if(at>=in.size()) { ok=false; return 0u; } return in[at++]; };
  auto boolean=[&]() { auto v=get(); if(v>1) ok=false; return v!=0; };
- // Validate retired maps before discarding them. Old co-saves still contain
- // these fields; corrupt payloads must not partially replace current state.
  auto discardMap=[&](unsigned maximum){
   const auto n=get();if(n>8192)return false;std::set<std::uint32_t> ids;
   for(unsigned i=0;i<n;++i){const auto id=get(),value=get();if(!id||value>maximum||!ids.insert(id).second)return false;}
@@ -452,7 +461,6 @@ inline bool decodeCollection(const std::vector<std::uint32_t>& in,CollectionSave
  stock(s.player); stock(s.discovered);
  auto actors=get(); if(actors>8192) return false;
  for(unsigned i=0;i<actors;++i) { auto actor=get(); if(!actor||s.opponents.contains(actor)) return false; stock(s.opponents[actor]); }
- // Read and discard retired v20 shop data; it never enters the current model.
  if(legacy){auto n=get();if(n>8192)return false;for(unsigned i=0;i<n;++i){get();Stock discarded;stock(discarded);get();get();}}
  auto credit=get(); if(credit>2000000) return false; s.goldCredit=static_cast<int>(credit)-1000000;
  
@@ -546,9 +554,26 @@ inline bool decodeCollection(const std::vector<std::uint32_t>& in,CollectionSave
  }
  if(version>=30){
   if(!decodeResidents(get,card,s.residents))return false;
-  if(!remapWorldState(s,[&](auto id){auto it=s.loadedWorldRemap.find(id);return it!=s.loadedWorldRemap.end()?it->second:virtualWorldID(id)?0:id;}))return false;
  }
- if(version>=31&&!decodeRegionalCalendars(get,s.culture))return false;
+ if(version>=31&&!decodeRegionalCalendars(get,s.culture,version==31?14:ruleFlags.size()))return false;
+ if(version>=32){
+  c.wagerLedger=get();const auto n=get();if(n>8192)return false;
+  for(unsigned i=0;i<n;++i){const auto id=get(),gold=get(),next=get();
+   if(!id||gold>maximumBettingGold||!next||next>100000072||s.bettingPurses.contains(id))return false;
+   s.bettingPurses[id]={static_cast<int>(gold),next};
+  }
+  if(c.wagerLedger&&c.pending()&&c.wager&&!s.bettingPurses.contains(c.wagerLedger))return false;
+ }
+ if(version>=33){
+  const auto n=get();if(n>maximumExchanges)return false;
+  for(unsigned i=0;i<n;++i){
+   const auto owner=get();CardExchange e;e.serial=get();e.collector=get();e.ledger=get();e.requested=card();e.reward=card();e.gold=get();const auto state=get();
+   if(!owner||s.exchanges.contains(owner)||!e.serial||e.serial>INT32_MAX||!e.collector||!e.ledger||!valid(e.requested)||isFoil(e.requested)||
+      (e.reward&&(!valid(e.reward)||isFoil(e.reward)||e.reward==e.requested))||(!e.reward&&!e.gold)||(e.reward&&e.gold)||e.gold>maximumExchangeGold||state<1||state>4)return false;
+   e.status=ExchangeStatus(state);s.exchanges.emplace(owner,e);
+  }
+ }
+ if(version>=30&&!remapWorldState(s,[&](auto id){auto it=s.loadedWorldRemap.find(id);return it!=s.loadedWorldRemap.end()?it->second:virtualWorldID(id)?0:id;}))return false;
  if(!ok||at!=in.size()) return false;
  saved=std::move(s); return true;
 }

@@ -1,0 +1,142 @@
+name: Build and test
+
+on:
+  push:
+    branches: [master]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tessera-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref_type != 'tag' }}
+
+env:
+  PYTHONUTF8: '1'
+
+jobs:
+  native:
+    name: Linux tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y g++-14 ninja-build libsdl2-dev libgl1-mesa-dev libwebp-dev python3-pil
+      - name: Check source and dependencies
+        run: |
+          python3 tools/release-info.py
+          python3 tools/setup-dependencies.py --native
+          python3 tools/test-art-fixtures.py
+      - name: Build native tests and preview
+        env:
+          CXX: g++-14
+        run: |
+          cmake --preset native
+          cmake --build --preset native
+      - name: Test
+        run: ctest --preset native --parallel 2 --output-junit "$PWD/build/native/native-tests.xml"
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: linux-test-results
+          path: |
+            build/native/native-tests.xml
+            build/native/Testing/Temporary/LastTest.log
+          if-no-files-found: warn
+          retention-days: 30
+
+  windows:
+    name: Windows DLL and packages
+    runs-on: windows-2025
+    timeout-minutes: 60
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      package_version: ${{ steps.version.outputs.package_version }}
+      prerelease: ${{ steps.version.outputs.prerelease }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Check source and version
+        id: version
+        run: python tools/release-info.py --github-output
+      - name: Fetch pinned dependencies
+        run: python tools/setup-dependencies.py --sources-only
+      - name: Set up Windows compiler
+        run: ./.github/scripts/windows-env.ps1
+      - name: Cache dependency binaries
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .deps/binary-cache
+          key: tessera-vcpkg-windows-2025-${{ hashFiles('vcpkg.json', 'cmake/dependencies.json', 'cmake/triplets/**', 'cmake/vcpkg-ports/**') }}
+      - name: Bootstrap vcpkg
+        run: ./build/deps/vcpkg/bootstrap-vcpkg.bat -disableMetrics
+      - name: Configure
+        run: cmake --preset windows-release
+      - name: Build
+        run: cmake --build --preset windows-release
+      - name: Run Windows probes
+        run: python tools/test-windows.py --build build/windows --output build/test-results
+      - name: Package
+        run: |
+          $arguments = @('--build-dir', 'build/windows', '--output-dir', 'dist', '--validation', 'build/test-results/windows-tests.json')
+          if ($env:GITHUB_REF_TYPE -eq 'tag') { $arguments += @('--tag', $env:GITHUB_REF_NAME) }
+          python tools/package-release.py @arguments
+      - name: Upload packages
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: Tessera-${{ steps.version.outputs.package_version }}
+          path: dist/*
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 30
+      - name: Upload Windows test results
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: windows-test-results
+          path: build/test-results/*
+          if-no-files-found: warn
+          retention-days: 30
+
+  release:
+    name: Publish versioned release
+    if: github.event_name == 'push' && github.ref_type == 'tag'
+    needs: [native, windows]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - name: Download tested packages
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: Tessera-${{ needs.windows.outputs.package_version }}
+          path: dist
+      - name: Verify checksums
+        working-directory: dist
+        run: sha256sum -c SHA256SUMS.txt
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ github.ref_name }}
+          RELEASE_VERSION: ${{ needs.windows.outputs.version }}
+          PRERELEASE: ${{ needs.windows.outputs.prerelease }}
+        run: |
+          options=()
+          if [[ "$PRERELEASE" == "true" ]]; then options+=(--prerelease --latest=false); else options+=(--latest); fi
+          cp dist/release-notes.md "$RUNNER_TEMP/release-notes.md"
+          printf '\nBuild and test run: https://github.com/%s/actions/runs/%s\n' "$GH_REPO" "$GITHUB_RUN_ID" >> "$RUNNER_TEMP/release-notes.md"
+          gh release create "$RELEASE_TAG" dist/*.zip dist/SHA256SUMS.txt dist/build-info.json dist/release-notes.md \
+            --verify-tag --draft --title "Tessera $RELEASE_VERSION" --notes-file "$RUNNER_TEMP/release-notes.md" "${options[@]}"
+          gh release edit "$RELEASE_TAG" --draft=false "${options[@]}"

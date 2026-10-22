@@ -1,0 +1,94 @@
+{
+  "status": "Current card rank policy",
+  "side_order": [
+    "top",
+    "right",
+    "bottom",
+    "left"
+  ],
+  "rank_costs": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    9,
+    13,
+    18,
+    24
+  ],
+  "tiers": [
+    {
+      "tier": 1,
+      "side_max": 6,
+      "weighted_min": 10,
+      "weighted_max": 13,
+      "peak_fraction": 0.12
+    },
+    {
+      "tier": 2,
+      "side_max": 7,
+      "weighted_min": 12,
+      "weighted_max": 16,
+      "peak_fraction": 0.15
+    },
+    {
+      "tier": 3,
+      "side_max": 7,
+      "weighted_min": 16,
+      "weighted_max": 20,
+      "peak_fraction": 0.3
+    },
+    {
+      "tier": 4,
+      "side_max": 8,
+      "weighted_min": 20,
+      "weighted_max": 24,
+      "peak_fraction": 0.1
+    },
+    {
+      "tier": 5,
+      "side_max": 8,
+      "weighted_min": 23,
+      "weighted_max": 27,
+      "peak_fraction": 0.25
+    },
+    {
+      "tier": 6,
+      "side_max": 9,
+      "weighted_min": 26,
+      "weighted_max": 31,
+      "peak_fraction": 0.25
+    },
+    {
+      "tier": 7,
+      "side_max": 9,
+      "weighted_min": 32,
+      "weighted_max": 37
+    },
+    {
+      "tier": 8,
+      "side_max": 9,
+      "weighted_min": 38,
+      "weighted_max": 44
+    },
+    {
+      "tier": 9,
+      "side_max": 10,
+      "weighted_min": 45,
+      "weighted_max": 52
+    },
+    {
+      "tier": 10,
+      "side_max": 10,
+      "weighted_min": 53,
+      "weighted_max": 60
+    }
+  ],
+  "peak_frequency_note": "Roster targets, not rarity or pack odds. IV's 8s are capped at 10%; other fractions are draft variety targets. Existing peak-bearing identities count toward each target.",
+  "corner_interpretation": "IV: an 8 permits at most 4 opposite, 3 adjacent. V: an 8 permits at most 5 opposite, 4 adjacent. VI: a 9 permits at most 5 opposite, 4 adjacent.",
+  "tier_three_exception": "A 7 permits at most 4 on every other side. Rare/Epic/Legendary may instead have one 5, with the remaining two sides at most 3.",
+  "upper_tiers": "VII is in standard play for non-unique identities. Unique cards stay reserved except released signature copies."
+}

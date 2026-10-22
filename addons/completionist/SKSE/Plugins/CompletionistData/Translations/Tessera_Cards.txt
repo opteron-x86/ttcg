@@ -1,0 +1,688 @@
+Tessera_Header	|Tessera
+Tessera_Cards_Page	|Tessera Cards
+Tessera_Collected	|Collected
+Tessera_Help	|Collected at least once. Foils also count toward the main card checklist.
+Tessera_Cards_Tier1_1	|Tier I
+Tessera_Cards_Card84E	|Abecean Navigator
+Tessera_Cards_CardBCC	|Alfiq Illusionist
+Tessera_Cards_CardAA2	|Ambitious Hireling
+Tessera_Cards_CardA72	|Arcanaeum Librarian
+Tessera_Cards_Card982	|Arenthia Swindler
+Tessera_Cards_Card85A	|Artaeum Savant
+Tessera_Cards_CardD26	|Banekin Sparkcaller
+Tessera_Cards_CardBDC	|Bloody Hand Chef
+Tessera_Cards_CardD7C	|Brook Nereid
+Tessera_Cards_Card942	|Bruma Armorer
+Tessera_Cards_Card844	|Bruma Magistrate
+Tessera_Cards_CardAC2	|Camonna Tong Heavy
+Tessera_Cards_CardC0C	|Clannfear Runt
+Tessera_Cards_CardAB4	|Clockwork City Pilgrim
+Tessera_Cards_CardA62	|Cog Collector
+Tessera_Cards_CardAD0	|Cornerclub Gambler
+Tessera_Cards_Card9B2	|Corsair
+Tessera_Cards_Card968	|Craglorn Scavenger
+Tessera_Cards_CardB6C	|Craven Conscript
+Tessera_Cards_Card81A	|Crown Corsair
+Tessera_Cards_CardB2C	|Crucible Blacksmith
+Tessera_Cards_Card81E	|Deathless Draugr
+Tessera_Cards_Card97C	|Dune Smuggler
+Tessera_Cards_CardA98	|Dwarven Scarab
+Tessera_Cards_Card828	|Dwarven Spider
+Tessera_Cards_Card9C8	|Encumbered Explorer
+Tessera_Cards_Card920	|Evermore Steward
+Tessera_Cards_Card926	|Feasting Vulture
+Tessera_Cards_Card82C	|Fighters Guild Recruit
+Tessera_Cards_CardA7E	|Firepot Spider
+Tessera_Cards_Card842	|Giant Bat
+Tessera_Cards_CardC0E	|Giant Slaughterfish
+Tessera_Cards_CardD18	|Gnarl Sapling
+Tessera_Cards_Card906	|Goblin Skulk
+Tessera_Cards_CardB76	|Great Moot Squire
+Tessera_Cards_Card830	|Guar Stablemaster
+Tessera_Cards_CardD0E	|Guardian Mudcrab
+Tessera_Cards_CardC1E	|Headless Zombie
+Tessera_Cards_Card8EC	|Hist Speaker
+Tessera_Cards_CardBAE	|Illicit Butcher
+Tessera_Cards_Card834	|Imperial Grunt
+Tessera_Cards_CardA16	|Insightful Scholar
+Tessera_Cards_Card928	|Jerall Forager
+Tessera_Cards_CardB12	|Karthspire Scout
+Tessera_Cards_CardB04	|Kwama Forager
+Tessera_Cards_CardABC	|Lower Canton Smith
+Tessera_Cards_CardAAC	|Mages Guild Recruit
+Tessera_Cards_Card97E	|Mechanical Ally
+Tessera_Cards_CardAC8	|Moon Sugar Smuggler
+Tessera_Cards_CardD86	|Moonlit Nereid
+Tessera_Cards_CardC38	|Murkwater Goblin
+Tessera_Cards_CardA80	|Murkwater Guide
+Tessera_Cards_Card8B0	|Niben Bay Cutthroat
+Tessera_Cards_Card956	|Northpoint Herald
+Tessera_Cards_CardC3A	|Oldgate Warden
+Tessera_Cards_CardC22	|Priest of Mara
+Tessera_Cards_Card9A4	|Protector of the Innocent
+Tessera_Cards_CardA4E	|Ratway Relic Hunter
+Tessera_Cards_Card8C2	|Ravenous Hunger
+Tessera_Cards_CardA48	|Relic Hunter
+Tessera_Cards_CardD30	|Riverwood Woodcutter
+Tessera_Cards_CardD20	|Scamp Forager
+Tessera_Cards_CardA6E	|Scroll Seeker
+Tessera_Cards_CardA9C	|Sheepish Dunmer
+Tessera_Cards_Card924	|Shimmerene Peddler
+Tessera_Cards_Card9B8	|Shriveled Mummy
+Tessera_Cards_CardA26	|Sightless Skulk
+Tessera_Cards_CardA74	|Skeevaton
+Tessera_Cards_Card9B4	|Skeever
+Tessera_Cards_Card994	|Skeleton
+Tessera_Cards_Card8F4	|Skilled Blacksmith
+Tessera_Cards_CardA50	|Star-Sung Bard
+Tessera_Cards_CardBE8	|Stunted Scamp
+Tessera_Cards_CardACE	|Suran Pawnbroker
+Tessera_Cards_Card96A	|Telvanni Wardweaver
+Tessera_Cards_CardCA6	|Thieves Guild Recruit
+Tessera_Cards_CardD8A	|Thornwatch Spriggan
+Tessera_Cards_CardC28	|Vampire Fledgling
+Tessera_Cards_CardB4A	|Village Militiaman
+Tessera_Cards_Card884	|Wrothgar Artisan
+Tessera_Cards_Tier2_1	|Tier II
+Tessera_Cards_CardC1C	|Aldmeri Spellwright
+Tessera_Cards_Card8C6	|Aldmeri Wardbinder
+Tessera_Cards_CardB9A	|Alfiq Conjurer
+Tessera_Cards_Card852	|Alik'r Survivalist
+Tessera_Cards_CardB64	|Arenthia Bladeforger
+Tessera_Cards_CardB6E	|Baandari Opportunist
+Tessera_Cards_Card85E	|Barded Guar
+Tessera_Cards_CardB28	|Bedeviling Scamp
+Tessera_Cards_CardAB0	|Bitter Coast Wayfarer
+Tessera_Cards_Card8D8	|Black Marsh Shieldmate
+Tessera_Cards_CardA02	|Blackreach Rebuilder
+Tessera_Cards_Card8F0	|Blacksap Protector
+Tessera_Cards_CardB06	|Blackwood Distiller
+Tessera_Cards_Card812	|Blue Grummite
+Tessera_Cards_Card866	|Bog Lurcher
+Tessera_Cards_CardA52	|Brassilisk
+Tessera_Cards_CardA0A	|Cauldron Keeper
+Tessera_Cards_CardD14	|Cavern Nereid
+Tessera_Cards_CardBEC	|Clannfear
+Tessera_Cards_CardA1A	|Cleric of Kyne
+Tessera_Cards_Card9E8	|Cliffside Lookout
+Tessera_Cards_Card818	|Covenant Marauder
+Tessera_Cards_CardB1C	|Crazed Hunger
+Tessera_Cards_CardA04	|Deepwood Trapper
+Tessera_Cards_CardA3A	|Draugr Sentry
+Tessera_Cards_Card882	|Dres Tormentor
+Tessera_Cards_CardBE2	|Dust Eater Skirmisher
+Tessera_Cards_Card8D6	|Dwarven Sentry
+Tessera_Cards_Card848	|Earthbone Spinner
+Tessera_Cards_Card9EE	|Eastmarch Axebearer
+Tessera_Cards_Card82A	|Ferocious Dreugh
+Tessera_Cards_Card82E	|Frostbite Spider
+Tessera_Cards_Card9E4	|Ghost Sea Lookout
+Tessera_Cards_Card88C	|Giant Snake
+Tessera_Cards_Card890	|Green Pact Stalker
+Tessera_Cards_CardCA8	|Guardian Skeever
+Tessera_Cards_Card908	|Helstrom Footpad
+Tessera_Cards_Card89C	|Ice Wraith
+Tessera_Cards_Card816	|Iliac Deckguard
+Tessera_Cards_Card93A	|Iliac Sorcerer
+Tessera_Cards_CardB8A	|Imperial Lackey
+Tessera_Cards_CardAE0	|Indoril Mastermind
+Tessera_Cards_CardBB2	|Insidious Spirit
+Tessera_Cards_Card8A0	|Lillandril Alchemist
+Tessera_Cards_Card8A6	|Lumbering Ogrim
+Tessera_Cards_Card95E	|Morkul Gatekeeper
+Tessera_Cards_CardC36	|Morthal Watchman
+Tessera_Cards_CardAFE	|Mudcrab Merchant
+Tessera_Cards_Card922	|Murkwater Savage
+Tessera_Cards_Card8B2	|Nimble Ally
+Tessera_Cards_CardAD4	|Nix-Hound
+Tessera_Cards_CardC12	|Outland Patrol
+Tessera_Cards_Card8B8	|Pillaging Tribune
+Tessera_Cards_CardC14	|Prankster Mage
+Tessera_Cards_Card9EA	|Restoration Tutor
+Tessera_Cards_CardA12	|Riften Pickpocket
+Tessera_Cards_CardC46	|Rihad Battlemage
+Tessera_Cards_Card8C8	|Rihad Horseman
+Tessera_Cards_CardB02	|Risen Dead
+Tessera_Cards_CardD08	|Riverbank Spriggan
+Tessera_Cards_CardA7A	|Ruin Archaeologist
+Tessera_Cards_CardB98	|Ruin Shambler
+Tessera_Cards_Card900	|Savage Ogre
+Tessera_Cards_Card92A	|Scamp
+Tessera_Cards_Card840	|Senche-Tiger
+Tessera_Cards_CardD50	|Sentinel Caravan Guard
+Tessera_Cards_CardA70	|Shalk Fabricant
+Tessera_Cards_CardB08	|Skeletal Hound
+Tessera_Cards_Card90C	|Stormhold Henchman
+Tessera_Cards_CardA0E	|Stronghold Patrol
+Tessera_Cards_CardC52	|Sunhold Medic
+Tessera_Cards_CardBAA	|Suthay Bootlegger
+Tessera_Cards_Card8E6	|Tree Minder
+Tessera_Cards_CardB26	|Unstoppable Berserker
+Tessera_Cards_CardA6C	|Verminous Fabricant
+Tessera_Cards_Card966	|Wardcrafter
+Tessera_Cards_CardCAA	|Wind Keep Spellsword
+Tessera_Cards_Card8EA	|Wood Orc Headhunter
+Tessera_Cards_Card8F2	|Wrothgar Stormcaller
+Tessera_Cards_CardC26	|Yokudan Nightblade
+Tessera_Cards_Tier3_1	|Tier III
+Tessera_Cards_Card95C	|Afflicted Alit
+Tessera_Cards_Card94E	|Aldmeri Patriot
+Tessera_Cards_CardAF4	|Ancestral Dead
+Tessera_Cards_CardC10	|Arenthia Guerrilla
+Tessera_Cards_Card954	|Argonian Veteran
+Tessera_Cards_CardB7E	|Assassin Beetle
+Tessera_Cards_CardA8C	|Assembled Sentry
+Tessera_Cards_CardA68	|Barrow Stalker
+Tessera_Cards_Card860	|Battlerage Orc
+Tessera_Cards_CardB90	|Black Worm Neophyte
+Tessera_Cards_Card944	|Blackrose Herbalist
+Tessera_Cards_CardBFC	|Blackwood Alchemist
+Tessera_Cards_CardC08	|Blades Defender
+Tessera_Cards_CardC04	|Blades Stalwart
+Tessera_Cards_CardBFA	|Blind Moth Priest
+Tessera_Cards_Card9A6	|Blood Sorceress
+Tessera_Cards_CardAE6	|Bloodline Outcast
+Tessera_Cards_CardAE4	|Bonewalker
+Tessera_Cards_Card99A	|Brotherhood Slayer
+Tessera_Cards_Card814	|Brutal Ashlander
+Tessera_Cards_Card86A	|Camoran Scout Leader
+Tessera_Cards_Card9E0	|Cave Bear
+Tessera_Cards_CardC06	|City Guard
+Tessera_Cards_CardA82	|Clockwork Scorpion
+Tessera_Cards_Card874	|Crystal Tower Crafter
+Tessera_Cards_Card87A	|Dark Harvester
+Tessera_Cards_Card87C	|Dawnstar Healer
+Tessera_Cards_CardB14	|Destruction Tutor
+Tessera_Cards_CardBC4	|Devious Bandit
+Tessera_Cards_CardBB8	|Discerning Thief
+Tessera_Cards_CardBFE	|Dremora Archer
+Tessera_Cards_Card880	|Dres Renegade
+Tessera_Cards_CardAC6	|Dres Spy
+Tessera_Cards_Card998	|Elsweyr Lookout
+Tessera_Cards_Card91C	|Farsight Nereid
+Tessera_Cards_Card888	|Fharun Defender
+Tessera_Cards_Card9AE	|Flame Atronach
+Tessera_Cards_Card92C	|Frost Atronach
+Tessera_Cards_Card992	|Gardener of Swords
+Tessera_Cards_CardA6A	|Gearwork Spider
+Tessera_Cards_Card838	|Grahtwood Ambusher
+Tessera_Cards_Card892	|Green-Touched Spriggan
+Tessera_Cards_CardB20	|Grummite Magus
+Tessera_Cards_CardD22	|Guardian Wolf
+Tessera_Cards_CardB88	|Guildsworn Honeytongue
+Tessera_Cards_Card832	|Guildsworn Spellguard
+Tessera_Cards_CardD0A	|Hew's Bane Infiltrator
+Tessera_Cards_Card91E	|Iliac Privateer
+Tessera_Cards_CardA4A	|Kagouti Fabricant
+Tessera_Cards_Card836	|Kvatch Soldier
+Tessera_Cards_CardB44	|Manic Grummite
+Tessera_Cards_CardA10	|Mistveil Enchanter
+Tessera_Cards_CardACA	|Morag Tong Aspirant
+Tessera_Cards_Card83A	|Morthal Executioner
+Tessera_Cards_Card912	|Murkwater Butcher
+Tessera_Cards_Card916	|Murkwater Witch
+Tessera_Cards_CardB60	|Nereid Sister
+Tessera_Cards_CardA54	|Nix-Hound Fabricant
+Tessera_Cards_CardC3C	|Orc Clan Captain
+Tessera_Cards_CardBDA	|Painted Troll
+Tessera_Cards_CardC40	|Palace Prowler
+Tessera_Cards_CardB0E	|Piercing Twilight
+Tessera_Cards_Card9F4	|Raging Horker
+Tessera_Cards_CardAF8	|Redoran Forerunner
+Tessera_Cards_CardCC6	|Reedfen Lurcher
+Tessera_Cards_CardC48	|Rotting Draugr
+Tessera_Cards_CardC4C	|Sharpshooter Scout
+Tessera_Cards_CardC50	|Skaven Pyromancer
+Tessera_Cards_CardA94	|Sly Marshblade
+Tessera_Cards_Card8DA	|Stonetooth Scrapper
+Tessera_Cards_Card9B0	|Storm Atronach
+Tessera_Cards_CardD40	|Stronghold Provisioner
+Tessera_Cards_Card9C6	|Studious Greybeard
+Tessera_Cards_Card8E0	|Summerset Shieldmage
+Tessera_Cards_CardA38	|Thalmor Soldier
+Tessera_Cards_CardA30	|Thieves Guild Fence
+Tessera_Cards_Card9F0	|Vigilant of Stendarr
+Tessera_Cards_Card8E8	|Whiterun Trooper
+Tessera_Cards_CardA34	|Windhelm Skirmisher
+Tessera_Cards_Card960	|Withered Hand Cultist
+Tessera_Cards_Tier4_1	|Tier IV
+Tessera_Cards_Card9BA	|Ageless Vampire
+Tessera_Cards_CardABE	|Ald'ruhn Arms Master
+Tessera_Cards_CardB4E	|Altmer Flameslinger
+Tessera_Cards_Card856	|An-Xileel Invader
+Tessera_Cards_CardB10	|Apex Wolf
+Tessera_Cards_CardA78	|Assembled Conduit
+Tessera_Cards_CardAF2	|Aundae Clan Sorcerer
+Tessera_Cards_Card948	|Auridon Paladin
+Tessera_Cards_CardAF0	|Bal Isra Warrider
+Tessera_Cards_Card9F2	|Bandit Ringleader
+Tessera_Cards_Card962	|Bangkorai Butcher
+Tessera_Cards_CardA00	|Battlefield Scrounger
+Tessera_Cards_CardA0C	|Berserker of the Pale
+Tessera_Cards_CardBE6	|Blades Guardian
+Tessera_Cards_CardC00	|Brotherhood Suspect
+Tessera_Cards_CardD6C	|Burnt Spriggan
+Tessera_Cards_CardBC0	|Cartel Bruiser
+Tessera_Cards_Card870	|Cliff Racer
+Tessera_Cards_Card872	|Cloudrest Illusionist
+Tessera_Cards_Card8FA	|Colovian Trooper
+Tessera_Cards_CardA2C	|Corrupted Shade
+Tessera_Cards_CardA14	|Court Wizard
+Tessera_Cards_Card81C	|Daring Cutpurse
+Tessera_Cards_CardB16	|Death Hound
+Tessera_Cards_CardB42	|Demented Grummite
+Tessera_Cards_CardC24	|Dragonfire Wizard
+Tessera_Cards_Card87E	|Dragonstar Rider
+Tessera_Cards_Card934	|Dragontail Savior
+Tessera_Cards_Card820	|Dread Clannfear
+Tessera_Cards_CardBD4	|Dremora Adept
+Tessera_Cards_CardBF2	|Dremora Vanguard
+Tessera_Cards_Card822	|Dune Stalker
+Tessera_Cards_Card910	|Dunmer Nightblade
+Tessera_Cards_CardA44	|Dushnikh Yal Archer
+Tessera_Cards_Card824	|Dwarven Ballista
+Tessera_Cards_Card826	|Dwarven Sphere
+Tessera_Cards_Card88A	|Fortress Watchman
+Tessera_Cards_Card9D2	|Frost Troll
+Tessera_Cards_CardD28	|Glenumbra Lurcher
+Tessera_Cards_Card9DA	|Gloomlurker
+Tessera_Cards_CardB38	|Gnarl Rootbender
+Tessera_Cards_CardB2A	|Golden Initiate
+Tessera_Cards_CardCAE	|Greenheart Oathkeeper
+Tessera_Cards_Card9AC	|Gristlehide Dreugh
+Tessera_Cards_CardCB4	|Guardian Bear
+Tessera_Cards_CardB68	|Guildsworn Cavalier
+Tessera_Cards_CardB46	|Heretic Conjurer
+Tessera_Cards_Card8EE	|High Rock Summoner
+Tessera_Cards_CardBCA	|Imperial Soldier
+Tessera_Cards_CardB66	|Invoker of the Hist
+Tessera_Cards_Card98E	|Iron Atronach
+Tessera_Cards_Card8A2	|Leaflurker
+Tessera_Cards_CardC32	|Lowland Troll
+Tessera_Cards_CardBA6	|Mercenary Captain
+Tessera_Cards_CardB94	|Monastic Champion
+Tessera_Cards_Card8AE	|Murkwater Skirmisher
+Tessera_Cards_CardBBA	|Nibenese Mercenary
+Tessera_Cards_Card8B6	|Northpoint Captain
+Tessera_Cards_CardB32	|Preying Elytra
+Tessera_Cards_Card92E	|Redoran Enforcer
+Tessera_Cards_CardA7C	|Reflective Automaton
+Tessera_Cards_CardC44	|Renowned Instructor
+Tessera_Cards_CardA66	|Riften Lawkeeper
+Tessera_Cards_CardD1C	|Rimebound Ice Wraith
+Tessera_Cards_Card996	|Shivering Apothecary
+Tessera_Cards_CardC4E	|Shrieking Harpy
+Tessera_Cards_Card8CE	|Silvenar Tracker
+Tessera_Cards_CardAE8	|Skeleton Champion
+Tessera_Cards_Card8D4	|Sparking Spider
+Tessera_Cards_CardB50	|Sparksmith
+Tessera_Cards_Card8E2	|Telvanni Arcanist
+Tessera_Cards_CardA1C	|Thalmor Justiciar
+Tessera_Cards_Card8E4	|Thorn Histmage
+Tessera_Cards_CardAB6	|Tribunal Oathman
+Tessera_Cards_CardAD2	|Twin Lamps Consul
+Tessera_Cards_Card8FC	|Valenwood Huntsman
+Tessera_Cards_CardB7A	|Valenwood Sentry
+Tessera_Cards_CardD60	|Wayrest Nightblade
+Tessera_Cards_CardB7C	|Windhelm Gatekeeper
+Tessera_Cards_Card958	|Wrothgar Kingpin
+Tessera_Cards_Tier5_1	|Tier V
+Tessera_Cards_Card850	|Ageless Automaton
+Tessera_Cards_Card810	|Alpha Wolf
+Tessera_Cards_CardB18	|Altmer Dragonknight
+Tessera_Cards_CardA4C	|Assembled Sanitizer
+Tessera_Cards_CardBEA	|Attuned Dremora
+Tessera_Cards_Card97A	|Auroran Sentry
+Tessera_Cards_Card85C	|Baandari Bruiser
+Tessera_Cards_Card964	|Belligerent Giant
+Tessera_Cards_CardAD6	|Berne Clan Nightstalker
+Tessera_Cards_CardBD2	|Blood-Crazed Daedroth
+Tessera_Cards_Card98C	|Bone Colossus
+Tessera_Cards_Card868	|Breton Conjurer
+Tessera_Cards_CardBB6	|Cartel Arcanist
+Tessera_Cards_Card988	|Chaurus
+Tessera_Cards_CardA84	|Clockwork Apostle
+Tessera_Cards_CardA18	|Conjuration Scholar
+Tessera_Cards_CardB52	|Dominion Battlereeve
+Tessera_Cards_CardA76	|Dormant Centurion
+Tessera_Cards_Card95A	|Dremora Markynaz
+Tessera_Cards_CardA3C	|Durzog
+Tessera_Cards_CardA90	|Dwarven Architon
+Tessera_Cards_Card930	|Eastmarch Crusader
+Tessera_Cards_Card9EC	|Eldergleam Matron
+Tessera_Cards_CardA42	|Emperor's Blade
+Tessera_Cards_Card940	|Fifth Legion Trainer
+Tessera_Cards_CardAC0	|Fighters Guild Steward
+Tessera_Cards_CardB1A	|Frenzied Alit
+Tessera_Cards_Card914	|Glenumbra Sorceress
+Tessera_Cards_CardBBE	|Goutfang Adept
+Tessera_Cards_CardD02	|Grahtwood Pathwarden
+Tessera_Cards_CardB2E	|Greatwood Elder
+Tessera_Cards_CardD16	|Green Pact Venomkeeper
+Tessera_Cards_Card90E	|Guardian Mammoth
+Tessera_Cards_Card8F6	|Haafingar Marauder
+Tessera_Cards_CardA64	|Hallowed Deathpriest
+Tessera_Cards_Card8F8	|Helgen Squad Leader
+Tessera_Cards_CardB82	|High Rock Stalwart
+Tessera_Cards_Card898	|Highland Lurcher
+Tessera_Cards_CardA46	|Hulking Fabricant
+Tessera_Cards_Card89E	|Imperial Legionnaire
+Tessera_Cards_Card932	|Imprisoned Deathlord
+Tessera_Cards_CardBEE	|Kynreeve Champion
+Tessera_Cards_Card946	|Lion Guard Strategist
+Tessera_Cards_CardB74	|Master of Incunabula
+Tessera_Cards_Card9F8	|Master Swordsmith
+Tessera_Cards_Card9BE	|Mentor of the Watch
+Tessera_Cards_Card83C	|Moonlight Werebat
+Tessera_Cards_CardACC	|Morag Tong Assassin
+Tessera_Cards_Card902	|Mournhold Guardian
+Tessera_Cards_CardB4C	|Murkwater Scourge
+Tessera_Cards_CardD62	|Nereid Tidecaller
+Tessera_Cards_CardB3E	|Nervous Giant
+Tessera_Cards_Card952	|Night Talon Lord
+Tessera_Cards_CardA28	|Nightprowler
+Tessera_Cards_Card8B4	|Nord Firebrand
+Tessera_Cards_CardBF6	|Occult Ritemaster
+Tessera_Cards_CardC3E	|Orc Clan Shaman
+Tessera_Cards_CardD0C	|Orsinium Shieldbearer
+Tessera_Cards_CardB9E	|Pouncing Senche
+Tessera_Cards_Card8BA	|Preserver of the Root
+Tessera_Cards_Card8C0	|Rampaging Minotaur
+Tessera_Cards_CardB48	|Renegade Magister
+Tessera_Cards_CardB8C	|Seasoned Captain
+Tessera_Cards_CardBC6	|Senche-raht Graveprowler
+Tessera_Cards_CardBD0	|Sentinel Reclaimer
+Tessera_Cards_Card96C	|Sentinel Spellweaver
+Tessera_Cards_CardC4A	|Septim Guardsman
+Tessera_Cards_Card90A	|Shadowfen Priest
+Tessera_Cards_CardB72	|Shadowscale Hunter
+Tessera_Cards_CardA24	|Shadowscale Partisan
+Tessera_Cards_Card8CC	|Shornhelm Champion
+Tessera_Cards_Card8D0	|Skywatch Vindicator
+Tessera_Cards_Card9A0	|Stalking Shadowscale
+Tessera_Cards_Card990	|Stoneshard Orc
+Tessera_Cards_CardAB2	|Temple Conjurer
+Tessera_Cards_CardAF6	|Temple Patriarch
+Tessera_Cards_Card99C	|Underworld Vigilante
+Tessera_Cards_CardCCA	|Valenwood Beastcaller
+Tessera_Cards_CardD88	|Wayrest Court Duelist
+Tessera_Cards_CardCEC	|Y'ffre's Storykeeper
+Tessera_Cards_Tier6_1	|Tier VI
+Tessera_Cards_Card858	|Archein Venomtongue
+Tessera_Cards_CardA5C	|Assembled Titan
+Tessera_Cards_CardA88	|Awakened Imperfect
+Tessera_Cards_Card94C	|Black Marsh Warden
+Tessera_Cards_CardBCE	|Blastbones
+Tessera_Cards_CardAD8	|Blighted Werebat
+Tessera_Cards_Card864	|Blood Magic Lord
+Tessera_Cards_Card9FC	|Bringer of Nightmares
+Tessera_Cards_CardA22	|Caravan Enforcer
+Tessera_Cards_Card86C	|Chaurus Reaper
+Tessera_Cards_Card9D4	|Conjuration Tutor
+Tessera_Cards_CardBC2	|Corinthe Brawler
+Tessera_Cards_CardA92	|Cradlecrush Giant
+Tessera_Cards_CardCFC	|Daggerfall Spellknight
+Tessera_Cards_Card878	|Dagi-raht Mystic
+Tessera_Cards_CardB1E	|Dark Seducer
+Tessera_Cards_CardCB2	|Deepmarsh Pathfinder
+Tessera_Cards_CardCF2	|Direnni Spellwright
+Tessera_Cards_Card972	|Dwarven Centurion
+Tessera_Cards_Card9D8	|Dwarven Dynamo
+Tessera_Cards_Card8DE	|Dwarven Spearguard
+Tessera_Cards_CardB34	|Elytra Noble
+Tessera_Cards_CardB86	|Empire Dreadmage
+Tessera_Cards_CardD32	|Falinesti Wildwarden
+Tessera_Cards_Card93C	|Fearless Northlander
+Tessera_Cards_Card9F6	|Frost Giant
+Tessera_Cards_CardAA0	|Ghostgate Defender
+Tessera_Cards_CardD64	|Glacial Ice Wraith
+Tessera_Cards_Card84A	|Golden Saint
+Tessera_Cards_CardAA4	|Grand Inquisitor
+Tessera_Cards_CardD3C	|Guardian Sabre Cat
+Tessera_Cards_CardCBE	|Hegathe Shieldbearer
+Tessera_Cards_CardD68	|Hist Sap Healer
+Tessera_Cards_CardB22	|Icy Shambles
+Tessera_Cards_CardBD6	|Keeper of the Gates
+Tessera_Cards_CardA9A	|Knight of Gnisis
+Tessera_Cards_Card9D6	|Lava Atronach
+Tessera_Cards_Card94A	|Legion Praefect
+Tessera_Cards_CardA5A	|Legion Shocktrooper
+Tessera_Cards_CardBDE	|Lord of the Arena
+Tessera_Cards_CardB84	|Mages Guild Conjurer
+Tessera_Cards_Card8A8	|Markarth Bannerman
+Tessera_Cards_Card8AA	|Militant Chieftain
+Tessera_Cards_CardA8A	|Mistveil Warden
+Tessera_Cards_CardAA6	|Moonmoth Castellan
+Tessera_Cards_Card8AC	|Murkwater Shaman
+Tessera_Cards_CardC30	|Nether Lich
+Tessera_Cards_CardC2A	|Nightlord Vampire
+Tessera_Cards_CardADE	|Nix-Ox
+Tessera_Cards_CardAEE	|Odirniran Necromancer
+Tessera_Cards_CardD12	|Orcish Siege Engineer
+Tessera_Cards_CardD48	|Order of Diagna Veteran
+Tessera_Cards_CardD74	|Orichalcum Forgemaster
+Tessera_Cards_Card846	|Pahmar-raht Renegade
+Tessera_Cards_CardC42	|Pit Lion
+Tessera_Cards_CardAEA	|Redoran Oathman
+Tessera_Cards_Card93E	|Riften Pillager
+Tessera_Cards_CardD56	|Rootwater Wayfinder
+Tessera_Cards_Card8CA	|Royal Sage
+Tessera_Cards_CardD5C	|Sapiarch of Warding
+Tessera_Cards_CardBC8	|Senche Noble
+Tessera_Cards_CardA06	|Shadowmaster
+Tessera_Cards_CardCDE	|Silvenar Emissary
+Tessera_Cards_CardAC4	|Skar Drillmaster
+Tessera_Cards_CardC1A	|Smuggler Underboss
+Tessera_Cards_Card8D2	|Soulrest Marshal
+Tessera_Cards_CardD8C	|Spinners' Grove Guardian
+Tessera_Cards_Card9A8	|Stealer of Secrets
+Tessera_Cards_Card9E2	|Steelheart Vanquisher
+Tessera_Cards_CardD72	|Stronghold Wise Woman
+Tessera_Cards_Card970	|Studium Headmaster
+Tessera_Cards_CardD3A	|Thornheart Lurcher
+Tessera_Cards_Card886	|Tideweaver Nereid
+Tessera_Cards_CardD52	|Totambu Battlemage
+Tessera_Cards_CardCE4	|Vinedusk Ranger
+Tessera_Cards_CardA96	|Voice of Balance
+Tessera_Cards_CardD66	|Waterfall Nereid
+Tessera_Cards_Card8FE	|Whirling Duelist
+Tessera_Cards_CardBD8	|Widow Daedra
+Tessera_Cards_CardA8E	|Worm King's Agent
+Tessera_Cards_Tier7_1	|Tier VII
+Tessera_Cards_CardCC2	|An-Xileel Rootwarden
+Tessera_Cards_CardA3E	|Ancient Giant
+Tessera_Cards_CardD4E	|Ancient Gnarl
+Tessera_Cards_CardCE8	|Ancient Spriggan
+Tessera_Cards_CardB9C	|Anequina Pouncer
+Tessera_Cards_Card904	|Archein Elite
+Tessera_Cards_CardC2E	|Armored Troll
+Tessera_Cards_Card980	|Battlereeve of Dusk
+Tessera_Cards_CardCB6	|Bjoulsae Battlecaller
+Tessera_Cards_CardB80	|Black Marsh Centurion
+Tessera_Cards_CardC0A	|Blades Flanker
+Tessera_Cards_CardCF8	|Blood-Price Enforcer
+Tessera_Cards_CardB00	|Blueclaw Matron
+Tessera_Cards_CardA86	|Brass Arquebus
+Tessera_Cards_CardD6E	|Camoran Warleader
+Tessera_Cards_CardC16	|Champion of the Arena
+Tessera_Cards_CardD42	|Champion of the Dragon
+Tessera_Cards_Card86E	|Child of Hircine
+Tessera_Cards_CardA58	|Clockwork Dragon
+Tessera_Cards_CardCCE	|Crystal Tower Spellwarden
+Tessera_Cards_CardB70	|Daedric Titan
+Tessera_Cards_Card876	|Daggerfall Mage
+Tessera_Cards_Card976	|Descendant of Alkosh
+Tessera_Cards_CardA5E	|Dwarven Colossus
+Tessera_Cards_Card99E	|Eclipse Baroness
+Tessera_Cards_Card984	|Elder Centaur
+Tessera_Cards_CardBB4	|Enraged Dragonknight
+Tessera_Cards_CardB78	|Fighters Guild Berserker
+Tessera_Cards_CardB56	|Fighters Guild Elite
+Tessera_Cards_CardAB8	|Genius Pathmage
+Tessera_Cards_CardD04	|Green Lady's Champion
+Tessera_Cards_Card9CA	|Greybeard Mentor
+Tessera_Cards_CardD24	|Guardian Troll
+Tessera_Cards_CardB62	|Guildsworn Bloodluster
+Tessera_Cards_CardD70	|Hallin's Stand Swordmaster
+Tessera_Cards_CardCBC	|Hammerfell Grand Marshal
+Tessera_Cards_Card894	|Hero of Anvil
+Tessera_Cards_Card89A	|Hive Defender
+Tessera_Cards_CardA56	|Hunter-Killers
+Tessera_Cards_Card918	|Indoril Archmage
+Tessera_Cards_CardB30	|Knight of Order
+Tessera_Cards_Card9AA	|Knight of the Hour
+Tessera_Cards_CardD5E	|Lillandril Leyweaver
+Tessera_Cards_Card8A4	|Loyal Housecarl
+Tessera_Cards_CardD4A	|Malacath's Oathkeeper
+Tessera_Cards_CardC02	|Marauder Chieftain
+Tessera_Cards_Card96E	|Master of Arms
+Tessera_Cards_CardBE0	|Miscarcand Lich
+Tessera_Cards_CardAA8	|Morag Tong Nightblade
+Tessera_Cards_Card950	|Mountain Giant Tyrant
+Tessera_Cards_CardCC0	|Nereid Stormsinger
+Tessera_Cards_Card98A	|Night Predator
+Tessera_Cards_CardC18	|Ordinator of the Almsivi
+Tessera_Cards_CardB58	|Pact Shieldbearer
+Tessera_Cards_CardAAE	|Poetic Armiger
+Tessera_Cards_CardA08	|Praetorian Commander
+Tessera_Cards_Card9B6	|Protector of the Mane
+Tessera_Cards_CardD44	|Psijic Mediator
+Tessera_Cards_CardA40	|Pure-Blood Elder
+Tessera_Cards_CardAEC	|Quarra Clan Bloodkin
+Tessera_Cards_CardBA8	|Queen's Captain
+Tessera_Cards_Card8BE	|Quin'rawl Burglar
+Tessera_Cards_Card978	|Renowned Legate
+Tessera_Cards_CardCE0	|Satakalaam War Priest
+Tessera_Cards_CardB36	|Seducer Darkfire
+Tessera_Cards_CardA2A	|Shadowgreen Elder
+Tessera_Cards_CardD1A	|Shadowscale Silencer
+Tessera_Cards_CardB3A	|Shining Saint
+Tessera_Cards_CardCF0	|Silvenar Oathbow
+Tessera_Cards_CardA36	|Sovngarde Hero
+Tessera_Cards_Card9DE	|Stoutheart Giant
+Tessera_Cards_Card8DC	|Stronghold Eradicator
+Tessera_Cards_CardD7E	|Sunhold Spellmarshal
+Tessera_Cards_Card974	|Supreme Atromancer
+Tessera_Cards_CardD6A	|Sword-Singer Adept
+Tessera_Cards_CardD58	|Valenwood Bonecarver
+Tessera_Cards_CardC2C	|Werewolf Brute
+Tessera_Cards_CardD84	|Xanmeer Lorekeeper
+Tessera_Cards_CardB6A	|Xivkyn Banelord
+Tessera_Cards_CardD76	|Y'ffre's Voice
+Tessera_Cards_Tier8_1	|Tier VIII
+Tessera_Cards_Card83E	|Ahnassi
+Tessera_Cards_Card854	|Allena Benoch
+Tessera_Cards_CardD2C	|Bittergreen the Wild
+Tessera_Cards_CardAFA	|Bolvyn Venim
+Tessera_Cards_CardD54	|Brackenleaf
+Tessera_Cards_CardAE2	|Caius Cosades
+Tessera_Cards_CardCD8	|Domihaus
+Tessera_Cards_CardCEE	|Dylora
+Tessera_Cards_CardC60	|Felldir the Old
+Tessera_Cards_CardC64	|Gaiden Shinji
+Tessera_Cards_Card9A2	|Garnag, Dark Adherent
+Tessera_Cards_CardADC	|Gentleman Jim Stacey
+Tessera_Cards_CardC66	|Gormlaith Golden-Hilt
+Tessera_Cards_CardC68	|Hakon One-Eye
+Tessera_Cards_CardBF4	|Hannibal Traven
+Tessera_Cards_CardBE4	|Jauffre
+Tessera_Cards_CardBA2	|Khamira
+Tessera_Cards_CardD1E	|King Camoran Aeradan
+Tessera_Cards_CardCAC	|King Lysandus
+Tessera_Cards_CardCF4	|Lamae Bal
+Tessera_Cards_CardCC8	|Lorelia
+Tessera_Cards_CardB3C	|Luzrah gro-Shar
+Tessera_Cards_CardB54	|Lyris Titanborn
+Tessera_Cards_CardBF8	|Martin Septim
+Tessera_Cards_CardBF0	|Modryn Oreyn
+Tessera_Cards_CardD78	|Morokei
+Tessera_Cards_CardADA	|Naryu Virian
+Tessera_Cards_Card8BC	|Queen Barenziah
+Tessera_Cards_CardCD0	|Raven Direnni
+Tessera_Cards_CardBA0	|Razum-Dar
+Tessera_Cards_Card8C4	|Red Bramman
+Tessera_Cards_CardC92	|Rislav the Righteous
+Tessera_Cards_CardCD4	|Ritemaster Iachesis
+Tessera_Cards_CardB5C	|Sai Sahan
+Tessera_Cards_CardA60	|Sails-Through-Storms
+Tessera_Cards_CardAFC	|Saint Jiub
+Tessera_Cards_CardCC4	|Sees-All-Colors
+Tessera_Cards_CardD4C	|Shadowmere
+Tessera_Cards_CardCBA	|Si'ess
+Tessera_Cards_CardD46	|Sinmur
+Tessera_Cards_CardB40	|Staada
+Tessera_Cards_Card936	|Swims-at-Night
+Tessera_Cards_Card986	|Tazkad the Packmaster
+Tessera_Cards_CardD10	|The Engine Guardian
+Tessera_Cards_CardCFA	|The Imperfect
+Tessera_Cards_CardCDA	|The Stonekeeper
+Tessera_Cards_Card938	|Ungolim the Listener
+Tessera_Cards_CardB5A	|Vanus Galerion
+Tessera_Cards_CardB5E	|Varen Aquilarios
+Tessera_Cards_CardBAC	|Vastarie
+Tessera_Cards_CardD3E	|Windsorrow
+Tessera_Cards_CardB96	|Zumog Phoom
+Tessera_Cards_Tier9_1	|Tier IX
+Tessera_Cards_CardD34	|Aiden Direnni
+Tessera_Cards_CardCE2	|Akulakhan
+Tessera_Cards_Card84C	|Ayrenn
+Tessera_Cards_CardCB8	|Belharza the Man-Bull
+Tessera_Cards_CardD80	|Darloc Brae
+Tessera_Cards_Card91A	|Divayth Fyr
+Tessera_Cards_CardC62	|Frandar Hunding
+Tessera_Cards_Card88E	|Gortwog gro-Nagorm
+Tessera_Cards_CardCD6	|Gwaering, the Green Lady
+Tessera_Cards_CardCEA	|Gyron Vardengroet
+Tessera_Cards_CardD82	|Harcane Grove Unicorn
+Tessera_Cards_CardD5A	|Heita-Meen
+Tessera_Cards_Card896	|High King Emeric
+Tessera_Cards_CardD2E	|Indaenir, the Silvenar
+Tessera_Cards_CardC6E	|Indoril Nerevar
+Tessera_Cards_CardC72	|Jurgen Windcaller
+Tessera_Cards_CardCD2	|Karstaag
+Tessera_Cards_CardCF6	|Keshu the Black Fin
+Tessera_Cards_CardD00	|Khunzar-ri
+Tessera_Cards_CardD06	|King Eplear
+Tessera_Cards_CardD36	|Lady Thorn
+Tessera_Cards_CardD2A	|Lord Warden Dusk
+Tessera_Cards_CardCCC	|Lyranth
+Tessera_Cards_CardC34	|M'aiq the Liar
+Tessera_Cards_CardC78	|Makela Leki
+Tessera_Cards_CardCFE	|Mannimarco, King of Worms
+Tessera_Cards_CardCDC	|Numidium
+Tessera_Cards_CardC8C	|Pelinal Whitestrake
+Tessera_Cards_CardC90	|Reman Cyrodiil
+Tessera_Cards_CardC94	|Saint Alessia
+Tessera_Cards_CardD38	|Selene
+Tessera_Cards_CardD7A	|The Uderfrykte Matron
+Tessera_Cards_CardCE6	|The Wilderking
+Tessera_Cards_CardCB0	|Torug gro-Igron
+Tessera_Cards_CardCA0	|Wulfharth
+Tessera_Cards_CardCA2	|Ysgramor
+Tessera_Cards_Tier10_1	|Tier X
+Tessera_Cards_CardC54	|Akatosh
+Tessera_Cards_CardC56	|Arkay
+Tessera_Cards_CardC58	|Azura
+Tessera_Cards_CardC5A	|Boethiah
+Tessera_Cards_CardC5C	|Clavicus Vile
+Tessera_Cards_CardC5E	|Dibella
+Tessera_Cards_CardC6A	|Hermaeus Mora
+Tessera_Cards_CardC6C	|Hircine
+Tessera_Cards_CardC70	|Julianos
+Tessera_Cards_CardC74	|Jyggalag
+Tessera_Cards_CardC76	|Kynareth
+Tessera_Cards_CardC7A	|Malacath
+Tessera_Cards_CardC7C	|Mara
+Tessera_Cards_CardC7E	|Mehrunes Dagon
+Tessera_Cards_CardC80	|Mephala
+Tessera_Cards_CardC82	|Meridia
+Tessera_Cards_CardC84	|Molag Bal
+Tessera_Cards_CardC88	|Namira
+Tessera_Cards_CardC8A	|Nocturnal
+Tessera_Cards_CardC8E	|Peryite
+Tessera_Cards_CardC96	|Sanguine
+Tessera_Cards_CardC98	|Sheogorath
+Tessera_Cards_CardC9A	|Stendarr
+Tessera_Cards_CardC9C	|Talos
+Tessera_Cards_CardC9E	|Vaermina
+Tessera_Cards_CardCA4	|Zenithar

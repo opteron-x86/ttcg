@@ -1,0 +1,704 @@
+Name,Tier,Rarity,Unique,Top,Right,Bottom,Left,Groups,Affinities,Available,Artwork,Roster status
+Abecean Navigator,1,Common,False,1,3,1,5,High Elf,Intelligence,True,source,ready
+Alfiq Illusionist,1,Epic,False,2,2,6,2,Khajiit,Strength,True,source,ready
+Ambitious Hireling,1,Common,False,1,4,2,4,Wood Elf,Willpower,True,source,ready
+Arcanaeum Librarian,1,Epic,False,2,6,2,2,Orc,Willpower,True,source,ready
+Arenthia Swindler,1,Common,False,3,3,3,2,Khajiit,Willpower,True,source,ready
+Artaeum Savant,1,Epic,False,2,2,6,2,High Elf,Intelligence,True,source,ready
+Banekin Sparkcaller,1,Epic,False,2,2,6,2,Daedra,Agility,True,source,ready
+Bloody Hand Chef,1,Epic,False,2,6,2,2,Beastfolk,Intelligence,True,source,ready
+Brook Nereid,1,Common,False,4,1,2,4,Spirit,Willpower,True,source,ready
+Bruma Armorer,1,Common,False,5,3,1,1,Imperial,,True,source,ready
+Bruma Magistrate,1,Rare,False,5,4,2,2,Imperial,,True,source,ready
+Camonna Tong Heavy,1,Rare,False,2,5,4,2,Orc,Intelligence,True,source,ready
+Clannfear Runt,1,Common,False,1,1,5,3,Daedra,,True,source,ready
+Clockwork City Pilgrim,1,Common,False,3,1,5,2,High Elf,,True,source,ready
+Cog Collector,1,Rare,False,4,1,5,3,Khajiit,Endurance,True,source,ready
+Cornerclub Gambler,1,Common,False,3,1,1,5,Wood Elf,Strength,True,source,ready
+Corsair,1,Common,False,4,1,2,4,Breton,Agility,True,source,ready
+Craglorn Scavenger,1,Epic,False,6,2,2,2,Redguard,Agility,True,source,ready
+Craven Conscript,1,Common,False,2,4,1,4,Orc,Strength,True,source,ready
+Crown Corsair,1,Common,False,4,1,4,2,Redguard,Intelligence,True,source,ready
+Crucible Blacksmith,1,Common,False,4,1,2,4,Wood Elf,Intelligence,True,source,ready
+Deathless Draugr,1,Epic,False,2,6,2,2,Undead,Strength,True,source,ready
+Dune Smuggler,1,Common,False,4,1,5,1,Khajiit,Agility,True,source,ready
+Dwarven Scarab,1,Common,False,2,1,3,5,Construct,,True,source,ready
+Dwarven Spider,1,Common,False,4,3,1,3,Construct,,True,source,ready
+Encumbered Explorer,1,Common,False,4,1,4,2,Imperial,Endurance,True,source,ready
+Evermore Steward,1,Rare,False,4,2,2,5,Breton,Strength,True,source,ready
+Feasting Vulture,1,Rare,False,5,4,2,2,Beast,,True,source,ready
+Fighters Guild Recruit,1,Common,False,4,4,1,2,Argonian,Willpower,True,source,ready
+Firepot Spider,1,Epic,False,2,6,2,2,Construct,,True,source,ready
+Giant Bat,1,Common,False,4,4,1,2,Beast,,True,source,ready
+Giant Slaughterfish,1,Epic,False,6,2,2,2,Beast,Strength,True,source,ready
+Gnarl Sapling,1,Common,False,1,4,2,4,Spirit,Strength,True,source,ready
+Goblin Skulk,1,Common,False,2,4,1,4,Beastfolk,Endurance,True,source,ready
+Great Moot Squire,1,Rare,False,5,4,2,2,Argonian,Endurance,True,source,ready
+Guar Stablemaster,1,Common,False,4,2,4,1,Dark Elf,,True,source,ready
+Guardian Mudcrab,1,Common,False,3,1,1,5,Spirit,Endurance,True,source,ready
+Headless Zombie,1,Common,False,1,5,3,1,Undead,,True,source,ready
+Hist Speaker,1,Epic,False,6,2,2,2,Argonian,Strength,True,source,ready
+Illicit Butcher,1,Rare,False,1,5,1,5,Wood Elf,Agility,True,source,ready
+Imperial Grunt,1,Common,False,4,4,1,2,Imperial,,True,source,ready
+Insightful Scholar,1,Rare,False,1,3,4,4,High Elf,Willpower,True,source,ready
+Jerall Forager,1,Common,False,1,5,3,2,Nord,Intelligence,True,available,ready
+Karthspire Scout,1,Common,False,2,4,4,1,Orc,Endurance,True,source,ready
+Kwama Forager,1,Common,False,4,1,4,2,Beast,,True,source,ready
+Lower Canton Smith,1,Common,False,1,1,5,3,Dark Elf,Endurance,True,source,ready
+Mages Guild Recruit,1,Common,False,4,1,4,2,Argonian,Agility,True,source,ready
+Mechanical Ally,1,Rare,False,5,3,3,1,Construct,,True,source,ready
+Moon Sugar Smuggler,1,Common,False,4,2,2,2,Khajiit,Intelligence,True,source,ready
+Moonlit Nereid,1,Epic,False,2,2,2,6,Spirit,Agility,True,source,ready
+Murkwater Goblin,1,Common,False,1,5,3,1,Beastfolk,Willpower,True,source,ready
+Murkwater Guide,1,Rare,False,2,5,4,2,Beastfolk,Strength,True,source,ready
+Niben Bay Cutthroat,1,Common,False,4,4,1,2,Redguard,Strength,True,source,ready
+Northpoint Herald,1,Common,False,3,1,1,5,Breton,Willpower,True,source,ready
+Oldgate Warden,1,Common,False,1,4,2,4,Breton,Endurance,True,source,ready
+Priest of Mara,1,Epic,False,6,2,2,2,Imperial,Willpower,True,source,ready
+Protector of the Innocent,1,Epic,False,6,2,2,2,Nord,Endurance,True,source,ready
+Ratway Relic Hunter,1,Epic,False,2,2,2,6,Wood Elf,Endurance,True,source,ready
+Ravenous Hunger,1,Rare,False,2,2,5,4,Daedra,Endurance,True,source,ready
+Relic Hunter,1,Common,False,5,3,1,1,Redguard,Endurance,True,source,ready
+Riverwood Woodcutter,1,Common,False,3,4,1,3,Nord,Strength,True,available,ready
+Scamp Forager,1,Common,False,4,2,4,1,Daedra,Agility,True,source,ready
+Scroll Seeker,1,Epic,False,2,2,2,6,Breton,Intelligence,True,source,ready
+Sheepish Dunmer,1,Common,False,1,2,4,4,Dark Elf,,True,source,ready
+Shimmerene Peddler,1,Common,False,2,3,2,4,High Elf,,True,source,ready
+Shriveled Mummy,1,Common,False,2,4,4,1,Undead,Endurance,True,source,ready
+Sightless Skulk,1,Common,False,2,4,4,1,Beastfolk,Agility,True,source,ready
+Skeevaton,1,Common,False,2,3,4,2,Construct,,True,source,ready
+Skeever,1,Common,False,5,3,1,1,Beast,,True,source,ready
+Skeleton,1,Common,False,2,4,1,4,Undead,,True,source,ready
+Skilled Blacksmith,1,Rare,False,5,4,2,2,Redguard,Willpower,True,source,ready
+Star-Sung Bard,1,Rare,False,2,4,2,5,Nord,,True,source,ready
+Stunted Scamp,1,Common,False,1,2,4,4,Daedra,,True,source,ready
+Suran Pawnbroker,1,Rare,False,2,2,5,4,Dark Elf,Intelligence,True,source,ready
+Telvanni Wardweaver,1,Epic,False,2,2,6,2,Dark Elf,Willpower,True,source,ready
+Thieves Guild Recruit,1,Common,False,5,3,1,1,Argonian,Intelligence,True,source,ready
+Thornwatch Spriggan,1,Rare,False,4,2,2,5,Spirit,Willpower,True,source,ready
+Vampire Fledgling,1,Rare,False,2,5,4,2,Undead,Endurance,True,source,ready
+Village Militiaman,1,Common,False,2,4,2,2,Nord,,True,source,ready
+Wrothgar Artisan,1,Common,False,1,5,3,1,Orc,Agility,True,source,ready
+Aldmeri Spellwright,2,Rare,False,2,6,5,2,High Elf,Intelligence,True,source,ready
+Aldmeri Wardbinder,2,Epic,False,2,7,3,2,High Elf,Willpower,True,source,ready
+Alfiq Conjurer,2,Epic,False,3,7,1,1,Khajiit,Intelligence,True,source,ready
+Alik'r Survivalist,2,Epic,False,7,3,2,2,Redguard,Endurance,True,source,ready
+Arenthia Bladeforger,2,Common,False,2,5,1,5,Wood Elf,Willpower,True,source,ready
+Baandari Opportunist,2,Common,False,2,5,3,2,Khajiit,Willpower,True,source,ready
+Barded Guar,2,Rare,False,6,5,2,2,Beast,Endurance,True,source,ready
+Bedeviling Scamp,2,Epic,False,2,2,7,3,Daedra,Intelligence,True,source,ready
+Bitter Coast Wayfarer,2,Common,False,2,2,5,4,Dark Elf,Endurance,True,source,ready
+Black Marsh Shieldmate,2,Rare,False,6,5,2,2,Argonian,Strength,True,source,ready
+Blackreach Rebuilder,2,Common,False,5,1,5,2,Construct,,True,source,ready
+Blacksap Protector,2,Common,False,4,3,2,4,Wood Elf,Agility,True,source,ready
+Blackwood Distiller,2,Epic,False,7,3,2,2,Argonian,Intelligence,True,source,ready
+Blue Grummite,2,Epic,False,7,2,3,2,Beastfolk,Willpower,True,source,ready
+Bog Lurcher,2,Common,False,4,3,2,4,Spirit,Willpower,True,source,ready
+Brassilisk,2,Epic,False,2,2,7,3,Construct,,True,source,ready
+Cauldron Keeper,2,Rare,False,6,5,2,2,Imperial,Intelligence,True,source,ready
+Cavern Nereid,2,Rare,False,5,2,2,6,Spirit,Intelligence,True,source,ready
+Clannfear,2,Common,False,5,1,5,2,Daedra,Strength,True,source,ready
+Cleric of Kyne,2,Common,False,4,2,5,1,Nord,Willpower,True,available,ready
+Cliffside Lookout,2,Common,False,2,2,4,4,Nord,Intelligence,True,source,ready
+Covenant Marauder,2,Common,False,1,5,2,5,Orc,Strength,True,source,ready
+Crazed Hunger,2,Common,False,3,2,4,4,Daedra,Endurance,True,source,ready
+Deepwood Trapper,2,Common,False,3,2,4,4,Dark Elf,Agility,True,source,ready
+Draugr Sentry,2,Rare,False,2,6,5,2,Undead,Strength,True,source,ready
+Dres Tormentor,2,Common,False,5,1,5,2,Dark Elf,Strength,True,source,ready
+Dust Eater Skirmisher,2,Common,False,5,1,2,5,Beastfolk,Agility,True,source,ready
+Dwarven Sentry,2,Common,False,2,2,5,4,Construct,,True,source,ready
+Earthbone Spinner,2,Rare,False,5,2,2,6,Wood Elf,Endurance,True,source,ready
+Eastmarch Axebearer,2,Epic,False,2,7,2,3,Nord,Strength,True,source,ready
+Ferocious Dreugh,2,Common,False,2,4,4,2,Beastfolk,Strength,True,source,ready
+Frostbite Spider,2,Common,False,5,4,2,2,Beast,,True,source,ready
+Ghost Sea Lookout,2,Common,False,4,2,2,5,Breton,Agility,True,source,ready
+Giant Snake,2,Common,False,5,2,5,1,Beast,Agility,True,source,ready
+Green Pact Stalker,2,Common,False,4,2,2,5,Wood Elf,Intelligence,True,source,ready
+Guardian Skeever,2,Common,False,4,2,2,5,Spirit,Agility,True,source,ready
+Helstrom Footpad,2,Common,False,5,2,5,1,Argonian,Agility,True,source,ready
+Ice Wraith,2,Common,False,2,5,1,5,Spirit,Intelligence,True,source,ready
+Iliac Deckguard,2,Common,False,4,3,2,4,Breton,Strength,True,source,ready
+Iliac Sorcerer,2,Epic,False,3,2,2,7,Breton,Willpower,True,source,ready
+Imperial Lackey,2,Common,False,5,4,2,2,Imperial,,True,source,ready
+Indoril Mastermind,2,Epic,False,2,2,7,3,Dark Elf,Intelligence,True,source,ready
+Insidious Spirit,2,Epic,False,2,7,3,2,Undead,Willpower,True,available,ready
+Lillandril Alchemist,2,Common,False,1,5,2,5,High Elf,Intelligence,True,source,ready
+Lumbering Ogrim,2,Rare,False,2,2,6,5,Daedra,Strength,True,source,ready
+Morkul Gatekeeper,2,Epic,False,2,7,3,2,Orc,Agility,True,source,ready
+Morthal Watchman,2,Common,False,3,1,3,5,Nord,Willpower,True,source,ready
+Mudcrab Merchant,2,Epic,False,7,3,2,2,Beast,Intelligence,True,source,ready
+Murkwater Savage,2,Common,False,4,2,4,3,Beastfolk,Endurance,True,source,ready
+Nimble Ally,2,Epic,False,3,2,2,7,Wood Elf,Strength,True,source,ready
+Nix-Hound,2,Common,False,4,4,3,2,Beast,,True,source,ready
+Outland Patrol,2,Common,False,5,2,5,1,Imperial,Agility,True,source,ready
+Pillaging Tribune,2,Epic,False,7,3,2,2,Imperial,Strength,True,source,ready
+Prankster Mage,2,Common,False,2,5,2,3,Khajiit,Agility,True,source,ready
+Restoration Tutor,2,Common,False,4,4,3,2,Imperial,Willpower,True,source,ready
+Riften Pickpocket,2,Rare,False,2,2,6,5,Dark Elf,Agility,True,source,ready
+Rihad Battlemage,2,Common,False,5,2,5,1,Redguard,Intelligence,True,source,ready
+Rihad Horseman,2,Common,False,5,4,2,2,Redguard,Strength,True,source,ready
+Risen Dead,2,Common,False,2,4,4,3,Undead,,True,source,ready
+Riverbank Spriggan,2,Epic,False,3,2,2,7,Spirit,Endurance,True,source,ready
+Ruin Archaeologist,2,Common,False,2,5,4,2,High Elf,,True,source,ready
+Ruin Shambler,2,Common,False,2,5,4,2,Undead,,True,source,ready
+Savage Ogre,2,Rare,False,4,5,2,4,Beastfolk,Intelligence,True,source,ready
+Scamp,2,Common,False,2,2,5,4,Daedra,Agility,True,source,ready
+Senche-Tiger,2,Rare,False,5,2,4,3,Khajiit,Strength,True,source,ready
+Sentinel Caravan Guard,2,Common,False,4,4,3,2,Redguard,Willpower,True,source,ready
+Shalk Fabricant,2,Rare,False,2,2,6,5,Construct,,True,source,ready
+Skeletal Hound,2,Common,False,1,5,2,5,Undead,Agility,True,source,ready
+Stormhold Henchman,2,Common,False,4,4,3,2,Argonian,Endurance,True,source,ready
+Stronghold Patrol,2,Rare,False,2,6,5,2,Orc,Willpower,True,source,ready
+Sunhold Medic,2,Common,False,2,4,4,3,High Elf,Willpower,True,source,ready
+Suthay Bootlegger,2,Common,False,1,4,3,5,Khajiit,Endurance,True,source,ready
+Tiny Dragon,2,Common,False,3,6,1,6,Dragon,Strength,False,source,pending
+Tree Minder,2,Common,False,5,4,2,2,Argonian,Willpower,True,source,ready
+Unstoppable Berserker,2,Rare,False,6,2,6,1,Nord,Strength,True,available,ready
+Verminous Fabricant,2,Common,False,3,2,4,4,Construct,,True,source,ready
+Wardcrafter,2,Rare,False,5,2,2,6,Breton,Intelligence,True,source,ready
+Wind Keep Spellsword,2,Common,False,2,5,1,5,Breton,Endurance,True,source,ready
+Wood Orc Headhunter,2,Common,False,2,5,4,2,Orc,Endurance,True,source,ready
+Wrothgar Stormcaller,2,Common,False,2,4,4,3,Orc,Intelligence,True,source,ready
+Yokudan Nightblade,2,Rare,False,6,5,2,2,Redguard,Agility,True,source,ready
+Afflicted Alit,3,Common,False,6,2,6,3,Beast,,True,source,ready
+Aldmeri Patriot,3,Common,False,5,2,3,6,High Elf,,True,source,ready
+Ancestral Dead,3,Common,False,3,6,2,6,Undead,,True,source,ready
+Arenthia Guerrilla,3,Common,False,2,6,3,6,Wood Elf,Agility,True,source,ready
+Argonian Veteran,3,Rare,False,6,6,4,3,Argonian,Intelligence,True,source,ready
+Assassin Beetle,3,Rare,False,6,6,4,3,Beast,Endurance,True,source,ready
+Assembled Sentry,3,Epic,False,3,7,5,1,Construct,,True,source,ready
+Barrow Stalker,3,Epic,False,3,7,5,3,Undead,Agility,True,source,ready
+Battlerage Orc,3,Rare,False,3,6,6,4,Orc,Agility,True,source,ready
+Black Worm Neophyte,3,Common,False,6,5,3,3,Imperial,Intelligence,True,source,ready
+Blackrose Herbalist,3,Common,False,6,5,3,3,Argonian,Agility,True,source,ready
+Blackwood Alchemist,3,Epic,False,7,5,3,3,Argonian,Willpower,True,source,ready
+Blades Defender,3,Common,False,5,3,3,6,Breton,Endurance,True,source,ready
+Blades Stalwart,3,Epic,False,5,3,3,7,Breton,Agility,True,source,ready
+Blind Moth Priest,3,Rare,False,6,6,4,3,Imperial,,True,source,ready
+Blood Sorceress,3,Common,False,6,2,6,3,Redguard,Willpower,True,source,ready
+Bloodline Outcast,3,Rare,False,3,6,6,4,Undead,Intelligence,True,source,ready
+Bonewalker,3,Common,False,4,5,4,4,Undead,Strength,True,source,ready
+Brotherhood Slayer,3,Rare,False,6,4,3,6,Wood Elf,Strength,True,source,ready
+Brutal Ashlander,3,Common,False,3,3,6,5,Dark Elf,Strength,True,source,ready
+Camoran Scout Leader,3,Common,False,4,4,4,5,Wood Elf,Endurance,True,source,ready
+Cave Bear,3,Common,False,5,4,4,4,Beast,Willpower,True,source,ready
+City Guard,3,Common,False,6,2,6,3,Imperial,Endurance,True,source,ready
+Clockwork Scorpion,3,Common,False,5,1,5,5,Construct,,True,source,ready
+Crystal Tower Crafter,3,Rare,False,6,5,6,1,High Elf,Intelligence,True,source,ready
+Dark Harvester,3,Common,False,1,6,4,6,Beastfolk,Endurance,True,source,ready
+Dawnstar Healer,3,Common,False,4,4,5,4,Nord,Willpower,True,source,ready
+Destruction Tutor,3,Common,False,5,6,2,4,High Elf,Intelligence,True,source,ready
+Devious Bandit,3,Epic,False,7,5,2,3,Khajiit,Willpower,True,source,ready
+Discerning Thief,3,Common,False,5,2,5,5,Khajiit,Strength,True,source,ready
+Dremora Archer,3,Epic,False,3,7,2,5,Daedra,Agility,True,source,ready
+Dres Renegade,3,Common,False,6,3,6,2,Dark Elf,Willpower,True,source,ready
+Dres Spy,3,Common,False,4,4,5,4,Dark Elf,Agility,True,source,ready
+Elsweyr Lookout,3,Common,False,6,2,5,3,Khajiit,Endurance,True,source,ready
+Farsight Nereid,3,Common,False,2,6,3,6,Spirit,Willpower,True,source,ready
+Fharun Defender,3,Common,False,3,6,5,3,Orc,Strength,True,source,ready
+Flame Atronach,3,Common,False,5,3,2,6,Daedra,Strength,True,source,ready
+Frost Atronach,3,Common,False,6,3,2,6,Daedra,Endurance,True,source,ready
+Gardener of Swords,3,Rare,False,6,6,4,3,Redguard,Endurance,True,source,ready
+Gearwork Spider,3,Common,False,6,1,3,6,Construct,,True,source,ready
+Grahtwood Ambusher,3,Epic,False,5,3,3,7,Wood Elf,Intelligence,True,source,ready
+Green-Touched Spriggan,3,Rare,False,6,4,3,6,Spirit,Endurance,True,source,ready
+Grummite Magus,3,Rare,False,3,5,5,6,Beastfolk,Willpower,True,source,ready
+Guardian Wolf,3,Common,False,5,3,3,6,Spirit,Strength,True,source,ready
+Guildsworn Honeytongue,3,Common,False,5,4,4,4,Imperial,Willpower,True,source,ready
+Guildsworn Spellguard,3,Common,False,6,2,6,3,Argonian,Endurance,True,source,ready
+Hew's Bane Infiltrator,3,Common,False,5,4,4,4,Redguard,Agility,True,source,ready
+Iliac Privateer,3,Common,False,2,6,3,6,Breton,Strength,True,source,ready
+Kagouti Fabricant,3,Rare,False,6,6,4,2,Construct,,True,source,ready
+Kvatch Soldier,3,Epic,False,7,5,3,3,Imperial,Strength,True,source,ready
+Manic Grummite,3,Epic,False,5,1,7,3,Beastfolk,Agility,True,source,ready
+Mistveil Enchanter,3,Common,False,4,4,4,5,Breton,Intelligence,True,source,ready
+Morag Tong Aspirant,3,Rare,False,4,3,6,6,Dark Elf,Agility,True,source,ready
+Morthal Executioner,3,Epic,False,3,3,7,5,Nord,Strength,True,source,ready
+Murkwater Butcher,3,Common,False,6,4,6,1,Beastfolk,Strength,True,source,ready
+Murkwater Witch,3,Common,False,6,4,4,3,Beastfolk,Intelligence,True,source,ready
+Nereid Sister,3,Epic,False,5,3,3,7,Spirit,Strength,True,source,ready
+Nix-Hound Fabricant,3,Common,False,6,6,1,3,Construct,,True,source,ready
+Orc Clan Captain,3,Epic,False,3,7,5,3,Orc,Endurance,True,source,ready
+Painted Troll,3,Epic,False,7,5,3,3,Beast,Strength,True,source,ready
+Palace Prowler,3,Rare,False,4,3,6,5,Khajiit,Intelligence,True,source,ready
+Piercing Twilight,3,Rare,False,5,4,6,4,Daedra,Agility,True,source,ready
+Raging Horker,3,Common,False,6,5,3,3,Beast,,True,source,ready
+Redoran Forerunner,3,Epic,False,3,3,7,5,Dark Elf,Intelligence,True,source,ready
+Reedfen Lurcher,3,Common,False,4,4,4,5,Spirit,Agility,True,source,ready
+Rotting Draugr,3,Common,False,3,6,5,3,Undead,,True,source,ready
+Sharpshooter Scout,3,Common,False,5,3,3,6,Wood Elf,Willpower,True,source,ready
+Skaven Pyromancer,3,Common,False,6,5,3,3,Redguard,Intelligence,True,source,ready
+Sly Marshblade,3,Common,False,5,4,4,4,Argonian,Strength,True,source,ready
+Stonetooth Scrapper,3,Common,False,3,6,2,6,Orc,Intelligence,True,source,ready
+Storm Atronach,3,Common,False,3,4,3,6,Daedra,Intelligence,True,source,ready
+Stronghold Provisioner,3,Common,False,4,5,4,4,Orc,Willpower,True,source,ready
+Studious Greybeard,3,Rare,False,4,3,6,6,Nord,Willpower,True,available,ready
+Summerset Shieldmage,3,Epic,False,7,4,4,2,High Elf,Endurance,True,source,ready
+Thalmor Soldier,3,Common,False,1,5,6,4,High Elf,,True,source,ready
+Thieves Guild Fence,3,Common,False,2,5,4,5,Khajiit,Agility,True,source,ready
+Vigilant of Stendarr,3,Rare,False,6,4,3,6,Breton,Willpower,True,source,ready
+Whiterun Trooper,3,Common,False,3,3,6,5,Nord,Endurance,True,source,ready
+Windhelm Skirmisher,3,Common,False,6,1,4,6,Nord,,True,source,ready
+Withered Hand Cultist,3,Epic,False,7,5,3,3,Redguard,Strength,True,source,ready
+Ageless Vampire,4,Common,False,3,6,6,5,Undead,Intelligence,True,source,ready
+Ald'ruhn Arms Master,4,Rare,False,5,3,7,6,Dark Elf,Endurance,True,source,ready
+Altmer Flameslinger,4,Common,False,4,6,5,5,High Elf,Willpower,True,source,ready
+An-Xileel Invader,4,Epic,False,8,3,4,3,Argonian,Agility,True,source,ready
+Apex Wolf,4,Common,False,6,5,5,4,Beast,Intelligence,True,source,ready
+Assembled Conduit,4,Epic,False,4,3,8,3,Construct,,True,source,ready
+Aundae Clan Sorcerer,4,Epic,False,3,8,3,4,Undead,Intelligence,True,source,ready
+Auridon Paladin,4,Epic,False,3,8,3,4,High Elf,Strength,True,source,ready
+Bal Isra Warrider,4,Common,False,6,5,5,4,Redguard,Endurance,True,source,ready
+Bandit Ringleader,4,Common,False,1,7,5,5,Khajiit,Intelligence,True,source,ready
+Bangkorai Butcher,4,Common,False,3,6,6,5,Orc,Intelligence,True,source,ready
+Battlefield Scrounger,4,Common,False,7,3,6,2,Redguard,Agility,True,source,ready
+Berserker of the Pale,4,Epic,False,4,3,8,3,Nord,Strength,True,source,ready
+Blades Guardian,4,Common,False,6,6,5,3,Redguard,Willpower,True,source,ready
+Brotherhood Suspect,4,Rare,False,7,6,5,3,Argonian,Willpower,True,source,ready
+Burnt Spriggan,4,Common,False,5,5,4,6,Spirit,Endurance,True,source,ready
+Cartel Bruiser,4,Rare,False,7,6,6,1,Khajiit,Willpower,True,source,ready
+Cliff Racer,4,Common,False,6,6,5,3,Beast,,True,source,ready
+Cloudrest Illusionist,4,Rare,False,3,7,6,5,High Elf,Intelligence,True,source,ready
+Colovian Trooper,4,Common,False,7,3,6,2,Imperial,Endurance,True,source,ready
+Corrupted Shade,4,Rare,False,3,7,6,5,Undead,Willpower,True,source,ready
+Court Wizard,4,Common,False,3,6,2,7,Breton,Intelligence,True,source,ready
+Daring Cutpurse,4,Common,False,7,5,4,2,Khajiit,Endurance,True,source,ready
+Death Hound,4,Common,False,4,6,5,5,Undead,Agility,True,available,ready
+Demented Grummite,4,Epic,False,3,8,3,4,Beastfolk,Endurance,True,source,ready
+Dragonfire Wizard,4,Epic,False,8,3,4,3,Imperial,Intelligence,True,source,ready
+Dragonstar Rider,4,Rare,False,7,6,5,3,Redguard,Strength,True,source,ready
+Dragontail Savior,4,Common,False,2,7,3,6,Orc,Willpower,True,source,ready
+Dread Clannfear,4,Common,False,7,1,5,5,Daedra,Endurance,True,source,ready
+Dremora Adept,4,Common,False,1,4,7,6,Daedra,Intelligence,True,source,ready
+Dremora Vanguard,4,Rare,False,7,2,3,7,Daedra,Strength,True,source,ready
+Dune Stalker,4,Common,False,5,4,5,6,Khajiit,Strength,True,source,ready
+Dunmer Nightblade,4,Common,False,5,4,6,5,Dark Elf,Agility,True,source,ready
+Dushnikh Yal Archer,4,Common,False,4,6,5,5,Orc,Agility,True,source,ready
+Dwarven Ballista,4,Common,False,5,4,6,5,Construct,,True,source,ready
+Dwarven Sphere,4,Common,False,5,3,6,6,Construct,,True,source,ready
+Fallen Dragon,4,Common,False,3,7,3,7,Dragon,Endurance,False,source,pending
+Flamespear Dragon,4,Legendary,False,2,7,4,7,Dragon,Strength,False,source,pending
+Fortress Watchman,4,Rare,False,3,7,6,5,Orc,Endurance,True,source,ready
+Frost Troll,4,Epic,False,8,3,4,3,Beast,Strength,True,source,ready
+Glenumbra Lurcher,4,Common,False,3,6,2,7,Spirit,Agility,True,source,ready
+Gloomlurker,4,Common,False,2,7,3,6,Beastfolk,Intelligence,True,source,ready
+Gnarl Rootbender,4,Rare,False,6,5,3,7,Spirit,Strength,True,source,ready
+Golden Initiate,4,Epic,False,3,8,3,4,Daedra,Agility,True,source,ready
+Greenheart Oathkeeper,4,Rare,False,6,5,3,7,Wood Elf,Intelligence,True,source,ready
+Gristlehide Dreugh,4,Common,False,3,6,6,5,Beastfolk,Strength,True,source,ready
+Guardian Bear,4,Common,False,6,5,3,6,Spirit,Endurance,True,source,ready
+Guildsworn Cavalier,4,Rare,False,6,5,3,7,Breton,Agility,True,source,ready
+Heretic Conjurer,4,Common,False,3,6,6,5,High Elf,Willpower,True,source,ready
+High Rock Summoner,4,Common,False,5,5,4,6,Breton,Willpower,True,source,ready
+Imperial Soldier,4,Common,False,6,6,5,3,Imperial,Strength,True,source,ready
+Invoker of the Hist,4,Common,False,7,3,6,2,Argonian,Strength,True,source,ready
+Iron Atronach,4,Common,False,3,5,7,3,Daedra,Strength,True,available,ready
+Leaflurker,4,Epic,False,3,4,3,8,Wood Elf,Willpower,True,source,ready
+Lowland Troll,4,Common,False,7,3,6,2,Beast,Strength,True,source,ready
+Mercenary Captain,4,Common,False,5,3,6,6,Nord,Endurance,True,source,ready
+Monastic Champion,4,Epic,False,1,4,3,8,Khajiit,Agility,True,source,ready
+Murkwater Skirmisher,4,Common,False,4,6,5,5,Beastfolk,Willpower,True,source,ready
+Mystic Dragon,4,Common,False,1,7,5,7,Dragon,Intelligence,False,source,pending
+Nibenese Mercenary,4,Common,False,6,5,5,4,Imperial,Agility,True,source,ready
+Northpoint Captain,4,Epic,False,3,4,3,8,Breton,Endurance,True,source,ready
+Preying Elytra,4,Rare,False,7,6,5,3,Beast,Willpower,True,source,ready
+Redoran Enforcer,4,Epic,False,4,3,8,3,Dark Elf,Strength,True,source,ready
+Reflective Automaton,4,Rare,False,5,3,7,6,Construct,,True,source,ready
+Renowned Instructor,4,Rare,False,5,3,7,6,Nord,Intelligence,True,source,ready
+Riften Lawkeeper,4,Common,False,5,4,6,5,Nord,,True,source,ready
+Rimebound Ice Wraith,4,Epic,False,3,4,3,8,Spirit,Intelligence,True,source,ready
+Serpentine Stalker,4,Legendary,False,6,6,6,6,Dragon,Agility,False,source,pending
+Shivering Apothecary,4,Rare,False,7,6,5,3,Imperial,Intelligence,True,source,ready
+Shrieking Harpy,4,Rare,False,3,7,6,5,Beastfolk,Agility,True,source,ready
+Silvenar Tracker,4,Common,False,5,5,4,6,Wood Elf,Strength,True,source,ready
+Skeleton Champion,4,Common,False,2,7,3,6,Undead,Strength,True,source,ready
+Sparking Spider,4,Common,False,6,2,7,3,Construct,,True,source,ready
+Sparksmith,4,Epic,False,8,3,4,3,Redguard,Intelligence,True,source,ready
+Telvanni Arcanist,4,Common,False,6,2,7,3,Dark Elf,Intelligence,True,source,ready
+Thalmor Justiciar,4,Common,False,2,7,3,6,High Elf,,True,source,ready
+Thorn Histmage,4,Common,False,6,6,5,3,Argonian,Endurance,True,source,ready
+Tribunal Oathman,4,Common,False,5,3,6,6,Dark Elf,Willpower,True,source,ready
+Twin Lamps Consul,4,Common,False,6,5,5,4,Argonian,Intelligence,True,source,ready
+Valenwood Huntsman,4,Common,False,3,6,2,7,Wood Elf,Endurance,True,source,ready
+Valenwood Sentry,4,Common,False,6,5,3,6,Wood Elf,Agility,True,source,ready
+Wayrest Nightblade,4,Common,False,6,5,3,6,Breton,Strength,True,source,ready
+Windhelm Gatekeeper,4,Common,False,6,2,7,3,Nord,,True,source,ready
+Wrothgar Kingpin,4,Epic,False,3,8,3,4,Orc,Strength,True,source,ready
+Ageless Automaton,5,Common,False,5,7,4,6,Construct,,True,source,ready
+Alpha Wolf,5,Epic,False,8,4,5,4,Beast,Intelligence,True,source,ready
+Altmer Dragonknight,5,Common,False,5,6,6,6,High Elf,Strength,True,source,ready
+Assembled Sanitizer,5,Common,False,7,7,3,2,Construct,,True,source,ready
+Attuned Dremora,5,Rare,False,3,4,7,7,Daedra,Agility,True,source,ready
+Auroran Sentry,5,Common,False,7,6,2,6,Daedra,Willpower,True,source,ready
+Baandari Bruiser,5,Common,False,5,4,7,5,Khajiit,Willpower,True,source,ready
+Belligerent Giant,5,Epic,False,3,5,4,8,Beastfolk,Strength,True,source,ready
+Berne Clan Nightstalker,5,Common,False,5,7,5,4,Undead,Agility,True,source,ready
+Blood Dragon,5,Legendary,False,5,7,4,7,Dragon,Strength,False,source,pending
+Blood-Crazed Daedroth,5,Common,False,3,6,7,6,Daedra,Strength,True,source,ready
+Bone Colossus,5,Rare,False,3,7,7,5,Undead,Endurance,True,source,ready
+Breton Conjurer,5,Common,False,5,4,5,7,Breton,Intelligence,True,source,ready
+Cartel Arcanist,5,Rare,False,3,7,4,7,Khajiit,Agility,True,source,ready
+Chaurus,5,Common,False,7,5,4,5,Beast,,True,source,ready
+Clockwork Apostle,5,Rare,False,3,7,7,5,High Elf,Intelligence,True,available,ready
+Conjuration Scholar,5,Rare,False,7,7,5,3,Redguard,Intelligence,True,source,ready
+Dominion Battlereeve,5,Common,False,2,7,4,7,High Elf,Endurance,True,source,ready
+Dormant Centurion,5,Rare,False,6,7,6,5,Construct,,True,source,ready
+Dremora Markynaz,5,Common,False,6,3,7,5,Daedra,Strength,True,available,ready
+Durzog,5,Rare,False,7,7,5,3,Beast,Strength,True,source,ready
+Dwarven Architon,5,Epic,False,4,8,3,5,Construct,,True,placeholder,ready
+Eastmarch Crusader,5,Common,False,4,7,5,6,Nord,Strength,True,source,ready
+Eldergleam Matron,5,Epic,False,4,5,4,8,Spirit,Willpower,True,source,ready
+Emperor's Blade,5,Epic,False,8,4,5,4,Imperial,Strength,True,source,ready
+Fifth Legion Trainer,5,Rare,False,7,7,5,3,Imperial,Willpower,True,source,ready
+Fighters Guild Steward,5,Common,False,2,4,7,7,Nord,Endurance,True,source,ready
+Frenzied Alit,5,Common,False,7,4,7,2,Beast,Agility,True,source,ready
+Glacial Dragon,5,Legendary,False,4,8,4,5,Dragon,Intelligence,False,source,pending
+Glenumbra Sorceress,5,Common,False,4,7,2,7,Breton,Willpower,True,source,ready
+Goutfang Adept,5,Common,False,7,7,3,3,Khajiit,Strength,True,source,ready
+Grahtwood Pathwarden,5,Common,False,5,4,5,7,Wood Elf,Endurance,True,source,ready
+Greatwood Elder,5,Common,False,4,7,2,7,Spirit,Endurance,True,source,ready
+Green Pact Venomkeeper,5,Common,False,6,6,5,6,Wood Elf,Intelligence,True,source,ready
+Guardian Mammoth,5,Common,False,5,4,5,7,Spirit,Willpower,True,source,ready
+Haafingar Marauder,5,Epic,False,4,4,4,8,Nord,Strength,True,source,ready
+Hallowed Deathpriest,5,Common,False,2,7,4,7,Undead,Intelligence,True,source,ready
+Helgen Squad Leader,5,Common,False,3,6,6,7,Nord,Endurance,True,source,ready
+High Rock Stalwart,5,Common,False,5,6,6,6,Orc,Endurance,True,source,ready
+Highland Lurcher,5,Common,False,6,6,5,6,Spirit,Strength,True,source,ready
+Hulking Fabricant,5,Common,False,7,4,5,5,Construct,,True,source,ready
+Icewing Dragon,5,Rare,False,5,7,4,7,Dragon,Intelligence,False,source,pending
+Imperial Legionnaire,5,Common,False,7,5,4,5,Imperial,Strength,True,source,ready
+Imprisoned Deathlord,5,Common,False,5,6,6,6,Undead,Strength,True,source,ready
+Karthspire Scourge,5,Rare,False,7,7,4,5,Dragon,Willpower,False,source,pending
+Kynreeve Champion,5,Epic,False,3,5,4,8,Daedra,Endurance,True,source,ready
+Lion Guard Strategist,5,Epic,False,4,5,4,8,Breton,Strength,True,source,ready
+Master Swordsmith,5,Common,False,7,4,7,2,Redguard,Endurance,True,source,ready
+Master of Incunabula,5,Epic,False,4,8,4,5,High Elf,Intelligence,True,available,ready
+Mentor of the Watch,5,Common,False,6,6,6,5,Imperial,Intelligence,True,source,ready
+Moonlight Werebat,5,Common,False,6,6,6,5,Beast,,True,source,ready
+Morag Tong Assassin,5,Rare,False,5,3,7,7,Dark Elf,Agility,True,source,ready
+Mournhold Guardian,5,Epic,False,5,4,8,4,Dark Elf,Endurance,True,source,ready
+Murkwater Scourge,5,Common,False,7,6,4,4,Beastfolk,Willpower,True,source,ready
+Nereid Tidecaller,5,Rare,False,7,5,3,7,Spirit,Intelligence,True,source,ready
+Nervous Giant,5,Common,False,7,5,7,1,Beastfolk,Agility,True,source,ready
+Night Talon Lord,5,Epic,False,4,8,4,5,Undead,Strength,True,available,ready
+Nightprowler,5,Common,False,5,5,4,7,Beastfolk,Intelligence,True,source,ready
+Nord Firebrand,5,Rare,False,7,6,4,6,Nord,Strength,True,source,ready
+Occult Ritemaster,5,Epic,False,4,8,4,5,Orc,Intelligence,True,source,ready
+Orc Clan Shaman,5,Common,False,5,7,5,4,Orc,Willpower,True,source,ready
+Orsinium Shieldbearer,5,Common,False,2,7,4,7,Orc,Agility,True,source,ready
+Pouncing Senche,5,Common,False,5,3,7,6,Khajiit,Intelligence,True,source,ready
+Preserver of the Root,5,Epic,False,8,4,5,4,Argonian,Endurance,True,source,ready
+Rampaging Minotaur,5,Rare,False,2,6,7,7,Beastfolk,Endurance,True,source,ready
+Renegade Magister,5,Common,False,7,2,7,4,Dark Elf,Intelligence,True,source,ready
+Revered Guardian,5,Common,False,7,4,5,7,Dragon,Willpower,False,source,pending
+Seasoned Captain,5,Common,False,6,6,6,5,Redguard,Strength,True,source,ready
+Senche-raht Graveprowler,5,Epic,False,4,8,4,5,Khajiit,Endurance,True,source,ready
+Sentinel Reclaimer,5,Common,False,7,5,4,5,Redguard,Agility,True,source,ready
+Sentinel Spellweaver,5,Epic,False,8,4,5,4,Redguard,Willpower,True,source,ready
+Septim Guardsman,5,Common,False,7,4,7,2,Imperial,Endurance,True,source,ready
+Shadowfen Priest,5,Common,False,6,6,6,5,Argonian,Willpower,True,source,ready
+Shadowscale Hunter,5,Common,False,7,4,7,2,Argonian,Intelligence,True,source,ready
+Shadowscale Partisan,5,Common,False,7,5,4,5,Argonian,Strength,True,source,ready
+Shearpoint Dragon,5,Rare,False,7,5,7,4,Dragon,Agility,False,source,pending
+Shornhelm Champion,5,Rare,False,7,5,3,7,Breton,Endurance,True,source,ready
+Skywatch Vindicator,5,Common,False,5,7,5,4,High Elf,Agility,True,source,ready
+Stalking Shadowscale,5,Rare,False,7,7,5,3,Argonian,Agility,True,source,ready
+Stoneshard Orc,5,Rare,False,3,7,7,5,Orc,Strength,True,source,ready
+Temple Conjurer,5,Common,False,6,5,6,6,Dark Elf,Intelligence,True,source,ready
+Temple Patriarch,5,Common,False,4,5,7,5,Dark Elf,Willpower,True,source,ready
+Underworld Vigilante,5,Rare,False,7,5,3,7,Wood Elf,Willpower,True,source,ready
+Valenwood Beastcaller,5,Epic,False,4,5,4,8,Wood Elf,Agility,True,placeholder,ready
+Wayrest Court Duelist,5,Common,False,6,6,5,6,Breton,Agility,True,source,ready
+Y'ffre's Storykeeper,5,Common,False,4,7,2,7,Wood Elf,Strength,True,source,ready
+Archein Venomtongue,6,Epic,False,9,4,5,4,Argonian,Strength,True,source,ready
+Assembled Titan,6,Epic,False,5,4,9,4,Construct,,True,available,ready
+Awakened Imperfect,6,Rare,False,6,4,8,6,Construct,,True,source,ready
+Black Marsh Warden,6,Rare,False,8,6,6,4,Argonian,Endurance,True,source,ready
+Blastbones,6,Common,False,5,7,6,6,Undead,,True,source,ready
+Blighted Werebat,6,Rare,False,8,6,6,4,Beast,Intelligence,True,source,ready
+Blood Magic Lord,6,Rare,False,4,8,6,6,Undead,Strength,True,available,ready
+Bringer of Nightmares,6,Epic,False,4,4,9,1,Daedra,Strength,True,source,ready
+Caravan Enforcer,6,Common,False,3,7,5,7,Khajiit,Intelligence,True,source,ready
+Chaurus Reaper,6,Common,False,7,6,6,5,Beast,,True,source,ready
+Conjuration Tutor,6,Common,False,6,6,5,7,Breton,Willpower,True,source,ready
+Corinthe Brawler,6,Common,False,2,7,7,6,Khajiit,Willpower,True,source,ready
+Cradlecrush Giant,6,Common,False,3,7,7,5,Beastfolk,Endurance,True,source,ready
+Daggerfall Spellknight,6,Rare,False,6,6,4,8,Breton,Strength,True,source,ready
+Dagi-raht Mystic,6,Common,False,7,7,6,2,Khajiit,Agility,True,source,ready
+Dark Seducer,6,Common,False,7,7,2,6,Daedra,Agility,True,source,ready
+Deepmarsh Pathfinder,6,Common,False,7,4,7,4,Argonian,Willpower,True,source,ready
+Direnni Spellwright,6,Common,False,3,7,7,5,High Elf,Intelligence,True,source,ready
+Dwarven Centurion,6,Common,False,7,4,7,4,Construct,,True,source,ready
+Dwarven Dynamo,6,Common,False,6,5,7,6,Construct,,True,source,ready
+Dwarven Spearguard,6,Common,False,5,3,7,7,Construct,,True,source,ready
+Elytra Noble,6,Epic,False,9,4,5,4,Beast,Willpower,True,source,ready
+Empire Dreadmage,6,Rare,False,8,6,6,4,Imperial,Intelligence,True,source,ready
+Falinesti Wildwarden,6,Epic,False,4,5,4,9,Wood Elf,Endurance,True,source,ready
+Fearless Northlander,6,Epic,False,9,4,4,3,Nord,Strength,True,source,ready
+Frost Giant,6,Common,False,5,7,6,6,Beastfolk,Willpower,True,source,ready
+Ghostgate Defender,6,Epic,False,5,4,9,4,Dark Elf,Endurance,True,source,ready
+Glacial Ice Wraith,6,Common,False,7,5,3,7,Spirit,Intelligence,True,source,ready
+Golden Saint,6,Common,False,7,7,6,2,Daedra,Willpower,True,source,ready
+Grand Inquisitor,6,Common,False,5,3,7,7,Dark Elf,Willpower,True,source,ready
+Guardian Sabre Cat,6,Common,False,6,6,5,7,Spirit,Agility,True,source,ready
+Hegathe Shieldbearer,6,Common,False,7,6,6,5,Redguard,Endurance,True,source,ready
+Hist Sap Healer,6,Common,False,7,6,6,5,Argonian,Intelligence,True,source,ready
+Icy Shambles,6,Common,False,4,7,4,7,Undead,,True,source,ready
+Ironscale Dragon,6,Common,False,4,8,5,7,Dragon,Endurance,False,source,pending
+Keeper of the Gates,6,Common,False,6,7,7,2,Nord,Intelligence,True,source,ready
+Knight of Gnisis,6,Common,False,6,5,7,6,Dark Elf,Endurance,True,source,ready
+Lava Atronach,6,Rare,False,8,3,7,2,Daedra,Endurance,True,source,ready
+Legion Praefect,6,Common,False,7,6,6,5,Imperial,Endurance,True,source,ready
+Legion Shocktrooper,6,Common,False,7,4,7,4,Imperial,Strength,True,source,ready
+Lord of the Arena,6,Epic,False,4,9,4,5,Beastfolk,Intelligence,True,available,ready
+Mages Guild Conjurer,6,Epic,False,4,5,4,9,Breton,Intelligence,True,source,ready
+Markarth Bannerman,6,Common,False,2,7,6,7,Nord,,True,source,ready
+Militant Chieftain,6,Epic,False,4,9,4,5,Orc,Willpower,True,source,ready
+Mistveil Warden,6,Epic,False,9,4,5,4,Imperial,Agility,True,source,ready
+Moonmoth Castellan,6,Common,False,7,7,5,3,Imperial,Willpower,True,source,ready
+Murkwater Shaman,6,Rare,False,4,8,6,6,Beastfolk,Strength,True,source,ready
+Nether Lich,6,Common,False,3,7,7,5,Undead,Intelligence,True,source,ready
+Nightlord Vampire,6,Epic,False,4,9,4,5,Undead,Intelligence,True,source,ready
+Nix-Ox,6,Common,False,7,7,5,3,Beast,Strength,True,source,ready
+Odirniran Necromancer,6,Common,False,7,4,7,4,Dark Elf,Intelligence,True,source,ready
+Orcish Siege Engineer,6,Common,False,5,7,6,6,Orc,Agility,True,source,ready
+Order of Diagna Veteran,6,Rare,False,8,6,6,4,Redguard,Willpower,True,source,ready
+Orichalcum Forgemaster,6,Rare,False,4,8,6,6,Orc,Intelligence,True,source,ready
+Pahmar-raht Renegade,6,Rare,False,6,8,3,5,Khajiit,Endurance,True,source,ready
+Pit Lion,6,Common,False,7,4,7,4,Beast,Endurance,True,source,ready
+Redoran Oathman,6,Rare,False,6,4,8,6,Dark Elf,Strength,True,source,ready
+Riften Pillager,6,Common,False,7,7,2,6,Nord,Agility,True,source,ready
+Rootwater Wayfinder,6,Common,False,7,5,3,7,Wood Elf,Willpower,True,source,ready
+Royal Sage,6,Rare,False,4,8,6,6,High Elf,Willpower,True,source,ready
+Sapiarch of Warding,6,Epic,False,4,9,4,5,High Elf,Intelligence,True,source,ready
+Senche Noble,6,Epic,False,9,4,5,1,Khajiit,Strength,True,source,ready
+Shadowmaster,6,Common,False,4,7,4,7,Beastfolk,Agility,True,source,ready
+Silvenar Emissary,6,Common,False,4,7,4,7,Wood Elf,Intelligence,True,source,ready
+Skar Drillmaster,6,Common,False,7,4,7,4,Redguard,Strength,True,source,ready
+Skeletal Dragon,6,Legendary,False,2,8,3,8,Dragon,Endurance,False,source,pending
+Skyborn Dragon,6,Rare,False,8,2,8,3,Dragon,Strength,False,source,pending
+Smuggler Underboss,6,Common,False,4,7,4,7,Breton,Agility,True,source,ready
+Soulrest Marshal,6,Common,False,7,7,5,3,Argonian,Agility,True,source,ready
+Spine of Eldersblood,6,Rare,False,5,4,9,4,Dragon,Endurance,False,source,pending
+Spinners' Grove Guardian,6,Rare,False,6,6,4,8,Wood Elf,Agility,True,source,ready
+Stealer of Secrets,6,Common,False,4,7,4,7,High Elf,Willpower,True,source,ready
+Steelheart Vanquisher,6,Common,False,3,7,7,5,Orc,Strength,True,source,ready
+Stronghold Wise Woman,6,Common,False,4,7,4,7,Orc,Endurance,True,source,ready
+Studium Headmaster,6,Common,False,5,7,6,6,High Elf,,True,source,ready
+Swiftwing Dragon,6,Common,False,8,4,8,1,Dragon,Strength,False,source,pending
+Thornheart Lurcher,6,Rare,False,6,6,4,8,Spirit,Willpower,True,source,ready
+Tideweaver Nereid,6,Epic,False,4,5,4,9,Spirit,Agility,True,source,ready
+Totambu Battlemage,6,Common,False,7,7,5,3,Redguard,Intelligence,True,source,ready
+Undying Dragon,6,Legendary,False,1,8,4,8,Dragon,Willpower,False,source,pending
+Vinedusk Ranger,6,Common,False,6,6,5,7,Wood Elf,Strength,True,source,ready
+Voice of Balance,6,Rare,False,4,8,6,4,Nord,Willpower,True,available,ready
+Waterfall Nereid,6,Common,False,4,7,4,7,Spirit,Strength,True,source,ready
+Whirling Duelist,6,Epic,False,9,4,5,4,Redguard,Agility,True,source,ready
+Widow Daedra,6,Common,False,2,7,7,6,Daedra,Intelligence,True,source,ready
+Wildfire Dragon,6,Legendary,False,8,1,8,4,Dragon,Strength,False,source,pending
+Worm King's Agent,6,Common,False,7,5,3,7,Breton,Endurance,True,source,ready
+An-Xileel Rootwarden,7,Common,False,8,7,6,4,Argonian,Willpower,True,source,ready
+Ancient Giant,7,Epic,False,5,9,6,6,Beastfolk,Willpower,True,available,ready
+Ancient Gnarl,7,Common,False,5,7,5,8,Spirit,Intelligence,True,source,ready
+Ancient Spriggan,7,Common,False,7,7,5,7,Spirit,Willpower,True,source,ready
+Anequina Pouncer,7,Common,False,8,8,4,2,Khajiit,Endurance,True,source,ready
+Archein Elite,7,Epic,False,9,6,6,5,Argonian,Intelligence,True,source,ready
+Armored Troll,7,Rare,False,8,8,5,4,Beast,Strength,True,source,ready
+Battlereeve of Dusk,7,Epic,False,5,9,6,6,High Elf,Strength,True,source,ready
+Bjoulsae Battlecaller,7,Common,False,7,6,4,8,Breton,Agility,True,source,ready
+Black Marsh Centurion,7,Rare,False,8,8,5,4,Argonian,Strength,True,source,ready
+Blades Flanker,7,Common,False,8,8,1,5,Nord,Strength,True,source,ready
+Blood-Price Enforcer,7,Epic,False,5,9,6,6,Orc,Agility,True,source,ready
+Blueclaw Matron,7,Rare,False,4,8,8,5,Beastfolk,Intelligence,True,source,ready
+Brass Arquebus,7,Common,False,4,7,6,8,Construct,,True,source,ready
+Camoran Warleader,7,Common,False,7,6,4,8,Wood Elf,Intelligence,True,source,ready
+Champion of the Arena,7,Rare,False,4,8,8,5,Undead,Endurance,True,source,ready
+Champion of the Dragon,7,Common,False,7,7,5,7,Breton,Strength,True,source,ready
+Child of Hircine,7,Epic,False,9,6,6,5,Beast,Agility,True,source,ready
+Clockwork Dragon,7,Rare,False,7,6,8,5,Construct,,True,available,ready
+Crystal Tower Spellwarden,7,Rare,False,4,8,8,5,High Elf,Willpower,True,source,ready
+Daedric Titan,7,Common,False,3,8,3,8,Daedra,Endurance,True,source,ready
+Daggerfall Mage,7,Rare,False,8,5,4,8,Breton,Intelligence,True,source,ready
+Descendant of Alkosh,7,Epic,False,5,9,4,6,Khajiit,Intelligence,True,available,ready
+Dovah of the Voice,7,Common,False,6,6,5,9,Dragon,Agility,False,available,pending
+Dwarven Colossus,7,Epic,False,9,4,5,6,Construct,,True,available,ready
+Echo of Akatosh,7,Legendary,False,8,8,5,5,Dragon,Intelligence,False,available,pending
+Eclipse Baroness,7,Common,False,7,5,7,7,Dark Elf,Intelligence,True,source,ready
+Elder Centaur,7,Common,False,4,8,7,6,Beastfolk,Agility,True,source,ready
+Enraged Dragonknight,7,Rare,False,8,8,5,4,Imperial,Strength,True,available,ready
+Fighters Guild Berserker,7,Common,False,4,8,7,6,Orc,Endurance,True,source,ready
+Fighters Guild Elite,7,Rare,False,4,8,8,5,Orc,Willpower,True,source,ready
+Frostscale Dragon,7,Epic,False,4,8,8,6,Dragon,Strength; Intelligence,False,available,pending
+Genius Pathmage,7,Common,False,5,7,5,8,Breton,Endurance,True,source,ready
+Green Lady's Champion,7,Epic,False,6,6,5,9,Wood Elf,Strength,True,source,ready
+Greybeard Mentor,7,Common,False,8,1,8,5,Nord,Willpower,True,source,ready
+Guardian Troll,7,Common,False,7,6,4,8,Spirit,Strength,True,source,ready
+Guildsworn Bloodluster,7,Rare,False,6,8,3,8,Nord,Agility,True,source,ready
+Hallin's Stand Swordmaster,7,Common,False,8,7,6,4,Redguard,Strength,True,source,ready
+Hammerfell Grand Marshal,7,Epic,False,9,6,6,5,Redguard,Endurance,True,source,ready
+Hero of Anvil,7,Epic,False,9,6,6,5,Imperial,Endurance,True,available,ready
+Hive Defender,7,Common,False,7,7,7,5,Beast,Intelligence,True,source,ready
+Hunter-Killers,7,Common,False,8,5,8,1,Construct,,True,source,ready
+Indoril Archmage,7,Common,False,6,4,8,7,Dark Elf,Intelligence,True,source,ready
+Knight of Order,7,Common,False,4,8,2,8,Daedra,Willpower,True,source,ready
+Knight of the Hour,7,Common,False,8,5,7,5,Imperial,Endurance,True,source,ready
+Lillandril Leyweaver,7,Common,False,5,7,7,7,High Elf,Intelligence,True,source,ready
+Loyal Housecarl,7,Epic,False,5,6,9,5,Nord,Endurance,True,source,ready
+Malacath's Oathkeeper,7,Common,False,5,7,7,7,Orc,Intelligence,True,source,ready
+Marauder Chieftain,7,Common,False,5,8,5,7,Orc,Strength,True,source,ready
+Master of Arms,7,Common,False,8,5,7,5,Redguard,Intelligence,True,source,ready
+Miscarcand Lich,7,Common,False,5,7,7,7,Undead,Intelligence,True,source,ready
+Morag Tong Nightblade,7,Common,False,7,5,8,5,Dark Elf,Agility,True,source,ready
+Mountain Giant Tyrant,7,Common,False,5,7,7,7,Beastfolk,Strength,True,source,ready
+Nereid Stormsinger,7,Rare,False,8,5,4,8,Spirit,Agility,True,source,ready
+Night Predator,7,Common,False,8,5,7,5,Beast,Strength,True,source,ready
+Ordinator of the Almsivi,7,Epic,False,6,5,9,6,Dark Elf,Strength,True,source,ready
+Pact Shieldbearer,7,Common,False,8,5,5,7,Nord,Strength,True,available,ready
+Poetic Armiger,7,Rare,False,5,4,8,8,Dark Elf,Willpower,True,source,ready
+Praetorian Commander,7,Common,False,8,7,6,4,Imperial,Willpower,True,source,ready
+Protector of the Mane,7,Rare,False,6,8,1,8,Khajiit,Strength,True,source,ready
+Psijic Mediator,7,Common,False,4,8,7,6,High Elf,Willpower,True,source,ready
+Pure-Blood Elder,7,Epic,False,5,9,6,6,Undead,Intelligence,True,source,ready
+Quarra Clan Bloodkin,7,Common,False,5,8,5,7,Undead,Agility,True,source,ready
+Queen's Captain,7,Common,False,8,5,7,5,Khajiit,Agility,True,source,ready
+Quin'rawl Burglar,7,Common,False,4,8,7,6,Khajiit,Willpower,True,source,ready
+Renowned Legate,7,Common,False,7,7,7,5,Imperial,Strength,True,source,ready
+Satakalaam War Priest,7,Common,False,7,7,7,5,Redguard,Willpower,True,source,ready
+Seducer Darkfire,7,Rare,False,7,8,5,6,Daedra,Strength,True,source,ready
+Shadowgreen Elder,7,Epic,False,6,6,5,9,Spirit,Endurance,True,source,ready
+Shadowscale Silencer,7,Common,False,8,5,7,5,Argonian,Agility,True,source,ready
+Shining Saint,7,Epic,False,6,9,4,6,Daedra,Intelligence,True,source,ready
+Silvenar Oathbow,7,Rare,False,8,5,4,8,Wood Elf,Endurance,True,source,ready
+Sovngarde Hero,7,Common,False,4,8,7,6,Undead,Willpower,True,available,ready
+Stoutheart Giant,7,Common,False,5,8,5,7,Beastfolk,Endurance,True,source,ready
+Stronghold Eradicator,7,Common,False,8,7,1,7,Construct,,True,source,ready
+Sunhold Spellmarshal,7,Common,False,5,8,5,7,High Elf,Intelligence,True,source,ready
+Supreme Atromancer,7,Epic,False,6,6,5,9,Breton,Willpower,True,available,ready
+Supreme Dragon,7,Epic,False,8,5,8,5,Dragon,Strength; Willpower,False,available,pending
+Sword-Singer Adept,7,Rare,False,8,8,5,4,Redguard,Agility,True,source,ready
+Valenwood Bonecarver,7,Common,False,5,7,5,8,Wood Elf,Willpower,True,source,ready
+Werewolf Brute,7,Common,False,8,7,6,4,Beast,Endurance,True,source,ready
+Xanmeer Lorekeeper,7,Common,False,7,7,7,5,Argonian,Endurance,True,source,ready
+Xivkyn Banelord,7,Common,False,4,6,8,7,Daedra,Agility,True,source,ready
+Y'ffre's Voice,7,Common,False,7,7,5,7,Wood Elf,Agility,True,source,ready
+Ahnassi,8,Legendary,True,8,8,4,8,Khajiit,Intelligence,False,available,ready
+Allena Benoch,8,Legendary,True,8,4,3,9,Wood Elf,Endurance,True,available,ready
+Bittergreen the Wild,8,Legendary,True,9,8,4,3,Beast,Willpower,False,source,ready
+Bolvyn Venim,8,Legendary,True,8,4,3,9,Dark Elf,Strength,True,available,ready
+Brackenleaf,8,Legendary,True,4,9,3,9,Spirit,Strength,False,source,ready
+Caius Cosades,8,Legendary,True,9,8,4,3,Imperial,Strength,True,available,ready
+Domihaus,8,Legendary,True,4,8,8,8,Beastfolk,Willpower,False,source,ready
+Dylora,8,Legendary,True,9,3,9,4,Daedra,Willpower,False,source,ready
+Felldir the Old,8,Legendary,True,4,8,8,8,Nord,Willpower,True,source,ready
+Gaiden Shinji,8,Legendary,True,9,4,9,3,Redguard,Strength,False,source,ready
+"Garnag, Dark Adherent",8,Legendary,True,3,9,8,4,Orc,Willpower,False,available,ready
+Gentleman Jim Stacey,8,Legendary,True,9,8,4,3,Redguard,Agility,True,available,ready
+Gormlaith Golden-Hilt,8,Legendary,True,9,3,9,4,Nord,Agility,False,source,ready
+Hakon One-Eye,8,Legendary,True,8,4,8,8,Nord,Endurance,False,source,ready
+Hannibal Traven,8,Legendary,True,8,4,3,9,Breton,Intelligence,True,available,ready
+Jauffre,8,Legendary,True,8,8,4,8,Breton,Willpower,False,available,ready
+Kaalgrontiid,8,Legendary,True,9,8,6,5,Dragon,Willpower,False,available,pending
+Khamira,8,Legendary,True,8,4,3,9,Khajiit,Strength,True,available,ready
+King Camoran Aeradan,8,Legendary,True,4,9,3,9,Wood Elf,Intelligence,False,source,ready
+King Lysandus,8,Legendary,True,4,9,3,9,Breton,Agility,False,source,ready
+Lamae Bal,8,Legendary,True,4,8,8,8,Undead,Intelligence,True,placeholder,ready
+Lorelia,8,Legendary,True,8,4,3,9,Spirit,Agility,False,source,ready
+Luzrah gro-Shar,8,Legendary,True,4,8,8,8,Orc,Agility,False,available,ready
+Lyris Titanborn,8,Legendary,True,5,8,9,5,Nord,Strength,True,available,ready
+Martin Septim,8,Legendary,True,9,4,9,3,Imperial,Willpower,False,available,ready
+Modryn Oreyn,8,Legendary,True,9,8,4,3,Dark Elf,Strength,True,available,ready
+Morokei,8,Legendary,True,3,9,4,9,Undead,Willpower,False,placeholder,ready
+Mulaamnir,8,Legendary,True,9,3,9,4,Dragon,Strength,False,available,pending
+Naryu Virian,8,Legendary,True,4,3,9,8,Dark Elf,Agility,True,available,ready
+Queen Barenziah,8,Legendary,True,8,4,8,8,Dark Elf,Intelligence,True,available,ready
+Raven Direnni,8,Legendary,True,3,9,8,4,High Elf,Agility,False,placeholder,ready
+Razum-Dar,8,Legendary,True,4,9,3,9,Khajiit,Willpower,True,available,ready
+Red Bramman,8,Legendary,True,4,3,9,8,Imperial,Agility,True,available,ready
+Rislav the Righteous,8,Legendary,True,8,8,8,4,Imperial,Endurance,False,source,ready
+Ritemaster Iachesis,8,Legendary,True,3,9,4,9,High Elf,Willpower,False,source,ready
+Sai Sahan,8,Legendary,True,8,8,8,4,Redguard,Endurance,False,available,ready
+Sails-Through-Storms,8,Legendary,True,9,8,4,3,Argonian,Strength,True,available,ready
+Saint Jiub,8,Legendary,True,9,3,9,4,Dark Elf,Endurance,True,available,ready
+Sees-All-Colors,8,Legendary,True,9,4,9,3,Argonian,Willpower,False,source,ready
+Shadowmere,8,Legendary,True,9,4,9,3,Beast,Endurance,False,placeholder,ready
+Si'ess,8,Legendary,True,8,4,8,8,Daedra,Intelligence,False,source,ready
+Sinmur,8,Legendary,True,3,9,4,9,Beastfolk,Agility,False,source,ready
+Staada,8,Legendary,True,4,3,9,8,Daedra,Strength,False,source,ready
+Swims-at-Night,8,Legendary,True,8,8,8,4,Argonian,Intelligence,True,available,ready
+Tazkad the Packmaster,8,Legendary,True,3,9,8,4,Beastfolk,Intelligence,True,available,ready
+The Engine Guardian,8,Legendary,True,4,3,9,8,Construct,Endurance,False,source,ready
+The Imperfect,8,Legendary,True,9,3,9,4,Construct,Intelligence,False,source,ready
+The Stonekeeper,8,Legendary,True,8,4,8,8,Construct,Strength,True,source,ready
+Ungolim the Listener,8,Legendary,True,8,8,4,8,Wood Elf,Strength,True,available,ready
+Vanus Galerion,8,Legendary,True,4,8,8,8,High Elf,Intelligence,False,available,ready
+Varen Aquilarios,8,Legendary,True,8,4,3,9,Imperial,Intelligence,False,available,ready
+Vastarie,8,Legendary,True,3,9,8,4,Undead,Strength,True,available,ready
+Windsorrow,8,Legendary,True,8,8,4,8,Spirit,Endurance,False,source,ready
+Zumog Phoom,8,Legendary,True,3,9,4,9,Orc,Endurance,True,available,ready
+Aiden Direnni,9,Legendary,True,9,9,6,5,High Elf,Agility,False,placeholder,ready
+Akulakhan,9,Legendary,True,8,4,10,6,Construct,Agility,False,source,ready
+Almalexia,9,Legendary,True,10,6,9,4,God,Endurance,False,available,pending
+Ayrenn,9,Legendary,True,4,10,6,8,High Elf,Endurance,True,available,ready
+Belharza the Man-Bull,9,Legendary,True,4,10,6,8,Beastfolk,Strength,False,source,ready
+Dagoth Ur,9,Legendary,True,10,6,9,4,God,Strength; Intelligence; Agility,False,available,pending
+Darloc Brae,9,Legendary,True,6,5,9,9,Khajiit,Agility,False,source,ready
+Divayth Fyr,9,Legendary,True,5,9,9,6,Dark Elf,Intelligence,False,available,ready
+Frandar Hunding,9,Legendary,True,9,6,5,9,Redguard,Intelligence,False,placeholder,ready
+Gortwog gro-Nagorm,9,Legendary,True,9,9,6,5,Orc,Strength,True,available,ready
+"Gwaering, the Green Lady",9,Legendary,True,9,6,5,9,Wood Elf,Agility,False,source,ready
+Gyron Vardengroet,9,Legendary,True,6,8,4,10,Breton,Strength,True,source,ready
+Harcane Grove Unicorn,9,Legendary,True,10,6,8,4,Beast,Intelligence,False,source,ready
+Heita-Meen,9,Legendary,True,10,6,8,4,Argonian,Endurance,False,source,ready
+High King Emeric,9,Legendary,True,6,5,9,9,Breton,Endurance,False,available,ready
+"Indaenir, the Silvenar",9,Legendary,True,6,8,4,10,Wood Elf,Agility,False,source,ready
+Indoril Nerevar,9,Legendary,True,8,4,10,6,Dark Elf,Strength,True,source,ready
+Jurgen Windcaller,9,Legendary,True,4,10,4,8,Nord,Willpower,True,source,ready
+Karstaag,9,Legendary,True,9,9,6,5,Beastfolk,Endurance,False,source,ready
+Keshu the Black Fin,9,Legendary,True,9,6,5,9,Argonian,Agility,False,source,ready
+Khunzar-ri,9,Legendary,True,6,8,4,10,Khajiit,Endurance,False,source,ready
+King Eplear,9,Legendary,True,6,5,9,9,Wood Elf,Willpower,False,source,ready
+Lady Thorn,9,Legendary,True,9,9,6,5,Undead,Agility,False,source,ready
+Lord Warden Dusk,9,Legendary,True,8,4,10,6,Daedra,Endurance,False,placeholder,ready
+Lyranth,9,Legendary,True,5,9,9,6,Daedra,Agility,False,placeholder,ready
+M'aiq the Liar,9,Legendary,True,9,4,8,8,Khajiit,,True,available,ready
+Makela Leki,9,Legendary,True,10,6,8,4,Redguard,Willpower,False,source,ready
+"Mannimarco, King of Worms",9,Legendary,True,4,10,6,8,Undead,Endurance,True,placeholder,ready
+Morihaus,9,Legendary,True,9,6,5,9,God,Strength; Willpower,False,placeholder,pending
+Numidium,9,Legendary,True,5,9,9,6,Construct,Willpower,False,source,ready
+Pelinal Whitestrake,9,Legendary,True,6,5,9,9,Imperial,Strength,False,source,ready
+Reman Cyrodiil,9,Legendary,True,10,6,8,4,Imperial,Endurance,False,source,ready
+Saint Alessia,9,Legendary,True,9,6,5,9,Imperial,Willpower,False,source,ready
+Selene,9,Legendary,True,6,5,9,9,Spirit,Intelligence,True,source,ready
+Sotha Sil,9,Legendary,True,9,9,7,5,God,Intelligence,False,available,pending
+The Uderfrykte Matron,9,Legendary,True,9,6,5,9,Beast,Strength,False,placeholder,ready
+The Wilderking,9,Legendary,True,6,8,4,10,Spirit,Willpower,False,source,ready
+Torug gro-Igron,9,Legendary,True,4,10,6,8,Orc,Intelligence,False,source,ready
+Vivec,9,Legendary,True,10,8,6,5,God,Willpower,False,available,pending
+Wulfharth,9,Legendary,True,9,7,9,2,Nord,Endurance,False,source,ready
+Ysgramor,9,Legendary,True,9,10,4,5,Nord,Strength,True,source,ready
+Akatosh,10,Legendary,True,9,8,5,9,God,Agility; Endurance,False,source,ready
+Arkay,10,Legendary,True,5,10,9,6,God,Willpower; Endurance,False,source,ready
+Azura,10,Legendary,True,5,10,9,6,God,Intelligence; Willpower,False,source,ready
+Boethiah,10,Legendary,True,10,4,10,3,God,Strength; Agility,False,source,ready
+Clavicus Vile,10,Legendary,True,4,10,3,10,God,Intelligence; Agility,False,source,ready
+Dibella,10,Legendary,True,8,5,9,9,God,Willpower; Agility,False,source,ready
+Hermaeus Mora,10,Legendary,True,10,4,10,3,God,Intelligence; Endurance,False,source,ready
+Hircine,10,Legendary,True,3,10,4,10,God,Strength,False,source,ready
+Julianos,10,Legendary,True,10,4,10,3,God,Intelligence,False,source,ready
+Jyggalag,10,Legendary,True,5,9,9,8,God,Intelligence; Endurance,False,placeholder,ready
+Kynareth,10,Legendary,True,9,5,7,10,God,Willpower; Agility,False,source,ready
+Malacath,10,Legendary,True,5,9,9,8,God,Strength; Endurance,False,placeholder,ready
+Mara,10,Legendary,True,8,8,5,10,God,Willpower,False,source,ready
+Mehrunes Dagon,10,Legendary,True,9,8,5,9,God,Strength; Intelligence,False,placeholder,ready
+Mephala,10,Legendary,True,4,10,3,10,God,Intelligence; Agility,False,placeholder,ready
+Meridia,10,Legendary,True,6,5,10,9,God,Willpower; Agility,False,placeholder,ready
+Molag Bal,10,Legendary,True,10,7,9,4,God,Strength; Endurance,False,placeholder,ready
+Namira,10,Legendary,True,5,10,9,6,God,Agility; Endurance,False,placeholder,ready
+Nocturnal,10,Legendary,True,10,9,6,5,God,Agility,False,source,ready
+Peryite,10,Legendary,True,4,10,7,9,God,Endurance,False,placeholder,ready
+Sanguine,10,Legendary,True,10,4,10,3,God,Strength; Agility,False,source,ready
+Sheogorath,10,Legendary,True,10,9,5,7,God,Intelligence; Agility,False,available,ready
+Stendarr,10,Legendary,True,7,9,4,10,God,Willpower; Endurance,False,source,ready
+Talos,10,Legendary,True,10,9,6,5,God,Strength; Willpower,False,source,ready
+Vaermina,10,Legendary,True,5,10,8,8,God,Intelligence; Endurance,False,placeholder,ready
+Zenithar,10,Legendary,True,5,9,9,8,God,Intelligence; Endurance,False,source,ready

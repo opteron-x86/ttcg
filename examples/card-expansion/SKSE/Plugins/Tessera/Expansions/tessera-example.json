@@ -1,0 +1,125 @@
+{
+  "schemaVersion": 1,
+  "setId": "tessera-example",
+  "name": "Example Expansion",
+  "cards": [
+    {
+      "id": "roadside-courier",
+      "name": "Roadside Courier",
+      "tier": 2,
+      "rarity": "Common",
+      "sides": [
+        1,
+        3,
+        5,
+        2
+      ],
+      "groups": [
+        "Imperial"
+      ],
+      "affinities": [
+        "Agility"
+      ],
+      "unique": false,
+      "art": "expansions/tessera-example/roadside-courier.png",
+      "thumbnail": "expansions/tessera-example/roadside-courier-thumb.webp",
+      "acquisition": {
+        "standardPacks": true,
+        "tournamentPacks": true,
+        "merchants": "all"
+      }
+    },
+    {
+      "id": "grove-sentinel",
+      "name": "Grove Sentinel",
+      "tier": 3,
+      "rarity": "Rare",
+      "sides": [
+        6,
+        2,
+        4,
+        4
+      ],
+      "groups": [
+        "Spirit"
+      ],
+      "affinities": [
+        "Willpower"
+      ],
+      "unique": false,
+      "art": "expansions/tessera-example/grove-sentinel.png",
+      "thumbnail": "expansions/tessera-example/grove-sentinel-thumb.webp",
+      "acquisition": {
+        "standardPacks": true,
+        "tournamentPacks": true,
+        "merchants": "all"
+      }
+    },
+    {
+      "id": "clockwork-envoy",
+      "name": "Clockwork Envoy",
+      "tier": 4,
+      "rarity": "Epic",
+      "sides": [
+        7,
+        2,
+        7,
+        3
+      ],
+      "groups": [
+        "Construct"
+      ],
+      "affinities": [],
+      "unique": false,
+      "art": "expansions/tessera-example/clockwork-envoy.png",
+      "thumbnail": "expansions/tessera-example/clockwork-envoy-thumb.webp",
+      "acquisition": {
+        "standardPacks": true,
+        "tournamentPacks": true,
+        "merchants": "all"
+      }
+    },
+    {
+      "id": "unpainted-wanderer",
+      "name": "Unpainted Wanderer",
+      "tier": 1,
+      "rarity": "Common",
+      "sides": [
+        3,
+        4,
+        1,
+        2
+      ],
+      "groups": [
+        "Khajiit"
+      ],
+      "affinities": [],
+      "unique": false,
+      "acquisition": {
+        "standardPacks": true,
+        "tournamentPacks": true,
+        "merchants": "all"
+      }
+    },
+    {
+      "id": "the-wayfarer",
+      "name": "The Wayfarer",
+      "tier": 8,
+      "rarity": "Legendary",
+      "sides": [
+        9,
+        4,
+        8,
+        9
+      ],
+      "groups": [
+        "Khajiit"
+      ],
+      "affinities": [],
+      "unique": true,
+      "acquisition": {
+        "tournamentPrizes": ["invitational"]
+      }
+    }
+  ]
+}

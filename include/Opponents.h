@@ -24,9 +24,12 @@ struct OpponentProfile {
  bool personalRules=false;unsigned personalTrade=1;
  int reputationGate=-1; // -1 follows the ordinary skill gate.
  bool restock=true;
+ // Authored road encounters use their base as a stable collection key.
+ bool spawned=false;
 };
 #include "OpponentProfiles.inc"
 inline constexpr RuntimeCatalog<baseOpponents> opponents{};
+inline bool isMaiq(const OpponentProfile& p){return !p.dynamic&&p.base==0x954BF;}
 inline auto& opponentPools(){static std::map<std::uint32_t,std::map<std::uint32_t,int>> pools;return pools;}
 inline int opponentIndex(std::uint32_t base) {
  for(std::size_t i=0;i<opponents.size();++i) if(opponents[i].base==base||(opponents[i].alternateBase&&opponents[i].alternateBase==base)) return static_cast<int>(i);

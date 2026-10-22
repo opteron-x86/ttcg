@@ -5,10 +5,7 @@
 #include <stdexcept>
 
 namespace preview {
-// ImGui saves state at RenderDrawData(), after App::draw() has already run the
-// foil passes. Isolate the entire frame, including those offscreen passes.
-// Context-state swapping also covers engine UAVs, shader class instances and
-// other bindings that a small hand-written state backup can easily miss.
+// Restore the engine graphics state after the entire frame, including foil passes.
 class DXIsolation {
     template<class T> using Ptr = Microsoft::WRL::ComPtr<T>;
     Ptr<ID3D11DeviceContext1> context;
@@ -38,8 +35,7 @@ public:
             bindTarget();
         }
         ~Frame() {
-            // Do not retain a backbuffer or cached textures in our private state
-            // between frames: the engine must remain free to resize its buffers.
+            // Release frame resources so Skyrim can resize its buffers.
             owner.context->ClearState();
             owner.context->SwapDeviceContextState(previous.Get(), nullptr);
         }

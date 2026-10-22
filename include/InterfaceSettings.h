@@ -1,4 +1,5 @@
 #pragma once
+#include "InterfaceTheme.h"
 #include <array>
 #include <string_view>
 #include <variant>
@@ -6,7 +7,7 @@
 
 namespace ttcg {
 struct InterfaceSettings {
- bool gamesEnabled=true,showCardNames=true,vanillaVoicesOnly=true,rankStroke=false;
+ bool gamesEnabled=true,showCardNames=true,showCardGroups=false,vanillaVoicesOnly=true,rankStroke=false;
  unsigned residents=1,rankLayout=0,nameplateStyle=0,nameCase=0;
  unsigned interfaceFont=0,cardNameFont=0,cardValueFont=0;
  unsigned theme=0,boardSurface=0,boardTexture=10,windowSize=90;
@@ -28,13 +29,14 @@ struct InterfaceSettings {
   Field{"residents","residents","Gameplay","Residents",&InterfaceSettings::residents,2,1},
   Field{"vanilla-voices","vanillaVoicesOnly","Gameplay","VanillaVoicesOnly",&InterfaceSettings::vanillaVoicesOnly,1,1},
   Field{"card-names","showCardNames","Appearance","ShowCardNames",&InterfaceSettings::showCardNames,1,1},
+  Field{"card-groups","showCardGroups","Appearance","ShowCardGroups",&InterfaceSettings::showCardGroups,1,0},
   Field{"card-ranks","rankLayout","Appearance","RankLayout",&InterfaceSettings::rankLayout,1,0},
   Field{"nameplate","nameplateStyle","Appearance","NameplateStyle",&InterfaceSettings::nameplateStyle,2,0},
   Field{"name-case","nameCase","Appearance","NameCase",&InterfaceSettings::nameCase,2,0},
   Field{"interface-font","interfaceFont","Appearance","InterfaceFont",&InterfaceSettings::interfaceFont,4,0},
   Field{"card-name-font","cardNameFont","Appearance","CardNameFont",&InterfaceSettings::cardNameFont,4,0},
   Field{"card-value-font","cardValueFont","Appearance","CardValueFont",&InterfaceSettings::cardValueFont,4,0},
-  Field{"theme","theme","Appearance","Theme",&InterfaceSettings::theme,4,0},
+  Field{"theme","theme","Appearance","Theme",&InterfaceSettings::theme,interfaceThemeCount-1,0},
   Field{"board-surface","boardSurface","Appearance","BoardSurface",&InterfaceSettings::boardSurface,6,0},
   Field{"board-texture","boardTexture","Appearance","BoardTexture",&InterfaceSettings::boardTexture,100,10},
   Field{"rank-shadow-opacity","rankShadowOpacity","Appearance","RankShadowOpacity",&InterfaceSettings::rankShadowOpacity,100,100},
@@ -49,7 +51,7 @@ struct InterfaceSettings {
   Field{"match-palette","controlPalette","Appearance","ControlPalette",&InterfaceSettings::controlPalette,4,0},
   Field{"match-player-colour","playerColour","Appearance","PlayerColour",&InterfaceSettings::playerColour,0xffffff,0x87c4dd},
   Field{"match-opponent-colour","opponentColour","Appearance","OpponentColour",&InterfaceSettings::opponentColour,0xffffff,0xdf9585},
-  Field{"match-border-style","controlBorderStyle","Appearance","ControlBorderStyle",&InterfaceSettings::controlBorderStyle,3,0},
+  Field{"match-border-style","controlBorderStyle","Appearance","ControlBorderStyle",&InterfaceSettings::controlBorderStyle,4,0},
   Field{"match-border-width","controlBorderWidth","Appearance","ControlBorderWidth",&InterfaceSettings::controlBorderWidth,40,12},
   Field{"match-border-opacity","controlBorderOpacity","Appearance","ControlBorderOpacity",&InterfaceSettings::controlBorderOpacity,100,100},
   Field{"match-control-marker","controlMarker","Appearance","ControlMarker",&InterfaceSettings::controlMarker,1,0}

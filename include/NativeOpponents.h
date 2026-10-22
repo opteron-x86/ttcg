@@ -9,7 +9,7 @@ inline std::map<RE::FormID,int> npcAvailabilityCache;
 inline std::map<RE::FormID,std::string> npcIdentityCache;
 inline std::set<std::string> npcGrantedCache;
 inline ttcg::NpcFactionTracking npcFactionTracking;
-inline void clearNpcCache(){npcFactionTracking.reset();std::scoped_lock lock(npcCacheMutex);npcAvailabilityCache.clear();npcIdentityCache.clear();npcGrantedCache.clear();}
+inline void clearNpcCache(){authoredEncounterActors.clear();npcFactionTracking.reset();std::scoped_lock lock(npcCacheMutex);npcAvailabilityCache.clear();npcIdentityCache.clear();npcGrantedCache.clear();}
 inline void initNpcForms(){auto data=RE::TESDataHandler::GetSingleton();npcAvailabilityFaction=data->LookupForm<RE::TESFaction>(0x886,plugin);npcGenericFaction=data->LookupForm<RE::TESFaction>(0x887,plugin);}
 inline bool npcGatesMet(RE::Actor* actor,const std::vector<ttcg::OpponentGate>& gates){
  const ttcg::NpcSyncWorkScope timing(ttcg::NpcSyncWork::Integration);
@@ -74,7 +74,11 @@ inline bool registerNpcActor(RE::Actor* actor,bool force){
  if(!actor||!saveValid)return false;const auto base=persistentID(actor->GetActorBase());if(!base)return false;
  const auto* definition=ttcg::opponentDefinition(base);const int index=ttcg::opponentIndex(base);
  if(definition&&!npcDefinitionAvailable(*definition))return false;
- if(index>=0&&!ttcg::opponents[index].dynamic)return !ttcg::excludedNpc(base);
+ if(index>=0&&!ttcg::opponents[index].dynamic){
+  if(ttcg::excludedNpc(base))return false;
+  if(ttcg::opponents[index].spawned)authoredEncounterActors[base]=actor->GetHandle();
+  return true;
+ }
  if(!definition&&!force&&!interfaceSettings.residents)return false;
  if(!npcEligibilityReason(actor,!definition&&!force).empty())return false;
  if(force&&(!npcTemporarilyReady(actor)||(definition&&!npcGatesMet(actor,definition->gates))))return false;
@@ -140,7 +144,7 @@ inline void syncNpcDialogue(){
  std::set<RE::FormID> dynamicReferences;
  {
  const ttcg::NpcSyncPhaseScope phase(ttcg::NpcSyncPhase::Dialogue);
- for(unsigned i=0;i<ttcg::opponents.size();++i){const auto& p=ttcg::opponents[i];auto actor=resolveID<RE::Actor>(p.reference);if(!actor)continue;
+ for(unsigned i=0;i<ttcg::opponents.size();++i){const auto& p=ttcg::opponents[i];auto actor=resolveOpponent(p);if(!actor)continue;
   const int actorProfile=profileIndex(actor),ready=npcAvailability(actor,actorProfile);
   {const ttcg::NpcSyncWorkScope cacheTiming(ttcg::NpcSyncWork::Cache);cache[actor->GetFormID()]=ready;identities[actor->GetFormID()]=ttcg::worldKey(p.base);}
   if(!p.dynamic||actorProfile!=int(i))continue;
@@ -149,8 +153,7 @@ inline void syncNpcDialogue(){
  }
  }
  const ttcg::NpcSyncPhaseScope phase(ttcg::NpcSyncPhase::Cleanup);
- // Recover markers restored by the game, including tags from older builds or
- // another character. Untagged actors need no Tessera identity/profile lookup.
+ // Reconcile opponent markers with the loaded roster.
  if(auto* lists=RE::ProcessLists::GetSingleton();lists&&npcFactionTracking.beginDiscovery(generation)){
   unsigned tagged=0;
   lists->ForAllActors([&](RE::Actor* actor){if(observeNpcFactions(actor,generation))++tagged;return RE::BSContainer::ForEachResult::kContinue;});

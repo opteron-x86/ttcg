@@ -62,7 +62,9 @@ inline std::string notice, receipt, cultureNotice;
 inline bool cultureGame=false;
 inline std::vector<ttcg::CardID> revealed;
 inline std::string revealKind;
+// Monotonic within the loaded game; an empty receipt publishes ID zero.
 inline std::uint64_t revealID=0;
+inline std::map<std::uint32_t,RE::ActorHandle> authoredEncounterActors;
 inline ttcg::Stock owned;
 inline int physicalCount(RE::TESObjectREFR* actor,RE::TESBoundObject* form) {
  if(!actor||!form) return 0;
@@ -86,7 +88,11 @@ template<class T> T* resolveID(std::uint32_t id){
  const ttcg::NpcSyncWorkScope timing(ttcg::NpcSyncWork::Forms);
  if(!id)return nullptr;
  const auto master=ttcg::identityMaster(id);
- return master?RE::TESDataHandler::GetSingleton()->LookupForm<T>(ttcg::identityLocal(id),master):RE::TESForm::LookupByID<T>(id);
+ // LookupForm<T> requires an exact record type: an Actor is not tagged REFR.
+ // Resolve the form first, then allow the same base-type conversions as the
+ // loaded-ID path (used by Skyrim actors, match banks and merchant references).
+ auto form=master?RE::TESDataHandler::GetSingleton()->LookupForm(ttcg::identityLocal(id),master):RE::TESForm::LookupByID(id);
+ return form?form->As<T>():nullptr;
 }
 inline unsigned tournamentVenue(){
  auto player=RE::PlayerCharacter::GetSingleton();if(!player)return 0;
@@ -96,6 +102,11 @@ inline unsigned tournamentVenue(){
 }
 inline int profileIndex(RE::Actor* actor) {const ttcg::NpcSyncWorkScope timing(ttcg::NpcSyncWork::Identity);return actor?ttcg::opponentIndex(persistentID(actor->GetActorBase())):-1;}
 inline const ttcg::OpponentProfile* profile(RE::Actor* actor) { const int i=profileIndex(actor);return i<0?nullptr:&ttcg::opponents[i]; }
+inline RE::Actor* resolveOpponent(const ttcg::OpponentProfile& p){
+ if(!p.spawned)return resolveID<RE::Actor>(p.reference);
+ auto it=authoredEncounterActors.find(p.base);if(it==authoredEncounterActors.end())return nullptr;
+ auto actor=it->second.get();return actor&&persistentID(actor->GetActorBase())==p.base?actor.get():nullptr;
+}
 inline std::uint32_t ledgerKey(RE::TESObjectREFR* actor) {
  if(!actor)return 0;const auto* p=profile(actor->As<RE::Actor>());return ttcg::opponentLedgerKey(p?p->base:0,persistentID(actor));
 }
@@ -135,7 +146,7 @@ inline ttcg::HoldTerms terms(RE::Actor* actor) {
  const auto i=profileIndex(actor);
  const auto terms=i>=0?ttcg::opponentTerms(saved,i):ttcg::holdTerms(saved,actorHold(actor));
  auto selected=development.terms(terms);
- if(i>=0&&!ttcg::opponents[i].dynamic&&ttcg::opponents[i].traveller)selected.rules&=~ttcg::Reverse;
+ if(i>=0&&ttcg::isMaiq(ttcg::opponents[i]))selected.rules&=~ttcg::Reverse;
  return selected;
 }
 inline bool unlocked(int i) {
@@ -150,14 +161,20 @@ inline bool childDialogueAvailable(RE::Actor* actor){
  // quest/scene gates and any compatibility patch, instead of duplicating them.
  return childChallengeInfo&&childChallengeInfo->objConditions.IsTrue(actor,RE::PlayerCharacter::GetSingleton());
 }
-inline bool actorReadyForCards(RE::Actor* actor){
+enum class ActorCardBlock { None, Missing, NonHumanoid, Dead, Disabled, Combat, Hostile, Scene, ChildDialogue };
+inline ActorCardBlock actorCardBlock(RE::Actor* actor){
  const ttcg::NpcSyncWorkScope timing(ttcg::NpcSyncWork::ActorState);
- return actor&&ttcg::measureNpcSync(ttcg::NpcSyncWork::Humanoid,[&]{return actor->IsHumanoid();})
-  &&!actor->IsDead()&&!actor->IsDisabled()&&!actor->IsInCombat()
-  &&!ttcg::measureNpcSync(ttcg::NpcSyncWork::Scene,[&]{return actor->GetCurrentScene();})
-  &&!ttcg::measureNpcSync(ttcg::NpcSyncWork::Hostility,[&]{return actor->IsHostileToActor(RE::PlayerCharacter::GetSingleton());})
-  &&(!isChild(actor)||childDialogueAvailable(actor));
+ if(!actor)return ActorCardBlock::Missing;
+ if(!ttcg::measureNpcSync(ttcg::NpcSyncWork::Humanoid,[&]{return actor->IsHumanoid();}))return ActorCardBlock::NonHumanoid;
+ if(actor->IsDead())return ActorCardBlock::Dead;
+ if(actor->IsDisabled())return ActorCardBlock::Disabled;
+ if(actor->IsInCombat())return ActorCardBlock::Combat;
+ if(ttcg::measureNpcSync(ttcg::NpcSyncWork::Hostility,[&]{return actor->IsHostileToActor(RE::PlayerCharacter::GetSingleton());}))return ActorCardBlock::Hostile;
+ if(ttcg::measureNpcSync(ttcg::NpcSyncWork::Scene,[&]{return actor->GetCurrentScene();}))return ActorCardBlock::Scene;
+ if(isChild(actor)&&!childDialogueAvailable(actor))return ActorCardBlock::ChildDialogue;
+ return ActorCardBlock::None;
 }
+inline bool actorReadyForCards(RE::Actor* actor){return actorCardBlock(actor)==ActorCardBlock::None;}
 inline bool resumingWith(RE::Actor* actor){return savedMatch.present&&!savedMatch.tournament&&actor&&persistentID(actor)==savedMatch.opponent;}
 inline bool canChallenge(RE::Actor* actor,bool allowResume=true) {
  if(!interfaceSettings.gamesEnabled||!hasAlbum()||!npcIntegrationReady(actor))return false;
@@ -175,22 +192,27 @@ inline ttcg::Stock inventory(RE::TESObjectREFR* actor) {
  ttcg::Stock result;
  if(actor==RE::PlayerCharacter::GetSingleton()) result=saved.player;
  else if(auto it=saved.opponents.find(ledgerKey(actor));it!=saved.opponents.end()) result=it->second;
- result[0]=physicalCount(actor,goldForm); return result;
+ if(actor==RE::PlayerCharacter::GetSingleton())result[0]=physicalCount(actor,goldForm);
+ else if(auto it=saved.bettingPurses.find(ledgerKey(actor));it!=saved.bettingPurses.end())result[0]=it->second.gold;
+ return result;
 }
 struct Bank {
  std::array<RE::TESObjectREFR*,2> actors{};
- std::uint32_t rival=0;
+ std::uint32_t rival=0,goldLedger=0;
  bool removedOpponent=false;
- explicit Bank(std::uint32_t opponent,std::uint32_t recoveryLedger=0):actors{RE::PlayerCharacter::GetSingleton(),resolveID<RE::TESObjectREFR>(opponent)},rival(actors[1]?ledgerKey(actors[1]):recoveryLedger?recoveryLedger:opponent),removedOpponent(!actors[1]&&recoveryLedger) {}
+ explicit Bank(std::uint32_t opponent,std::uint32_t recoveryLedger=0):actors{RE::PlayerCharacter::GetSingleton(),resolveID<RE::TESObjectREFR>(opponent)},removedOpponent(!actors[1]&&recoveryLedger) {
+  const bool recovering=saved.contract.pending()&&saved.contract.opponent==opponent;
+  rival=actors[1]?ledgerKey(actors[1]):recoveryLedger?recoveryLedger:recovering&&saved.contract.wagerLedger?saved.contract.wagerLedger:opponent;
+  goldLedger=recovering?saved.contract.wagerLedger:rival;
+ }
+ std::uint32_t wagerLedger() const{return goldLedger;}
  int count(int p,ttcg::CardID id) {
-   if(!id) return physicalCount(actors[p],goldForm);
+   if(!id){if(p==1&&goldLedger){auto it=saved.bettingPurses.find(goldLedger);return it==saved.bettingPurses.end()?0:it->second.gold;}return physicalCount(actors[p],goldForm);}
    if(p==0) return ttcg::count(saved.player,id);
    auto it=saved.opponents.find(rival); return it==saved.opponents.end()?0:ttcg::count(it->second,id);
  }
  int change(int p,ttcg::CardID id,int amount) {
-   // Canceling a removed reference still restores its virtual card collection.
-   // Its physical purse has ceased to exist; do not strand the player's refund
-   // behind gold which can no longer be returned to that actor.
+   if(p==1&&!id&&goldLedger){auto it=saved.bettingPurses.find(goldLedger);return it==saved.bettingPurses.end()?0:ttcg::changeBettingPurse(it->second,amount);}
    if(p==1&&!id&&removedOpponent&&amount>0)return amount;
    if(!id) return physicalChange(actors[p],goldForm,amount);
    if(!ttcg::storedCard(saved,id)||(p==1&&!rival)) return 0;
@@ -227,7 +249,6 @@ inline void syncProgression(ttcg::NpcSyncTiming* timing=nullptr) {
  const ttcg::NpcSyncPhaseScope phase(ttcg::NpcSyncPhase::World);
  syncGameAvailability();
  saved.brandSheiJailed=brandSheiArrest&&brandSheiArrest->IsRunning()&&brandSheiArrest->GetCurrentStageID()==20;
- // Retain the legacy forms, but faction membership no longer gates play.
  if(guildGlobal)guildGlobal->value=1.0f;
  if(collegeGlobal)collegeGlobal->value=1.0f;
  auto stage=[](std::uint32_t id){const auto q=resolveID<RE::TESQuest>(id);return q?unsigned(q->GetCurrentStageID()):0u;};
@@ -240,7 +261,7 @@ inline void syncProgression(ttcg::NpcSyncTiming* timing=nullptr) {
  const auto builders=resolveID<RE::TESFaction>(0xDB01C4E5);
  saved.tournamentBlocked.clear();
  for(int i=0;i<static_cast<int>(ttcg::opponents.size());++i){const auto& p=ttcg::opponents[i];bool present=false,dead=false;
-   for(auto id:{p.reference,p.alternateReference})if(id){auto actor=resolveID<RE::Actor>(id);
+   for(auto id:{p.reference,p.alternateReference})if(id){auto actor=id==p.reference?resolveOpponent(p):resolveID<RE::Actor>(id);
     {const ttcg::NpcSyncWorkScope stateTiming(ttcg::NpcSyncWork::ActorState);present|=actor&&!actor->IsDead()&&!actor->IsDisabled();dead|=actor&&actor->IsDead();}
     if(actor&&p.dialogueFaction){
      auto faction=ttcg::measureNpcSync(ttcg::NpcSyncWork::Forms,[&]{return RE::TESDataHandler::GetSingleton()->LookupForm<RE::TESFaction>(p.dialogueFaction,plugin);});
@@ -267,12 +288,12 @@ inline void syncProgression(ttcg::NpcSyncTiming* timing=nullptr) {
    // Refresh due stock before dialogue conditions are evaluated; never seed an
    // unseen collection just to decide whether its owner is willing to play.
    if(hasAlbum()&&unlocked(i)&&!saved.contract.pending()&&restock&&hour>=restock) {
-     auto actor=resolveID<RE::Actor>(p.reference);
+     auto actor=resolveOpponent(p);
      if((!actor||actor->IsDisabled())&&p.alternateReference)actor=resolveID<RE::Actor>(p.alternateReference);
      if(actor)seedOpponent(actor);
    }
-   const bool freeToTalk=!saved.accessBlocked.contains(p.base)&&(actorReadyForCards(resolveID<RE::Actor>(p.reference))||(p.alternateReference&&actorReadyForCards(resolveID<RE::Actor>(p.alternateReference))));
-   const bool resuming=savedMatch.present&&!savedMatch.tournament&&(savedMatch.opponent==p.reference||savedMatch.opponent==p.alternateReference);
+   const bool freeToTalk=!saved.accessBlocked.contains(p.base)&&(actorReadyForCards(resolveOpponent(p))||(p.alternateReference&&actorReadyForCards(resolveID<RE::Actor>(p.alternateReference))));
+   const bool resuming=savedMatch.present&&!savedMatch.tournament&&(savedMatch.ledger==p.reference||savedMatch.opponent==p.reference||savedMatch.opponent==p.alternateReference);
    if(i<int(opponentGlobals.size())&&opponentGlobals[i])opponentGlobals[i]->value=hasAlbum()&&(resuming||unlocked(i))&&freeToTalk?
      (resuming||(ttcg::opponentHasCards(saved,i)&&ttcg::encounterReady(saved,i,hour)&&(development.unlockAllPlayers||ttcg::willingToPlay(saved,i,hour)))?1.0f:2.0f):0.0f;
  }
@@ -340,7 +361,7 @@ inline void updateTournaments(){
   if(tournamentLetterInFlight.load())continue;
   if(!tournamentLetterReady.load())tournamentLetterReady.store((std::uint64_t(e.id)<<32)|book->GetFormID());
  }
- for(auto& [base,amount]:saved.tournaments.npcGold)if(amount){int i=ttcg::opponentIndex(base);if(i>=0){auto actor=resolveID<RE::Actor>(ttcg::opponents[i].reference);if(actor)amount-=std::clamp(physicalChange(actor,goldForm,int(amount)),0,int(amount));}}
+ for(auto& [base,amount]:saved.tournaments.npcGold)if(amount){int i=ttcg::opponentIndex(base);if(i>=0){auto actor=resolveOpponent(ttcg::opponents[i]);if(actor)amount-=std::clamp(physicalChange(actor,goldForm,int(amount)),0,int(amount));}}
  ttcg::deliverTournamentPacks(saved,[](unsigned kind,int amount){return physicalChange(RE::PlayerCharacter::GetSingleton(),kind?tournamentPackForm:packForm,amount);});
  if(saved.goldCredit>0){Bank bank(0);saved.goldCredit-=std::clamp(bank.change(0,0,saved.goldCredit),0,saved.goldCredit);}
 }
@@ -451,8 +472,6 @@ inline void recover() {
    ensureAlbum();ttcg::retainOwnedDecks(saved);updateTournaments();return;
  }
  auto& c=saved.contract;
- // Legacy/malformed saves without a resumable table still recover their escrow.
- // Finished legacy games keep their result and use a deterministic card choice.
  int winner=c.outcome>=-1?c.outcome:-1;
  finish(winner);
  development.grantFoils(saved);
@@ -467,11 +486,9 @@ inline void seedOpponent(RE::Actor* actor) {
    return;
  }
  const auto id=ledgerKey(actor);
- const bool first=!saved.opponents.contains(id);
- const auto restock=ttcg::progress(saved,i).restockAt;const bool due=restock&&gameHour()>=restock;
  ttcg::replenishOpponent(saved,i,id,gameHour());
  applyNpcGrants(actor);
- if(first||due){Bank bank(persistentID(actor));const int purse=bank.count(1,0);if(purse<ttcg::opponents[i].wager*2)bank.change(1,0,ttcg::opponents[i].wager*2-purse);}
+ if(!saved.contract.pending())ttcg::refreshBettingPurse(saved.bettingPurses[id],ttcg::opponents[i].wager,gameHour());
 }
 inline bool prepare(RE::Actor* actor,bool resetTerms=false) {
  notice.clear();receipt.clear();revealed.clear();revealKind.clear();
@@ -557,7 +574,7 @@ inline std::string json(RE::Actor* actor,bool=true,bool conceal=false) {
  for(unsigned n=0;n<10;++n){if(n)out+=',';out+=std::to_string(destinations[n]);}out+="]";
  out+=",\"known\":[";
  for(std::size_t i=0;i<ttcg::cards.size()*2;++i) { if(i) out+=','; out+=ttcg::count(saved.discovered,ttcg::displayCardID(static_cast<int>(i)))?"true":"false"; }
- out+=std::format("],\"packs\":[{},{}],\"revealID\":{},\"revealKind\":{},\"revealed\":[",physicalCount(RE::PlayerCharacter::GetSingleton(),packForm),physicalCount(RE::PlayerCharacter::GetSingleton(),tournamentPackForm),revealID,ttcg::quote(revealKind));
+ out+=std::format("],\"packs\":[{},{}],\"revealID\":{},\"revealKind\":{},\"revealed\":[",physicalCount(RE::PlayerCharacter::GetSingleton(),packForm),physicalCount(RE::PlayerCharacter::GetSingleton(),tournamentPackForm),revealed.empty()?0:revealID,ttcg::quote(revealKind));
  for(std::size_t i=0;i<revealed.size();++i) { if(i) out+=','; out+=std::to_string(ttcg::displayIndex(revealed[i])); }
  out+="],\"roster\":[";
  bool first=true;
@@ -622,7 +639,7 @@ inline void load(SKSE::SerializationInterface* serial) {
     continue;
    }
    if(type!=0x434F4C4C) continue;
-   if((version!=20&&version!=21&&version!=26&&version!=27&&version!=28&&version!=29&&version!=30&&version!=ttcg::collectionFormat)||length%4||length>16*1048576) { saveValid=false; continue; }
+   if(!ttcg::supportedCollectionFormat(version)||length%4||length>16*1048576) { saveValid=false; continue; }
    std::vector<std::uint32_t> data(length/4);
    if(serial->ReadRecordData(data.data(),length)!=length||!ttcg::decodeCollection(data,saved,version)) { saveValid=false; continue; }
    if(version<30){

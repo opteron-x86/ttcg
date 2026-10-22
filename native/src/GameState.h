@@ -10,7 +10,7 @@ inline int itemNumber(const Json& a,int index,int fallback=-1){return a.is_array
 inline std::string join(const Json& a,std::string_view delimiter=" · "){std::string result;if(a.is_array())for(const auto& s:a)if(s.is_string()){if(!result.empty())result+=delimiter;result+=s.get<std::string>();}return result;}
 inline const Json& member(const Json& j,const char* key){static const Json empty=Json::object();auto it=j.find(key);return it==j.end()?empty:*it;}
 inline const Json& arrayMember(const Json& j,const char* key){static const Json empty=Json::array();auto it=j.find(key);return it==j.end()||!it->is_array()?empty:*it;}
-inline constexpr std::array<std::pair<unsigned,const char*>,14> ruleNames{{{16,"Open"},{64,"Three Open"},{1,"Same"},{8192,"Same Wall"},{2,"Plus"},{4,"Reverse"},{2048,"Fallen Ace"},{32,"Affinity"},{128,"Legion"},{256,"Decimation"},{512,"Order"},{1024,"Chaos"},{16384,"Swap"},{4096,"Sudden Death"}}};
+inline const auto ruleNames=[]{std::array<std::pair<unsigned,const char*>,ttcg::ruleFlags.size()> result{};for(unsigned i=0;i<result.size();++i)result[i]={ttcg::ruleFlags[i],ttcg::ruleName(ttcg::ruleFlags[i])};return result;}();
 inline const char* tradeName(int value){static const char* names[]{"None","One","Diff","Direct","All"};return names[std::clamp(value,0,4)];}
 inline std::string rulesLabel(unsigned rules,bool=true){std::string result;for(auto [bit,name]:ruleNames)if(rules&bit){if(!result.empty())result+=" · ";result+=name;}return result;}
 inline AlbumView albumFromGame(const Json& snapshot) {
@@ -37,6 +37,8 @@ inline AlbumView albumFromGame(const Json& snapshot) {
     result.packs=c.at("packs").get<std::array<int,2>>();result.notice=label(c,"notice");
     result.revealID=c.value("revealID",0ull);result.revealKind=label(c,"revealKind")=="tournament"?1:0;
     for(const auto& n:arrayMember(c,"revealed"))result.revealed.push_back(identity(n.get<int>()));
+    // A sequence number alone is not a receipt: reopening clears its contents.
+    if(result.revealed.empty())result.revealID=0;
     return result;
 }
 // Presentation clocks use immutable revisions. Every capture wave turns together;
@@ -61,7 +63,11 @@ struct Presentation {
                     if(itemNumber(current[placedPlayer],h)==-1&&(itemNumber(hands[placedPlayer],h)==id||itemNumber(hands[placedPlayer],h)==-2))placedHand=h;
             }
             if(placedHand>=0)duration=.36;
-            for(const auto& stage:arrayMember(state,"stages")){stageStarts.push_back(duration);duration+=label(stage,"label").empty()?.4:1.16;}
+            for(const auto& stage:arrayMember(state,"stages")){
+                stageStarts.push_back(duration);
+                const bool announced=!label(stage,"label").empty();
+                if(announced||number(stage,"captures"))duration+=announced?1.16:.4;
+            }
             stageSounds.resize(stageStarts.size());
             if(flag(state,"suddenDeath"))duration+=1.6;
             if(label(state,"phase")=="result")duration+=1.8;

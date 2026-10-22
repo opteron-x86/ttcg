@@ -1,4 +1,5 @@
 #include "Renderer.h"
+#include "InterfaceTheme.h"
 #include <algorithm>
 #include <fstream>
 #include <iostream>
@@ -25,7 +26,6 @@ int main(int argc,char** argv) {
     try {
         preview::Options o;
         o.tesseraRoot=TESSERA_DEFAULT_ROOT;o.previewRoot=TESSERA_PREVIEW_ROOT;
-        // Permit a Windows build to travel with this prototype folder.
         auto executable=std::filesystem::absolute(argv[0]).parent_path();
         for (const auto& candidate : {executable,executable.parent_path(),executable.parent_path().parent_path()})
             if(std::filesystem::exists(candidate/"assets/fonts/LiberationSerif-Regular.ttf"))o.previewRoot=candidate;
@@ -46,11 +46,12 @@ int main(int argc,char** argv) {
             else if(a=="--skyrim-controls")o.hosted=true;
             else if(a=="--inspect")o.inspect=true;
             else if(a=="--size"){auto v=value();auto p=v.find('x');if(p==v.npos)throw std::runtime_error("Use WIDTHxHEIGHT");o.width=std::clamp(std::stoi(v),1100,3840);o.height=std::clamp(std::stoi(v.substr(p+1)),720,2160);}
-            else if(a=="--theme"){auto v=value();const char* names[]{"tessera","charcoal","oxblood","parchment","umber"};bool found=false;for(int n=0;n<5;++n)if(v==names[n]){o.theme=n;found=true;}if(!found)throw std::runtime_error("Unknown theme: "+v);}
+            else if(a=="--theme"){auto v=value();bool found=false;for(int n=0;n<ttcg::interfaceThemeCount;++n)if(v==ttcg::interfaceThemes[n].id){o.theme=n;found=true;}if(!found)throw std::runtime_error("Unknown theme: "+v);}
             else if(a=="--help"){
                 std::cout<<"Tessera native UI verification host\n"
                     "  --snapshot FILE.json --page cards|decks|journal|rules|tournaments|appearance|match-appearance|controls|gameplay|developer\n"
-                    "  --topic RULE [--demo-step N] --history --inspect --theme tessera|charcoal|oxblood|parchment|umber\n"
+                    "  --topic RULE [--demo-step N] --history --inspect\n"
+                    "  --theme tessera|charcoal|oxblood|parchment|umber|oathvein|veldun|norden\n"
                     "  Shop snapshots: --page buy|sell|buyback\n"
                     "  --tessera-root PATH --size WIDTHxHEIGHT\n"
                     "  --frames N --screenshot FILE.bmp [--hidden]\n";

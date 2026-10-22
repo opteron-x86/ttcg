@@ -1,0 +1,8 @@
+/* Browser fixture only; theme styling comes from the runtime stylesheet. */
+body{background:radial-gradient(ellipse at 62% 22%,#49413333,transparent 50%),radial-gradient(ellipse at 16% 86%,#262d253b,transparent 65%),#0e100f}
+#backdrop{background:transparent}
+html[data-scene=board] #table{background:none;border-color:transparent;box-shadow:none;clip-path:none}
+html[data-scene=board] #table::before,html[data-scene=board] #table::after,html[data-scene=board] #theme-corners,html[data-scene=board] #table>header,html[data-scene=board] .match-heading,html[data-scene=board] #player-hand,html[data-scene=board] #rival-hand,html[data-scene=board] #match-footer{display:none}
+html[data-scene=board] #game{height:100%;display:flex;align-items:center;justify-content:center}
+html[data-scene=board] .play-area{height:100%;display:flex;align-items:center;justify-content:center}
+html[data-scene=board] #board{transform:scale(1.1)}

@@ -60,7 +60,8 @@ void GameApp::tournamentOutcome(){
     if(!current)for(const auto& e:arrayMember(member(c,"tournaments"),"events"))if(number(e,"announcement")){current=&e;break;}
     if(!current||inspecting||showRuleReference||!confirmationTitle.empty())return;const auto& e=*current;eventID=number(e,"id");
     if(!ImGui::IsPopupOpen("Tournament result"))ImGui::OpenPopup("Tournament result");const float width=850*scale;ImGui::SetNextWindowPos(ImGui::GetIO().DisplaySize*.5f,ImGuiCond_Always,ImVec2(.5f,.5f));ImGui::SetNextWindowSize(ImVec2(width,std::min(775*scale,ImGui::GetIO().DisplaySize.y-45*scale)));ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding,ImVec2(30,28)*scale);
-    if(ImGui::BeginPopupModal("Tournament result",nullptr,ImGuiWindowFlags_NoDecoration)){
+    if(ImGui::BeginPopupModal("Tournament result",nullptr,ImGuiWindowFlags_NoDecoration|popupFlags())){
+        popupSurface();
         const bool champion=number(e,"champion")==20,over=number(e,"champion")||flag(e,"eliminated");const int announce=number(e,"announcement"),upgrades=number(e,"foilUpgrades");
         const auto outcome=itemNumber(member(state,"score"),0)==itemNumber(member(state,"score"),1)?"Draw":itemNumber(member(state,"score"),0)>5?"Game won":"Game lost";
         const auto title=champion?"Tournament won":announce==1?"Through to the semifinals":announce==2?"Through to the final":flag(e,"eliminated")?"Tournament over":outcome;
@@ -115,8 +116,8 @@ void GameApp::resultModal(){
     if(!ImGui::IsPopupOpen("Game result"))ImGui::OpenPopup("Game result");
     ImGui::SetNextWindowPos(frameAt+frameSize*.5f,ImGuiCond_Always,ImVec2(.5f,.5f));ImGui::SetNextWindowSize(extent);
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding,ImVec2(32,28)*scale);
-    if(ImGui::BeginPopupModal("Game result",nullptr,ImGuiWindowFlags_NoDecoration|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoScrollbar)){
-        const auto panel=ImGui::GetWindowPos();surface(panel,extent);auto* d=ImGui::GetWindowDrawList();d->AddRect(panel,panel+extent,palette().accent);
+    if(ImGui::BeginPopupModal("Game result",nullptr,ImGuiWindowFlags_NoDecoration|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoScrollbar|popupFlags())){
+        const auto panel=ImGui::GetWindowPos();surface(panel,extent);auto* d=ImGui::GetWindowDrawList();panelFrame(panel,extent);
         const auto origin=panel+ImVec2(32,28)*scale;const float width=extent.x-64*scale;
         if(done){
             float y=origin.y+4*scale;

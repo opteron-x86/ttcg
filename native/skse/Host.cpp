@@ -29,12 +29,12 @@ struct ContextGuard {
 };
 bool foreignMenu(RE::UI* ui) {
     if(!ui)return true;
-    // Menu context, rather than a list of other mods, determines input ownership.
+    // Yield input to another active menu.
     const auto own=ui->GetMenu(menuName), cursor=ui->GetMenu(RE::CursorMenu::MENU_NAME), hud=ui->GetMenu(RE::HUDMenu::MENU_NAME);
     for(const auto& menu:ui->menuStack) {
         if(menu && menu.get()!=own.get() && menu.get()!=cursor.get() && menu.get()!=hud.get() && menu->UsesMenuContext())return true;
     }
-    // Meridian's focus helper may be unpaused and need not use menu context.
+    // Include external focus menus that leave Skyrim unpaused.
     return ui->IsMenuOpen("MeridianUI_FocusMenu") || ui->IsMenuOpen(RE::MainMenu::MENU_NAME) ||
         ui->IsMenuOpen(RE::LoadingMenu::MENU_NAME) || ui->IsMenuOpen(RE::DialogueMenu::MENU_NAME);
 }

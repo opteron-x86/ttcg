@@ -32,7 +32,7 @@ inline HoldTerms holdTerms(const CollectionSave& s,std::uint32_t id=whiterunHold
 }
 inline HoldTerms opponentTerms(const CollectionSave& s,int i){
  if(i<0||i>=int(opponents.size()))return {};
- const auto& p=opponents[i];if(p.personalRules)return {p.rules,p.personalTrade};if(p.dynamic||!p.traveller)return holdTerms(s,p.hold);
+ const auto& p=opponents[i];if(p.personalRules)return {p.rules,p.personalTrade};if(!isMaiq(p))return holdTerms(s,p.hold);
  // A saved game count keeps an encounter's terms stable through lobby visits,
  // album edits and reloads. Finishing or forfeiting advances the next draw.
  const auto& r=progress(s,i).competitive;
@@ -41,12 +41,12 @@ inline HoldTerms opponentTerms(const CollectionSave& s,int i){
 }
 inline bool encounterReady(const CollectionSave& s,int i,unsigned hour){
  if(i<0||i>=int(opponents.size()))return false;
- if(opponents[i].dynamic||!opponents[i].traveller)return true;
+ if(!isMaiq(opponents[i]))return true;
  const auto it=s.encounterAfter.find(opponents[i].base);
  return it==s.encounterAfter.end()||hour>=it->second;
 }
 inline void finishTravellerEncounter(CollectionSave& s,int i,unsigned hour){
- if(i>=0&&i<int(opponents.size())&&!opponents[i].dynamic&&opponents[i].traveller)s.encounterAfter[opponents[i].base]=hour+168;
+ if(i>=0&&i<int(opponents.size())&&isMaiq(opponents[i]))s.encounterAfter[opponents[i].base]=hour+168;
 }
 inline const char* holdName(std::uint32_t id){for(auto h:holds)if(h.id==id)return h.name;return "Elsewhere";}
 inline bool unlockedOpponent(const CollectionSave& s,int i) {
@@ -145,7 +145,7 @@ inline Stock unclaimedPersonalPool(const CollectionSave& s,int i){
  return pool;
 }
 inline bool opponentCardAllowed(const Card& card,int i) {
- if(i>=0&&i<int(opponents.size())&&!opponents[i].dynamic&&opponents[i].traveller){
+ if(i>=0&&i<int(opponents.size())&&isMaiq(opponents[i])){
   const auto* expansion=expansionCard(card);
   return (card.tier>=6&&card.tier<=7)||card.form==opponents[i].signature||
     (card.unique&&!card.pending&&(!card.available||(expansion&&expansion->tournamentPrizes)));
@@ -186,9 +186,31 @@ inline const char* cardsPreventingPlay(const Stock& player,const Stock& rival,in
  if(playableCount(player)<5)return "You don't have enough cards for a game.";
  return "";
 }
+inline int handRuleScore(const Hand& hand,unsigned rules){
+ // Estimate the board this hand can create without peeking at the player's deck.
+ // Placement search still uses the full live rules when choosing each move.
+ Match sample(indices(hand),indices(hand),1,rules&~Swap);sample.board={};
+ for(int h=0;h<5;++h)sample.board[h]={cardIndex(hand[h]),1,h};
+ int score=0;
+ for(auto id:hand){const int i=cardIndex(id);const auto& card=cards[i];
+  for(int value:card.sides)score+=4*(rules&Reverse?11-value-sample.affinityModifier(i):value+sample.affinityModifier(i));
+  for(auto other:hand)if(other!=id){const auto groups=cardGroups[i]&cardGroups[cardIndex(other)];
+   if(groups&&(rules&(Legion|Decimation|Dominion)))score+=(((rules&Decimation)&&!(rules&Reverse))||((rules&Legion)&&(rules&Reverse)))?-1:1;
+   if(rules&(Same|Plus))for(int a:card.sides)for(int b:cards[cardIndex(other)].sides)if(a==b)++score;
+  }
+ }
+ return score;
+}
 inline Hand opponentHand(const Stock& stock,int i,std::uint32_t seed,unsigned rules=0) {
  const auto permitted=playableOpponentStock(stock,i);
- if(i>=0&&i<int(opponents.size())&&!opponents[i].dynamic&&opponents[i].traveller)return selectHand(permitted,seed);
+ if(i>=0&&i<int(opponents.size())&&isMaiq(opponents[i]))return selectHand(permitted,seed);
+ if(rules&(Ascension|Descension|Dominion)){
+  if(playableCount(permitted)<5)return {};
+  auto best=opponentHand(permitted,i,seed,rules&~(Ascension|Descension|Dominion));int score=handRuleScore(best,rules);
+  std::mt19937 rng(seed^0xAFF171u);
+  for(unsigned n=0;n<64;++n){const auto next=selectHand(permitted,rng());const int value=handRuleScore(next,rules);if(value>score){best=next;score=value;}}
+  return best;
+ }
  if(rules&Reverse){
   // Reverse uses the entire owned collection, including low cards outside a theme.
   std::vector<CardID> pool;
