@@ -40,7 +40,8 @@ export_map = {string(offset(u32(names+4*i))): offset(u32(functions+4*u16(ordinal
 assert {'SKSEPlugin_Load', 'SKSEPlugin_Query', 'SKSEPlugin_Version', 'Tessera_GetCollectionAPI'} <= export_map.keys()
 version = export_map['SKSEPlugin_Version']
 assert u32(version) == 1 and string(version+8) == 'TTCG'
-major, minor, patch = map(int, json.loads((root/'vcpkg.json').read_text())['version-semver'].split('.'))
+release = json.loads((root/'vcpkg.json').read_text())['version-semver']
+major, minor, patch = map(int, release.split('-', 1)[0].split('.'))
 assert u32(version+4) == (major << 24 | minor << 16 | patch << 4), 'DLL and project versions differ'
 assert u32(version+0x304) == 3, 'Require dynamic struct layouts and Address Library v5 support'
 assert u32(version+0x308) == 1, 'Require Address Library, without a fixed post-629 layout'

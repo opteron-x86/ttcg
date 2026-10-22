@@ -42,6 +42,11 @@ def main():
         report['cases'][name] = {'returncode': result.returncode}
         save()
         if result.returncode:
+            details = Path(log.name).read_text(encoding='utf-8', errors='replace')[-12000:]
+            print(details, flush=True)
+            if os.environ.get('GITHUB_ACTIONS'):
+                details = details.replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
+                print(f'::error title={name}::{details}', flush=True)
             raise SystemExit(f'FAIL: {name}; see {log.name}')
         print(f'PASS: {name}', flush=True)
     report['passed'] = True
