@@ -21,7 +21,7 @@ for key in pause_keys:
 all_unpaused,_=module.refresh((root/'SKSE/Plugins/TTCG.ini.example').read_text(),'[Interface]\n'+'\n'.join(key+'=0' for key in pause_keys)+'\n')
 assert all(key+'=0' in all_unpaused for key in pause_keys)
 assert module.refresh((root/'SKSE/Plugins/TTCG.ini.example').read_text(),text)==(text,[])
-# Retired keys are dropped, never used to enable a current test switch.
+# Only declared keys control the test switches.
 for value in ('1','2','9','0','-1','bad'):
  migrated,removed=module.refresh(text,'[Development]\nWhiterunTournament='+value+'\n')
  assert 'InvitationalTournaments=0' in migrated and removed==['Development.whiteruntournament']

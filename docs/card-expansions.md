@@ -16,9 +16,9 @@ Open [Expansion Workshop](expansion-editor.html) in Chrome, Edge or Firefox. It 
 
 You can reopen a saved project, expansion ZIP or mod folder. Opening a JSON file alone also works, but you will need to supply its images. Keep your original artwork separately from the editor project.
 
-## Try the included cards
+## Example cards
 
-The `example` folder contains **My Cool Cards**:
+The [My Cool Cards example](../examples/my-cool-cards/SKSE/Plugins/Tessera/Expansions/my-cool-cards.json) defines three cards:
 
 | Card | Tier and rarity | Where it can appear |
 |---|---|---|
@@ -26,7 +26,7 @@ The `example` folder contains **My Cool Cards**:
 | Dark Elf Waifu | III, Epic | Standard packs, tournament packs and specialist dealers |
 | Ultimate Waifu | X, Legendary unique | Masters tournament prizes |
 
-To install it, zip the `SKSE` and `TesseraUI` folders inside `example` together. You can also install the separate `Tessera-Example-Expansion.zip` download. In the album, choose **Cards → Filters → Card set → My Cool Cards**.
+Supply images at the paths listed in the JSON, then zip the `SKSE` and `TesseraUI` folders together. In the album, choose **Cards → Filters → Card set → My Cool Cards**.
 
 The sample uses custom card strengths. Choose **Custom values** in the editor to export it with those values unchanged.
 

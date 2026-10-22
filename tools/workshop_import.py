@@ -455,7 +455,7 @@ class Plan:
                   f"- {len(review['starterCardsOutsideTierOne'])} starter identities are now above tier I or unique.",
                   f"- Non-unique identities with reserved acquisition flags: {len(review['reservedNonUniqueCards'])}.",
                   '- Reserved trophies by tier: ' + ', '.join(f'{t}: {n}' for t, n in review['trophies'].items()) + '.',
-                  '- Remaining legacy groups: ' + (', '.join(review['remainingLegacyGroups']) or 'none') + '.', '',
+                  '- Unassigned groups: ' + (', '.join(review['remainingLegacyGroups']) or 'none') + '.', '',
                   'Current pack buckets below their maximum draws:', '']
         for kind, rows in review['packShortfalls'].items():
             lines += [f"- {kind}: tier {row['tier']} {row['rarity']} — {row['count']} candidates; maximum draws: {row['maxDraws']}."

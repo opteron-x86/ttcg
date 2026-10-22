@@ -81,9 +81,9 @@ jobs:
       - name: Bootstrap vcpkg
         run: ./build/deps/vcpkg/bootstrap-vcpkg.bat -disableMetrics
       - name: Configure
-        run: cmake --preset windows-release
+        run: python tools/ci-run.py configure cmake --preset windows-release
       - name: Build
-        run: cmake --build --preset windows-release
+        run: python tools/ci-run.py build cmake --build --preset windows-release
       - name: Run Windows probes
         run: python tools/test-windows.py --build build/windows --output build/test-results
       - name: Package

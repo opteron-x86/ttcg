@@ -1,4 +1,4 @@
-"""Exercise the shipped legacy callbacks and background dispatcher without Skyrim."""
+"""Exercise Papyrus callbacks and the background dispatcher."""
 from pathlib import Path
 import re
 import subprocess
@@ -13,7 +13,7 @@ api_source = (root / 'include/NativeCollectionAPI.h').read_text()
 queue = api_source[api_source.index('template<class Task> void queue('):api_source.index('inline int apiVersion(')]
 
 # Compile the actual callbacks, substituting only the SKSE task queue and the
-# engine refresh. This catches accidental work in any retired entry point.
+# engine refresh. Callback calls leave the dispatcher idle.
 harness = r'''
 #include <atomic>
 #include <cassert>
@@ -87,4 +87,4 @@ update = encounters.split('Event OnUpdate()', 1)[1]
 assert update.count('RegisterForSingleUpdate') == 1
 assert update.index('BackgroundUpdate()') < update.index('RegisterForSingleUpdate(30.0)')
 assert 'scanMasterApproach' not in source
-print('Legacy compatibility: inert callbacks/fragments, preserved variable, coalesced tasks and stale-save rejection passed')
+print('Papyrus callbacks and background dispatch tests passed')

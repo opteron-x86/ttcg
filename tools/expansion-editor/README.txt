@@ -29,7 +29,7 @@ Exports contain the JSON and artwork in these folders:
   TesseraUI/art/expansions/<set-id>/thumbs/<card-id>.webp
 
 The editor adds no text or numbers to the pictures; Tessera draws them in game.
-Older expansion ZIPs can be imported and exported again to use TesseraUI.
 
-The full authoring kit includes My Cool Cards, a three-card example, and guides
-for card settings, tournament prizes, NPC collections and quest rewards.
+The source includes example card definitions and guides for card settings,
+tournament prizes, NPC collections and quest rewards. Supply your artwork
+at the paths declared in each example.

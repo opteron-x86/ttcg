@@ -1,4 +1,4 @@
-"""Keep retired form identities resolvable without making their dialogue playable."""
+"""Keep reserved dialogue records resolvable and disabled."""
 import json
 import struct
 from plugin_records import ROOT, walk, parse_fields, build_record, apply, ctda
