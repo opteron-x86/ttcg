@@ -43,8 +43,7 @@ def build():
         assert len(preset['cards']) == 5 and all(card in ids for card in preset['cards']), preset['name']
     (OUT / 'card-data.js').write_text('window.ruleLabData = ' + json.dumps({'cards': cards, 'presets': presets}, ensure_ascii=False).replace('<', '\\u003c') + ';\n')
 
-    # Reuse the actual browser renderer and its heraldic icons without loading the
-    # old application's game bridge, settings handlers or album lifecycle.
+    # Load the card renderer and heraldic icons for the rule lab.
     source = (ROOT / 'TesseraUI/app.js').read_text()
     start, end = source.index('const affinityNames='), source.index('function description(id)')
     renderer = source[start:end]

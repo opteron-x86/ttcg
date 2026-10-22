@@ -16,10 +16,7 @@ SOURCE_FILES = (
     "data/rank-policy.json", "data/workshop-roster.json", "include/Album.h", "include/Tournaments.h",
     "include/Match.h", "include/Campaign.h", "include/Shop.h",
 )
-# This offline report audits the official roster only. Runtime expansions are
-# opt-in additions to the same tier/rarity buckets; they are not authoring data.
-# These two recipes are described by this report. Fail visibly when their
-# implementation changes so rebuilding cannot silently bless outdated formulas.
+# Check the official roster against its pack-generation formulas.
 REVIEWED_PACKS = (
     ("include/Album.h", "inline std::vector<CardID> packCards(",
      "9ec31744012ed3935b4cf07967516722b997d5ab9f0eaad82bc456b0bc56974f"),

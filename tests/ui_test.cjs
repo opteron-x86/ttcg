@@ -191,7 +191,7 @@ const assert=require('node:assert/strict');
    assert.equal(await page.locator('#window-size').inputValue(),'90','Navigating options must not resize');
    await page.evaluate(()=>window.ttcgKey('confirm'));
    assert.equal(await page.locator('#window-size').inputValue(),'85');
-   // The X exits immediately. Escape works even with a selected card or legacy keyCode.
+   // The close button and Escape exit immediately, including with a card selected.
    fixture.session++; fixture.revision=0; fixture.settling=false; fixture.stages=[];
    await page.evaluate(s=>window.ttcgState(s),fixture);
    assert.equal(await page.locator('#leave').innerText(),'');

@@ -15,7 +15,7 @@ int main() {
  assert(d.terms({0,1}).trade==1&&d.terms({2,1}).rules==2&&d.maxWager(false,true,10)==10);
  ini={{"Enabled","1"},{"AddAllCards","1"},{"FriendlyGame","1"},{"ShowAllPlayers","1"},{"Rules","55"},{"TradeRule","1"},{"Wager","25"},{"OpponentSkill","0"},{"RecordResults","0"}};
  d=DevelopmentSettings::load(read);assert(d.showAllPlayers&&!d.unlockAllPlayers&&!d.recordResults&&d.opponentSkill==0);
- // Legacy FriendlyGame settings no longer override adult stakes.
+ // Adult matches use the configured rules and wager.
  assert(d.terms({0,1}).rules==55&&d.terms({0,1}).trade==1&&d.fixedWager(false,true)==25&&d.maxWager(false,true,10)==25);
  ini["FriendlyGame"]="0";d=DevelopmentSettings::load(read);
  assert(d.terms({0,1}).trade==1&&d.fixedWager(false,true)==25&&d.maxWager(false,true,5)==25);

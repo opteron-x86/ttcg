@@ -96,7 +96,7 @@ int main(){
   const auto key=worldFormID(identity);
   RE::Actor npc{identity.plugin=="Skyrim.esm"?key:0x2707459Cu,key};bind(&npc,identity);
   assert(RE::TESForm::LookupByID<RE::TESObjectREFR>(npc.id)==&npc);
-  // Negative control: this is the old plugin-name lookup used at match start.
+   // Actor records require a lookup with the matching form type.
   assert(data.LookupForm<RE::TESObjectREFR>(identity.local,normalizedPlugin(identity.plugin))==nullptr);
   assert(data.LookupForm<RE::Actor>(identity.local,normalizedPlugin(identity.plugin))==&npc);
   assert(campaign::resolveID<RE::Actor>(key)==&npc);

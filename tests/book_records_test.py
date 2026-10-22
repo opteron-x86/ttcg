@@ -44,9 +44,7 @@ generated, sequence = builder.generate(blob)
 assert generated == blob, 'Plugin is not current or the generator is not idempotent'
 assert sequence == (artifact / 'Seq/Tessera TCG.seq').read_bytes()
 
-# Reproduce the old generator's output for every book, including the album
-# used as the invitation template. One build must repair all of them without
-# needing a second pass or changing any subrecord values or unrelated records.
+# Normalize book subrecord order while preserving values and unrelated records.
 legacy = bytearray(blob)
 for start, end, header, fields in books.values():
     keywords = [(tag, value) for tag, value in fields if tag in (b'KSIZ', b'KWDA')]

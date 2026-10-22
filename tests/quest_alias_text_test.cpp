@@ -23,14 +23,14 @@ int main(){
     };
     const std::vector<ttcg::AliasTextName> names{{2,100},{3,200},{4,300}};
     Quest old;
-    // Actual broken-save case: an accepted instance zero with no text record.
+    // Create text records for an accepted quest instance.
     assert(ttcg::refreshQuestAliasText(old,names,create));
     assert(old.currentInstanceID==0 && old.instanceData.size()==1);
     assert(old.instanceData[0]->id==0 && old.instanceData[0]->stringData.size()==3);
     assert(old.stage==20 && old.offer==17 && old.reservedReward==8);
     for(int i=0;i<20;++i)assert(ttcg::refreshQuestAliasText(old,names,create));
     assert(allocated.size()==1 && old.instanceData[0]->stringData.size()==3);
-    // An old completed instance and other stored text/globals are preserved.
+    // Preserve completed instances, unrelated text and quest globals.
     auto* active=create(5);active->stringData={{2,99},{9,900}};
     active->valueData={42};active->journalStage=20;
     old.instanceData.push_back(nullptr);old.instanceData.push_back(active);old.currentInstanceID=5;
@@ -40,7 +40,7 @@ int main(){
     assert(active->stringData[1].aliasID==9 && active->stringData[1].fullNameFormID==900);
     assert(active->valueData==std::vector<float>{42} && active->journalStage==20);
     assert(old.instanceData[0]->id==0 && old.instanceData[0]->stringData.size()==3);
-    // Current newer instance is missing while historical records exist.
+    // Create the active instance when other instances already exist.
     old.currentInstanceID=6;
     assert(ttcg::refreshQuestAliasText(old,names,create));
     assert(old.instanceData.size()==4 && old.instanceData.back()->id==6);
@@ -48,5 +48,5 @@ int main(){
     assert(!ttcg::refreshQuestAliasText(empty,{},create));
     assert(!ttcg::refreshQuestAliasText(empty,names,[](unsigned)->Instance*{return nullptr;}));
     assert(empty.instanceData.empty());
-    std::cout<<"Quest text: missing legacy/current records repaired; repeat refresh, history, globals and quest state preserved\n";
+    std::cout<<"Quest text: missing records created; repeat refresh, globals and quest state preserved\n";
 }

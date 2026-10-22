@@ -4,8 +4,7 @@
 
 using namespace ttcg;
 
-// Keep the previous full-stock calculation as an independent reference for the
-// bounded hand check. No timing assertions: correctness must not depend on CPU.
+// Compare the bounded hand check with a complete stock count.
 bool referenceReadiness(const CollectionSave& s,int i){
  if(i<0||i>=int(opponents.size()))return false;
  const auto& p=opponents[i];const auto found=s.opponents.find(opponentLedgerKey(p.base,p.reference));

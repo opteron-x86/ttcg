@@ -113,8 +113,6 @@ function createExpansionFiles(core) {
    if(!c.missingArt)continue;progress('Importing '+c.name,i,project.cards.length);await yieldFrame();
    const art=c.missingArt, expected=prefix+'TesseraUI/art/'+art;
    let matches=[...map].filter(([p])=>p===expected||p==='TesseraUI/art/'+art||p===art||p.endsWith('/TesseraUI/art/'+art));
-   // Import old releases so authors can re-export to TesseraUI without changing
-   // permanent card IDs. Exports and the game itself use only TesseraUI.
    if(!matches.length)matches=[...map].filter(([p])=>p===prefix+'MeridianUI/ttcg/art/'+art||p==='MeridianUI/ttcg/art/'+art||p.endsWith('/MeridianUI/ttcg/art/'+art));
    if(matches.length!==1){missing++;continue;}
    const [path,blob]=matches[0];let asset=byPath.get(path);

@@ -40,7 +40,7 @@ int main(){
  assert(command("refresh"));assert(cardBackID=="mosaic"&&cardBackPreference==id);
  touch("backs/custom/Moon & Star's_夜 100%.webp");assert(command("refresh"));
  assert(cardBackID==id&&cardBack.ends_with(".webp"));
- // Long UTF-8 names exceed the old generic command limit but still round-trip.
+ // Preserve long UTF-8 filenames through selection and settings.
  std::string longName;for(int i=0;i<60;++i)longName+="夜";
  touch("backs/custom/"+longName+".png");assert(command("refresh"));
  assert(command("select custom/"+longName)&&cardBackID=="custom/"+longName);

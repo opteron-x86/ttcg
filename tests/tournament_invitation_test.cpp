@@ -68,8 +68,7 @@ int main(){
  assert(tournament(expired,past)->starts==900&&tournament(expired,past)->ends==1068);
  assert(!recordTournamentInvitation(expired,letter,true,1000));
  assert(enterTournament(expired,past,1000,bank)&&tournament(expired,past)->ends==1068);
- // Missing dispatch acknowledgement used to strand the in-flight request and
- // keep a delivered letter invisible. Actual courier stock now confirms it.
+ // Courier stock confirms delivery when the dispatch callback is missing.
  CollectionSave missed;grantStarter(missed);
  const auto missing=newTournament(missed,1,100,true,1);
  assert(reconcileTournamentInvitations(missed,letter,0,1,101).empty());

@@ -88,7 +88,7 @@ int main(int argc,char**){
  int traveller=-1;for(unsigned i=0;i<opponents.size();++i)if(opponents[i].traveller){traveller=i;break;}
  assert(traveller>=0);const auto personal=opponentTerms(isolated,traveller);tickRegionalRules(isolated,200*24);
  assert(isolated.tournaments.events[0].rules==event.rules);assert(opponentTerms(isolated,traveller).rules==personal.rules);
- // Previous format loads without inventing historic protections or schedules.
+ // Missing regional protections and schedules start empty.
  auto wire=encodeCollection(s);std::vector<std::uint32_t> appendix;encodeRegionalCalendars(appendix,s.culture);wire.resize(wire.size()-appendix.size()-3);
  CollectionSave legacy;assert(decodeCollection(wire,legacy,30));assert(!regionalCulture(legacy,1).nextRuleChange);assert(holdTerms(legacy,1).rules==holdTerms(s,1).rules);
  tickRegionalRules(legacy,60*24);assert(regionalCulture(legacy,1).nextRuleChange>=74*24);

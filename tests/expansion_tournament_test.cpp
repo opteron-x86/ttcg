@@ -108,7 +108,7 @@ int main(){
  }
  // Unentered offers can be refreshed if their expansion is gone.
  loaded.tournaments.events[0].joined=false;loaded.tournaments.events[0].bracket[0]=e.bracket[0];refreshTournamentRewards(loaded);assert(loaded.tournaments.events[0].reward!=Trophy&&loaded.tournaments.events[0].trophy==0);
- // The reservation ledger supports the expansion limit, beyond the old 1,024.
+ // Preserve reservations across multiple large expansions.
  s=world();for(auto name:{"many-a","many-b","many-c"}){auto many=manifest(name);const auto card=many["cards"][0];for(unsigned n=1;n<400;++n){auto c=card;c["id"]="card-"+std::to_string(n);many["cards"].push_back(c);}install(many);}
  for(const auto& card:cards)if(card.unique)s.tournaments.trophies.insert(card.form);
  assert(s.tournaments.trophies.size()>1024&&decodeCollection(encodeCollection(s),loaded));assert(loaded.tournaments.trophies==s.tournaments.trophies);

@@ -30,8 +30,7 @@ int main(){
  CollectionSave early;recordCampaignResult(early,expert,0,false,0);assert(!early.starter&&localReputation(early,1).wins==0);
  recordCampaignResult(early,expert,0,false,0);assert(localReputation(early,1).wins==0&&early.players.empty());
  again.accessBlocked.insert(opponents[master].base);assert(!unlockedOpponent(again,master)&&!willingToPlay(again,master,25));
- // Legacy membership bits cannot lock built-in opponents, including after
- // loading an older save; actual world/quest blocks still apply.
+ // Opponent access follows world and quest conditions.
  DevelopmentSettings dev;dev.enabled=true;dev.unlockAllPlayers=true;
  s.collegeMember=s.guildMember=false;refreshWorldAccess(s,{});
  for(unsigned base:{0x1C193u,0x13B81u,0x19959u}){const auto i=opponentIndex(base);assert(i>=0&&unlockedOpponent(s,i)&&dev.unlockedPlayer(s,i));}

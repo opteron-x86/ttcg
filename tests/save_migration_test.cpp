@@ -14,20 +14,18 @@ int main(){
  }
  ttcg::CollectionSave loaded;assert(ttcg::decodeCollection(before,loaded));
  assert(ttcg::encodeCollection(loaded)==before&&ttcg::validHand(loaded.deck,loaded.player));
- // Format 28 predates the expansion dictionary and remains readable.
+ // Decode collections with an empty expansion dictionary.
  auto v30=before;assert(v30.back()==0);v30.pop_back();v30.resize(v30.size()-2);assert(v30.back()==0);v30.pop_back();assert(ttcg::decodeCollection(v30,loaded,30));
  auto v29=v30;assert(v29.front()==0);v29.erase(v29.begin());v29.resize(v29.size()-3);assert(ttcg::decodeCollection(v29,loaded,29));
  auto v28=v29;assert(v28.front()==0);v28.erase(v28.begin());assert(ttcg::decodeCollection(v28,loaded,28)&&ttcg::validHand(loaded.deck,loaded.player));
- // Preserve current development collections and courier events while replacing
- // the old daily regional offer with per-player visits (format 27).
+ // Preserve collections and courier events; initialize regional visits.
  std::ifstream old("tests/fixtures/collection-v26-courier.txt");assert(old);std::vector<std::uint32_t> wire;for(std::uint32_t n;old>>n;)wire.push_back(n);
  assert(ttcg::decodeCollection(wire,loaded,26));assert(loaded.starter&&loaded.tournaments.events.size()==2);
  assert(loaded.tournaments.events[0].invitation==1&&loaded.tournaments.events[0].announced==32);
  assert(loaded.culture.carriedHold==2&&loaded.culture.carriedRules==(ttcg::Open|ttcg::Same)&&!loaded.culture.visitHold&&loaded.culture.asked.empty());
  assert(loaded.culture.regions.at(8).abolitionAfter==300&&!loaded.culture.regions.at(8).offer.status);
  assert(ttcg::decodeCollection(ttcg::encodeCollection(loaded),current));assert(ttcg::encodeCollection(current)==ttcg::encodeCollection(loaded));
- // Captured with the pre-cleanup encoder, including both retired win ledgers,
- // a hold approach cooldown, the development token and M'aiq's live cooldown.
+ // Restore saved progress and cooldowns from the fixed fixture.
  std::ifstream prior("tests/fixtures/collection-v31-progress.txt");assert(prior);wire.clear();for(std::uint32_t n;prior>>n;)wire.push_back(n);
  assert(ttcg::decodeCollection(wire,loaded,31));
  const auto base=0x13BBFu;

@@ -50,7 +50,7 @@ template<class Get> bool decodeRuleCulture(Get get,RuleCultureState& c,bool lega
   auto& o=r.offer;o.opponent=get();o.source=get();o.carried=get();o.local=get();o.rule=get();o.roll=get();o.driftRoll=get();o.driftSeed=get();o.status=get();
   if(o.source>10||!validRules(o.carried)||!validRules(o.local)||(o.rule&&!singleRule(o.rule))||o.roll>=100||o.driftRoll>=100||o.status>2)return false;
   if(o.status==1&&(!o.opponent||!o.source||o.source==id||!o.rule||!(o.carried&o.rule)||(o.local&o.rule)))return false;
-  if(legacy)o={}; // Old daily offers have no individual player/visit identity.
+  if(legacy)o={}; // Reset offers without a player and visit identity.
   else if(o.status==1&&(c.visitHold!=id||o.source!=c.carriedHold||o.carried!=c.carriedRules||std::find(c.asked.begin(),c.asked.end(),o.opponent)==c.asked.end()))return false;
  }
  if(c.visitHold&&!c.regions.contains(c.visitHold))return false;
