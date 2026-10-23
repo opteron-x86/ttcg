@@ -223,7 +223,7 @@ struct Bank {
  }
 };
 inline bool available() { return saveValid&&goldForm&&packForm&&tournamentPackForm&&progression&&albumForm; }
-inline void initForms() {
+inline void initForms(bool distributeVendorPacks=true) {
  initNpcForms();
  childChallengeInfo=RE::TESDataHandler::GetSingleton()->LookupForm<RE::TESTopicInfo>(ttcg::encounter_childAccept,plugin);
  gamesEnabledGlobal=RE::TESDataHandler::GetSingleton()->LookupForm<RE::TESGlobal>(0xFDA,plugin);
@@ -239,7 +239,7 @@ inline void initForms() {
  goldForm=RE::TESForm::LookupByID<RE::TESBoundObject>(0xF);
  packForm=RE::TESDataHandler::GetSingleton()->LookupForm<RE::TESObjectMISC>(0x840,plugin);
  tournamentPackForm=RE::TESDataHandler::GetSingleton()->LookupForm<RE::TESObjectMISC>(0xFD6,plugin);
- vendors::initialize(plugin);
+ vendors::initialize(plugin,distributeVendorPacks);
  SKSE::log::info("Album forms available: {}",available());
 }
 inline void seedOpponent(RE::Actor* actor);
@@ -418,7 +418,7 @@ inline bool buyAlbum(RE::Actor* actor) {
 }
 inline void removeLegacyAlbumStock() {
  if(!available())return;
- const auto changed=vendors::removeLegacyAlbums([](RE::TESObjectREFR* ref){return physicalCount(ref,albumForm);},
+ const auto changed=vendors::removeLegacyAlbums(albumForm,
    [](RE::TESObjectREFR* ref,int amount){return physicalChange(ref,albumForm,amount);});
  if(changed)SKSE::log::info("Removed legacy album stock from {} merchant inventories",changed);
 }
