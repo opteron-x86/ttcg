@@ -5,6 +5,7 @@
 #include <set>
 #include <vector>
 #include <cstdint>
+#include <string_view>
 #include <type_traits>
 namespace SKSE::log {template<class... T>void debug(const char*,T...){} template<class... T>void info(const char*,T...){} template<class... T>void warn(const char*,T...){} template<class... T>void error(const char*,T...){} }
 namespace RE {
@@ -32,7 +33,10 @@ struct Actor {std::set<TESFaction*> factions;bool IsInFaction(TESFaction* f){ret
 struct TESDataHandler {static TESDataHandler* GetSingleton(){static TESDataHandler d;return &d;}std::vector<TESFaction*> factions;std::vector<TESNPC*> npcs;template<class T>auto& GetFormArray(){if constexpr(std::is_same_v<T,TESNPC>)return npcs;else return factions;}template<class T>T* LookupForm(unsigned id,const char*){return TESForm::LookupByID<T>(id);}};
 }
 #include "VendorDistribution.h"
-int main(){
+int main(int argc,char** argv){
+ assert(argc==1||(argc==2&&std::string_view(argv[1])=="--no-pack-injection"));
+ const bool distributePacks=argc==1;
+ const int expectedPacks=distributePacks?1:0;
  using namespace RE;
  BGSKeyword categories[4],pack;unsigned ids[]={0x8F958,0x8F959,0x937A2,0x914E9};
  for(int i=0;i<4;++i)TESForm::forms[ids[i]]=&categories[i];
@@ -47,8 +51,9 @@ int main(){
  TESFaction role,marker;TESForm::forms[0x51599]=&role;TESForm::forms[0x882]=&marker;
  TESNPC regular,modNPC,innNPC;regular.factions.push_back({&role,0});modNPC.factions.push_back({&f[2],0});innNPC.factions.push_back({&f[3],0});
  TESDataHandler::GetSingleton()->npcs={&regular,&modNPC,&innNPC};
- vendors::initialize("Fixture.esp");assert(vendors::factions.size()==4);
- assert(general.GetObjectCount(&roll)==1&&modded.GetObjectCount(&roll)==1);
+ if(distributePacks)vendors::initialize("Fixture.esp");else vendors::initialize("Fixture.esp",false);
+ assert(vendors::factions.size()==4);
+ assert(general.GetObjectCount(&roll)==expectedPacks&&modded.GetObjectCount(&roll)==expectedPacks);
  assert(inn.GetObjectCount(&roll)==0&&shared.GetObjectCount(&roll)==0);
  assert(inclusion.HasForm(&pack)&&!food.HasForm(&pack));
  assert(modNPC.IsInFaction(&marker)&&!innNPC.IsInFaction(&marker));
@@ -82,5 +87,9 @@ int main(){
  assert(vendors::removeLegacyAlbums(nullptr,change)==0&&removals==2);
  vendors::albumContainers.push_back(nullptr);
  assert(vendors::removeLegacyAlbums(&album,change)==1&&removals==3);
- vendors::initialize("Fixture.esp");assert(general.GetObjectCount(&roll)==1);
+ // Distribution is fixed at startup; later initialization cannot switch modes.
+ vendors::initialize("Fixture.esp",!distributePacks);
+ assert(vendors::factions.size()==4);
+ assert(general.GetObjectCount(&roll)==expectedPacks&&modded.GetObjectCount(&roll)==expectedPacks);
+ assert(inclusion.HasForm(&pack)&&modNPC.IsInFaction(&marker));
 }

@@ -58,7 +58,7 @@ inline bool eligible(RE::Actor* actor){
  for(auto faction:factions)if(actor->IsInFaction(faction))return true;
  return false;
 }
-inline void initialize(const char* plugin){
+inline void initialize(const char* plugin,bool distributePacks=true){
  static bool initialized=false;if(initialized)return;
  auto data=RE::TESDataHandler::GetSingleton();
  generalGoodsRole=RE::TESForm::LookupByID<RE::TESFaction>(0x51599);
@@ -66,6 +66,8 @@ inline void initialize(const char* plugin){
  auto roll=data->LookupForm<RE::TESLevItem>(0x880,plugin);
  auto keyword=data->LookupForm<RE::BGSKeyword>(0x881,plugin);
  if(!roll||!keyword){SKSE::log::error("Missing vendor pack records");return;}
+ SKSE::log::info("Vendor pack injection: {}",distributePacks?"enabled":"disabled (diagnostic)");
+ SKSE::log::debug("Vendor pack roll: {:08X} at {}",roll->GetFormID(),static_cast<const void*>(roll));
  std::set<RE::TESObjectCONT*> generalContainers,otherContainers;
  std::set<RE::TESObjectREFR*> generalReferences,otherReferences;
  for(auto faction:data->GetFormArray<RE::TESFaction>()){
@@ -74,6 +76,7 @@ inline void initialize(const char* plugin){
   auto ref=faction->vendorData.merchantContainer;
   auto object=ref?ref->GetBaseObject():nullptr;
   auto base=object?object->As<RE::TESObjectCONT>():nullptr;
+  if(ref&&base)SKSE::log::debug("Vendor chest {:08X} at {}: base {:08X}, general goods {}",ref->GetFormID(),static_cast<const void*>(ref),base->GetFormID(),general);
   if(general){factions.push_back(faction);generalReferences.insert(ref);if(base)generalContainers.insert(base);}
   else {if(ref)otherReferences.insert(ref);if(base)otherContainers.insert(base);}
  }
@@ -85,11 +88,13 @@ inline void initialize(const char* plugin){
   SKSE::log::debug("General-goods faction: {:08X}",faction->GetFormID());
  }
  unsigned count=0;
- for(auto base:generalContainers){
+ if(distributePacks)for(auto base:generalContainers){
   // Base inventories are shared by all references. Avoid stocking an inn or
   // specialist when a mod reuses its chest base for a general merchant.
   if(otherContainers.contains(base)){SKSE::log::warn("Shared vendor container {:08X}: pack injection skipped",base->GetFormID());continue;}
-  if(base->GetObjectCount(roll)==0&&base->AddObjectToContainer(roll,1,nullptr))++count;
+  if(base->GetObjectCount(roll)==0&&base->AddObjectToContainer(roll,1,nullptr)){
+   ++count;SKSE::log::debug("Vendor pack injected into base {:08X} at {}",base->GetFormID(),static_cast<const void*>(base));
+  }
  }
  const auto tagged=tagAlbumSellers();
  SKSE::log::debug("Album dialogue: general-goods role {}, marker {}, tagged {} NPC bases",generalGoodsRole!=nullptr,albumSeller!=nullptr,tagged);
