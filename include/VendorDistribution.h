@@ -26,10 +26,16 @@ inline unsigned tagAlbumSellers(){
  }
  return count;
 }
-// Remove albums from merchant stock.
-template<class Count,class Change> unsigned removeLegacyAlbums(Count count,Change change){
+// Inspect saved stock without generating leveled inventories in unopened chests.
+template<class Change> unsigned removeLegacyAlbums(RE::TESBoundObject* album,Change change){
+ if(!album)return 0;
  unsigned changed=0;
- for(auto container:albumContainers){const int have=count(container);if(have>0&&change(container,-have))++changed;}
+ for(auto container:albumContainers){
+  if(!container)continue;
+  const auto items=container->GetInventoryCounts([&](RE::TESBoundObject& object){return &object==album;},true);
+  const auto it=items.find(album);
+  if(it!=items.end()&&it->second>0&&change(container,-it->second))++changed;
+ }
  return changed;
 }
 // Classify service factions by their actual buying categories, including mod

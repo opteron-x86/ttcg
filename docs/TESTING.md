@@ -8,6 +8,8 @@
 
 Test with an ordinary play save and a separate development save:
 
+- Load a save made before installing Tessera. Die and let the game reload at least three times, then manually reload without dying. Repeat after visiting a general-goods merchant; check that packs appear and an album can be purchased. Run this on Skyrim 1.7.104 as well as 1.6.1170.
+- Load an older Tessera save with merchant albums still in inventory. Confirm those albums are removed, other stock remains, and packs return at the normal merchant restock.
 - Buy an album, open it, change decks and reload the save.
 - Start and finish a match, inspect cards, settle the result and resume an interrupted game.
 - Buy and sell cards, use buyback and open both pack types.

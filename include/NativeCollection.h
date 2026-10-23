@@ -418,7 +418,7 @@ inline bool buyAlbum(RE::Actor* actor) {
 }
 inline void removeLegacyAlbumStock() {
  if(!available())return;
- const auto changed=vendors::removeLegacyAlbums([](RE::TESObjectREFR* ref){return physicalCount(ref,albumForm);},
+ const auto changed=vendors::removeLegacyAlbums(albumForm,
    [](RE::TESObjectREFR* ref,int amount){return physicalChange(ref,albumForm,amount);});
  if(changed)SKSE::log::info("Removed legacy album stock from {} merchant inventories",changed);
 }

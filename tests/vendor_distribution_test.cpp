@@ -9,11 +9,23 @@
 namespace SKSE::log {template<class... T>void debug(const char*,T...){} template<class... T>void info(const char*,T...){} template<class... T>void warn(const char*,T...){} template<class... T>void error(const char*,T...){} }
 namespace RE {
 struct TESForm {unsigned id=0;virtual ~TESForm()=default;static inline std::map<unsigned,TESForm*> forms;unsigned GetFormID(){return id;}template<class T>T* As(){return dynamic_cast<T*>(this);}template<class T>static T* LookupByID(unsigned id){return dynamic_cast<T*>(forms[id]);}};
+struct TESBoundObject:TESForm{};
 struct BGSKeyword:TESForm{};
 struct BGSListForm:TESForm {std::vector<TESForm*> forms;bool HasForm(TESForm* f){for(auto p:forms)if(p==f)return true;return false;}};
 struct TESLevItem:TESForm{};
 struct TESObjectCONT:TESForm {std::map<TESForm*,int> objects;int GetObjectCount(TESForm* p){return objects[p];}bool AddObjectToContainer(TESForm* p,int n,void*){objects[p]+=n;return true;}};
-struct TESObjectREFR:TESForm {TESForm* base{};TESForm* GetBaseObject(){return base;}};
+struct TESObjectREFR:TESForm {
+ TESForm* base{};TESForm* GetBaseObject(){return base;}
+ std::map<TESBoundObject*,int> stock;
+ bool inventoryInitialized=false;
+ unsigned inventoryInitializations=0;
+ template<class Filter>auto GetInventoryCounts(Filter filter,bool noInit=false){
+  if(!noInit&&!inventoryInitialized){inventoryInitialized=true;++inventoryInitializations;}
+  std::map<TESBoundObject*,int> result;
+  if(inventoryInitialized)for(auto [object,count]:stock)if(filter(*object))result[object]=count;
+  return result;
+ }
+};
 struct TESFaction:TESForm {bool vendor=true;bool IsVendor(){return vendor;}struct Data {struct Values {bool notBuySell=false;} vendorValues;TESObjectREFR* merchantContainer{};BGSListForm* vendorSellBuyList{};} vendorData;};
 struct TESNPC:TESForm {struct Rank {TESFaction* faction;int rank;};std::vector<Rank> factions;bool IsInFaction(TESFaction* f){for(auto r:factions)if(r.faction==f&&r.rank>=0)return true;return false;}};
 struct Actor {std::set<TESFaction*> factions;bool IsInFaction(TESFaction* f){return factions.contains(f);}};
@@ -48,11 +60,27 @@ int main(){
  actor.factions.clear();actor.factions.insert(&f[2]);assert(vendors::albumEligible(&actor));
  actor.factions.clear();actor.factions.insert(&f[3]);assert(!vendors::albumEligible(&actor));
  actor.factions.clear();actor.factions.insert(&marker);assert(!vendors::albumEligible(&actor)); // Callback revalidates real seller membership.
- std::map<TESObjectREFR*,int> stock{{&refs[0],1},{&refs[1],2},{&refs[2],3},{&refs[3],4}};
- auto count=[&](TESObjectREFR* ref){return stock[ref];};
- auto change=[&](TESObjectREFR* ref,int n){stock[ref]+=n;return n;};
- assert(vendors::removeLegacyAlbums(count,change)==2);
- assert(stock[&refs[0]]==0&&stock[&refs[1]]==0&&stock[&refs[2]]==3&&stock[&refs[3]]==4);
- assert(vendors::removeLegacyAlbums(count,change)==0);
+ TESBoundObject album,otherItem;
+ unsigned removals=0;
+ auto change=[&](TESObjectREFR* ref,int n){assert(n<0);assert(ref->inventoryInitialized);++removals;ref->stock[&album]+=n;return n;};
+ // First installation and repeated reloads must not initialize merchant stock.
+ for(unsigned reload=0;reload<3;++reload){
+  assert(vendors::removeLegacyAlbums(&album,change)==0);
+  for(const auto& ref:refs)assert(!ref.inventoryInitialized&&ref.inventoryInitializations==0);
+ }
+ assert(removals==0);
+ // Existing saves retain their album migration, without touching other stock.
+ for(unsigned n=0;n<4;++n){refs[n].inventoryInitialized=true;refs[n].stock[&album]=int(n)+1;refs[n].stock[&otherItem]=9;}
+ assert(vendors::removeLegacyAlbums(&album,change)==2&&removals==2);
+ assert(refs[0].stock[&album]==0&&refs[1].stock[&album]==0&&refs[2].stock[&album]==3&&refs[3].stock[&album]==4);
+ assert(vendors::removeLegacyAlbums(&album,change)==0&&removals==2);
+ for(const auto& ref:refs)assert(ref.stock.at(&otherItem)==9&&ref.inventoryInitializations==0);
+ refs[0].stock[&album]=-1;refs[1].stock.erase(&album);
+ assert(vendors::removeLegacyAlbums(&album,change)==0&&removals==2);
+ refs[0].stock[&album]=2;
+ assert(vendors::removeLegacyAlbums(&album,[](TESObjectREFR*,int){return 0;})==0&&refs[0].stock[&album]==2);
+ assert(vendors::removeLegacyAlbums(nullptr,change)==0&&removals==2);
+ vendors::albumContainers.push_back(nullptr);
+ assert(vendors::removeLegacyAlbums(&album,change)==1&&removals==3);
  vendors::initialize("Fixture.esp");assert(general.GetObjectCount(&roll)==1);
 }
