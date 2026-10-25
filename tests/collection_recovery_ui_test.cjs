@@ -37,6 +37,17 @@ const base=JSON.parse(fs.readFileSync('build/test-fixtures/album.json','utf8'));
   const modal=await page.locator('#collection-recovery-confirm .modal').boundingBox();assert(modal.x>=0&&modal.y>=0&&modal.x+modal.width<=width+1&&modal.y+modal.height<=height+1);
   if(width===1920){fs.mkdirSync('build/previews',{recursive:true});await page.screenshot({path:'build/previews/collection-recovery-confirm.png'});}
   await page.locator('#collection-recovery-confirm-action').click();assert.equal(commands.length,2);assert(commands[1].endsWith('clear confirm'));
+  await update();await page.locator('#dev-reset-tessera').click();assert.equal(commands.length,2);
+  assert.match(await page.locator('#collection-recovery-confirm-copy').innerText(),/eight starter cards/);
+  assert.match(await page.locator('#collection-recovery-confirm-copy').innerText(),/records, reputation, tournaments/);
+  await page.locator('#collection-recovery-cancel').click();assert.equal(commands.length,2);
+  await page.locator('#dev-reset-tessera').click();await page.evaluate(()=>ttcgKey('cancel'));assert.equal(commands.length,2);
+  await page.locator('#dev-reset-tessera').click();await update();assert(await page.locator('#collection-recovery-confirm').isHidden());
+  packet.collection.resetBlocked='Finish pending merchant payments first.';await update();assert(await page.locator('#dev-reset-tessera').isDisabled());assert(await page.locator('#dev-clear-collection').isEnabled());
+  packet.collection.resetBlocked='';await update();await page.locator('#dev-reset-tessera').click();
+  const resetModal=await page.locator('#collection-recovery-confirm .modal').boundingBox();assert(resetModal.x>=0&&resetModal.y>=0&&resetModal.x+resetModal.width<=width+1&&resetModal.y+resetModal.height<=height+1);
+  if(width===1920)await page.screenshot({path:'build/previews/tessera-reset-confirm.png'});
+  await page.locator('#collection-recovery-confirm-action').click();assert.equal(commands.length,3);assert(commands[2].endsWith('reset confirm'));
   packet.collection.owned.fill(0);packet.collection.deck.fill(-1);packet.collection.discovered?.fill(false);packet.revealCards=false;
   packet.settings.development.enabled=false;await update();assert.equal(await page.locator('#settings-section-developer').count(),0);
   assert.deepEqual(errors,[]);await page.close();console.log(`${width}x${height}: collection recovery confirmations, cancellation, stale requests, developer gating and blocked actions passed`);

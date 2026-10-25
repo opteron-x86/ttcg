@@ -70,6 +70,11 @@ int main(){
     assert(generation.load()>oldGeneration&&!isReady(nullptr)&&SKSE::events.changes.back().strArg=="unavailable");
     queue([]{});SKSE::tasks.run();assert(!isReady(nullptr)); // no republishing during load
     campaign::saved={};activate();assert(isReady(nullptr)&&ownedCount(nullptr,ident,0)==0);
+    bool staleReward=false,currentReward=false;
+    queueCurrent([&]{staleReward=true;campaign::saved.player[ttcg::cards[0].form]=9;});
+    reset();campaign::saved={};activate();
+    queueCurrent([&]{currentReward=true;campaign::saved.player[ttcg::cards[0].form]=1;});
+    SKSE::tasks.run();assert(!staleReward&&currentReward&&ownedCount(nullptr,ident,0)==1);
     campaign::saveValid=false;publish();assert(!isReady(nullptr));
     assert(SKSE::messaging.changes.size()==SKSE::events.changes.size());
     assert(exchangeIntegration::publications>0&&exchangeIntegration::resets>0);

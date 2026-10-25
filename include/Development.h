@@ -72,8 +72,7 @@ struct DevelopmentSettings {
    const int fixed=fixedWager(practice,canStake);return fixed>=0?fixed:normal;
  }
  bool albumAccess(const CollectionSave& s) const {return s.starter||s.developmentCardsGranted||s.developmentFoilsGranted||unlockAllPlayers;}
- template<class Persist> bool clearCollection(CollectionSave& s,Persist persist) {
-   if(!enabled||!collectionRecoveryBlocked(s).empty())return false;
+ template<class Persist> bool disableCollectionGrants(Persist persist) {
    // Persist before deleting anything: a later load must not refill the album.
    // If a write fails, keep ownership intact and reflect any successful writes.
    for(auto [key,field]:std::array<std::pair<const char*,bool DevelopmentSettings::*>,3>{{
@@ -81,11 +80,27 @@ struct DevelopmentSettings {
        {"RevealAllCards",&DevelopmentSettings::revealAllCards}}}){
      if(!persist(key,0))return false;this->*field=false;
    }
+   return true;
+ }
+ template<class Persist> bool clearCollection(CollectionSave& s,Persist persist) {
+   if(!enabled||!collectionRecoveryBlocked(s).empty()||!disableCollectionGrants(persist))return false;
    std::erase_if(s.player,[](const auto& entry){return entry.first!=0;});
    s.discovered.clear();s.deck={};for(auto& deck:s.decks)deck.cards={};
    // Retain album access, including characters who only used development grants,
    // without issuing starter cards the next time the physical album is checked.
    s.starter=true;saveActiveDeck(s);return true;
+ }
+ template<class Persist> bool resetTessera(CollectionSave& s,Persist persist) {
+   if(!enabled||!tesseraResetBlocked(s).empty())return false;
+   auto fresh=freshTesseraSave(s);
+   if(!disableCollectionGrants(persist))return false;
+   const DevelopmentSettings defaults;
+   for(auto [key,field]:switches)if(field!=&DevelopmentSettings::revealAllCards)
+     if(!setPersisted(key,defaults.*field,persist))return false;
+   for(auto [key,value]:std::array<std::pair<const char*,int>,6>{{
+       {"TournamentHold",1},{"RuleLesson",0},{"Rules",-1},{"TradeRule",-1},{"Wager",-1},{"OpponentSkill",-1}}})
+     if(!setPersisted(key,value,persist))return false;
+   s=std::move(fresh);return true;
  }
  // Explicit buttons refill missing copies, including cards previously lost or
  // sold. Automatic INI grants below remain one-time, discovery-aware grants.

@@ -24,8 +24,8 @@ function renderSettings(){
  renderCollectionRecovery();
 }
 let collectionRecoveryConfirmation=null;
-function collectionRecoveryDisabled(){
- return state?.screen!=='album'||state.phase!=='ready'||state.interruptedMatch||state.collection?.recoveryBlocked||state.collection?.staked||state.collection?.paying||bindings().capturing||bindingPending;
+function collectionRecoveryDisabled(action){
+ return state?.screen!=='album'||state.phase!=='ready'||state.interruptedMatch||state.collection?.recoveryBlocked||(action==='reset'&&state.collection?.resetBlocked)||state.collection?.staked||state.collection?.paying||bindings().capturing||bindingPending;
 }
 function renderCollectionRecovery(){
  const missing=state.collection?.missingSets||[];
@@ -33,8 +33,10 @@ function renderCollectionRecovery(){
  $('collection-missing-sets').textContent=`Missing expansions: ${missing.join(', ')}. Reinstall them to restore your cards, or remove their saved copies.`;
  $('collection-remove-missing').disabled=Boolean(collectionRecoveryDisabled());
  $('dev-clear-collection').disabled=Boolean(collectionRecoveryDisabled());
+ $('dev-reset-tessera').disabled=Boolean(collectionRecoveryDisabled('reset'));
  $('collection-recovery-blocked').textContent=state.collection?.recoveryBlocked||'';
  $('development-clear-help').textContent=state.collection?.recoveryBlocked||'Start collecting again with an empty album. Your game progress is kept.';
+ $('development-reset-help').textContent=state.collection?.resetBlocked||state.collection?.recoveryBlocked||'Start Tessera over with your album and starter cards. All Tessera progress is erased.';
 }
 function closeCollectionRecovery(restore=true){
  const pending=collectionRecoveryConfirmation;
@@ -43,22 +45,24 @@ function closeCollectionRecovery(restore=true){
  if(restore&&pending)$(pending.button).focus({preventScroll:true});return true;
 }
 function confirmCollectionRecovery(action,button){
- if(collectionRecoveryDisabled()||action==='clear'&&!developmentSettings()?.enabled)return;
- const clear=action==='clear';collectionRecoveryConfirmation={action,button,session:state.session,revision:state.revision};
- $('collection-recovery-confirm-title').textContent=clear?'Clear your collection?':'Remove unavailable cards?';
- $('collection-recovery-confirm-copy').textContent=clear?
+ if(collectionRecoveryDisabled(action)||action!=='remove-missing'&&!developmentSettings()?.enabled)return;
+ const clear=action==='clear',reset=action==='reset';collectionRecoveryConfirmation={action,button,session:state.session,revision:state.revision};
+ $('collection-recovery-confirm-title').textContent=reset?'Reset Tessera for this character?':clear?'Clear your collection?':'Remove unavailable cards?';
+ $('collection-recovery-confirm-copy').textContent=reset?
+  'Erases your collection, decks, records, reputation, tournaments and regional rule changes. Resets NPC and merchant collections, cancels card exchanges, and removes carried packs and old invitations. Keeps your album and gives eight starter cards and a starter deck. Gold and interface preferences stay. Development overrides return to defaults for all characters. Restore an earlier save to undo.':clear?
   'Deletes every card and foil, including unavailable cards, clears discovery marks and empties all decks for this character. Your album, gold and game progress are kept. Automatic card grants and Reveal all cards will be turned off for all characters. Restore an earlier save to recover deleted cards.':
   'Removes unavailable cards and their discovery marks from this character, and clears their deck slots. Installed cards and game progress are kept. Reinstalling the expansions will no longer restore these copies. Keep an earlier save if you may want them back.';
- $('collection-recovery-confirm-action').textContent=clear?'Clear collection':'Remove cards';
+ $('collection-recovery-confirm-action').textContent=reset?'Reset Tessera':clear?'Clear collection':'Remove cards';
  closeSelectMenu();$('collection-recovery-confirm').hidden=false;$('collection-recovery-cancel').focus();
 }
 $('dev-clear-collection').onclick=()=>confirmCollectionRecovery('clear','dev-clear-collection');
+$('dev-reset-tessera').onclick=()=>confirmCollectionRecovery('reset','dev-reset-tessera');
 $('collection-remove-missing').onclick=()=>confirmCollectionRecovery('remove-missing','collection-remove-missing');
 $('collection-recovery-cancel').onclick=()=>closeCollectionRecovery();
 $('collection-recovery-confirm-action').onclick=()=>{
  const pending=collectionRecoveryConfirmation;closeCollectionRecovery();
- if(!pending||pending.session!==state?.session||pending.revision!==state.revision||collectionRecoveryDisabled()||pending.action==='clear'&&!developmentSettings()?.enabled)return;
- $('collection-remove-missing').disabled=$('dev-clear-collection').disabled=true;
+ if(!pending||pending.session!==state?.session||pending.revision!==state.revision||collectionRecoveryDisabled(pending.action)||pending.action!=='remove-missing'&&!developmentSettings()?.enabled)return;
+ $('collection-remove-missing').disabled=$('dev-clear-collection').disabled=$('dev-reset-tessera').disabled=true;
  send('collection-recovery',`${pending.action} confirm`);
 };
 function settingsPreviewCards(){

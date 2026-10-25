@@ -51,6 +51,15 @@ int main(int argc,char** argv){
         s["collection"]["recoveryBlocked"]="Finish or forfeit your interrupted game first.";app.receive(s.dump());frame();frame();click("Clear collection");require(commands.empty(),"Blocked recovery submitted a command");
         s["settings"]["development"]["enabled"]=false;app.receive(s.dump());frame();frame();
         require(std::none_of(hits.begin(),hits.end(),[&](const auto& h){return matches(h,"Clear collection");}),"Collection reset visible outside development mode");
+        require(std::none_of(hits.begin(),hits.end(),[&](const auto& h){return matches(h,"Reset Tessera");}),"Full reset visible outside development mode");
+      }
+      load("album","developer");{
+        click("Reset Tessera");require(commands.empty(),"Full reset ran before confirmation");click("cancel");require(commands.empty(),"Cancelled full reset submitted a command");
+        click("Reset Tessera");auto s=app.snapshot();s["revision"]=s["revision"].get<unsigned>()+1;app.receive(s.dump());frame();frame();
+        require(std::none_of(hits.begin(),hits.end(),[&](const auto& h){return matches(h,"confirm");}),"Stale full-reset confirmation stayed open");
+        s["collection"]["resetBlocked"]="Finish pending merchant payments first.";app.receive(s.dump());frame();frame();click("Reset Tessera");require(commands.empty(),"Full reset bypassed pending merchant payment");
+        s["collection"]["resetBlocked"]="";app.receive(s.dump());frame();frame();click("Reset Tessera");click("confirm");
+        require(commands.size()==1&&commands.back().ends_with("reset confirm"),"Confirmed full reset did not reach the backend");
       }
       load("album","gameplay");{
         auto s=app.snapshot();s["settings"]["development"]["enabled"]=false;s["collection"]["missingSets"]={"removed-test-set"};app.receive(s.dump());frame();frame();
