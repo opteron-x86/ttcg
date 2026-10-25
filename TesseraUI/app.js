@@ -18,7 +18,7 @@ const $=id=>document.getElementById(id);
 // Shared interaction scope for keyboard navigation. Keep overlay
 // priority here so a hidden control cannot receive focus behind another dialog.
 function activeOverlay(){
- return ['shop-confirm','tournament-confirm','tournament-outcome','deck-dialog','album-modal','abolition-dialog','table-inspection','match-rules','group-choice','rule-request','post-match','forfeit','reward','album-filter-panel'].map($).find(el=>el&&!el.hidden)||null;
+ return ['collection-recovery-confirm','shop-confirm','tournament-confirm','tournament-outcome','deck-dialog','album-modal','abolition-dialog','table-inspection','match-rules','group-choice','rule-request','post-match','forfeit','reward','album-filter-panel'].map($).find(el=>el&&!el.hidden)||null;
 }
 function activeInteractionScope(){return openSelectMenu?.list||activeOverlay()||$('table');}
 function visibleControls(scope){return [...scope.querySelectorAll('button,input,select,[tabindex="0"]')].filter(el=>!el.disabled&&el.getClientRects().length);}
@@ -340,6 +340,7 @@ async function playPresentation(next) {
  }
 }
 window.ttcgReset=()=>{
+ closeCollectionRecovery(false);
  interruptedForfeit=false;$('interrupted-match').hidden=true;
  resetShop();
  resetTablePresentation();
@@ -354,6 +355,7 @@ window.ttcgState=raw=>{
  const next=typeof raw==='string'?JSON.parse(raw):raw;
  const key=`${next.session}:${next.revision}`;
  const changed=key!==lastRevision;
+ if(changed)closeCollectionRecovery(false);
  if(next.screen!=='lesson'||next.session!==state?.session)resetLesson();
  clearTablePointer();
  if(changed) { closeMatchRules(false);hideRuleTooltip();closeShopConfirmation(false);closeAbolition(false);clearBoardDrag();closeTableInspection(false);closeGroupChoice();cancelPlayback(); selected=-1; sent=false; lastRevision=key; }
@@ -372,6 +374,7 @@ window.ttcgState=raw=>{
 };
 function closeView() {
  if(closeShopConfirmation())return;
+ if(closeCollectionRecovery())return;
  if(closeTournamentConfirmation())return;
  if(closeTournamentOutcome())return;
  if(closeTableInspection())return;

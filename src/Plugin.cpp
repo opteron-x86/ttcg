@@ -701,6 +701,42 @@ void command(const char* raw) {
  if(!campaign::interfaceSettings.gamesEnabled&&(verb=="start"||verb=="play"||verb=="prepare"||verb=="rule-lesson"||verb=="shop"))return;
  if(!ttcg::tournamentRewardAllowsCommand(campaign::saved,verb)){publish();return;}
  if(screen=="shop"&&verb!="shop"&&verb!="close"&&verb!="binding"&&verb!="development"&&verb!="cardback"&&verb!="settings")return;
+ if(verb=="collection-recovery"){
+   std::string action,confirmation;
+   if(!(input>>action>>confirmation)||(input>>extra)||confirmation!="confirm"||
+      (action!="clear"&&action!="remove-missing"&&action!="reset"))return;
+   if(!campaign::available()||active||thinking||settling||screen!="album"||!bindingCapture.empty())return;
+   if(action!="remove-missing"&&!campaign::development.enabled)return;
+   const auto blocked=action=="reset"?campaign::resetBlocked():ttcg::collectionRecoveryBlocked(campaign::saved,campaign::savedMatch.present);
+   if(!blocked.empty()){campaign::notice=blocked;publish();return;}
+   bool itemsRemoved=true;
+   if(action=="clear"||action=="reset"){
+     const auto persist=[](std::string_view key,int value){
+       const std::wstring wide(key.begin(),key.end());
+       return WritePrivateProfileStringW(L"Development",wide.c_str(),std::to_wstring(value).c_str(),settingsPath.c_str())!=0;
+     };
+     std::vector<unsigned> cancelled;
+     if(action=="reset")for(const auto& [owner,offer]:campaign::saved.exchanges)if(offer.active())cancelled.push_back(owner);
+     const bool changed=action=="reset"?campaign::development.resetTessera(campaign::saved,persist):campaign::development.clearCollection(campaign::saved,persist);
+     if(!changed){campaign::notice="Couldn't save the development settings. Your Tessera progress has not been changed.";publish();return;}
+     if(action=="reset"){
+       collectionIntegration::reset();releaseOpponent();cancelPanelRequest();campaign::closeShop();
+       auto fresh=std::move(campaign::saved);campaign::revert(nullptr);campaign::saved=std::move(fresh);
+       opponent={};opponentName.clear();challengeContext=false;albumSection.clear();lastResult={};
+       ++epoch;++session;revision=0;presentationWait.reset();updateMusic();
+       itemsRemoved=campaign::removeResetItems();campaign::ensureAlbum();
+       campaign::npcFactionTracking.allowDiscovery();campaign::registerNearbyNpcs();
+       collectionIntegration::activate();
+       for(auto owner:cancelled)if(auto* quest=campaign::resolveID<RE::TESQuest>(owner))exchangeIntegration::notify(quest,"cancelled");
+     }
+     developmentNotice.clear();
+   }else if(!ttcg::removeUnavailableCards(campaign::saved))return;
+   campaign::prepare(opponent.get().get(),action=="reset");campaign::syncProgression();
+   campaign::notice=action=="reset"?(itemsRemoved?"Tessera reset. Your album has eight starter cards and a starter deck.":"Tessera reset. Some packs or old invitations could not be removed."):
+     action=="clear"?"Collection cleared. Collect new cards from packs, shops and games.":"Unavailable cards removed from your collection and decks.";
+   log::info("Collection recovery: {}",action);
+   match=ttcg::Match(1,campaign::sessionRules);++revision;publish();return;
+ }
  if(verb=="settings") {
    std::string key;int value=-1;
    if(active||thinking||settling||screen=="lesson"||!bindingCapture.empty()||
@@ -1029,7 +1065,7 @@ void npcRefreshPapyrus(RE::StaticFunctionTag*,RE::Actor* actor){if(!actor)return
 void npcEnabledPapyrus(RE::StaticFunctionTag*,RE::Actor* actor,bool enabled){if(!actor)return;const auto handle=actor->GetHandle();collectionIntegration::queue([handle,enabled](){auto actor=handle.get();if(!actor)return;campaign::registerNpcActor(actor.get());const auto base=campaign::persistentID(actor->GetActorBase());if(auto it=campaign::saved.residents.profiles.find(base);it!=campaign::saved.residents.profiles.end())it->second.enabled=enabled;campaign::syncProgression();});}
 void npcGivePapyrus(RE::StaticFunctionTag*,RE::Actor* actor,RE::BSFixedString card,RE::BSFixedString grant,int quantity,bool foil){
  if(!actor||card.empty()||grant.empty())return;const auto handle=actor->GetHandle();const std::string key=card.c_str(),token=grant.c_str();
- collectionIntegration::queue([handle,key,token,quantity,foil](){auto actor=handle.get();if(!actor||!ttcg::validExpansionKey(key)||!ttcg::validExpansionKey(token)||quantity<1||quantity>99||(campaign::profileIndex(actor.get())<0&&!campaign::registerNpcActor(actor.get(),true))){log::warn("NPC card grant rejected: {}",token);return;}
+ collectionIntegration::queueCurrent([handle,key,token,quantity,foil](){auto actor=handle.get();if(!actor||!ttcg::validExpansionKey(key)||!ttcg::validExpansionKey(token)||quantity<1||quantity>99||(campaign::profileIndex(actor.get())<0&&!campaign::registerNpcActor(actor.get(),true))){log::warn("NPC card grant rejected: {}",token);return;}
   campaign::seedOpponent(actor.get());const auto base=campaign::persistentID(actor->GetActorBase());
   const bool given=ttcg::grantNpcCards(campaign::saved,campaign::ledgerKey(actor.get()),"script:"+token+":"+ttcg::worldKey(base),{{key,unsigned(quantity),foil}});
   campaign::syncProgression();log::info("NPC card grant {}: {}",token,given?"delivered":"already delivered or unavailable");
@@ -1054,7 +1090,7 @@ RE::TESObjectBOOK* nextTournamentInvitationPapyrus(RE::StaticFunctionTag*){
 }
 void tournamentInvitationPapyrus(RE::StaticFunctionTag*,RE::TESObjectBOOK* letter,bool delivered){
  if(!letter)return;const auto form=letter->GetFormID();const auto request=campaign::tournamentLetterInFlight.load();
- collectionIntegration::queue([form,delivered,request](){
+ collectionIntegration::queueCurrent([form,delivered,request](){
   if(!delivered&&request&&unsigned(request)==form)campaign::acknowledgeTournamentCourier(request);
   campaign::updateTournaments();
  });
@@ -1069,7 +1105,7 @@ void shopPapyrus(RE::StaticFunctionTag*,RE::Actor* actor){
 bool expansionLoadedPapyrus(RE::StaticFunctionTag*,RE::BSFixedString key){return ttcg::expansionCardID(key.c_str())!=0;}
 void expansionGivePapyrus(RE::StaticFunctionTag*,RE::BSFixedString key,std::int32_t quantity,bool foil){
  const std::string identity(key.c_str());
- collectionIntegration::queue([identity,quantity,foil](){
+ collectionIntegration::queueCurrent([identity,quantity,foil](){
   const bool granted=campaign::available()&&RE::PlayerCharacter::GetSingleton()&&ttcg::grantExpansionCard(campaign::saved,identity,quantity,foil);
   if(granted){log::info("Expansion reward: {} x{}, foil {}",identity,quantity,foil);++revision;publish();}
   else log::warn("Expansion reward rejected: {} x{}, foil {} (unavailable card, duplicate unique, or invalid quantity/state)",identity,quantity,foil);

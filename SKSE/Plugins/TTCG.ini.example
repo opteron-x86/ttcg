@@ -7,6 +7,10 @@ Enabled=0
 ; All switches below require Enabled=1. Restart Skyrim after editing this file.
 ; Enabled=1 reveals the Developer section in the album Settings tab. Those changes apply immediately.
 ; Settings also has Add all cards / Add all foils buttons to refill missing copies.
+; Clear collection deletes this character's cards, discoveries and deck contents after confirmation.
+; It keeps the album and progress, and turns off AddAllCards, AddAllFoils and RevealAllCards here.
+; Reset Tessera starts this character over with the album, eight starter cards and a starter deck.
+; It clears Tessera progress and carried packs, and restores the development overrides below to defaults.
 Enabled=0
 ; Add one copy of every catalog identity once per saved character, including reserved uniques.
 ; Later library updates add newly introduced undiscovered identities. Supplies the album.

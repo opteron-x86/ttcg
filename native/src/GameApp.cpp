@@ -283,7 +283,7 @@ void GameApp::draw(){
     auto notice=!collection.notice.empty()?collection.notice:label(member(state,"settings"),"interfaceNotice");
     if(notice.empty()&&page=="album"){
         const auto missing=join(arrayMember(member(state,"collection"),"missingSets"),", ");
-        if(!missing.empty())notice="Cards unavailable from "+missing+". Reinstall the expansion to restore them.";
+        if(!missing.empty())notice="Cards unavailable from "+missing+". Reinstall the expansion, or remove these cards in Settings > Gameplay.";
         else if(!arrayMember(state,"expansionErrors").empty())notice="An expansion could not be loaded. See TTCG.log.";
     }
     if(!notice.empty())text(frameAt+ImVec2(28,frameSize.y/scale-31)*scale,notice,16,palette().accent,width);
