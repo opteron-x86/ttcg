@@ -39,6 +39,24 @@ int main(int argc,char** argv){
         clickAt(p,mouse);};
       const auto command=[&](std::string prefix){return std::any_of(commands.begin(),commands.end(),[&](const auto& c){return c.starts_with(prefix);});};
       for(auto page:{"cards","decks","journal","rules","tournaments","appearance","match-appearance","controls","gameplay","developer"}){load(page==std::string("tournaments")?"tournaments":"album",page);for(int theme=0;theme<ttcg::interfaceThemeCount;++theme){auto s=app.snapshot();s["settings"]["theme"]=theme;app.receive(s.dump());frame();}}
+      // Collection deletion requires the Developer gate and an explicit,
+      // revision-bound confirmation. Missing-set recovery is available normally.
+      load("album","developer");{
+        auto s=app.snapshot();s["settings"]["development"]["enabled"]=true;app.receive(s.dump());o.page="developer";preview::GameTestAccess::page(app,o);frame();frame();
+        click("Clear collection");require(commands.empty(),"Collection cleared before confirmation");click("cancel");require(commands.empty(),"Cancelling cleared the collection");
+        click("Clear collection");click("confirm");require(commands.size()==1&&commands.back().ends_with("clear confirm"),"Confirmed collection reset was not submitted");
+        s["revision"]=s["revision"].get<unsigned>()+1;app.receive(s.dump());frame();frame();commands.clear();
+        click("Clear collection");s["revision"]=s["revision"].get<unsigned>()+1;app.receive(s.dump());frame();frame();
+        require(std::none_of(hits.begin(),hits.end(),[&](const auto& h){return matches(h,"confirm");}),"Stale collection confirmation stayed open");
+        s["collection"]["recoveryBlocked"]="Finish or forfeit your interrupted game first.";app.receive(s.dump());frame();frame();click("Clear collection");require(commands.empty(),"Blocked recovery submitted a command");
+        s["settings"]["development"]["enabled"]=false;app.receive(s.dump());frame();frame();
+        require(std::none_of(hits.begin(),hits.end(),[&](const auto& h){return matches(h,"Clear collection");}),"Collection reset visible outside development mode");
+      }
+      load("album","gameplay");{
+        auto s=app.snapshot();s["settings"]["development"]["enabled"]=false;s["collection"]["missingSets"]={"removed-test-set"};app.receive(s.dump());frame();frame();
+        click("Remove unavailable cards");require(commands.empty(),"Missing cards removed without confirmation");click("cancel");require(commands.empty(),"Cancel removed missing cards");
+        click("Remove unavailable cards");click("confirm");require(commands.size()==1&&commands.back().ends_with("remove-missing confirm"),"Normal settings did not submit missing-card cleanup");
+      }
       // Theme selection must reach the persisted settings command, not only
       // change the desktop preview. Each new choice is reached through the menu.
       for(int theme=5;theme<ttcg::interfaceThemeCount;++theme){

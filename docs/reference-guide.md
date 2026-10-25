@@ -44,4 +44,6 @@ The album, shop, match setup and match have separate pause settings. Leaving a g
 
 Collections and progress belong to the character's save. Interface settings are stored in `SKSE/Plugins/TTCG.ini`.
 
+If removed expansions leave unavailable cards in the album, use **Settings > Gameplay > Remove unavailable cards**, or reinstall the expansions to restore them. Cleanup removes only unavailable copies, their discovery marks and deck slots after confirmation. **Settings > Developer > Clear collection** is a separate full reset for testing, visible only with `[Development] Enabled=1` in the INI. See [collection recovery](card-expansions.md#check-and-share-your-set) for its effects and save precautions.
+
 To change the illustrations, see [Replacing card art](card-art-replacers.md). Addon authors can create [card expansions](card-expansions.md) or use the [collection API](collection-api.md).

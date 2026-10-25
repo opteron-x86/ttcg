@@ -133,12 +133,29 @@ void GameApp::settings(ImVec2 at,ImVec2 size){
         textBlock("Left and right Shift, Ctrl, and Alt can be combined with a key. Escape cancels.",width,18);if(!label(s,"notice").empty())textBlock(label(s,"notice"),width,18,palette().accent);
         heading("In Tessera");textBlock("Click a card, then a board square to play. You can also drag cards onto the board or into a deck. Right-click a card to inspect it. Tab and the arrow keys move focus; Enter selects. On a controller, use the directional pad and confirm button. Back closes the current panel.",width,19);
     }else if(settingsPage==2){
+        const auto& collectionState=member(state,"collection");
+        const auto missing=join(arrayMember(collectionState,"missingSets"),", ");
+        if(!missing.empty()){
+            textBlock("Unavailable cards",width,22,palette().accent);ImGui::Dummy(ImVec2(0,16*scale));
+            textBlock("Missing expansions: "+missing+". Reinstall them to restore your cards, or remove their saved copies.",width,18);
+            const auto blocked=label(collectionState,"recoveryBlocked");
+            ImGui::BeginDisabled(pendingCommand||capturing()||!member(state,"interruptedMatch").empty()||!blocked.empty());
+            if(ImGui::Button("Remove unavailable cards"))confirm("Remove unavailable cards?","Removes unavailable cards and their discovery marks from this character, and clears their deck slots. Installed cards and game progress are kept. Reinstalling the expansions will no longer restore these copies. Keep an earlier save if you may want them back.","collection-recovery","remove-missing confirm","Remove cards");
+            ImGui::EndDisabled();if(!blocked.empty())textBlock(blocked,width,17,palette().accent);
+            heading("Gameplay");
+        }
         toggle("Tessera games","games","gamesEnabled");textBlock("Disables Tessera games. The album is still available.",width,17);heading("Modded players");select("Residents","residents","residents",{"Disabled","Some residents","All eligible residents"});toggle("Only vanilla voices","vanilla-voices","vanillaVoicesOnly");textBlock("Authored opponents can use their own voices.",width,17);
         heading("Add a player");textBlock(label(s,"residentCandidate","Look at an eligible NPC before opening the album."),width,18);if(button("add-resident","Add player",ImGui::GetCursorScreenPos(),ImVec2(200,40)*scale,false,flag(s,"canAddResident")&&!pendingCommand))send("npc-add");
         heading("World pause");toggle("Pause in album","pause-album","pauseWorldInAlbum");heading("Experimental");textBlock("Unpaused games can be interrupted when the opponent moves or enters a scene.",width,17);toggle("Pause in shops","pause-shop","pauseWorldInShops");toggle("Pause in match setup","pause-setup","pauseWorldInMatchSetup");toggle("Pause in match","pause-match","pauseWorldDuringMatches");
     }else{
         const auto devToggle=[&](const char* name,const char* command,const char* json){const auto p=ImGui::GetCursorScreenPos();const bool value=flag(dev,json);text(p+ImVec2(0,8)*scale,name,19,palette().ink);if(button(command,value?"On":"Off",p+ImVec2(width-68*scale,0),ImVec2(68,36)*scale,value))send("development",std::string("set ")+command+" "+(value?"0":"1"));ImGui::SetCursorScreenPos(p+ImVec2(0,58)*scale);ImGui::Dummy(ImVec2(width,0));};
         heading("Collection");if(ImGui::Button("Add all cards"))send("development","cards");ImGui::SameLine();if(ImGui::Button("Add all foils"))send("development","foils");
+        const auto blocked=label(member(state,"collection"),"recoveryBlocked");
+        ImGui::Dummy(ImVec2(0,12*scale));
+        ImGui::BeginDisabled(pendingCommand||capturing()||!member(state,"interruptedMatch").empty()||!blocked.empty());
+        if(ImGui::Button("Clear collection"))confirm("Clear your collection?","Deletes every card and foil, including unavailable cards, clears discovery marks and empties all decks for this character. Your album, gold and game progress are kept. Automatic card grants and Reveal all cards will be turned off for all characters. Restore an earlier save to recover deleted cards.","collection-recovery","clear confirm","Clear collection");
+        ImGui::EndDisabled();
+        textBlock(blocked.empty()?"Start collecting again with an empty album. Your game progress is kept.":blocked,width,17);
         heading("Tournaments");devToggle("Regular tournaments","RegularTournaments","RegularTournaments");devToggle("Invitational tournaments","InvitationalTournaments","InvitationalTournaments");devToggle("Masters tournaments","MastersTournaments","MastersTournaments");
         std::vector<std::string> holds;for(const auto& h:arrayMember(member(state,"collection"),"regions"))holds.push_back(label(h,"name"));int hold=std::clamp(number(dev,"TournamentHold",1)-1,0,9);if(!holds.empty()&&combo("dev-hold","Courier hold",hold,holds,width))send("development","set TournamentHold "+std::to_string(hold+1));
         heading("Players");devToggle("Show all players","ShowAllPlayers","ShowAllPlayers");devToggle("Unlock all players","UnlockAllPlayers","UnlockAllPlayers");devToggle("Reveal all cards","RevealAllCards","RevealAllCards");devToggle("Allow any NPC","AllowAnyNPC","AllowAnyNPC");devToggle("Record results","RecordResults","RecordResults");

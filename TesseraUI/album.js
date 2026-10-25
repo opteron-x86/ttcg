@@ -89,7 +89,7 @@ function renderAlbum(){
  $('album-count').textContent=state.cards.some(card=>card.setId)?`Tessera ${progress(false)} · Expansions ${progress(true)}`:`${identityTotal(id=>c.owned[id]>0)} owned · ${progress(false)} discovered`;
  $('album-back').hidden=!(state.matchContext??Boolean(state.opponent));
  $('album-tournaments').hidden=tab!=='tournaments';$('opponents-panel').hidden=tab!=='opponents';$('album-rules').hidden=tab!=='rules';$('settings-panel').hidden=tab!=='settings';$('album-workspace').hidden=tab!=='cards'&&tab!=='decks';
- const missing=c.missingSets?.length?`Cards unavailable from ${c.missingSets.join(', ')}. Reinstall the expansion to restore them.`:'';
+ const missing=c.missingSets?.length?`Cards unavailable from ${c.missingSets.join(', ')}. Reinstall the expansion, or remove these cards in Settings > Gameplay.`:'';
  const errors=state.expansionErrors?.length?'An expansion could not be loaded. See TTCG.log.':'';
  $('album-status').textContent=c.notice||missing||errors;$('album-status').hidden=!$('album-status').textContent;$('album-status').title=(state.expansionErrors||[]).join('\n');
  if(tab==='settings'){renderSettings();return;}

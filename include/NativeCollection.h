@@ -561,10 +561,10 @@ inline std::string json(RE::Actor* actor,bool=true,bool conceal=false) {
  out+=",\"rivalDeck\":[";
  for(int h=0;h<5;++h) { if(h) out+=','; out+=conceal?"-2":std::to_string(ttcg::displayIndex(rivalDeck[h])); }
  auto& c=saved.contract;
- std::set<std::string> missingSets;
- for(const auto& [id,n]:saved.player)if(n>0){auto found=saved.missingCards.find(ttcg::baseCardID(id));if(found!=saved.missingCards.end())missingSets.insert(found->second.substr(0,found->second.find(':')));}
+ const auto missingSets=ttcg::missingCollectionSets(saved);
  out+="],\"missingSets\":[";bool firstMissing=true;for(const auto& set:missingSets){if(!firstMissing)out+=',';firstMissing=false;out+=ttcg::quote(set);}
- out+=std::format("],\"gold\":{},\"rivalGold\":{},\"canStake\":{},\"staked\":{},\"reward\":{},\"wager\":{},\"notice\":{},\"receipt\":{},\"prizes\":[",
+ out+="],\"recoveryBlocked\":"+ttcg::quote(ttcg::collectionRecoveryBlocked(saved,savedMatch.present));
+ out+=std::format(",\"gold\":{},\"rivalGold\":{},\"canStake\":{},\"staked\":{},\"reward\":{},\"wager\":{},\"notice\":{},\"receipt\":{},\"prizes\":[",
    ttcg::count(stock,0),ttcg::count(rival,0),canStake?"true":"false",c.pending()&&(c.rule()||c.wager)?"true":"false",c.choicePending()?"true":"false",c.wager,ttcg::quote(notice),ttcg::quote(receipt));
  for(int h=0;h<5;++h) { if(h) out+=','; out+=conceal?"-2":std::to_string(ttcg::displayIndex(c.hands[1][h])); }
  out+=std::format("],\"outcome\":{},\"choice\":{},\"paying\":{}}}",c.outcome,c.rule()==ttcg::TradeOne&&c.outcome==1?ttcg::prizeChoice(c.hands[0]):-1,c.paying?"true":"false");

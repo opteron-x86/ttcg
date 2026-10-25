@@ -701,6 +701,26 @@ void command(const char* raw) {
  if(!campaign::interfaceSettings.gamesEnabled&&(verb=="start"||verb=="play"||verb=="prepare"||verb=="rule-lesson"||verb=="shop"))return;
  if(!ttcg::tournamentRewardAllowsCommand(campaign::saved,verb)){publish();return;}
  if(screen=="shop"&&verb!="shop"&&verb!="close"&&verb!="binding"&&verb!="development"&&verb!="cardback"&&verb!="settings")return;
+ if(verb=="collection-recovery"){
+   std::string action,confirmation;
+   if(!(input>>action>>confirmation)||(input>>extra)||confirmation!="confirm"||
+      (action!="clear"&&action!="remove-missing"))return;
+   if(!campaign::available()||active||thinking||settling||screen!="album"||!bindingCapture.empty())return;
+   if(action=="clear"&&!campaign::development.enabled)return;
+   const auto blocked=ttcg::collectionRecoveryBlocked(campaign::saved,campaign::savedMatch.present);
+   if(!blocked.empty()){campaign::notice=blocked;publish();return;}
+   if(action=="clear"){
+     if(!campaign::development.clearCollection(campaign::saved,[](const char* key,int value){
+       const std::string name(key);const std::wstring wide(name.begin(),name.end());
+       return WritePrivateProfileStringW(L"Development",wide.c_str(),std::to_wstring(value).c_str(),settingsPath.c_str())!=0;
+     })){campaign::notice="Couldn't save the collection settings. Your collection has not been cleared.";publish();return;}
+     developmentNotice.clear();
+   }else if(!ttcg::removeUnavailableCards(campaign::saved))return;
+   campaign::prepare(opponent.get().get());campaign::syncProgression();
+   campaign::notice=action=="clear"?"Collection cleared. Collect new cards from packs, shops and games.":"Unavailable cards removed from your collection and decks.";
+   log::info("Collection recovery: {}",action);
+   match=ttcg::Match(1,campaign::sessionRules);++revision;publish();return;
+ }
  if(verb=="settings") {
    std::string key;int value=-1;
    if(active||thinking||settling||screen=="lesson"||!bindingCapture.empty()||

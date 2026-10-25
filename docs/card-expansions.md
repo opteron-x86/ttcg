@@ -150,3 +150,9 @@ If the set does not appear, check `TTCG.log` for its filename. Common mistakes a
 For release, distribute the ZIP exported by the editor, or zip your own `SKSE` and `TesseraUI` folders together. Leave the authoring guides and editor out of the installed mod.
 
 Removing a set makes its cards unavailable but keeps their saved ownership. Reinstalling it with the same IDs restores them. A deck containing unavailable cards cannot start a game.
+
+If you have permanently removed a test set, open **Settings > Gameplay > Remove unavailable cards** in the album. Confirming removes saved copies and discovery marks for unavailable cards and clears their deck slots. Installed cards and game progress are kept. This also covers cards removed from a newer version of an installed set. After cleanup, reinstalling the old definitions will not restore those copies; keep an earlier save if you may want them back. Development mode is not required.
+
+To start collecting again after granting yourself every card, set `[Development] Enabled=1` in `SKSE/Plugins/TTCG.ini`, restart Skyrim, and use **Settings > Developer > Clear collection**. Confirming deletes all standard and foil copies, including unavailable cards, clears discoveries and empties every saved deck for the current character. The album remains acquired; gold, unopened packs, opponents, match records and reputation are kept. It also turns off `AddAllCards`, `AddAllFoils` and `RevealAllCards` in the INI for all characters so loading a save cannot refill the collection automatically. Set `Enabled=0` and restart to hide Developer settings when finished.
+
+Both actions require you to finish or forfeit interrupted matches, settle pending trades and payments, and finish or withdraw from a tournament. Restore an earlier save to undo deletion. Addons that keep their own acquisition history, such as Completionist, retain that history.

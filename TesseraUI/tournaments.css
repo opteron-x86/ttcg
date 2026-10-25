@@ -57,7 +57,7 @@
 .tournament-outcome-panel .modal-actions { gap:12px; }
 .tournament-confirm-panel { width:460px;max-width:80%; }
 .tournament-confirm-panel h2 { margin:0 0 26px;color:var(--gold);font-size:28px;font-weight:normal; }
-.tournament-confirm-panel #tournament-confirm-copy { color:var(--muted);font-size:18px;line-height:1.5; }
+.tournament-confirm-panel #tournament-confirm-copy,.tournament-confirm-panel #collection-recovery-confirm-copy { color:var(--muted);font-size:18px;line-height:1.5; }
 
 .tournament-sidebar { display:flex;flex-direction:column;min-height:0; }
 .tournament-views { display:flex;gap:4px;margin-bottom:16px;border-bottom:1px solid #bba16b33; }

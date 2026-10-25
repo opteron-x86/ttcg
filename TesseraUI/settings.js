@@ -21,7 +21,46 @@ function renderSettings(){
  $('settings-title').textContent=entries.find(s=>s.id===settingsSection).title;
  $('settings-preview').hidden=settingsSection!=='appearance';
  renderWindowSettings();renderBindings();renderSettingsPreview();
+ renderCollectionRecovery();
 }
+let collectionRecoveryConfirmation=null;
+function collectionRecoveryDisabled(){
+ return state?.screen!=='album'||state.phase!=='ready'||state.interruptedMatch||state.collection?.recoveryBlocked||state.collection?.staked||state.collection?.paying||bindings().capturing||bindingPending;
+}
+function renderCollectionRecovery(){
+ const missing=state.collection?.missingSets||[];
+ $('collection-recovery').hidden=!missing.length;
+ $('collection-missing-sets').textContent=`Missing expansions: ${missing.join(', ')}. Reinstall them to restore your cards, or remove their saved copies.`;
+ $('collection-remove-missing').disabled=Boolean(collectionRecoveryDisabled());
+ $('dev-clear-collection').disabled=Boolean(collectionRecoveryDisabled());
+ $('collection-recovery-blocked').textContent=state.collection?.recoveryBlocked||'';
+ $('development-clear-help').textContent=state.collection?.recoveryBlocked||'Start collecting again with an empty album. Your game progress is kept.';
+}
+function closeCollectionRecovery(restore=true){
+ const pending=collectionRecoveryConfirmation;
+ if($('collection-recovery-confirm').hidden)return false;
+ $('collection-recovery-confirm').hidden=true;collectionRecoveryConfirmation=null;
+ if(restore&&pending)$(pending.button).focus({preventScroll:true});return true;
+}
+function confirmCollectionRecovery(action,button){
+ if(collectionRecoveryDisabled()||action==='clear'&&!developmentSettings()?.enabled)return;
+ const clear=action==='clear';collectionRecoveryConfirmation={action,button,session:state.session,revision:state.revision};
+ $('collection-recovery-confirm-title').textContent=clear?'Clear your collection?':'Remove unavailable cards?';
+ $('collection-recovery-confirm-copy').textContent=clear?
+  'Deletes every card and foil, including unavailable cards, clears discovery marks and empties all decks for this character. Your album, gold and game progress are kept. Automatic card grants and Reveal all cards will be turned off for all characters. Restore an earlier save to recover deleted cards.':
+  'Removes unavailable cards and their discovery marks from this character, and clears their deck slots. Installed cards and game progress are kept. Reinstalling the expansions will no longer restore these copies. Keep an earlier save if you may want them back.';
+ $('collection-recovery-confirm-action').textContent=clear?'Clear collection':'Remove cards';
+ closeSelectMenu();$('collection-recovery-confirm').hidden=false;$('collection-recovery-cancel').focus();
+}
+$('dev-clear-collection').onclick=()=>confirmCollectionRecovery('clear','dev-clear-collection');
+$('collection-remove-missing').onclick=()=>confirmCollectionRecovery('remove-missing','collection-remove-missing');
+$('collection-recovery-cancel').onclick=()=>closeCollectionRecovery();
+$('collection-recovery-confirm-action').onclick=()=>{
+ const pending=collectionRecoveryConfirmation;closeCollectionRecovery();
+ if(!pending||pending.session!==state?.session||pending.revision!==state.revision||collectionRecoveryDisabled()||pending.action==='clear'&&!developmentSettings()?.enabled)return;
+ $('collection-remove-missing').disabled=$('dev-clear-collection').disabled=true;
+ send('collection-recovery',`${pending.action} confirm`);
+};
 function settingsPreviewCards(){
  return state.cards.map((_,i)=>i).filter(i=>albumKnown(i)&&!state.cards[i].foil);
 }
