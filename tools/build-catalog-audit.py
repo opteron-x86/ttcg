@@ -19,16 +19,17 @@ SOURCE_FILES = (
 # Check the official roster against its pack-generation formulas.
 REVIEWED_PACKS = (
     ("include/Album.h", "inline std::vector<CardID> packCards(",
-     "9ec31744012ed3935b4cf07967516722b997d5ab9f0eaad82bc456b0bc56974f"),
+     "daf8e4e13bd4447295a27d927eb10d110e670f865977fd2f43d423a35bdba05f"),
     ("include/Tournaments.h", "inline std::vector<CardID> tournamentPack(",
-     "66c640f0b1b51effed8fd55c03cbf7e74c68dc2e1d44261038e7b7948ae3eeb1"),
+     "ee9cb765254006d1f4579f6f9a52c212ad8b51ade83df54c4384a676532c8a91"),
 )
 
 
 def verify_pack_recipes():
     trophy_source = (ROOT / "include/Tournaments.h").read_text()
-    trophy_guard = 'if((circuit!=1&&circuit!=2)||c.pending||!c.unique||std::string_view(c.rarity)!="Legendary")return false;'
-    trophy_condition = 'return officialCard(c)&&!c.available&&(circuit==1?c.tier==8:c.tier==9||c.tier==10);'
+    trophy_guard = ('if ((circuit != 1 && circuit != 2) || c.pending || !c.unique || '
+                    'std::string_view(c.rarity) != "Legendary")\n        return false;')
+    trophy_condition = 'return officialCard(c) && !c.available && (circuit == 1 ? c.tier == 8 : c.tier == 9 || c.tier == 10);'
     if trophy_guard not in trophy_source or trophy_condition not in trophy_source:
         raise ValueError("Tournament trophy eligibility changed. Review routes_for before rebuilding the audit.")
     for path, signature, expected in REVIEWED_PACKS:

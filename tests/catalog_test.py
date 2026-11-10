@@ -31,7 +31,7 @@ assert [r['base'] for r in layout['records']]==[p['base'] for p in profiles]
 script_names={p.stem for p in (root/'Scripts/Source').glob('*.psc')}
 assert {p.stem for p in (root/'Scripts').glob('*.pex')}==script_names
 native=(root/'src/Plugin.cpp').read_text();api=(root/'Scripts/Source/TTCG_Native.psc').read_text()
-assert set(re.findall(r'Function (\w+)\(',api))==set(re.findall(r'RegisterFunction\("(\w+)","TTCG_Native"',native))
+assert set(re.findall(r'Function (\w+)\(',api))==set(re.findall(r'RegisterFunction\("(\w+)",\s*"TTCG_Native"',native))
 assert 'SetUniqueID(0x54544347)' in native
 assert b"TTCG_Album\0" in (root/'Tessera TCG.esp').read_bytes()
 native_collection=(root/'include/NativeCollection.h').read_text()

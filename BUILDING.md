@@ -35,6 +35,10 @@ build/native/native/TesseraNativeUI --snapshot build/test-fixtures/album.json
 
 For a Windows DLL from Linux, install clang-cl, lld-link, llvm-rc, xwin and Wine, then run `bash tools/build-native.sh`. The script downloads the pinned SDK and build dependencies. Run `bash tools/test-native.sh` to test that DLL through Wine. `XWIN_SYSROOT` can select an existing Windows SDK.
 
+## Formatting
+
+C++ sources follow `.clang-format`. Run `bash tools/format.sh` before committing; CI runs `bash tools/format.sh --check` with clang-format 23.1.4 (`pipx install clang-format==23.1.4`). Generated headers are listed in `.clang-format-ignore` and keep their generators' layout.
+
 ## Packages
 
 Commit the source, build it and run the Windows probes, then:

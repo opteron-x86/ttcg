@@ -10,7 +10,7 @@ start = source.index('void backgroundUpdatePapyrus(')
 bridge = source[start:source.index('bool resumeMatch()', start)]
 
 api_source = (root / 'include/NativeCollectionAPI.h').read_text()
-queue = api_source[api_source.index('template<class Task> void queue('):api_source.index('inline int apiVersion(')]
+queue = api_source[api_source.index('template <class Task> void queue('):api_source.index('inline int apiVersion(')]
 
 # Compile the actual callbacks, substituting only the SKSE task queue and the
 # engine refresh. Callback calls leave the dispatcher idle.

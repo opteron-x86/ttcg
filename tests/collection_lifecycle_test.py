@@ -6,7 +6,7 @@ import re
 
 root = Path(__file__).resolve().parents[1]
 source = (root / 'src/Plugin.cpp').read_text()
-guard = re.search(r'if\((msg->type!=SKSE::MessagingInterface::kPreLoadGame&&.*?)\) \{\s*// SKSE passes', source, re.S)
+guard = re.search(r'if \((msg->type != SKSE::MessagingInterface::kPreLoadGame &&.*?)\) \{\s*// SKSE passes', source, re.S)
 assert guard, 'Collection load recovery guard not found'
 code = r'''
 #include <cassert>
