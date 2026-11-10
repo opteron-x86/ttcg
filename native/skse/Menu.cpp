@@ -12,13 +12,21 @@ public:
         if (Host::get().pauses()) menuFlags.set(RE::UI_MENU_FLAGS::kPausesGame);
         menuFlags.set(RE::UI_MENU_FLAGS::kUsesCursor, RE::UI_MENU_FLAGS::kUpdateUsesCursor,
                       RE::UI_MENU_FLAGS::kUsesMenuContext, RE::UI_MENU_FLAGS::kCustomRendering,
-                      RE::UI_MENU_FLAGS::kDisablePauseMenu);
+                      RE::UI_MENU_FLAGS::kDisablePauseMenu, RE::UI_MENU_FLAGS::kDontHideCursorWhenTopmost);
         inputContext.set(RE::UserEvents::INPUT_CONTEXT_ID::kMenuMode);
+    }
+    void RefreshPlatform() override {
+        // Native widgets support mouse and controller together. The base
+        // Scaleform policy hides the cursor when a controller is enabled.
+        Host::get().refreshCursor();
     }
     void PostDisplay() override { Host::get().draw(); }
     RE::UI_MESSAGE_RESULTS ProcessMessage(RE::UIMessage& message) override {
         switch (*message.type) {
-            case RE::UI_MESSAGE_TYPE::kShow: Host::get().shown(); break;
+            case RE::UI_MESSAGE_TYPE::kShow:
+                Host::get().shown();
+                RefreshPlatform();
+                break;
             case RE::UI_MESSAGE_TYPE::kHide:
             case RE::UI_MESSAGE_TYPE::kForceHide: Host::get().hidden(); break;
             case RE::UI_MESSAGE_TYPE::kScaleformEvent:

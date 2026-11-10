@@ -4,7 +4,6 @@
 #include "RendererDX11.h"
 #include "DXIsolation.h"
 #include <imgui_impl_dx11.h>
-#include <imgui_impl_win32.h>
 #include <imgui_internal.h>
 #include <windows.h>
 #include <algorithm>
@@ -32,10 +31,10 @@ bool foreignMenu(RE::UI* ui) {
     if (!ui) return true;
     // Yield input to another active menu.
     const auto own = ui->GetMenu(menuName), cursor = ui->GetMenu(RE::CursorMenu::MENU_NAME),
-               hud = ui->GetMenu(RE::HUDMenu::MENU_NAME);
+               hud = ui->GetMenu(RE::HUDMenu::MENU_NAME), console = ui->GetMenu(RE::Console::MENU_NAME);
     for (const auto& menu : ui->menuStack) {
         if (menu && menu.get() != own.get() && menu.get() != cursor.get() && menu.get() != hud.get() &&
-            menu->UsesMenuContext())
+            menu.get() != console.get() && menu->UsesMenuContext())
             return true;
     }
     // Include external focus menus that leave Skyrim unpaused.
@@ -53,7 +52,10 @@ struct Host::State {
     std::function<void(const std::string&)> command;
     std::function<void()> interrupted;
     bool initialized = false, textAllowed = false, reopen = false;
-    std::atomic<bool> closeQueued{false}, clearInput{true}, resetRenderer{false}, wantsText{false}, gamepad{false};
+    std::uint64_t cursorLogToken = 0;
+    unsigned cursorLogCount = 0;
+    std::atomic<bool> closeQueued{false}, clearInput{true}, resetRenderer{false}, wantsText{false}, gamepad{false},
+        cursorRefreshQueued{false};
     std::atomic<HWND> window{nullptr};
     struct Input {
         enum Kind { key, character, mouse, wheel, analog, capture } kind;
@@ -68,7 +70,8 @@ struct Host::State {
         ID3D11Device* device = nullptr;
         ID3D11DeviceContext* context = nullptr;
         HWND window = nullptr;
-        bool win32 = false, dx11 = false;
+        bool dx11 = false;
+        std::chrono::steady_clock::time_point lastFrame{};
         std::unique_ptr<DXIsolation> isolation;
         std::unique_ptr<Renderer> renderer;
         std::unique_ptr<GameApp> app;
@@ -83,7 +86,6 @@ struct Host::State {
             renderer.reset();
             isolation.reset();
             if (dx11) ImGui_ImplDX11_Shutdown();
-            if (win32) ImGui_ImplWin32_Shutdown();
             if (imgui) ImGui::DestroyContext(imgui);
         }
         void initialize(ID3D11Device* d, ID3D11DeviceContext* c, IDXGISwapChain* swap, const Options& options) {
@@ -98,15 +100,13 @@ struct Host::State {
             imgui = ImGui::CreateContext();
             ImGui::SetCurrentContext(imgui);
             auto& io = ImGui::GetIO();
-            io.ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange;
+            io.BackendPlatformName = "tessera-skse";
             io.MouseDrawCursor = false;
             io.IniFilename = nullptr;
             io.LogFilename = nullptr;
             io.ConfigErrorRecoveryEnableAssert = false;
             io.ConfigErrorRecoveryEnableTooltip = false;
             imgui->ErrorCallback = [](ImGuiContext*, void*, const char* text) { log::error("Native UI: {}", text); };
-            win32 = ImGui_ImplWin32_Init(window);
-            if (!win32) throw std::runtime_error("Cannot initialize native window input");
             dx11 = ImGui_ImplDX11_Init(device, context);
             if (!dx11) throw std::runtime_error("Cannot initialize native DirectX renderer");
             renderer = makeDXRenderer(device, context);
@@ -181,12 +181,18 @@ void Host::unfocus() {
     state->reopen = false;
     close("focus released");
 }
-bool Host::hasFocus() const {
+Interaction Host::interaction() const {
     auto& s = *state;
     const auto window = s.window.load();
     auto* ui = RE::UI::GetSingleton();
-    return s.session.active() && (!window || GetForegroundWindow() == window) && ui && ui->IsMenuOpen(menuName) &&
-           !foreignMenu(ui);
+    return skyrim::interaction(s.session.active(), ui && ui->IsMenuOpen(menuName), foreignMenu(ui),
+                               !window || GetForegroundWindow() == window,
+                               ui && ui->IsMenuOpen(RE::Console::MENU_NAME));
+}
+void Host::discardInput() {
+    state->clearInput = true;
+    std::scoped_lock lock(state->inputMutex);
+    state->input.clear();
 }
 void Host::shown() {
     auto& s = *state;
@@ -195,6 +201,32 @@ void Host::shown() {
         return;
     }
     s.clearInput = true;
+}
+void Host::refreshCursor() {
+    auto& s = *state;
+    if (s.cursorRefreshQueued.exchange(true)) return;
+    const auto token = s.session.token();
+    // kShow runs before the menu stack has finished updating. Defer cursor
+    // ownership until that completes, just as a later device change would.
+    SKSE::GetTaskInterface()->AddTask([this, token] {
+        auto& s = *state;
+        s.cursorRefreshQueued = false;
+        if (!s.session.accepts(token) || interaction() != Interaction::active) return;
+        auto* ui = RE::UI::GetSingleton();
+        auto* queue = RE::UIMessageQueue::GetSingleton();
+        if (!ui || !queue) return;
+        const bool open = ui->IsMenuOpen(RE::CursorMenu::MENU_NAME);
+        queue->AddMessage(RE::CursorMenu::MENU_NAME, open ? RE::UI_MESSAGE_TYPE::kUpdate : RE::UI_MESSAGE_TYPE::kShow,
+                          nullptr);
+        // Cursor Menu owns Skyrim's rendered pointer. MenuCursor's visibility
+        // setter calls Win32 ShowCursor and would expose a second desktop arrow.
+        if (s.cursorLogToken != token) {
+            s.cursorLogToken = token;
+            s.cursorLogCount = 0;
+        }
+        if (s.cursorLogCount++ < 3)
+            SKSE::log::info("Native cursor menu recovery: session {}, menu was open {}", token, open);
+    });
 }
 void Host::releaseTextInput() {
     auto& s = *state;
@@ -266,9 +298,21 @@ void Host::queueClose(const char* reason) {
 void Host::draw() {
     auto& s = *state;
     if (!s.session.active() || s.closeQueued) return;
-    if (!hasFocus()) {
-        queueClose("focus or menu changed");
+    const auto mode = interaction();
+    if (mode == Interaction::lost) {
+        queueClose("game menu changed");
         return;
+    }
+    const bool inputActive = mode == Interaction::active;
+    if (inputActive && !RE::UI::GetSingleton()->IsMenuOpen(RE::CursorMenu::MENU_NAME)) refreshCursor();
+    if (!inputActive) {
+        discardInput();
+        if (s.wantsText.exchange(false)) {
+            const auto token = s.session.token();
+            SKSE::GetTaskInterface()->AddTask([this, token] { syncTextInput(token); });
+        }
+        const auto window = s.window.load();
+        if (window && GetForegroundWindow() != window) return;
     }
     ContextGuard contextGuard;
     bool frameStarted = false;
@@ -316,23 +360,33 @@ void Host::draw() {
         if (snapshot) g.app->receive(*snapshot);
         if (s.escapeApp.exchange(false)) g.app->escape();
         ImGui_ImplDX11_NewFrame();
-        ImGui_ImplWin32_NewFrame();
+        // SKSE supplies all input. The Win32 backend also polls the OS cursor,
+        // which Skyrim may lock at the centre; mixing that with MenuCursor
+        // queues conflicting positions and breaks native hit testing.
+        RECT client{};
+        if (!GetClientRect(g.window, &client)) return;
+        io.DisplaySize = {float(client.right - client.left), float(client.bottom - client.top)};
+        io.DeltaTime = g.lastFrame.time_since_epoch().count()
+                           ? std::clamp(std::chrono::duration<float>(start - g.lastFrame).count(), .001f, .1f)
+                           : 1.f / 60;
+        g.lastFrame = start;
         const auto size = isolated.targetSize();
         if (io.DisplaySize.x <= 0 || io.DisplaySize.y <= 0) return;
         if (size.x > 0 && size.y > 0)
             io.DisplayFramebufferScale = {size.x / io.DisplaySize.x, size.y / io.DisplaySize.y};
         // CursorMenu provides the coordinates Skyrim displays. Win32's OS cursor
         // can be locked at screen center while Skyrim uses a software cursor.
-        if (auto* cursor = RE::MenuCursor::GetSingleton()) {
+        if (auto* cursor = RE::MenuCursor::GetSingleton(); inputActive && cursor) {
             const auto& c = cursor->GetRuntimeData();
             const float sx = c.screenWidthX > 0 ? io.DisplaySize.x / c.screenWidthX : 1.f;
             const float sy = c.screenWidthY > 0 ? io.DisplaySize.y / c.screenWidthY : 1.f;
             io.AddMousePosEvent(c.cursorPosX * sx, c.cursorPosY * sy);
-        }
-        io.AddFocusEvent(true);
-        io.AddKeyEvent(ImGuiMod_Ctrl, (GetAsyncKeyState(VK_CONTROL) & 0x8000) != 0);
-        io.AddKeyEvent(ImGuiMod_Shift, (GetAsyncKeyState(VK_SHIFT) & 0x8000) != 0);
-        io.AddKeyEvent(ImGuiMod_Alt, (GetAsyncKeyState(VK_MENU) & 0x8000) != 0);
+        } else
+            io.AddMousePosEvent(-FLT_MAX, -FLT_MAX);
+        io.AddFocusEvent(inputActive);
+        io.AddKeyEvent(ImGuiMod_Ctrl, inputActive && (GetAsyncKeyState(VK_CONTROL) & 0x8000) != 0);
+        io.AddKeyEvent(ImGuiMod_Shift, inputActive && (GetAsyncKeyState(VK_SHIFT) & 0x8000) != 0);
+        io.AddKeyEvent(ImGuiMod_Alt, inputActive && (GetAsyncKeyState(VK_MENU) & 0x8000) != 0);
         if (s.gamepad)
             io.BackendFlags |= ImGuiBackendFlags_HasGamepad;
         else
@@ -343,7 +397,7 @@ void Host::draw() {
             input.swap(s.input);
         }
         for (const auto& event : input) {
-            if (event.token != token) continue;
+            if (!inputActive || event.token != token) continue;
             switch (event.kind) {
                 case State::Input::capture: g.app->captureKey(unsigned(event.code), unsigned(event.value)); break;
                 case State::Input::key: io.AddKeyEvent(ImGuiKey(event.code), event.value > 0); break;
@@ -363,7 +417,8 @@ void Host::draw() {
         ImGui::NewFrame();
         frameStarted = true;
         g.app->draw();
-        if (s.wantsText.exchange(io.WantTextInput) != io.WantTextInput)
+        const bool wantsText = inputActive && io.WantTextInput;
+        if (s.wantsText.exchange(wantsText) != wantsText)
             SKSE::GetTaskInterface()->AddTask([this, token] { syncTextInput(token); });
         if (g.app->closeRequested()) queueClose("back/close button");
         ImGui::Render();
@@ -399,8 +454,13 @@ RE::BSEventNotifyControl Host::ProcessEvent(RE::InputEvent* const* events, RE::B
         return keyboard && (keyboard->GetRuntimeData().curState[code] & 0x80) != 0;
     };
     const unsigned modifiers = ttcg::heldHotkeyModifiers(pressed);
-    if (s.session.active() && !hasFocus()) queueClose("input focus changed");
-    const bool focused = hasFocus();
+    const auto mode = interaction();
+    if (mode == Interaction::lost) queueClose("input menu changed");
+    if (mode != Interaction::active) {
+        discardInput();
+        releaseTextInput();
+        return RE::BSEventNotifyControl::kContinue;
+    }
     const auto token = s.session.token();
     if (manager) s.gamepad = manager->IsGamepadEnabled();
     std::vector<State::Input> batch;
@@ -409,7 +469,6 @@ RE::BSEventNotifyControl Host::ProcessEvent(RE::InputEvent* const* events, RE::B
     };
     for (auto* event = *events; event; event = event->next) {
         auto* button = event->AsButtonEvent();
-        if (!focused) continue;
         if (auto* character = event->AsCharEvent()) {
             if (character->keyCode >= 32 && character->keyCode != 127 && character->keyCode <= 0x10ffff)
                 push(State::Input::character, int(character->keyCode), 0);
@@ -453,6 +512,8 @@ RE::BSEventNotifyControl Host::ProcessEvent(RE::InputEvent* const* events, RE::B
 }
 RE::BSEventNotifyControl Host::ProcessEvent(const RE::MenuOpenCloseEvent* event,
                                             RE::BSTEventSource<RE::MenuOpenCloseEvent>*) {
+    if (event && !event->opening && event->menuName == RE::Console::MENU_NAME && state->session.active())
+        refreshCursor();
     if (event && event->opening && event->menuName != menuName && event->menuName != RE::CursorMenu::MENU_NAME &&
         state->session.active() && foreignMenu(RE::UI::GetSingleton()))
         queueClose("another menu opened");
