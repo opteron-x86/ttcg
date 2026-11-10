@@ -5,9 +5,9 @@ import subprocess
 import tempfile
 
 root = Path(__file__).resolve().parents[1]
-source = (root / 'src/Plugin.cpp').read_text()
+source = (root / 'src/Papyrus.cpp').read_text()
 start = source.index('void backgroundUpdatePapyrus(')
-bridge = source[start:source.index('bool resumeMatch()', start)]
+bridge = source[start:source.index('void albumPapyrus(', start)]
 
 api_source = (root / 'include/NativeCollectionAPI.h').read_text()
 queue = api_source[api_source.index('template <class Task> void queue('):api_source.index('inline int apiVersion(')]
@@ -87,5 +87,5 @@ assert not any(old in encounters for old in ('NextMaster', 'MasterArrived', 'Pat
 update = encounters.split('Event OnUpdate()', 1)[1]
 assert update.count('RegisterForSingleUpdate') == 1
 assert update.index('BackgroundUpdate()') < update.index('RegisterForSingleUpdate(30.0)')
-assert 'scanMasterApproach' not in source
+assert not any('scanMasterApproach' in p.read_text() for p in (root / 'src').glob('*.*'))
 print('Papyrus callbacks and background dispatch tests passed')

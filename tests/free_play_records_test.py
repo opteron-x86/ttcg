@@ -148,7 +148,7 @@ print(f'Records/audio: {len(records)-1} records, album purchase dialogue, packs,
 invitation_source=(root/'Scripts/Source/TTCG_TournamentInvitation.psc').read_text()
 assert 'Scriptname TTCG_TournamentInvitation extends ObjectReference' in invitation_source
 assert 'GetBaseObject(' not in invitation_source and 'OnContainerChanged(' not in invitation_source
-native=(root/'src/Plugin.cpp').read_text()
+native=(root/'src/Events.cpp').read_text()
 assert 'event->baseObj' in native and 'event->oldContainer == 0x39FB9' in native and 'event->oldContainer == 0x39FB7' in native
 encounters=(root/'Scripts/Source/TTCG_EncountersQuest.psc').read_text()
 assert 'courier.AddItemToContainer(invitation, 1)' in encounters

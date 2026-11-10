@@ -112,7 +112,7 @@ int main() {
         unsigned v, r;
         in >> verb >> v >> r;
         if (v == session && r == revision) {
-            // Exercise the same reward gate as Plugin.cpp. The final win records its
+            // Exercise the same reward gate as Commands.cpp. The final win records its
             // reward before playback, and only the browser's acknowledgement settles it.
             if (!verb.starts_with("test-") && verb != "reload" && !tournamentRewardAllowsCommand(s, verb)) {
                 output();
