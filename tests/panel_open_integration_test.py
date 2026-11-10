@@ -4,16 +4,18 @@ import subprocess
 import tempfile
 
 root = Path(__file__).resolve().parents[1]
-source = (root / 'src/Plugin.cpp').read_text()
+panel = (root / 'src/Panel.cpp').read_text()
+state = (root / 'src/PluginState.cpp').read_text()
+papyrus = (root / 'src/Papyrus.cpp').read_text()
 collection = (root / 'include/NativeCollection.h').read_text()
 def section(text, start, end):
     return text[text.index(start):text.index(end, text.index(start))]
 actor_gate = section(collection, 'enum class ActorCardBlock', 'inline bool resumingWith')
-finish = section(source, 'void finishPanelRequest(', 'void requestPanel(')
-cancel = section(source, 'void cancelPanelRequest()', '\nstd::string albumSection')
+finish = section(panel, 'void finishPanelRequest(', 'void requestPanel(')
+cancel = section(state, 'void cancelPanelRequest()', '\nstd::string albumSection')
 adapters = '\n'.join([
-    section(source, 'void beginPapyrus(', 'void receiveCommand('),
-    section(source, 'void tournamentEntryPapyrus(', 'bool expansionLoadedPapyrus('),
+    section(papyrus, 'void beginPapyrus(', 'void receiveCommand('),
+    section(papyrus, 'void tournamentEntryPapyrus(', 'bool expansionLoadedPapyrus('),
 ])
 code = r"""
 #include "PanelOpenRequest.h"

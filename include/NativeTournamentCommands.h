@@ -1,4 +1,4 @@
-// Included in Plugin.cpp after the normal table helpers.
+// Included in src/Commands.cpp after the normal table helpers.
 void tournamentBoard() {
     releaseOpponent();
     if (active) campaign::savedMatch = {};

@@ -80,6 +80,14 @@ target_compile_options(tessera_commonlib_lifetime_test PRIVATE /EHsc /Brepro)
 
 add_library(${PROJECT_NAME} SHARED
   src/Plugin.cpp
+  src/PluginState.cpp
+  src/Music.cpp
+  src/World.cpp
+  src/Panel.cpp
+  src/MatchFlow.cpp
+  src/Commands.cpp
+  src/Papyrus.cpp
+  src/Events.cpp
   native/skse/Host.cpp
   native/skse/Menu.cpp
 )
