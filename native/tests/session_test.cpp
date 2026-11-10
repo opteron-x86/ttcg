@@ -1,5 +1,6 @@
 #include "Session.h"
 #include "Keys.h"
+#include "Interaction.h"
 #include <stdexcept>
 #include <iostream>
 
@@ -37,6 +38,21 @@ int main() {
     require(keyboardKey(30) == ImGuiKey_A && keyboardKey(203) == ImGuiKey_LeftArrow);
     require(controllerKey(4096) == ImGuiKey_GamepadFaceDown && controllerKey(8192) == ImGuiKey_GamepadFaceRight);
     require(keyboardKey(255) == ImGuiKey_None && controllerKey(999) == ImGuiKey_None);
+    // Alt-Tab and console input leave the menu generation intact. Returning to
+    // Skyrim resumes the same session; another game menu still interrupts it.
+    require(s.open() && s.shown());
+    const auto beforeTab = s.token();
+    for (bool console : {false, true}) {
+        require(interaction(s.active(), true, false, false, console) == Interaction::suspended);
+        require(s.accepts(beforeTab));
+        require(interaction(s.active(), true, false, true, console) ==
+                (console ? Interaction::suspended : Interaction::active));
+    }
+    require(interaction(s.active(), true, true, true, false) == Interaction::lost);
+    require(interaction(s.active(), false, false, false, false) == Interaction::lost);
+    s.close();
+    s.hidden();
+    require(interaction(s.active(), false, false, true, false) == Interaction::hidden);
     std::cout
         << "Native menu lifecycle: repeated opens, close-before-show, stale input/commands and key mapping passed\n";
 }

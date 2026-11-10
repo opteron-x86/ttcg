@@ -2,6 +2,7 @@
 #include <RE/Skyrim.h>
 #include <SKSE/SKSE.h>
 #include "Session.h"
+#include "Interaction.h"
 #include <atomic>
 #include <memory>
 #include <functional>
@@ -13,7 +14,8 @@ class Host final : public RE::BSTEventSink<RE::InputEvent*>, public RE::BSTEvent
     std::unique_ptr<State> state;
     Host();
     ~Host() override;
-    bool hasFocus() const;
+    Interaction interaction() const;
+    void discardInput();
     void queueClose(const char*);
     void releaseTextInput();
     void syncTextInput(std::uint64_t);
@@ -35,6 +37,7 @@ public:
     bool focused() const;
     bool anyFocus() const;
     bool pauses() const;
+    void refreshCursor();
     RE::BSEventNotifyControl ProcessEvent(RE::InputEvent* const*, RE::BSTEventSource<RE::InputEvent*>*) override;
     RE::BSEventNotifyControl ProcessEvent(const RE::MenuOpenCloseEvent*,
                                           RE::BSTEventSource<RE::MenuOpenCloseEvent>*) override;
