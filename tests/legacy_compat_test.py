@@ -34,6 +34,7 @@ Tasks tasks;
 Tasks* GetTaskInterface(){return &tasks;}
 }
 namespace collectionIntegration {
+inline std::atomic<unsigned> generation{1};
 inline void publish() {}
 ''' + queue + r'''
 }

@@ -34,6 +34,12 @@ inline void activate() {ready=campaign::available();publish();}
 template<class Task> void queue(Task task) {
     SKSE::GetTaskInterface()->AddTask([task=std::move(task)]() mutable {task();publish();});
 }
+// Rewards and courier callbacks queued before a load or reset belong to the
+// previous collection. Background tasks with completion cleanup use queue().
+template<class Task> void queueCurrent(Task task) {
+    const auto expected=generation.load();
+    queue([expected,task=std::move(task)]() mutable {if(expected==generation.load())task();});
+}
 inline int apiVersion(RE::StaticFunctionTag*) {return TESSERA_COLLECTION_API_VERSION;}
 inline bool isReady(RE::StaticFunctionTag*) {return bool(ttcg::collectionAPI::store.acquire());}
 inline int revision(RE::StaticFunctionTag*) {return int(ttcg::collectionAPI::store.getRevision());}
