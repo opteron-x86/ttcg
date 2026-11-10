@@ -4,12 +4,16 @@
 
 namespace preview {
 class Assets {
-    struct Entry { Texture texture; std::uint64_t touched; };
+    struct Entry {
+        Texture texture;
+        std::uint64_t touched;
+    };
     Renderer& renderer;
     std::filesystem::path root;
     std::unordered_map<std::string, Entry> textures;
     std::uint64_t frame = 0, resident = 0;
     Texture load(const std::filesystem::path& file);
+
 public:
     static constexpr std::uint64_t budget = 160ull * 1024 * 1024;
     unsigned decoded = 0, missing = 0;

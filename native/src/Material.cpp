@@ -48,8 +48,10 @@ vec3 artwork(vec2 p,vec3 base,vec2 light,float strength,float treatment,float am
 }
 )SHADER";
 std::string glFragment() {
-    return std::string("#version 330 core\nin vec2 uv;out vec4 outputColour;uniform sampler2D source;uniform vec2 light;uniform float strength;uniform float treatment;uniform float amount;\n") + materialBody +
-        "\nvoid main(){vec4 b=texture(source,uv);outputColour=vec4(artwork(uv,b.rgb,light,strength,treatment,amount),b.a);}";
+    return std::string(
+               "#version 330 core\nin vec2 uv;out vec4 outputColour;uniform sampler2D source;uniform vec2 light;uniform float strength;uniform float treatment;uniform float amount;\n") +
+           materialBody +
+           "\nvoid main(){vec4 b=texture(source,uv);outputColour=vec4(artwork(uv,b.rgb,light,strength,treatment,amount),b.a);}";
 }
 std::string hlslShader() {
     return std::string(R"SHADER(
@@ -68,6 +70,6 @@ Vertex vertex(uint id : SV_VertexID) {
     return v;
 }
 )SHADER") + materialBody +
-        "\nfloat4 pixel(Vertex input):SV_TARGET{float4 b=source.Sample(sampling,input.uv);return float4(artwork(input.uv,b.rgb,light,strength,treatment,amount),b.a);}";
+           "\nfloat4 pixel(Vertex input):SV_TARGET{float4 b=source.Sample(sampling,input.uv);return float4(artwork(input.uv,b.rgb,light,strength,treatment,amount),b.a);}";
 }
 }

@@ -30,6 +30,10 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y g++-14 ninja-build libsdl2-dev libgl1-mesa-dev libwebp-dev python3-pil
+      - name: Check C++ formatting
+        run: |
+          pipx install clang-format==23.1.4
+          bash tools/format.sh --check
       - name: Check source and dependencies
         run: |
           python3 tools/release-info.py

@@ -10,6 +10,6 @@ for path in (root / 'Scripts/Source').glob('*.psc'):
     for name in re.findall(r'\bFunction\s+(\w+)\([^\n]*\)[^\n]*\bNative\b', source, re.I):
         declared.add((script, name))
 registered = {(script, name) for name, script in re.findall(
-    r'vm->RegisterFunction\("(\w+)","(\w+)"', (root / 'src/Plugin.cpp').read_text() + (root / 'include/NativeExchange.h').read_text())}
+    r'vm->RegisterFunction\("(\w+)",\s*"(\w+)"', (root / 'src/Plugin.cpp').read_text() + (root / 'include/NativeExchange.h').read_text())}
 assert declared == registered, (declared - registered, registered - declared)
 print(f'Papyrus: all {len(declared)} native declarations match DLL registrations')
