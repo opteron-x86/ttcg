@@ -1280,7 +1280,7 @@ void message(SKSE::MessagingInterface::Message* msg) {
      const std::string s(section),k(key);const std::wstring ws(s.begin(),s.end()),wk(k.begin(),k.end());
      return static_cast<int>(GetPrivateProfileIntW(ws.c_str(),wk.c_str(),fallback,settingsPath.c_str()));
    });
-   campaign::initForms();
+   campaign::initForms(GetPrivateProfileIntW(L"Diagnostics",L"VendorPackInjection",1,settingsPath.c_str())!=0);
    for(const auto& field:hotkeys.fields)hotkeys.*field.member=GetPrivateProfileIntW(L"Input",field.ini,field.defaultKey,settingsPath.c_str());
    hotkeys.normalize();
    for(const auto& option:pauseOptions)worldPauseSettings.*option.member=GetPrivateProfileIntW(L"Interface",option.iniKey,1,settingsPath.c_str())!=0;

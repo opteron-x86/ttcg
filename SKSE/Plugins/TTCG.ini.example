@@ -1,7 +1,10 @@
 [Diagnostics]
 ; Detailed logs and sampled NPC profiling for troubleshooting only. Restart after changing.
-; Independent of Development mode; this does not change gameplay.
+; Enabled controls logging only, independently of Development mode.
 Enabled=0
+; Troubleshooting only: 0 skips adding Tessera pack rolls to merchant chest bases.
+; Requires a full restart; merchant packs will be unavailable in untouched chests.
+VendorPackInjection=1
 
 [Development]
 ; All switches below require Enabled=1. Restart Skyrim after editing this file.
