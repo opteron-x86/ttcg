@@ -19,7 +19,8 @@ vec3 finish(vec2 p, vec3 base, vec2 light, float strength) {
     // Broad iridescence that drifts with the light, bent so it never reads as a ruled rainbow.
     float field=along*1.15+.16*sin(across*4.6+lamp.y*3.)+.07*sin(along*9.-across*3.+lamp.x*4.)+dot(lamp,vec2(1.9,1.3));
     vec3 hue=spectrum(field);
-    hue=mix(vec3(dot(hue,vec3(.333,.333,.333))),hue,.7);
+    float grey=dot(hue,vec3(.333,.333,.333));
+    hue=mix(vec3(grey,grey,grey),hue,.7);
     // One soft sheen crossing the card, with a tight core.
     float band=along-dot(lamp,axis)*1.7+.03*sin(across*7.);
     float sheen=bell(band,.30), core=bell(band,.045);
