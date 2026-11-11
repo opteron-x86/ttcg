@@ -416,6 +416,10 @@ void App::card(int index, ImVec2 at, ImVec2 size, bool chosen, bool foil, int ow
                                     foil ? face.foilStrength : 0, treated ? matchAppearance.treatment : 0,
                                     matchAppearance.strength);
     }
+    if (face.frame == 0) {
+        framedCard(c, texture, at, size, chosen, owner);
+        return;
+    }
     d->AddRectFilled(at + ImVec2(3, 5), at + size + ImVec2(3, 5), rgb(0x000000, 55), 2);
     const bool skin = skinned();
     d->AddRectFilled(at, at + size, skin ? rgb(0x151515) : rgb(0x14201c), 2);
@@ -485,17 +489,7 @@ void App::card(int index, ImVec2 at, ImVec2 size, bool chosen, bool foil, int ow
                 d->AddText(f, digitSize, pos + ImVec2(shift * unit, 0), rgb(0xf4eedb), value.c_str());
         d->AddText(f, digitSize, pos, rgb(0xf4eedb), value.c_str());
     };
-    if (face.classic) {
-        number(0, at + ImVec2(33, 20) * unit);
-        number(1, at + ImVec2(49, 39) * unit);
-        number(2, at + ImVec2(33, 58) * unit);
-        number(3, at + ImVec2(17, 39) * unit);
-    } else {
-        number(0, at + ImVec2(size.x * .5f, 20 * unit));
-        number(1, at + ImVec2(size.x - 15 * unit, size.y * (face.names ? .42f : .5f)));
-        number(2, at + ImVec2(size.x * .5f, size.y * (face.names ? .65f : face.groups ? .82f : .92f)));
-        number(3, at + ImVec2(15 * unit, size.y * (face.names ? .42f : .5f)));
-    }
+    for (int side = 0; side < 4; ++side) number(side, at + valueAnchor(side, size));
     const ImVec2 badge = at + ImVec2(face.classic ? size.x * .55f : 17 * unit, 19 * unit);
     const auto pigment = c.rarity == "Rare"        ? std::array<unsigned, 2>{0x08718c, 0x062e3c}
                          : c.rarity == "Epic"      ? std::array<unsigned, 2>{0x612480, 0x260c38}

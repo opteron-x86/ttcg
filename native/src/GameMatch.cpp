@@ -598,18 +598,7 @@ std::pair<ImVec2, ImVec2> GameApp::table(const Json& data, ImVec2 at, ImVec2 siz
             if (sq < 0 || sq > 8 || side < 0 || side > 3) continue;
             const auto p =
                 boardAt + ImVec2(11 * scale + (sq % 3) * (tileW + gap), 11 * scale + (sq / 3) * (tileH + gap));
-            const ImVec2 places[]{ImVec2(face.classic ? 33.f / 180 : .5f, face.classic ? 20.f / 240 : .083f),
-                                  ImVec2(face.classic ? 49.f / 180 : .917f, face.classic ? 39.f / 240
-                                                                            : face.names ? .42f
-                                                                                         : .5f),
-                                  ImVec2(face.classic ? 33.f / 180 : .5f, face.classic ? 58.f / 240
-                                                                          : face.names ? .65f
-                                                                                       : .92f),
-                                  ImVec2(face.classic ? 17.f / 180 : .083f, face.classic ? 39.f / 240
-                                                                            : face.names ? .42f
-                                                                                         : .5f)};
-            d->AddCircle(p + ImVec2(tileW * places[side].x, tileH * places[side].y), tileW * .105f, palette().accent,
-                         32, 2 * scale);
+            d->AddCircle(p + valueAnchor(side, ImVec2(tileW, tileH)), tileW * .105f, palette().accent, 32, 2 * scale);
         }
     }
     return {boardAt, ImVec2(boardW, boardH)};

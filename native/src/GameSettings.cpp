@@ -208,6 +208,7 @@ void GameApp::settings(ImVec2 at, ImVec2 size) {
         select("Card names", "card-name-font", "cardNameFont", fonts);
         select("Card values", "card-value-font", "cardValueFont", fonts);
         heading("Card face");
+        select("Frame", "card-frame", "cardFrame", {"Framed", "Borderless"});
         select("Values", "card-ranks", "rankLayout", {"Edge values", "Classic values"});
         toggle("Card names", "card-names", "showCardNames");
         toggle("Card groups", "card-groups", "showCardGroups");

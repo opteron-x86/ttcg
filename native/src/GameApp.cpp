@@ -131,6 +131,7 @@ void GameApp::applySettings() {
     const auto& c = member(state, "settings");
     theme = ttcg::interfaceThemeIndex(number(c, "theme"));
     face.classic = number(c, "rankLayout") == 1;
+    face.frame = std::clamp(number(c, "cardFrame"), 0, 1);
     face.names = flag(c, "showCardNames", true);
     face.groups = flag(c, "showCardGroups");
     face.nameplate = number(c, "nameplateStyle");

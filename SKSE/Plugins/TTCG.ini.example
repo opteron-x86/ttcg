@@ -107,6 +107,8 @@ BoardTexture=10
 ; Choose a card back in Tessera Settings. Saved across characters and restarts.
 ; Built-ins: mosaic, dragon, celestial. Custom images go in TesseraUI/art/backs/custom/.
 CardBack=mosaic
+; 0 = framed card with a value plate on each edge (default); 1 = the earlier borderless face.
+CardFrame=0
 ; 0 = values on the edges (default); 1 = classic upper-left diamond.
 RankLayout=0
 ; Hide card names on faces while retaining hover names and inspection.

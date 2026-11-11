@@ -9,7 +9,7 @@ namespace ttcg {
 struct InterfaceSettings {
     bool gamesEnabled = true, showCardNames = true, showCardGroups = false, vanillaVoicesOnly = true,
          rankStroke = false;
-    unsigned residents = 1, rankLayout = 0, nameplateStyle = 0, nameCase = 0;
+    unsigned residents = 1, rankLayout = 0, nameplateStyle = 0, nameCase = 0, cardFrame = 0;
     unsigned interfaceFont = 0, cardNameFont = 0, cardValueFont = 0;
     unsigned theme = 0, boardSurface = 0, boardTexture = 10, windowSize = 90;
     unsigned rankShadowOpacity = 100, rankShadowBlur = 2, rankShadowOffset = 1, rankStrokeWeight = 10;
@@ -39,6 +39,7 @@ struct InterfaceSettings {
         Field{"card-groups", "showCardGroups", "Appearance", "ShowCardGroups", &InterfaceSettings::showCardGroups, 1,
               0},
         Field{"card-ranks", "rankLayout", "Appearance", "RankLayout", &InterfaceSettings::rankLayout, 1, 0},
+        Field{"card-frame", "cardFrame", "Appearance", "CardFrame", &InterfaceSettings::cardFrame, 1, 0},
         Field{"nameplate", "nameplateStyle", "Appearance", "NameplateStyle", &InterfaceSettings::nameplateStyle, 2, 0},
         Field{"name-case", "nameCase", "Appearance", "NameCase", &InterfaceSettings::nameCase, 2, 0},
         Field{"interface-font", "interfaceFont", "Appearance", "InterfaceFont", &InterfaceSettings::interfaceFont, 4,

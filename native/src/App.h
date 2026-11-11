@@ -33,6 +33,7 @@ struct Skin {
 struct Face {
     bool classic = false, names = true, groups = false, foil = true;
     int nameplate = 0, lettering = 0, back = 0;
+    int frame = 0; // 0 framed, 1 the earlier borderless face.
     float shadowBlur = 2, shadowOffset = 1;
     float shadow = 0.8f, stroke = 0.6f, foilStrength = 0.72f, grain = 0.10f;
 };
@@ -114,6 +115,9 @@ protected:
     void controlFrame(ImVec2 at, ImVec2 size, int owner);
     void card(int index, ImVec2 at, ImVec2 size, bool selected, bool foil, int owner = -1, int materialSlot = 0,
               bool large = false, CardContext context = CardContext::General);
+    // Centre of a value on a card of this size, shared with the rule demonstrations.
+    ImVec2 valueAnchor(int side, ImVec2 size) const;
+    void framedCard(const CardView& card, Texture texture, ImVec2 at, ImVec2 size, bool chosen, int owner);
     void cardGrid(ImVec2 at, ImVec2 size, bool changed = false);
     void dragCard(int index, bool foil, int owner = -1, CardContext context = CardContext::General);
     void packTile(unsigned kind, ImVec2 at, ImVec2 size, bool chosen);

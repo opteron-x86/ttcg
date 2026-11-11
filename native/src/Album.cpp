@@ -79,7 +79,9 @@ void App::cardGrid(ImVec2 at, ImVec2 size, bool changed) {
                     const float unit = w / 180.f, pixels = 14 * unit;
                     const auto measure = font()->CalcTextSizeA(pixels, 1e5f, 0, label.c_str());
                     const auto extent = measure + ImVec2(10, 6) * unit;
-                    const auto badge = p + ImVec2(w - 5 * unit - extent.x, h * .75f - extent.y);
+                    // On the framed face the count sits in the top corner, clear of the plates and footer.
+                    const auto badge = face.frame == 0 ? p + ImVec2(w - 9 * unit - extent.x, 9 * unit)
+                                                       : p + ImVec2(w - 5 * unit - extent.x, h * .75f - extent.y);
                     auto* draw = ImGui::GetWindowDrawList();
                     draw->AddRectFilled(badge, badge + extent,
                                         skinned() ? IM_COL32(12, 12, 12, 200) : IM_COL32(18, 29, 24, 182), unit);

@@ -168,7 +168,7 @@ foreach(option WEBP_BUILD_ANIM_UTILS WEBP_BUILD_CWEBP WEBP_BUILD_DWEBP WEBP_BUIL
 endforeach()
 add_subdirectory(native/third_party/libwebp EXCLUDE_FROM_ALL)
 add_library(tessera_frontend STATIC
- native/src/App.cpp native/src/Skin.cpp native/src/Album.cpp native/src/Packs.cpp
+ native/src/App.cpp native/src/Skin.cpp native/src/CardFace.cpp native/src/Album.cpp native/src/Packs.cpp
  native/src/GameApp.cpp native/src/GameInspector.cpp native/src/GameAlbum.cpp native/src/GameJournal.cpp native/src/GameRules.cpp
  native/src/GameMatch.cpp native/src/GameSettings.cpp native/src/GameShop.cpp native/src/GameTournaments.cpp
  native/src/Assets.cpp native/src/Material.cpp native/src/RendererDX11.cpp)
