@@ -21,7 +21,7 @@ class GitHubPackageTests(unittest.TestCase):
                      'source/docs/card-art-prompts/output/image.png'):
             with self.subTest(name=name), self.assertRaises(ValueError):
                 check_public_files([name])
-        check_public_files(['TesseraUI/art/backs/mosaic.webp', 'TesseraUI/assets/themes/paper.png'])
+        check_public_files(['TesseraUI/art/backs/mosaic.webp', 'TesseraUI/assets/boards/walnut/surface.webp'])
         check_public_files(source_files())
 
     def test_archive_rejects_art_before_writing(self):

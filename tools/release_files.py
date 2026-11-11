@@ -19,8 +19,9 @@ def ui_files(root):
               ('LiberationSerif-Regular', 'LiberationSerif-Bold', 'LiberationSans-Regular',
                'Jost-Regular', 'Lato-Regular')]
     names += [f'TesseraUI/icons/affinity-{i}.png' for i in range(5)]
-    names += [f'TesseraUI/assets/themes/{surface}.png' for surface in
-              ('fine', 'slate', 'paper', 'leather', 'wood')]
+    names += ['TesseraUI/assets/boards/cell.png']
+    for board in ('slate', 'felt', 'parchment', 'leather', 'walnut', 'slab'):
+        names += [f'TesseraUI/assets/boards/{board}/surface.webp', f'TesseraUI/assets/boards/{board}/frame.png']
     names += [f'TesseraUI/assets/packs/{pack}.png' for pack in ('standard', 'tournament')]
     files = {name: root / name for name in names}
     for name, path in files.items():

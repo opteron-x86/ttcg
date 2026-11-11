@@ -118,7 +118,7 @@ void App::surface(ImVec2 at, ImVec2 size, bool main) {
 }
 void App::boardSurface(int material, ImVec2 at, ImVec2 size) {
     if (material == 0) material = ttcg::interfaceThemes[theme].boardSurface;
-    auto& texture = boardSurfaces[std::clamp(material, 1, 6) - 1];
+    auto& texture = boardSurfaces[std::clamp(material, 1, 7) - 1];
     if (!texture.id) {
         const auto pixels = boardPixels(material, 512, 512);
         texture = renderer.upload(pixels.data(), 512, 512);

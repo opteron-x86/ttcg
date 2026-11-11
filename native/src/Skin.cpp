@@ -63,6 +63,9 @@ void App::loadSkins() {
             s.opponent = plain(colour(j["control"], "opponent", 0));
         }
         s.font = j.value("font", std::string("jost"));
+        constexpr std::string_view boards[]{"", "plain", "slate", "felt", "parchment", "leather", "walnut", "slab"};
+        for (int board = 1; board < int(std::size(boards)); ++board)
+            if (j.value("board", std::string()) == boards[board]) s.board = board;
         if (j.contains("art") && j["art"].is_object())
             for (const auto& [name, entry] : j["art"].items()) {
                 if (!entry.is_object()) continue;
@@ -101,16 +104,20 @@ void App::skinPanel(ImVec2 at, ImVec2 size, float density, ImU32 tint) {
         return;
     }
     // The frame line sits `inset` pixels inside the texture edge and lands on
-    // the requested rectangle. Corners keep their detail; edges stretch, or
-    // repeat mirrored so torn strokes never smear.
+    // the requested rectangle.
     const float inset = piece->inset, margin = piece->margin;
     const float k = std::min({skinUnit() * density, size.x / (2.4f * margin), size.y / (2.4f * margin)});
-    const ImVec2 a = at - ImVec2(inset, inset) * k, b = at + size + ImVec2(inset, inset) * k;
+    nineSlice(art, at - ImVec2(inset, inset) * k, size + ImVec2(inset, inset) * (2 * k), margin, k, piece->tile, tint);
+}
+void App::nineSlice(Texture art, ImVec2 a, ImVec2 size, float margin, float k, bool tile, ImU32 tint) {
+    // Corners keep their detail; edges stretch, or repeat mirrored so torn strokes never smear.
+    auto* d = ImGui::GetWindowDrawList();
+    const ImVec2 b = a + size;
     const float m = margin * k, u = margin / art.width, v = margin / art.height;
     const float xs[]{a.x, a.x + m, b.x - m, b.x}, ys[]{a.y, a.y + m, b.y - m, b.y};
     const float us[]{0, u, 1 - u, 1}, vs[]{0, v, 1 - v, 1};
     const auto tiles = [&](float length, float source) {
-        if (!piece->tile) return 1;
+        if (!tile) return 1;
         const int n = std::max(1, int(std::round(length / (source * k))));
         return n | 1;
     };

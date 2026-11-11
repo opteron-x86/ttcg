@@ -37,7 +37,9 @@ ImVec2 App::valueAnchor(int side, ImVec2 size) const {
     if (face.frame != 0) {
         const float middle = size.y * (face.names ? .42f : .5f);
         const ImVec2 legacy[]{ImVec2(size.x * .5f, 20 * unit), ImVec2(size.x - 15 * unit, middle),
-                              ImVec2(size.x * .5f, size.y * (face.names ? .65f : face.groups ? .82f : .92f)),
+                              ImVec2(size.x * .5f, size.y * (face.names    ? .65f
+                                                             : face.groups ? .82f
+                                                                           : .92f)),
                               ImVec2(15 * unit, middle)};
         return legacy[side];
     }
@@ -81,8 +83,8 @@ void App::framedCard(const CardView& c, Texture texture, ImVec2 at, ImVec2 size,
     auto* nameFont = cardNameFont ? cardNameFont : serif;
     if (face.names || face.groups) {
         const float pixels = std::clamp(size.x * .069f, 9.f * scale, 28.f * scale);
-        auto lines = face.names ? nameLines(nameFont, c.name, pixels, size.x * .84f, face.lettering)
-                                : std::vector<NameLine>{};
+        auto lines =
+            face.names ? nameLines(nameFont, c.name, pixels, size.x * .84f, face.lettering) : std::vector<NameLine>{};
         if (lines.size() > 2) lines = nameLines(nameFont, c.name, pixels * .8f, size.x * .84f, face.lettering);
         const float lineHeight = (lines.size() > 2 ? pixels * .8f : pixels) * 1.16f;
         std::vector<NameLine> groupLines;
@@ -107,8 +109,7 @@ void App::framedCard(const CardView& c, Texture texture, ImVec2 at, ImVec2 size,
             y += lines.size() * lineHeight;
         }
         if (!groupLines.empty())
-            drawNameLines(d, nameFont, inner, innerEnd - inner, groupLines, y, groupPixels, scale,
-                          rgb(0xd9d2bf, 210));
+            drawNameLines(d, nameFont, inner, innerEnd - inner, groupLines, y, groupPixels, scale, rgb(0xd9d2bf, 210));
     }
     d->AddRectFilled(ImVec2(inner.x, footerTop), innerEnd, base);
     d->AddRectFilled(ImVec2(inner.x, footerTop), ImVec2(innerEnd.x, footerTop + std::max(1.f, 1.2f * unit)),
@@ -139,16 +140,16 @@ void App::framedCard(const CardView& c, Texture texture, ImVec2 at, ImVec2 size,
         d->AddPolyline(diamond, 4, light, ImDrawFlags_Closed, rim);
     } else {
         const float cx = at.x + size.x * .5f, cy = at.y + size.y * .46f, w = 15 * unit, cut = 7 * unit;
-        const ImVec2 top[]{ImVec2(cx - w, at.y + bezel * .5f),    ImVec2(cx - w, at.y + 23 * unit),
+        const ImVec2 top[]{ImVec2(cx - w, at.y + bezel * .5f),     ImVec2(cx - w, at.y + 23 * unit),
                            ImVec2(cx - w + cut, at.y + 30 * unit), ImVec2(cx + w - cut, at.y + 30 * unit),
                            ImVec2(cx + w, at.y + 23 * unit),       ImVec2(cx + w, at.y + bezel * .5f)};
-        const ImVec2 bottom[]{ImVec2(cx - w, end.y - bezel * .5f),    ImVec2(cx - w, end.y - 31 * unit),
+        const ImVec2 bottom[]{ImVec2(cx - w, end.y - bezel * .5f),     ImVec2(cx - w, end.y - 31 * unit),
                               ImVec2(cx - w + cut, end.y - 38 * unit), ImVec2(cx + w - cut, end.y - 38 * unit),
                               ImVec2(cx + w, end.y - 31 * unit),       ImVec2(cx + w, end.y - bezel * .5f)};
-        const ImVec2 left[]{ImVec2(at.x + bezel * .5f, cy - w),    ImVec2(at.x + 22 * unit, cy - w),
+        const ImVec2 left[]{ImVec2(at.x + bezel * .5f, cy - w),     ImVec2(at.x + 22 * unit, cy - w),
                             ImVec2(at.x + 29 * unit, cy - w + cut), ImVec2(at.x + 29 * unit, cy + w - cut),
                             ImVec2(at.x + 22 * unit, cy + w),       ImVec2(at.x + bezel * .5f, cy + w)};
-        const ImVec2 right[]{ImVec2(end.x - bezel * .5f, cy - w),    ImVec2(end.x - 22 * unit, cy - w),
+        const ImVec2 right[]{ImVec2(end.x - bezel * .5f, cy - w),     ImVec2(end.x - 22 * unit, cy - w),
                              ImVec2(end.x - 29 * unit, cy - w + cut), ImVec2(end.x - 29 * unit, cy + w - cut),
                              ImVec2(end.x - 22 * unit, cy + w),       ImVec2(end.x - bezel * .5f, cy + w)};
         plate(top, 6);

@@ -54,7 +54,8 @@ inline std::vector<unsigned char> boardPixels(int surface, int width, int height
     constexpr SurfaceGradient gradients[]{
         {.50f, .50f, .50f, 0x1d2522, 0x1d2522, 0x1d2522}, {.30f, 0, .65f, 0x343b41, 0x20272c, 0x1c2328},
         {.50f, .35f, .80f, 0x28473b, 0x18382c, 0x18382c}, {.50f, .40f, 1, 0xe3cfa4, 0xc4a475, 0xc4a475},
-        {.35f, .10f, .72f, 0x35312e, 0x24211f, 0x24211f}, {.40f, .15f, .80f, 0x583d2a, 0x3d291c, 0x3d291c}};
-    return gradientPixels(gradients[std::clamp(surface, 1, 6) - 1], width, height);
+        {.35f, .10f, .72f, 0x35312e, 0x24211f, 0x24211f}, {.40f, .15f, .80f, 0x583d2a, 0x3d291c, 0x3d291c},
+        {.50f, .40f, .80f, 0x222222, 0x191919, 0x161616}};
+    return gradientPixels(gradients[std::clamp(surface, 1, 7) - 1], width, height);
 }
 }

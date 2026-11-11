@@ -269,7 +269,7 @@ int main(int argc, char** argv) {
             for (int theme = 0; theme < ttcg::interfaceThemeCount; ++theme) {
                 auto s = app.snapshot();
                 s["settings"]["theme"] = theme;
-                for (int material = 0; material <= 6; ++material) {
+                for (int material = 0; material <= 7; ++material) {
                     s["settings"]["boardSurface"] = material;
                     app.receive(s.dump());
                     frame();

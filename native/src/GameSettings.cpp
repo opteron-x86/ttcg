@@ -200,7 +200,7 @@ void GameApp::settings(ImVec2 at, ImVec2 size) {
         for (const auto& theme : ttcg::interfaceThemes) themeNames.emplace_back(theme.name);
         select("Interface", "theme", "theme", themeNames);
         select("Game board", "board-surface", "boardSurface",
-               {"Theme default", "Plain", "Slate", "Felt", "Parchment", "Leather", "Walnut"});
+               {"Theme default", "Plain", "Slate", "Felt", "Parchment", "Leather", "Walnut", "Dark slab"});
         slider("Board texture", "board-texture", "boardTexture", 100, "%d%%");
         heading("Fonts");
         const std::vector<std::string> fonts{"Default", "Georgia", "Times New Roman", "Arial", "Verdana"};

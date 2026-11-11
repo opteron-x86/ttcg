@@ -15,6 +15,7 @@
     "value": "#c2b7a0",
     "notice": "#d08a5a"
   },
+  "board": "leather",
   "control": {"player": "#d6cdb2", "opponent": "#b9573f"},
   "art": {
     "panel": {"file": "panel.png", "margin": 90, "inset": 4},

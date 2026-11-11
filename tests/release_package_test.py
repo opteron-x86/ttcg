@@ -37,7 +37,9 @@ class ReleaseTests(unittest.TestCase):
         for back in ('mosaic', 'dragon', 'celestial'):
             self.assertIn(f'TesseraUI/art/backs/{back}.webp', main)
         self.assertTrue(all(Path(name).suffix == '.webp' for name in main if name.startswith('TesseraUI/art/')))
-        for name in tuple(f'assets/themes/{t}.png' for t in ('fine', 'paper', 'leather', 'wood', 'slate')):
+        boards = ('slate', 'felt', 'parchment', 'leather', 'walnut', 'slab')
+        for name in ('assets/boards/cell.png',) + tuple(f'assets/boards/{b}/{f}' for b in boards
+                                                         for f in ('surface.webp', 'frame.png')):
             self.assertIn('TesseraUI/'+name, main)
             self.assertNotIn('TesseraUI/'+name, art)
         self.assertNotIn('TesseraUI/pack-models.js', main)

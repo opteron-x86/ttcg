@@ -28,6 +28,7 @@ struct Skin {
     std::string font = "jost";
     ImU32 value = IM_COL32(126, 196, 112, 255), notice = IM_COL32(200, 72, 58, 255);
     unsigned player = 0, opponent = 0; // Control colours; zero keeps the palette setting.
+    int board = 0;                     // Default game board; zero keeps the theme's.
     std::unordered_map<std::string, SkinArt> art;
 };
 struct Face {
@@ -49,7 +50,7 @@ protected:
     std::array<Texture, ttcg::interfaceThemeCount> surfaces{};
     std::array<Skin, ttcg::interfaceThemeCount> skins{};
     bool padPrompts = false;
-    std::array<Texture, 6> boardSurfaces{};
+    std::array<Texture, 7> boardSurfaces{};
     ImFont *preferredFont = nullptr, *cardNameFont = nullptr, *cardValueFont = nullptr;
     std::string customBack = "backs/mosaic.webp";
     Filter filter;
@@ -95,6 +96,9 @@ protected:
     float skinUnit() const;
     const SkinArt* skinPiece(const char* name) const;
     Texture skinArt(const char* name);
+    // Corners of `margin` texture pixels drawn `k` screen pixels per texture pixel; edges stretch or tile.
+    void nineSlice(Texture art, ImVec2 at, ImVec2 size, float margin, float k, bool tile = false,
+                   ImU32 tint = IM_COL32_WHITE);
     void skinPanel(ImVec2 at, ImVec2 size, float density = 1, ImU32 tint = IM_COL32_WHITE);
     // Draws nothing and returns false when the skin has no such texture.
     bool skinBand(const char* name, ImVec2 at, ImVec2 size, ImU32 tint = IM_COL32_WHITE);

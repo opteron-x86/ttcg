@@ -48,7 +48,7 @@ struct InterfaceSettings {
         Field{"card-value-font", "cardValueFont", "Appearance", "CardValueFont", &InterfaceSettings::cardValueFont, 4,
               0},
         Field{"theme", "theme", "Appearance", "Theme", &InterfaceSettings::theme, interfaceThemeCount - 1, 0},
-        Field{"board-surface", "boardSurface", "Appearance", "BoardSurface", &InterfaceSettings::boardSurface, 6, 0},
+        Field{"board-surface", "boardSurface", "Appearance", "BoardSurface", &InterfaceSettings::boardSurface, 7, 0},
         Field{"board-texture", "boardTexture", "Appearance", "BoardTexture", &InterfaceSettings::boardTexture, 100, 10},
         Field{"rank-shadow-opacity", "rankShadowOpacity", "Appearance", "RankShadowOpacity",
               &InterfaceSettings::rankShadowOpacity, 100, 100},

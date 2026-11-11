@@ -302,8 +302,10 @@ std::pair<ImVec2, ImVec2> GameApp::table(const Json& data, ImVec2 at, ImVec2 siz
                 tileW = tileH * .75f, boardW = 3 * tileW + 2 * gap + 22 * scale;
     const ImVec2 boardAt = at + ImVec2((size.x - boardW) / 2, 45 * scale);
     auto* d = ImGui::GetWindowDrawList();
-    const int configuredSurface = std::clamp(number(member(state, "settings"), "boardSurface"), 0, 6),
-              surface = configuredSurface ? configuredSurface : ttcg::interfaceThemes[theme].boardSurface;
+    const int configuredSurface = std::clamp(number(member(state, "settings"), "boardSurface"), 0, 7),
+              surface = configuredSurface ? configuredSurface
+                        : skin().board    ? skin().board
+                                          : ttcg::interfaceThemes[theme].boardSurface;
     struct BoardColours {
         ImU32 edge, grid, mark, cell;
     };
@@ -316,25 +318,39 @@ std::pair<ImVec2, ImVec2> GameApp::table(const Json& data, ImVec2 at, ImVec2 siz
         {IM_COL32(169, 154, 133, 130), IM_COL32(201, 185, 164, 43), IM_COL32(186, 170, 143, 82),
          IM_COL32(10, 4, 3, 16)},
         {IM_COL32(196, 158, 105, 140), IM_COL32(226, 193, 144, 56), IM_COL32(211, 182, 136, 82),
-         IM_COL32(31, 17, 10, 21)}};
+         IM_COL32(31, 17, 10, 21)},
+        {IM_COL32(233, 230, 221, 90), IM_COL32(233, 230, 221, 40), IM_COL32(233, 230, 221, 70), IM_COL32(0, 0, 0, 10)}};
     const auto boardColour = colours[surface - 1];
     boardSurface(surface, boardAt, ImVec2(boardW, boardH));
-    d->AddRect(boardAt, boardAt + ImVec2(boardW, boardH), boardColour.edge);
-    if (!skinned())
-        d->AddRect(boardAt - ImVec2(5, 5) * scale, boardAt + ImVec2(boardW, boardH) + ImVec2(5, 5) * scale,
-                   boardColour.edge);
-    const char* materials[]{"", "", "slate", "fine", "paper", "leather", "wood"};
-    if (surface != 1 && face.grain > 0) {
-        auto texture = assets.get(std::string("../assets/themes/") + materials[surface] + ".png");
-        d->AddImage(texture.id, boardAt, boardAt + ImVec2(boardW, boardH), ImVec2(0, 0), ImVec2(1, 1),
-                    IM_COL32(255, 255, 255, int(face.grain * 255 * .75f)));
-    }
-    if (skinned()) {
+    // A board material is a field texture, a railed frame around it and a recess for each empty square.
+    // The Board texture setting fades the material into the flat board; a tenth or more shows it in full.
+    constexpr const char* materials[]{"", "", "slate", "felt", "parchment", "leather", "walnut", "slab"};
+    const float material = std::clamp(face.grain * 10, 0.f, 1.f);
+    const auto boardArt = [&](const char* file) {
+        return surface > 1 && material > 0
+                   ? assets.optional(std::string("../assets/boards/") + materials[surface] + file)
+                   : Texture{};
+    };
+    const auto field = boardArt("/surface.webp"), rail = boardArt("/frame.png");
+    const auto slot = field.id ? assets.optional("../assets/boards/cell.png") : Texture{};
+    const auto strength = IM_COL32(255, 255, 255, int(material * 255));
+    if (field.id)
+        d->AddImage(field.id, boardAt, boardAt + ImVec2(boardW, boardH), ImVec2(0, 0), ImVec2(1, 1), strength);
+    if (rail.id) {
+        // The texture's rail is 64 pixels wide inside a 96 pixel corner.
+        const float width = 15 * scale;
+        nineSlice(rail, boardAt - ImVec2(width, width), ImVec2(boardW, boardH) + ImVec2(width, width) * 2, 96,
+                  width / 64, false, strength);
+    } else {
+        d->AddRect(boardAt, boardAt + ImVec2(boardW, boardH), boardColour.edge);
         const ImVec2 a = boardAt - ImVec2(5, 5) * scale, b = boardAt + ImVec2(boardW, boardH) + ImVec2(5, 5) * scale;
-        skinRule(a, ImVec2(b.x, a.y));
-        skinRule(ImVec2(a.x, b.y), b);
-        skinRule(a, ImVec2(a.x, b.y), .7f);
-        skinRule(ImVec2(b.x, a.y), b, .7f);
+        if (skinned()) {
+            skinRule(a, ImVec2(b.x, a.y));
+            skinRule(ImVec2(a.x, b.y), b);
+            skinRule(a, ImVec2(a.x, b.y), .7f);
+            skinRule(ImVec2(b.x, a.y), b, .7f);
+        } else
+            d->AddRect(a, b, boardColour.edge);
     }
     const float handArea = (size.x - boardW) / 2 - 30 * scale;
     const bool stack = demo;
@@ -518,8 +534,12 @@ std::pair<ImVec2, ImVec2> GameApp::table(const Json& data, ImVec2 at, ImVec2 siz
                 !busy)
                 inspectCard(number(cell, "card", -1), true, itemNumber(member(data, "modifiers"), square, 0));
         } else {
-            d->AddRectFilled(pos, pos + cardSize, boardColour.cell);
-            d->AddRect(pos, pos + cardSize, boardColour.grid, 1);
+            if (slot.id)
+                d->AddImage(slot.id, pos, pos + cardSize, ImVec2(0, 0), ImVec2(1, 1), strength);
+            else {
+                d->AddRectFilled(pos, pos + cardSize, boardColour.cell);
+                d->AddRect(pos, pos + cardSize, boardColour.grid, 1);
+            }
             const int affinity = itemNumber(member(data, "tiles"), square, 0);
             if (affinity) {
                 const int a = std::countr_zero(unsigned(affinity));

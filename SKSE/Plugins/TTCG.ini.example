@@ -98,11 +98,11 @@ PauseWorldInMatchSetup=1
 PauseWorldDuringMatches=1
 
 [Appearance]
-; Window theme: 0 Tessera, 1 Charcoal, 2 Oxblood, 3 Parchment, 4 Umber.
+; Window theme: 0 Tessera, 1 Charcoal, 2 Oxblood, 3 Parchment, 4 Umber, 5 Oathvein, 6 Vel'dun, 7 Norden.
 Theme=0
-; Board: 0 match theme, 1 plain, 2 slate, 3 green felt, 4 parchment, 5 dark leather, 6 walnut.
+; Board: 0 match theme, 1 plain, 2 slate, 3 green felt, 4 parchment, 5 dark leather, 6 walnut, 7 dark slab.
 BoardSurface=0
-; Board texture strength, 0-100. Saved independently of the window theme.
+; Board material strength, 0-100. Ten or more shows the material in full; lower values fade it into the plain board.
 BoardTexture=10
 ; Choose a card back in Tessera Settings. Saved across characters and restarts.
 ; Built-ins: mosaic, dragon, celestial. Custom images go in TesseraUI/art/backs/custom/.
