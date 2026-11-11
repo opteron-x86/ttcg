@@ -81,8 +81,9 @@ void App::framedCard(const CardView& c, Texture texture, ImVec2 at, ImVec2 size,
     // Footer: tier gem, bottom value and affinity share one opaque strip.
     const float footer = 27 * unit, footerTop = innerEnd.y - footer;
     auto* nameFont = cardNameFont ? cardNameFont : serif;
-    if (face.names || face.groups) {
-        const float pixels = std::clamp(size.x * .069f, 9.f * scale, 28.f * scale);
+    // Below nine real pixels a name is noise; very small cards carry values only.
+    if (size.x >= 84 && (face.names || face.groups)) {
+        const float pixels = std::clamp(size.x * .069f, std::max(9.f, 9.f * scale), std::max(9.f, 28.f * scale));
         auto lines =
             face.names ? nameLines(nameFont, c.name, pixels, size.x * .84f, face.lettering) : std::vector<NameLine>{};
         if (lines.size() > 2) lines = nameLines(nameFont, c.name, pixels * .8f, size.x * .84f, face.lettering);
