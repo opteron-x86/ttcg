@@ -112,8 +112,18 @@
   "deardiary": {
     "mod": "Dear Diary Dark Mode (white text)",
     "art": {
-      "panel": [
-        "deardiary_dm/messagebox/messagebox_BG.swf",
+      "detail": [
+        "deardiary_dm/inventory/itemcard_1_BG.swf",
+        9,
+        "trim"
+      ],
+      "selector": [
+        "deardiary_dm/quest_journal/quest_journal_menu_cov.swf",
+        9,
+        "trim"
+      ],
+      "tab": [
+        "deardiary_dm/quest_journal/quest_journal_menu.swf",
         9,
         "trim"
       ]

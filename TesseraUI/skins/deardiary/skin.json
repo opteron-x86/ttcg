@@ -3,16 +3,16 @@
   "id": "deardiary",
   "name": "Dear Diary",
   "credit": "Dear Diary Dark Mode by uranreactor",
-  "font": "sans",
+  "font": "serif",
   "palette": {
     "background": "#0c0c0c",
     "centre": "#1e1e1e",
     "text": "#efefef",
-    "muted": "#a9a9a9",
-    "accent": "#e6e6e6",
-    "line": "#ffffff2a",
-    "selection": "#3b3b3b",
-    "value": "#e6e6e6",
+    "muted": "#b3a79c",
+    "accent": "#c9956a",
+    "line": "#8a5a3a66",
+    "selection": "#4a1410",
+    "value": "#c9956a",
     "notice": "#d0705e"
   },
   "board": "slate",
@@ -22,9 +22,22 @@
   },
   "art": {
     "panel": {
-      "file": "panel.png",
-      "margin": 60,
-      "inset": 0
+      "file": "detail.png",
+      "margin": 110,
+      "inset": 8
+    },
+    "detail": {
+      "file": "detail.png",
+      "margin": 110,
+      "inset": 8
+    },
+    "selector": {
+      "file": "selector.png",
+      "cap": 0.17
+    },
+    "tab": {
+      "file": "tab.png",
+      "cap": 0.17
     }
   }
 }

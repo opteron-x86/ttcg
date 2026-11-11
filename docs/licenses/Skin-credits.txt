@@ -24,3 +24,7 @@ licence. Complete upstream menus, SWF files and plugins are not included.
 
 Keycap images are read from the player's own ImGui Icons installation
 (Data/Interface/ImGuiIcons/Icons) and are not bundled.
+
+Game board fields (TesseraUI/assets/boards/*/surface.webp and the rails made
+from them) are built from images generated with the image generation tool of
+OpenAI's Codex CLI; prompts are recorded in tools/board-art/README.md.

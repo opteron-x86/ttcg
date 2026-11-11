@@ -8,12 +8,13 @@ Each board is three textures drawn by native/src/GameMatch.cpp:
                64 px rail; the remaining 32 px is the rail's shadow on the field
   cell.png     shared by every board: the recess of one empty square
 
-The materials are procedural SVG filters rendered with rsvg-convert, so they
-are reproducible and need no source images.
+The field of each material is painted source art from tools/board-art where a
+file exists, and a procedural SVG filter otherwise; rails, shadows and the
+recess are always drawn here. Rendering uses rsvg-convert and ImageMagick.
 
     python3 tools/build-board-textures.py
 """
-import pathlib, subprocess, tempfile
+import argparse, base64, pathlib, subprocess, tempfile
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 OUT = ROOT / 'TesseraUI/assets/boards'
@@ -163,12 +164,41 @@ def render(svg, target):
     pathlib.Path(handle.name).unlink()
 
 
+ART = ROOT / 'tools/board-art'
+# The field sits behind cards, so bright materials are toned down: brightness, saturation.
+TONE = {'felt': (72, 85), 'parchment': (84, 80), 'walnut': (88, 95), 'leather': (90, 95)}
+# A rail in another material than its field.
+RAIL = {'felt': 'walnut', 'parchment': 'leather'}
+
+
+def painted(name, procedural):
+    """A texture function drawing the painted source art, or None to use the procedural one."""
+    source = ART / f'{name}.webp'
+    if procedural or not source.is_file():
+        return None
+    brightness, saturation = TONE.get(name, (100, 100))
+
+    def texture(w=W, h=H):
+        # librsvg only loads files beside the SVG, so the art is embedded.
+        jpeg = subprocess.check_output(['magick', str(source), '-resize', f'{w}x{h}^', '-gravity', 'center',
+                                        '-extent', f'{w}x{h}', '-modulate', f'{brightness},{saturation}',
+                                        '-quality', '92', 'jpg:-'])
+        data = base64.b64encode(jpeg).decode()
+        return '', f'<image width="{w}" height="{h}" href="data:image/jpeg;base64,{data}"/>'
+    return texture
+
+
 def main():
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument('--procedural', action='store_true', help='ignore tools/board-art and generate every material')
+    args = parser.parse_args()
     OUT.mkdir(parents=True, exist_ok=True)
     render(CELL, OUT / 'cell.png')
     for name, (base, texture, rail, vignette, (rail_base, rail_texture)) in materials().items():
         folder = OUT / name
         folder.mkdir(exist_ok=True)
+        texture = painted(name, args.procedural) or texture
+        rail_texture = painted(RAIL.get(name, name), args.procedural) or rail_texture
         defs, body = texture()
         # The field is opaque, so it ships as WebP; the rail needs its alpha and stays PNG.
         with tempfile.TemporaryDirectory() as work:
