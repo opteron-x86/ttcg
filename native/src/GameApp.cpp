@@ -725,13 +725,17 @@ void GameApp::draw() {
         size.y -= 70 * scale;
         const auto& interrupted = member(state, "interruptedMatch");
         if (!interrupted.is_null() && !interrupted.empty()) {
-            text(body, "Resume your game with " + label(interrupted, "opponent") + ".", 17, palette().accent,
-                 width - 300 * scale);
-            if (flag(interrupted, "canResume") &&
-                button("resume", "Resume", body + ImVec2(width - 240 * scale, -5 * scale), ImVec2(105, 35) * scale))
-                send("interrupted", "resume");
+            // The offer and its answers sit together, clear of the page's own totals on the right.
+            const auto offer = "Resume your game with " + label(interrupted, "opponent") + ".";
+            text(body + ImVec2(0, 3 * scale), offer, 17, palette().accent);
+            float x = font()->CalcTextSizeA(17 * scale, 1e5f, 0, offer.c_str()).x + 26 * scale;
+            if (flag(interrupted, "canResume")) {
+                if (button("resume", "Resume", body + ImVec2(x, -5 * scale), ImVec2(105, 35) * scale, true))
+                    send("interrupted", "resume");
+                x += 117 * scale;
+            }
             if (!flag(interrupted, "finished") &&
-                button("abandon", "Forfeit", body + ImVec2(width - 115 * scale, -5 * scale), ImVec2(115, 35) * scale))
+                button("abandon", "Forfeit", body + ImVec2(x, -5 * scale), ImVec2(105, 35) * scale))
                 confirm("Forfeit this game?", "The trade rule and wager still apply.", "interrupted", "forfeit",
                         "Forfeit");
             body.y += 47 * scale;

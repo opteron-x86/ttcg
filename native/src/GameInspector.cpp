@@ -57,9 +57,9 @@ void GameApp::nativeInspector() {
         z = y * std::sin(pitch) + z * std::cos(pitch);
         return centre + ImVec2(x, yy) * (depth / (depth + z));
     };
-    const float lean = std::min(1.f, std::abs(std::sin(yaw)) + std::abs(std::sin(pitch)));
-    softShadow(artAt + ImVec2(w, h) * (.06f * lean), ImVec2(w, h) * (1 - .12f * lean), 1.5f, 18);
+    // The shadow is drawn flat with the card, so it tilts with it.
     const int first = d->VtxBuffer.Size;
+    softShadow(artAt, ImVec2(w, h), 1.5f, 18);
     if (back) {
         const auto texture = assets.get(customBack);
         d->AddImage(texture.id, artAt, artAt + ImVec2(w, h), ImVec2(1, 0), ImVec2(0, 1));

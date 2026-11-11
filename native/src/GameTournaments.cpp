@@ -216,22 +216,41 @@ void GameApp::tournamentOutcome() {
                            : announce == 2         ? "Through to the final"
                            : flag(e, "eliminated") ? "Tournament over"
                                                    : outcome;
-        textBlock(title, width - 60 * scale, 34, palette().accent);
-        ImGui::Dummy(ImVec2(0, 13 * scale));
-        textBlock(label(e, "name") + " · " + label(e, "circuitName"), width - 60 * scale, 20, palette().muted);
+        // A centred heading in the outcome's own colour, between two rules.
+        const bool lost = flag(e, "eliminated") || std::string_view(title) == "Game lost";
+        const ImU32 tone = champion    ? IM_COL32(240, 196, 101, 255)
+                           : lost      ? (skinned() ? skin().notice : palette().muted)
+                           : skinned() ? skin().value
+                                       : palette().accent;
+        const float middle = ImGui::GetWindowPos().x + width * .5f;
+        const auto centred = [&](const std::string& value, float pixels, ImU32 colour, float gap) {
+            const auto at = ImGui::GetCursorScreenPos();
+            text(ImVec2(middle, at.y), value, pixels, colour, 0, true);
+            ImGui::Dummy(ImVec2(1, (pixels * 1.3f + gap) * scale));
+        };
+        {
+            const auto at = ImGui::GetCursorScreenPos();
+            const float half = capsWidth(title, 30, 4) * .5f + 26 * scale, y = at.y + 22 * scale;
+            textCaps(ImVec2(middle, at.y + 2 * scale), title, 30, tone, 4, true);
+            const float reach = std::max(0.f, width * .5f - 40 * scale - half);
+            gradientLine(ImGui::GetWindowDrawList(), ImVec2(middle - half - reach, y), reach, fade(tone, .7f));
+            gradientLine(ImGui::GetWindowDrawList(), ImVec2(middle + half, y), reach, fade(tone, .7f));
+            ImGui::Dummy(ImVec2(1, 56 * scale));
+        }
+        centred(label(e, "name") + " · " + label(e, "circuitName"), 20, palette().muted, 4);
         const int node = number(e, "lastNode", 8);
         if (node >= 8 && node <= 14) {
             const auto& wins = member(e, "wins")[node - 8];
-            textBlock(std::string(node < 12   ? "Quarterfinals"
-                                  : node < 14 ? "Semifinals"
-                                              : "Final") +
-                          " · " + std::to_string(itemNumber(wins, 0, 0)) + "–" + std::to_string(itemNumber(wins, 1, 0)),
-                      width - 60 * scale, 20, palette().muted);
+            centred(std::string(node < 12   ? "Quarterfinals"
+                                : node < 14 ? "Semifinals"
+                                            : "Final") +
+                        " · " + std::to_string(itemNumber(wins, 0, 0)) + "–" + std::to_string(itemNumber(wins, 1, 0)),
+                    20, palette().muted, 4);
         }
-        ImGui::Dummy(ImVec2(0, 20 * scale));
+        ImGui::Dummy(ImVec2(0, 16 * scale));
         if (champion) {
-            textBlock(std::to_string(number(e, "purse")) + " gold", width - 60 * scale, 23, palette().accent);
-            if (!upgrades) textBlock(label(e, "prize"), width - 60 * scale, 22, palette().ink);
+            centred(std::to_string(number(e, "purse")) + " gold", 26, skinned() ? skin().value : palette().accent, 6);
+            if (!upgrades) centred(label(e, "prize"), 21, palette().ink, 4);
             const auto p = ImGui::GetCursorScreenPos() + ImVec2(0, 15 * scale);
             int slot = 0;
             const auto& cards = arrayMember(e, "prizeCards");

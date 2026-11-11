@@ -205,6 +205,17 @@ python3 tools/package-release.py --build-dir build/linux-clangcl \
 - Card names never drop below nine real pixels. Shop tiles, pack reveals, the rule demo and the classic layout were checked on the framed face; tournament prize cards, the drag preview and the three deck densities were not.
 - The player decided to keep the drawn card frame for now.
 
+### Presentation checkpoint (2026-11-11)
+
+Shared helpers live in `native/src/Skin.cpp`: `softShadow`, `glow`, `cornerMarks`, `fadeVertices`, `scaleVertices`, `gridScroll` and `gridFade`.
+
+- **Match** (`GameMatch.cpp`): corner marks on the last card played; the board edge nearest whoever is to move is lit in their colour; captures lift, flip and flare in the captor's colour; a ghost of the chosen card shows over the hovered square; hand cards rise when chosen; scores pop when they change; empty squares carry their affinity as a carved medallion; board and hand cards cast soft shadows.
+- **Packs** (`Packs.cpp`): cards are dealt face down and turn over one at a time, with a longer beat and a lasting glow for rarer cards and foils. The first press of Continue (shown as Reveal all) turns the rest over; the next dismisses the receipt.
+- **Inspector** (`GameInspector.cpp`): the full framed card is drawn flat and every vertex is projected, so values, name and foil tilt together; the foil follows the tilt. The ✕ is replaced by a Close prompt whose item id is still `close-art`.
+- **Card facts** (`GameApp::factRows`): one block of labelled rows (rarity, tier, group, affinity, set, owned) used by the album detail, the shop detail (compact) and the inspector.
+- **Layouts**: card grids scroll one whole row per wheel notch and fade where rows continue; the lobby centres the deck between its controls and footer and shows the player's purse; the interrupted-game offer keeps its buttons beside its text; tournament results have a centred heading in the outcome's colour.
+- None of this has been seen in game yet. Affinity medallions were checked with a hand-edited fixture, since no bundled fixture has affinity squares.
+
 Hand over the absolute path of `dist/<name>/Tessera-<ver>-dev.<hash>-Main.zip`. Compare with the previous Main zip's file hashes to confirm only intended files changed. Skyrim UI mods' assets and the player's mod folder are at `/mnt/mods/Amaranth/mods` (profile `KINMUNE CS`); the player runs Oathvein UI, Dear Diary Dark Mode, Natural Typefaces and Quickslot, so Oathvein is the look to be judged against in game.
 
 ## Image generation
