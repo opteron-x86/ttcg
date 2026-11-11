@@ -550,6 +550,17 @@ void GameApp::closeView() {
     }
     send("close");
 }
+GameApp::FooterPrompts GameApp::footerPrompts() const {
+    if (capturing()) return {"Cancel", nullptr, false};
+    const auto page = label(state, "screen"), phase = label(state, "phase");
+    if (page == "album" && phase == "ready")
+        return {flag(state, "matchContext") ? "Back" : "Close", "Select", tab == 0 || tab == 1};
+    if (page == "shop") return {"Close", "Select", true};
+    if (page == "lesson") return {"Close", "Select", false};
+    if (phase == "ready") return {"Close", "Select", true};
+    if (phase == "match") return {"Leave", "Play card", true};
+    return {"Close", "Select", false};
+}
 void GameApp::header(ImVec2 at, ImVec2 size) {
     if (skinned()) {
         // A skin titles the window with its own band, or a hairline; closing lives in the prompt bar.
@@ -715,25 +726,17 @@ void GameApp::draw() {
             notice = "An expansion could not be loaded. See TTCG.log.";
     }
     if (skinned()) {
-        // Prompts name only controls that exist: Escape or the pad's back button
-        // leaves, the right button inspects, the left plays or selects.
+        // Modal dialogs own their controls; don't advertise actions on the dimmed screen behind them.
         const float y = frameAt.y + frameSize.y - 50 * scale;
         skinRule(ImVec2(at.x, y - 9 * scale), ImVec2(at.x + width, y - 9 * scale), .4f);
         float x = at.x;
-        // Mirrors the screen dispatch above.
-        const bool inAlbum = page == "album" && phase == "ready";
-        const bool inMatch = !inAlbum && page != "shop" && page != "lesson" && phase != "ready";
-        bool leave = false;
-        x += keyPrompt("Esc", "360_B",
-                       inAlbum   ? (flag(state, "matchContext") ? "Back" : "Close")
-                       : inMatch ? "Leave"
-                                 : "Back",
-                       ImVec2(x, y), &leave) +
-             26 * scale;
-        if (leave) closeView();
-        if (page != "lesson") {
-            x += keyPrompt("Mouse1", "360_A", inMatch ? "Play card" : "Select", ImVec2(x, y)) + 26 * scale;
-            x += keyPrompt("Mouse2", "360_Y", "Inspect", ImVec2(x, y)) + 26 * scale;
+        if (!ImGui::IsPopupOpen(nullptr, ImGuiPopupFlags_AnyPopupId | ImGuiPopupFlags_AnyPopupLevel)) {
+            const auto prompts = footerPrompts();
+            bool leave = false;
+            x += keyPrompt("Esc", "360_B", prompts.back, ImVec2(x, y), &leave) + 26 * scale;
+            if (leave) closeView();
+            if (prompts.action) x += keyPrompt("Mouse1", "360_A", prompts.action, ImVec2(x, y)) + 26 * scale;
+            if (prompts.inspect) x += keyPrompt("Mouse2", "360_Y", "Inspect", ImVec2(x, y)) + 26 * scale;
         }
         if (!notice.empty())
             text(ImVec2(x + 10 * scale, y + 6 * scale), notice, 16, skin().notice, at.x + width - x - 10 * scale);

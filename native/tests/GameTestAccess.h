@@ -8,6 +8,8 @@ struct GameTestAccess {
     static int theme(const GameApp& app) { return app.theme; }
     static const Skin& skin(const GameApp& app, int theme) { return app.skins[theme]; }
     static ImFont* interfaceFont(const GameApp& app) { return app.font(); }
+    static auto footerPrompts(const GameApp& app) { return app.footerPrompts(); }
+    static bool padPrompts(const GameApp& app) { return app.padPrompts; }
     static void page(GameApp& app, const Options& o) {
         if (o.page == "cards")
             app.tab = 0;

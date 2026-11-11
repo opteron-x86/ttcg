@@ -42,6 +42,12 @@ class GameApp final : public App {
     ImVec2 frameAt{}, frameSize{};
     std::array<ImFont*, 5> interfaceFonts{}, nameFonts{}, valueFonts{};
     bool sourceReady = false;
+    struct FooterPrompts {
+        const char* back = "Close";
+        const char* action = "Select";
+        bool inspect = false;
+    };
+    FooterPrompts footerPrompts() const;
     void send(std::string_view verb, std::string args = {}, bool exclusive = true);
     void request(Json command) override;
     void closeView();

@@ -151,6 +151,68 @@ int main(int argc, char** argv) {
                     frame();
                 }
             }
+            // Footer actions follow the active page, rather than advertising inspection everywhere.
+            for (auto page : {"cards", "decks", "journal", "rules", "tournaments", "appearance", "controls"}) {
+                load("album", page);
+                const auto prompts = preview::GameTestAccess::footerPrompts(app);
+                require(prompts.inspect == (std::string_view(page) == "cards" || std::string_view(page) == "decks"),
+                        "Footer advertises inspection on a page without card inspection controls");
+                require(std::string_view(prompts.back) == "Close" && std::string_view(prompts.action) == "Select",
+                        "Album footer advertises match actions");
+            }
+            load("album", "appearance");
+            {
+                auto s = app.snapshot();
+                s["settings"]["theme"] = 5;
+                s["settings"]["cardFrame"] = 0;
+                app.receive(s.dump());
+                frame();
+                const auto has = [&](const char* label) {
+                    return std::any_of(hits.begin(), hits.end(), [&](const Hit& h) { return matches(h, label); });
+                };
+                require(!has("##nameplate") && !has("rank-stroke") && !has("##rank-shadow-opacity"),
+                        "Framed card settings offer unused nameplate or value-finish controls");
+                s["settings"]["cardFrame"] = 1;
+                app.receive(s.dump());
+                frame();
+                require(has("##nameplate") && has("rank-stroke") && has("##rank-shadow-opacity"),
+                        "Borderless card settings lost their appearance controls");
+                s["matchContext"] = true;
+                app.receive(s.dump());
+                require(std::string_view(preview::GameTestAccess::footerPrompts(app).back) == "Back",
+                        "Match album does not advertise return to the lobby");
+                s["settings"]["capturing"] = "collection";
+                app.receive(s.dump());
+                const auto prompts = preview::GameTestAccess::footerPrompts(app);
+                require(std::string_view(prompts.back) == "Cancel" && !prompts.action && !prompts.inspect,
+                        "Binding capture advertises unrelated actions");
+            }
+            load("lobby");
+            {
+                auto s = app.snapshot();
+                s["settings"]["theme"] = 5;
+                app.receive(s.dump());
+                frame();
+                frame();
+                // Focus a real setup card, then use the advertised controller inspection key.
+                const auto found =
+                    std::find_if(hits.begin(), hits.end(), [&](const Hit& h) { return matches(h, "setup-card"); });
+                require(found != hits.end(), "Lobby has no focusable setup card");
+                auto* window = ImGui::FindWindowByName(found->window.c_str());
+                ImGui::FocusWindow(window);
+                ImGui::SetFocusID(found->id, window);
+                io.AddKeyEvent(ImGuiKey_GamepadFaceUp, true);
+                frame();
+                require(preview::GameTestAccess::padPrompts(app), "Gamepad input did not select pad prompts");
+                require(preview::GameTestAccess::inspecting(app), "Lobby ignores its advertised pad inspection key");
+                io.AddKeyEvent(ImGuiKey_GamepadFaceUp, false);
+                frame();
+                io.AddKeyEvent(ImGuiKey_Escape, true);
+                frame();
+                require(!preview::GameTestAccess::padPrompts(app), "Keyboard input did not restore keyboard prompts");
+                io.AddKeyEvent(ImGuiKey_Escape, false);
+                frame();
+            }
             // Collection deletion requires the Developer gate and an explicit,
             // revision-bound confirmation. Missing-set recovery is available normally.
             load("album", "developer");

@@ -132,11 +132,11 @@ void GameApp::settings(ImVec2 at, ImVec2 size) {
         textBlock(title, width, 22, palette().accent);
         ImGui::Dummy(ImVec2(0, 16 * scale));
     };
-    const auto toggle = [&](const char* name, const char* key, const char* json) {
+    const auto toggle = [&](const char* name, const char* key, const char* json, const char* off = "Off") {
         bool v = valueOf(json) != 0;
         const auto p = ImGui::GetCursorScreenPos();
         text(p + ImVec2(0, 9) * scale, name, 19, palette().ink, width - 115 * scale);
-        if (button(key, v ? "On" : "Off", p + ImVec2(width - 68 * scale, 0), ImVec2(68, 36) * scale, v,
+        if (button(key, v ? "On" : off, p + ImVec2(width - 68 * scale, 0), ImVec2(68, 36) * scale, v,
                    !pendingCommand && !capturing()))
             send("settings", std::string(key) + " " + (v ? "0" : "1"));
         ImGui::SetCursorScreenPos(p + ImVec2(0, 58) * scale);
@@ -147,7 +147,7 @@ void GameApp::settings(ImVec2 at, ImVec2 size) {
         if (combo(key, name, value, choices, width)) send("settings", std::string(key) + " " + std::to_string(value));
     };
     const auto slider = [&](const char* name, const char* key, const char* json, int maximum, const char* format = "%d",
-                            bool tenths = false) {
+                            bool tenths = false, bool skinDefault = false) {
         const auto p = ImGui::GetCursorScreenPos();
         text(p + ImVec2(0, 8) * scale, name, 18, palette().ink, width * .51f);
         ImGui::SetCursorScreenPos(p + ImVec2(width * .56f, 0));
@@ -170,7 +170,9 @@ void GameApp::settings(ImVec2 at, ImVec2 size) {
         draw->AddCircleFilled(ImVec2(x, y), (ImGui::IsItemHovered() || ImGui::IsItemActive() ? 4.5f : 3.5f) * scale,
                               palette().accent, 20);
         char shown[32]{};
-        if (tenths)
+        if (skinDefault)
+            std::snprintf(shown, sizeof(shown), "Skin");
+        else if (tenths)
             std::snprintf(shown, sizeof(shown), format, value / 10.f);
         else
             std::snprintf(shown, sizeof(shown), format, value);
@@ -203,7 +205,12 @@ void GameApp::settings(ImVec2 at, ImVec2 size) {
                {"Theme default", "Plain", "Slate", "Felt", "Parchment", "Leather", "Walnut", "Dark slab"});
         slider("Board texture", "board-texture", "boardTexture", 100, "%d%%");
         heading("Fonts");
-        const std::vector<std::string> fonts{"Default", "Georgia", "Times New Roman", "Arial", "Verdana"};
+        const auto skinFontName = skin().font == "lato"    ? "Lato"
+                                  : skin().font == "serif" ? "Liberation Serif"
+                                  : skin().font == "sans"  ? "Liberation Sans"
+                                                           : "Jost";
+        const std::vector<std::string> fonts{skinned() ? std::string("Skin: ") + skinFontName : "Default", "Georgia",
+                                             "Times New Roman", "Arial", "Verdana"};
         select("Interface", "interface-font", "interfaceFont", fonts);
         select("Card names", "card-name-font", "cardNameFont", fonts);
         select("Card values", "card-value-font", "cardValueFont", fonts);
@@ -212,15 +219,22 @@ void GameApp::settings(ImVec2 at, ImVec2 size) {
         select("Values", "card-ranks", "rankLayout", {"Edge values", "Classic values"});
         toggle("Card names", "card-names", "showCardNames");
         toggle("Card groups", "card-groups", "showCardGroups");
-        select("Nameplate", "nameplate", "nameplateStyle", {"Shaded band", "Soft fade", "Printed on art"});
-        select("Lettering", "name-case", "nameCase", {"Small caps", "Title case", "Uppercase"});
-        heading("Card values");
-        slider("Shadow opacity", "rank-shadow-opacity", "rankShadowOpacity", 100, "%d%%");
-        slider("Shadow blur", "rank-shadow-blur", "rankShadowBlur", 8);
-        slider("Shadow offset", "rank-shadow-offset", "rankShadowOffset", 6);
-        toggle("Stroke", "rank-stroke", "rankStroke");
-        slider("Stroke weight", "rank-stroke-weight", "rankStrokeWeight", 30, "%.1f px", true);
-        if (ImGui::Button("Reset card values")) send("settings", "rank-finish-reset 0");
+        if (face.frame != 0)
+            select("Nameplate", "nameplate", "nameplateStyle", {"Shaded band", "Soft fade", "Printed on art"});
+        select("Lettering", "name-case", "nameCase",
+               {skinned() ? "Skin: Title case" : "Small caps", "Title case", "Uppercase"});
+        if (face.frame != 0) {
+            heading("Card values");
+            slider("Shadow opacity", "rank-shadow-opacity", "rankShadowOpacity", 100, "%d%%");
+            slider("Shadow blur", "rank-shadow-blur", "rankShadowBlur", 8);
+            slider("Shadow offset", "rank-shadow-offset", "rankShadowOffset", 6);
+            toggle("Stroke", "rank-stroke", "rankStroke", skinned() ? "Skin" : "Off");
+            if (valueOf("rankStroke"))
+                slider("Stroke weight", "rank-stroke-weight", "rankStrokeWeight", 30, "%.1f px", true);
+            else if (skinned())
+                textBlock("Skin default: 1 px stroke.", width, 17, palette().muted);
+            if (ImGui::Button("Reset card values")) send("settings", "rank-finish-reset 0");
+        }
         heading("Card back");
         int i = 0;
         for (const auto& back : arrayMember(state, "cardBacks")) {
@@ -247,7 +261,8 @@ void GameApp::settings(ImVec2 at, ImVec2 size) {
         }
         heading("Control colours");
         select("Palette", "match-palette", "controlPalette",
-               {"Tessera", "Blue / amber", "Violet / mint", "Ivory / slate", "Custom"});
+               {skinned() && skin().player && skin().opponent ? "Skin colours" : "Tessera", "Blue / amber",
+                "Violet / mint", "Ivory / slate", "Custom"});
         if (valueOf("controlPalette") == 4) {
             const auto colour = [&](const char* title, const char* key, const char* json) {
                 const auto p = ImGui::GetCursorScreenPos();
@@ -271,10 +286,17 @@ void GameApp::settings(ImVec2 at, ImVec2 size) {
             colour("Opponent", "match-opponent-colour", "opponentColour");
         }
         heading("Card borders");
-        select("Style", "match-border-style", "controlBorderStyle",
-               {"Single line", "Double line", "Clipped corners", "Corner brackets", "Original Tessera"});
-        slider("Thickness", "match-border-width", "controlBorderWidth", 40, "%.1f px", true);
-        slider("Opacity", "match-border-opacity", "controlBorderOpacity", 100, "%d%%");
+        if (face.frame != 0 || matchAppearance.marker) {
+            if (face.frame == 0) textBlock("Extra border around the frame.", width, 17, palette().muted);
+            select("Style", "match-border-style", "controlBorderStyle",
+                   {"Single line", "Double line", "Clipped corners", "Corner brackets", "Original Tessera"});
+            const bool skinWidth = skinned() && valueOf("controlBorderWidth") == 12;
+            slider("Thickness", "match-border-width", "controlBorderWidth", 40, "%.1f px", true, skinWidth);
+            if (skinWidth) textBlock("Skin default: 1.8 px border.", width, 17, palette().muted);
+            slider("Opacity", "match-border-opacity", "controlBorderOpacity", 100, "%d%%");
+        } else
+            textBlock("The frame uses your control colours. Enable the control marker for an extra border.", width, 17,
+                      palette().muted);
         toggle("Control marker", "match-control-marker", "controlMarker");
         if (valueOf("controlMarker")) textBlock("Filled: yours. Outline: opponent’s.", width, 17);
         ImGui::Dummy(ImVec2(0, 16 * scale));

@@ -18,24 +18,32 @@ The goal is a complete overhaul of the native (ImGui/DirectX 11) interface so it
 
 ## Status
 
-All work is committed except the last step (three new skins, below), which must be committed first.
+The three extra skins and preview tooling are committed in `04c0924`. The phase 1 software follow-ups are complete; real-controller and Skyrim validation remain open.
 
 | Phase | Scope | State |
 |---|---|---|
-| 1 Skins as data | `skin.json` + textures; Oathvein, Vel'dun, Norden; converter; controller glyph prompts | **Done** (`2d1bf12`) |
+| 1 Skins as data | `skin.json` + textures; Oathvein, Vel'dun, Norden; converter; controller glyph prompts | **Done** (`2d1bf12`); Settings/prompt follow-ups complete |
 | 2 Card face | One framed card design | **Done** (`1a18721`); verification items open |
 | 3 Game board | Material boards with rail and recessed squares | **Done** (`84f231b`); refinements open |
 | 4 Layouts and type | Match, lobby, results, journal, shop, album, type scale, fonts | **Partly done** (results summary, trade-rule label); most open |
 | 5 In-game integration | Blur, packaging, neutral default skin, theme migration | **Partly done** (blur, skin packaging); rest open |
-| Extra skins | Untarnished, Edge, Dear Diary | **Added, uncommitted, not yet previewed** |
+| Extra skins | Untarnished, Edge, Dear Diary | **Committed** (`04c0924`), desktop previews reviewed |
 
-Last verified: 89/89 native tests pass with the extra skins (before the final docs/tooling commit). The Windows DLL was last cross-built and probed at `2d1bf12` only; **rebuild and re-probe before handing a zip to the player** (see [Build](#build-test-and-package)). `dist/skins-phase1/` is stale.
+Last verified: **89/89 native tests pass**, including new page-specific prompt checks, controller inspection in the lobby, device switching, and framed/borderless Settings visibility. Native build, formatting, and preview-script failure checks pass. **Rebuild and re-probe before handing a zip to the player** (see [Build](#build-test-and-package)); the checkpoint output directory is `dist/ui-phase1-followups/`, whose `build-info.json` records the exact tested source and DLL. `dist/skins-phase1/` is stale.
 
 ### First actions for the next agent
 
-1. `git status`; commit the pending work: `Add Untarnished, Edge and Dear Diary skins` plus `Add UI overhaul plan and preview tooling`. Run `bash tools/format.sh` and `ctest --preset native --parallel 8` first.
-2. Preview the three new skins (they have never been rendered): `THEME=edge tools/preview-ui.sh edge-album --snapshot build/test-fixtures/album.json --page cards` and likewise for `untarnished`, `deardiary`. Fix anything broken (see [Skin checks](#phase-1-follow-ups)).
-3. Rebuild the Windows DLL, run the Wine probes, package, and give the player the zip path (the player tests in Skyrim through MO2; nothing in this branch has been seen in-game yet).
+1. Check `git status` and the checkpoint's `dist/ui-phase1-followups/build-info.json`; if source has changed, rebuild/probe/package rather than handing over an older DLL.
+2. Have the player run the native UI checkpoint checklist in `docs/TESTING.md` with the new Main zip. Desktop previews and synthetic controller input do not establish in-game blur or physical-controller behaviour.
+3. Continue with the phase 2 card-face verification list below, then the ordered board, layout and typography work. Keep existing theme indices and the agreed shared card design.
+
+### Phase 1 follow-up checkpoint
+
+- Reviewed album, match, lobby and result screens for Untarnished, Edge and Dear Diary at 1080p, and their albums at 720p and 4K. No skin asset or metric changes were needed. Previews are under `build/previews/phase1-checkpoint/before/`.
+- Settings now names skin fonts and control colours, identifies inherited lettering/stroke/border defaults, and preserves saved setting values. Nameplate and numeral-finish controls appear only for the borderless face; additional-border controls appear on framed cards only when the control marker enables that border.
+- Footer prompts follow the active page. Inspection is advertised for card/deck views, shops, lobbies and matches; modal dialogs suppress background prompts. Lobby cards now accept focused `I`/pad Y inspection alongside the existing mouse action. Runtime icon names `360_A`, `360_B`, `360_Y`, `Esc`, `Mouse1`, `Mouse2` were confirmed in the installed icon pack; no icons are bundled.
+- `tools/preview-ui.sh` renders into a temporary directory, propagates host/conversion failure, and replaces the output PNG only after success. An invalid-fixture check confirmed that an older PNG is preserved and stale BMPs cannot produce a false success.
+- Updated Settings previews, including runtime keycaps, are under `build/previews/phase1-checkpoint/after/`. Real pad hardware, Skyrim menu blur, and the remaining phases still need verification.
 
 ## Architecture
 
@@ -92,17 +100,17 @@ Ordered. Each item should end with preview screenshots reviewed by looking at th
 
 ### Phase 1 follow-ups
 
-- Preview Untarnished, Edge, Dear Diary (album, match, lobby, dialogs). Known risks: Edge's `band.png` (1300x118) is used for both the title and the item-card band and may look wrong as a title; Dear Diary has no tab/selector art so buttons and tabs fall back to hairlines/flat fills; Untarnished has no art at all (palette only). Tune `skin.json` metrics, or add recipe entries, until each looks intentional. Untarnished should be a clean, flat white-on-black look after the mod.
-- Settings labels still read "Default"/"Tessera" while a skin overrides card fonts, name case, value stroke, control palette and border width. Make the Settings screen show what is actually in effect, or add a "Skin default" choice.
-- Controller glyph switching (`trackInputDevice`) is untested with a real pad. Verify in game; confirm button names exist in the player's ImGui Icons (`360_A`, `360_B`, `360_Y`).
-- Add controller prompts for Back/Select consistent with what the screens actually bind (Esc/pad B closes, M1 selects/plays, M2/Y inspects). Don't list a control that doesn't exist.
+- **Done:** previewed the three extra skins across album, match, lobby and dialogs; Edge's band and the flat/hairline fallbacks look intentional. Untarnished remains a clean white-on-black palette.
+- **Done:** Settings displays effective skin defaults and hides framed-card controls that do not apply. Existing persisted meanings are unchanged; selecting a skin default still follows the skin.
+- **Done in automation:** page-specific Back/Close/Select/Play/Inspect prompts, keyboard/pad switching and focused pad Y inspection in the lobby. Icon files exist in the installed pack.
+- **Open:** verify controller glyph switching with a real pad and confirm keyboard/mouse fallback in Skyrim.
 
 ### Phase 2: card face
 
 - Verify the framed face everywhere it appears: deck slots and decks grid at all three densities, shop tiles, pack reveal, tournament prize cards, rule demonstrations (`rules.json` demos use `valueAnchor`; check the highlight circles line up), lobby setup cards, drag preview, the 3D inspector (`GameInspector.cpp`, unchanged and may not match), `card-faces` in tests.
 - Foil: confirm the foil shader (`Renderer::material`) still reads well under the bezel, and that the bezel doesn't tint foil art. Consider a foil sheen on the bezel itself.
 - Value legibility at small sizes (Small deck density, 720p). The 25-unit digit and plate sizes were tuned at 1080p only.
-- Names: plates cover the artwork edges; check long expansion names and the "Printed on art" nameplate option (`face.nameplate == 2`) behave on the framed face. Currently the framed face ignores `nameplate`; decide whether to honour it.
+- Names: plates cover the artwork edges; check long expansion names. The framed face has a fixed nameplate; the "Printed on art" option (`face.nameplate == 2`) is now offered only for the borderless face. Any later expansion of framed nameplate styles needs its own visual verification.
 - Classic value layout (`rankLayout == 1`) is drawn as a diamond plaque; check it, and that the count badge and affinity icons don't collide.
 - Compact legend: a gem for tier is unlabelled; confirm the inspector or tooltip explains it.
 

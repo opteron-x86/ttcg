@@ -139,7 +139,10 @@ void GameApp::lobby(ImVec2 at, ImVec2 size) {
                 send("browse", "album");
             }
         }
-        if (id >= 0 && ImGui::IsItemHovered() && ImGui::IsMouseClicked(1)) inspectCard(id);
+        if (id >= 0 && ((ImGui::IsItemHovered() && ImGui::IsMouseClicked(1)) ||
+                        (ImGui::IsItemFocused() &&
+                         (ImGui::IsKeyPressed(ImGuiKey_I) || ImGui::IsKeyPressed(ImGuiKey_GamepadFaceUp)))))
+            inspectCard(id);
         if (id >= 0)
             displayCard(id, p, ImVec2(w, h), false, -1, 1 + i);
         else {

@@ -27,6 +27,18 @@ For collection recovery, use a separate development save and retain a copy befor
 
 The established gameplay test runtime is Skyrim SE 1.6.1170 under Linux/Proton. The DLL enables SE, AE and VR; the automated loader checks cover their declarations. In-game validation on other runtimes and VR remains to be recorded here.
 
+## Native UI overhaul checkpoint
+
+In-game results for `feat/oathvein-skin` remain unrecorded. Use the Main package under `dist/ui-phase1-followups/`; its `build-info.json` identifies the source and tested DLL. Keep the separate Card Art installation enabled.
+
+- Switch between Oathvein, Vel'dun, Norden, Untarnished, Edge and Dear Diary. Check the album, lobby, match and result dialog at the normal play resolution.
+- In Appearance, check that default fonts and colours identify the skin. Switch between Framed and Borderless: nameplate/shadow/stroke controls belong to Borderless; framed border controls appear with the control marker. Explicit font/colour choices should survive theme changes and restarts.
+- Move between keyboard/mouse and a physical controller. Prompts should switch to the installed icon pack's A/B/Y glyphs, or readable plain caps without that pack. Verify focused pad Y inspection in the lobby, album, decks and shop. Settings and Journal should not advertise inspection; modal dialogs should not leave active-looking prompts behind them.
+- Repeatedly open and close Tessera, including after card inspection, match setup and results. Test both paused and unpaused play. The scene should blur only while Tessera is open and recover after closing, forced closure and save reload.
+- Complete a match, settle the trade, open packs and receive a tournament reward. Confirm the framed cards, new board materials and result summaries do not obstruct selection or settlement.
+
+Record runtime, resolution, input device and any UI/icon mods with results. Desktop previews, the 89 native tests and Wine probes do not replace these Skyrim checks.
+
 ## Merchant inventory crash isolation
 
 The first `noInit` cleanup candidate still crashed during the reporter's death/reload test on 1.7.104. The new crash log's DLL fingerprint matches the CI candidate, and the stack still passes through leveled-inventory initialization and scrap-heap cleanup. The cause remains unconfirmed.
