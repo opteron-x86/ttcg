@@ -451,7 +451,7 @@ void App::card(int index, ImVec2 at, ImVec2 size, bool chosen, bool foil, int ow
             uv0.y = (1 - crop) * .4f;
             uv1.y = uv0.y + crop;
         }
-        d->AddImage(texture.id, at, at + size, uv0, uv1);
+        artImage(texture, at, at + size, uv0, uv1);
     }
     const float unit = size.x / 180.f;
     if ((face.names || face.groups) && face.nameplate != 2) drawCardShade(d, at, size, skin ? 0x0a0a0a : 0x101d16);

@@ -49,7 +49,7 @@ void GameApp::nativeInspector() {
     yaw += (turnTarget - yaw) * std::min(1.f, ImGui::GetIO().DeltaTime * 8);
     const bool back = std::cos(yaw) * std::cos(pitch) < 0;
     // The card is drawn flat with its full face, then every vertex is tilted into place.
-    const float depth = 3200 * scale;
+    const float depth = 1800 * scale;
     const auto project = [&](ImVec2 flat) {
         float x = flat.x - centre.x, y = flat.y - centre.y, z = -x * std::sin(yaw);
         x *= std::cos(yaw);
@@ -62,12 +62,16 @@ void GameApp::nativeInspector() {
     softShadow(artAt, ImVec2(w, h), 1.5f, 18);
     if (back) {
         const auto texture = assets.get(customBack);
-        d->AddImage(texture.id, artAt, artAt + ImVec2(w, h), ImVec2(1, 0), ImVec2(0, 1));
+        artGrid = 16;
+        artImage(texture, artAt, artAt + ImVec2(w, h), ImVec2(1, 0), ImVec2(0, 1));
+        artGrid = 1;
         d->AddRect(artAt, artAt + ImVec2(w, h), IM_COL32(0, 0, 0, 220), 0, 0, std::max(1.f, 1.5f * scale));
     } else {
         foilLightSet = true;
         foilLight = ImVec2(.5f + std::sin(yaw) * .45f, .5f + std::sin(pitch) * .45f);
+        artGrid = 16;
         card(selected, artAt, ImVec2(w, h), false, face.foil && selectedFoil, -1, 21, true);
+        artGrid = 1;
         foilLightSet = false;
         // A sheen crosses the face as it turns.
         const float sweep = std::sin(yaw) * 1.6f;

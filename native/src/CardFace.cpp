@@ -75,7 +75,7 @@ void App::framedCard(const CardView& c, Texture texture, ImVec2 at, ImVec2 size,
             uv0.y = (1 - crop) * .4f;
             uv1.y = uv0.y + crop;
         }
-        d->AddImage(texture.id, inner, innerEnd, uv0, uv1);
+        artImage(texture, inner, innerEnd, uv0, uv1);
     }
     d->AddRect(inner, innerEnd, rgb(0x000000, 170), 0, 0, std::max(1.f, unit));
     // Footer: tier gem, bottom value and affinity share one opaque strip.

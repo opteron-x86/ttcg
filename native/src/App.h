@@ -81,6 +81,10 @@ protected:
     float yaw = 0, pitch = 0, turnTarget = 0;
     // Set while the inspector draws, so the foil answers the card's tilt and not the clock.
     bool foilLightSet = false;
+    // Card art is drawn as this many strips each way; the inspector raises it so a tilted card
+    // keeps true perspective instead of bending along one diagonal.
+    int artGrid = 1;
+    void artImage(Texture texture, ImVec2 a, ImVec2 b, ImVec2 uv0, ImVec2 uv1);
     ImVec2 foilLight{.5f, .5f};
     static const Palette& builtInPalette(int index);
     const Palette& palette() const;

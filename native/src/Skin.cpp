@@ -239,6 +239,18 @@ void App::gridFade(GridEdges edges) {
     if (edges.below)
         d->AddRectFilledMultiColor(ImVec2(at.x, at.y + size.y - reach), at + size, clear, clear, solid, solid);
 }
+void App::artImage(Texture texture, ImVec2 a, ImVec2 b, ImVec2 uv0, ImVec2 uv1) {
+    auto* d = ImGui::GetWindowDrawList();
+    const int n = std::max(1, artGrid);
+    for (int y = 0; y < n; ++y)
+        for (int x = 0; x < n; ++x) {
+            const float x0 = float(x) / n, x1 = float(x + 1) / n, y0 = float(y) / n, y1 = float(y + 1) / n;
+            d->AddImage(texture.id, ImVec2(a.x + (b.x - a.x) * x0, a.y + (b.y - a.y) * y0),
+                        ImVec2(a.x + (b.x - a.x) * x1, a.y + (b.y - a.y) * y1),
+                        ImVec2(uv0.x + (uv1.x - uv0.x) * x0, uv0.y + (uv1.y - uv0.y) * y0),
+                        ImVec2(uv0.x + (uv1.x - uv0.x) * x1, uv0.y + (uv1.y - uv0.y) * y1));
+        }
+}
 void App::softShadow(ImVec2 at, ImVec2 size, float strength, float reach) {
     auto* d = ImGui::GetWindowDrawList();
     const ImVec2 drop(0, reach * .35f * scale);
