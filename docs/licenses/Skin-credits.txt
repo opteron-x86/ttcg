@@ -1,0 +1,15 @@
+Tessera skins — interface artwork
+
+Oathvein, Vel'dun and Norden skins: artwork from Oathvein UI, Vel'dun UI and
+Norden UI by Nithog, used with permission.
+https://www.nexusmods.com/skyrimspecialedition/mods/160916
+https://www.nexusmods.com/skyrimspecialedition/mods/176230
+https://www.nexusmods.com/skyrimspecialedition/mods/166086
+
+The textures in TesseraUI/skins are rendered from vector shapes in those mods'
+menu files by tools/build-skin.py; tools/skin/recipes.json lists the source
+file and shape for each texture. They are not covered by Tessera's GPL-3.0
+licence. Complete upstream menus, SWF files and plugins are not included.
+
+Keycap images are read from the player's own ImGui Icons installation
+(Data/Interface/ImGuiIcons/Icons) and are not bundled.

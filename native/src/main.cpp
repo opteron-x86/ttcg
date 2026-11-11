@@ -73,6 +73,10 @@ int main(int argc, char** argv) {
                 o.previewRoot = value();
             else if (a == "--screenshot")
                 o.screenshot = value();
+            else if (a == "--backdrop")
+                o.backdrop = value();
+            else if (a == "--key-icons")
+                o.keyIcons = value();
             else if (a == "--frames")
                 o.frames = std::max(1, std::stoi(value()));
             else if (a == "--presentation-time")
@@ -106,7 +110,9 @@ int main(int argc, char** argv) {
                        "  --theme tessera|charcoal|oxblood|parchment|umber|oathvein|veldun|norden\n"
                        "  Shop snapshots: --page buy|sell|buyback\n"
                        "  --tessera-root PATH --size WIDTHxHEIGHT\n"
-                       "  --frames N --screenshot FILE.bmp [--hidden]\n";
+                       "  --frames N --screenshot FILE.bmp [--hidden]\n"
+                       "  --backdrop IMAGE.png|jpg draws a game scene behind the interface\n"
+                       "  --key-icons DIR reads keycaps from an ImGui Icons folder\n";
                 return 0;
             } else
                 throw std::runtime_error("Unknown option: " + a);

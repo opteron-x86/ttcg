@@ -86,6 +86,17 @@ Texture Assets::get(const std::string& path) {
     textures.emplace(path, Entry{texture, frame});
     return texture;
 }
+Texture Assets::optional(const std::string& path) {
+    auto it = textures.find(path);
+    if (it != textures.end()) {
+        it->second.touched = frame;
+        return it->second.texture;
+    }
+    auto texture = load((root / std::filesystem::path(std::u8string(path.begin(), path.end()))).lexically_normal());
+    resident += texture.bytes;
+    textures.emplace(path, Entry{texture, frame});
+    return texture;
+}
 Texture Assets::card(int index, bool large) {
     std::string path = ttcg::cards[index].art;
     if (!large && path.starts_with("cards/")) path.replace(0, 6, "thumbs/");

@@ -277,7 +277,19 @@ int main(int argc, char** argv) {
             }
             {
                 std::vector<ImTextureID> textures;
+                int index = 0;
                 for (const auto& texture : preview::GameTestAccess::themeSurfaces(app)) {
+                    // Skinned themes draw their panel texture and generate no background.
+                    const auto id = ttcg::interfaceThemes[index++].id;
+                    if (id == "oathvein" || id == "veldun" || id == "norden") {
+                        require(!texture.id, "Skinned theme generated an unused background");
+                        const auto& skin = preview::GameTestAccess::skin(app, index - 1);
+                        require(skin.loaded && skin.art.contains("panel") && skin.art.at("panel").margin > 0 &&
+                                    skin.art.contains("selector") && skin.art.contains("tab") && skin.player &&
+                                    skin.opponent,
+                                "Bundled skin did not load its panel, bands and control colours");
+                        continue;
+                    }
                     require(texture.id && texture.width == 1024 && texture.height == 768,
                             "Theme background was replaced by a board material");
                     textures.push_back(texture.id);

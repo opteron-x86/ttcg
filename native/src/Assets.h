@@ -22,6 +22,8 @@ public:
     void beginFrame();
     void invalidateBacks();
     Texture get(const std::string& path);
+    // Interface art that may be absent; no placeholder is substituted.
+    Texture optional(const std::string& path);
     Texture card(int index, bool large = false);
     Texture back(int index = 0);
     Texture pack(unsigned kind);

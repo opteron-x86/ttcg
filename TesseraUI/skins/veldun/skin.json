@@ -1,0 +1,24 @@
+{
+  "schema": 1,
+  "id": "veldun",
+  "name": "Vel'dun",
+  "credit": "Vel'dun UI by Nithog",
+  "font": "lato",
+  "palette": {
+    "background": "#151612",
+    "centre": "#302d26",
+    "text": "#ece8d9",
+    "muted": "#b4b3a5",
+    "accent": "#c2b7a0",
+    "line": "#c2b7a03c",
+    "selection": "#625b43",
+    "value": "#c2b7a0",
+    "notice": "#d08a5a"
+  },
+  "control": {"player": "#d6cdb2", "opponent": "#b9573f"},
+  "art": {
+    "panel": {"file": "panel.png", "margin": 90, "inset": 4},
+    "selector": {"file": "selector.png", "cap": 0.16},
+    "tab": {"file": "tab.png", "cap": 0.3}
+  }
+}

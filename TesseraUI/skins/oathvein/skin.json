@@ -1,0 +1,28 @@
+{
+  "schema": 1,
+  "id": "oathvein",
+  "name": "Oathvein",
+  "credit": "Oathvein UI by Nithog",
+  "font": "jost",
+  "palette": {
+    "background": "#161616",
+    "centre": "#302626",
+    "text": "#e9e6dd",
+    "muted": "#a3a19c",
+    "accent": "#e9e6dd",
+    "line": "#e9e6dd2e",
+    "selection": "#8f3229",
+    "value": "#7ec470",
+    "notice": "#c8483a"
+  },
+  "control": {"player": "#e3dfd4", "opponent": "#c8483a"},
+  "art": {
+    "panel": {"file": "panel.png", "margin": 170, "inset": 22, "tile": true},
+    "title": {"file": "title.png", "cap": 0.1, "passes": 2},
+    "band": {"file": "band.png", "cap": 0.1},
+    "plate": {"file": "plate.png", "cap": 0.1},
+    "selector": {"file": "selector.png", "cap": 0.08},
+    "tab": {"file": "tab.png", "cap": 0.3},
+    "sigil": {"file": "sigil.png", "opacity": 0.1}
+  }
+}

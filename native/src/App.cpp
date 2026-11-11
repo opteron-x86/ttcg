@@ -21,12 +21,12 @@ const Palette themes[]{{"Tessera", rgb(0x131e19), rgb(0x28372e), rgb(0xe7dec6), 
                         rgb(0x765130, 90), rgb(0xc5a475), false},
                        {"Umber", rgb(0x1e1715), rgb(0x493029), rgb(0xe9d8bc), rgb(0xb69b81), rgb(0xd1a76e),
                         rgb(0x92704e, 115), rgb(0x604633), false},
-                       {"Oathvein", rgb(0x131415), rgb(0x302626), rgb(0xe9e6dd), rgb(0xb4b3ae), rgb(0xe9e6dd),
-                        rgb(0x9b6960, 150), rgb(0x9d4136), true, FrameStyle::Oathvein},
+                       {"Oathvein", rgb(0x161616), rgb(0x302626), rgb(0xe9e6dd), rgb(0xa3a19c), rgb(0xe9e6dd),
+                        rgb(0xe9e6dd, 46), rgb(0x8f3229), true, FrameStyle::Skinned},
                        {"Vel'dun", rgb(0x151612), rgb(0x302d26), rgb(0xece8d9), rgb(0xb4b3a5), rgb(0xbeb18a),
-                        rgb(0x938d77, 165), rgb(0x625b43), true, FrameStyle::Veldun},
+                        rgb(0x938d77, 165), rgb(0x625b43), true, FrameStyle::Skinned},
                        {"Norden", rgb(0x101315), rgb(0x2b3033), rgb(0xe9e6dd), rgb(0xb4b8bb), rgb(0xd2d5d4),
-                        rgb(0xa9b0b3, 135), rgb(0x464f55), true, FrameStyle::Norden}};
+                        rgb(0xa9b0b3, 135), rgb(0x464f55), true, FrameStyle::Skinned}};
 static_assert(std::size(themes) == ttcg::interfaceThemeCount);
 const char* romans[]{"", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"};
 ImU32 rarity(const CardView& card) {
@@ -56,10 +56,12 @@ ImU32 alpha(ImU32 colour, float amount) {
     return (colour & 0xffffff) | (unsigned(std::clamp(amount, 0.f, 1.f) * 255) << 24);
 }
 }
-const Palette& App::palette() const { return themes[theme]; }
+const Palette& App::builtInPalette(int index) { return themes[ttcg::interfaceThemeIndex(index)]; }
+const Palette& App::palette() const { return skins[theme].loaded ? skins[theme].palette : themes[theme]; }
 ImFont* App::font() const { return preferredFont ? preferredFont : palette().sans ? sans : serif; }
 App::App(Renderer& r, const Options& o) : renderer(r), options(o), assets(r, o.tesseraRoot) {
     theme = ttcg::interfaceThemeIndex(o.theme);
+    loadSkins();
     screen = o.screen;
     inspecting = o.inspect;
     yaw = o.yaw;
@@ -103,26 +105,16 @@ App::~App() {
         if (texture.id) renderer.release(texture);
 }
 void App::surface(ImVec2 at, ImVec2 size, bool main) {
+    if (skinned()) {
+        skinPanel(at, size, main ? 1.f : .62f);
+        return;
+    }
     auto& texture = surfaces[theme];
     if (!texture.id) {
         const auto pixels = surfacePixels(theme, 1024, 768);
         texture = renderer.upload(pixels.data(), 1024, 768);
     }
-    auto* d = ImGui::GetWindowDrawList();
-    if (palette().frame != FrameStyle::Norden) {
-        d->AddImage(texture.id, at, at + size);
-        return;
-    }
-    const float cut = std::min({(main ? 18.f : 11.f) * scale, size.x * .25f, size.y * .25f});
-    const auto end = at + size;
-    const auto uv = [&](ImVec2 p) { return ImVec2((p.x - at.x) / size.x, (p.y - at.y) / size.y); };
-    const auto quad = [&](ImVec2 a, ImVec2 b, ImVec2 c, ImVec2 e) {
-        d->AddImageQuad(texture.id, a, b, c, e, uv(a), uv(b), uv(c), uv(e));
-    };
-    d->AddImage(texture.id, at + ImVec2(cut, 0), end - ImVec2(cut, 0), ImVec2(cut / size.x, 0),
-                ImVec2(1 - cut / size.x, 1));
-    quad(at + ImVec2(0, cut), at + ImVec2(cut, 0), ImVec2(at.x + cut, end.y), ImVec2(at.x, end.y - cut));
-    quad(ImVec2(end.x - cut, at.y), ImVec2(end.x, at.y + cut), end - ImVec2(0, cut), end - ImVec2(cut, 0));
+    ImGui::GetWindowDrawList()->AddImage(texture.id, at, at + size);
 }
 void App::boardSurface(int material, ImVec2 at, ImVec2 size) {
     if (material == 0) material = ttcg::interfaceThemes[theme].boardSurface;
@@ -134,75 +126,39 @@ void App::boardSurface(int material, ImVec2 at, ImVec2 size) {
     ImGui::GetWindowDrawList()->AddImage(texture.id, at, at + size);
 }
 void App::panelFrame(ImVec2 at, ImVec2 size, bool main) {
+    // A skin's panel texture carries its own frame.
+    if (skinned()) return;
     auto* d = ImGui::GetWindowDrawList();
     const auto& p = palette();
     const auto end = at + size;
-    if (p.frame == FrameStyle::Classic) {
-        d->AddRect(at + ImVec2(1, 1), end - ImVec2(1, 1), p.accent);
-        if (main && theme > 0)
-            for (int i = 0; i < 4; ++i) {
-                const ImVec2 corner =
-                    at + ImVec2(i % 2 ? size.x - 8 * scale : 8 * scale, i / 2 ? size.y - 8 * scale : 8 * scale);
-                const float sx = i % 2 ? -1.f : 1.f, sy = i / 2 ? -1.f : 1.f;
-                line(corner, corner + ImVec2(32 * sx, 0) * scale);
-                line(corner, corner + ImVec2(0, 32 * sy) * scale);
-            }
-        return;
-    }
-    const float weight = (main ? 2.5f : 1.6f) * scale;
-    const ImVec2 inset = ImVec2(2, 2) * scale;
-    if (p.frame == FrameStyle::Oathvein) {
-        d->AddRect(at + inset, end - inset, alpha(p.selection, .80f), 0, 0, weight);
-        d->AddRect(at + inset * 2, end - inset * 2, alpha(p.ink, .10f));
-        for (float y : {at.y + 2 * scale, end.y - 2 * scale}) {
-            const auto left = ImVec2(at.x + 8 * scale, y), mid = ImVec2(at.x + size.x * .36f, y + scale),
-                       right = ImVec2(end.x - 8 * scale, y + scale);
-            d->AddRectFilledMultiColor(left, mid, alpha(p.ink, .2f), alpha(p.ink, .85f), alpha(p.ink, .85f),
-                                       alpha(p.ink, .2f));
-            d->AddRectFilledMultiColor(ImVec2(mid.x, y), right, alpha(p.ink, .85f), alpha(p.ink, 0), alpha(p.ink, 0),
-                                       alpha(p.ink, .85f));
+    d->AddRect(at + ImVec2(1, 1), end - ImVec2(1, 1), p.accent);
+    if (main && theme > 0)
+        for (int i = 0; i < 4; ++i) {
+            const ImVec2 corner =
+                at + ImVec2(i % 2 ? size.x - 8 * scale : 8 * scale, i / 2 ? size.y - 8 * scale : 8 * scale);
+            const float sx = i % 2 ? -1.f : 1.f, sy = i / 2 ? -1.f : 1.f;
+            line(corner, corner + ImVec2(32 * sx, 0) * scale);
+            line(corner, corner + ImVec2(0, 32 * sy) * scale);
         }
-    } else if (p.frame == FrameStyle::Veldun) {
-        // Broad top/right edges and an open lower-left corner echo the widget.
-        const float x = at.x + 3 * scale, y = at.y + 3 * scale, r = end.x - 3 * scale, b = end.y - 3 * scale;
-        const ImVec2 points[]{ImVec2(x, at.y + size.y * .42f), ImVec2(x, y), ImVec2(r, y), ImVec2(r, b),
-                              ImVec2(at.x + size.x * .68f, b)};
-        d->AddPolyline(points, 5, alpha(p.accent, .65f), ImDrawFlags_None, weight);
-        d->AddRect(at + ImVec2(7, 7) * scale, end - ImVec2(7, 7) * scale, alpha(p.accent, .13f));
-        d->AddLine(ImVec2(x, y + 2 * scale), ImVec2(r, y + 2 * scale), alpha(p.ink, .25f), scale);
-    } else {
-        const float cut = (main ? 16.f : 9.f) * scale;
-        const auto a = at + inset, b = end - inset;
-        const ImVec2 points[]{a + ImVec2(cut, 0), ImVec2(b.x - cut, a.y), ImVec2(b.x, a.y + cut), b - ImVec2(0, cut),
-                              b - ImVec2(cut, 0), ImVec2(a.x + cut, b.y), ImVec2(a.x, b.y - cut), a + ImVec2(0, cut)};
-        d->AddPolyline(points, 8, alpha(p.accent, .65f), ImDrawFlags_Closed, 1.1f * scale);
-        const auto centre = (a + b) * .5f;
-        ImVec2 inner[8];
-        for (int i = 0; i < 8; ++i)
-            inner[i] =
-                points[i] + ImVec2(points[i].x < centre.x ? 4.f : -4.f, points[i].y < centre.y ? 4.f : -4.f) * scale;
-        d->AddPolyline(inner, 8, alpha(p.accent, .13f), ImDrawFlags_Closed, scale);
-    }
 }
 void App::popupSurface() {
-    if (palette().frame == FrameStyle::Classic) return;
+    if (!skinned()) return;
     const auto at = ImGui::GetWindowPos(), size = ImGui::GetWindowSize();
-    surface(at, size);
-    panelFrame(at, size);
+    // A torn edge reaches past the dialog's own clip rectangle.
+    auto* d = ImGui::GetWindowDrawList();
+    d->PushClipRectFullScreen();
+    skinPanel(at, size, .62f);
+    d->PopClipRect();
 }
 void App::controlBorder(ImVec2 at, ImVec2 size, ImU32 colour) {
     auto* d = ImGui::GetWindowDrawList();
     const auto end = at + size;
-    if (palette().frame == FrameStyle::Norden) {
-        const float cut = std::min(5 * scale, size.y * .18f);
-        const ImVec2 points[]{at + ImVec2(cut, 0),       ImVec2(end.x - cut, at.y), ImVec2(end.x, at.y + cut),
-                              end - ImVec2(0, cut),      end - ImVec2(cut, 0),      ImVec2(at.x + cut, end.y),
-                              ImVec2(at.x, end.y - cut), at + ImVec2(0, cut)};
-        d->AddPolyline(points, 8, colour, ImDrawFlags_Closed, scale);
-    } else {
-        d->AddRect(at, end, colour, palette().frame == FrameStyle::Classic ? 2.f : 0.f);
-        if (palette().frame == FrameStyle::Veldun) d->AddLine(at, end - ImVec2(0, size.y), colour, 2 * scale);
+    if (skinned()) {
+        // Controls rest on a hairline instead of sitting in a box.
+        skinRule(ImVec2(at.x, end.y - 1), ImVec2(end.x, end.y - 1), ((colour >> 24) & 255) > 100 ? 1.f : .55f);
+        return;
     }
+    d->AddRect(at, end, colour, 2.f);
 }
 void App::text(ImVec2 at, const std::string& value, float size, ImU32 colour, float wrap, bool centre) {
     const float pixels = size * scale;
@@ -260,9 +216,25 @@ bool App::sectionTab(const char* id, const std::string& title, ImVec2 at, ImVec2
     ImGui::SetCursorScreenPos(at);
     const bool hit = ImGui::InvisibleButton(id, size, ImGuiButtonFlags_EnableNav);
     auto* d = ImGui::GetWindowDrawList();
+    if (skinned()) {
+        const bool hover = ImGui::IsItemHovered() || (ImGui::IsItemFocused() && ImGui::GetIO().NavVisible);
+        // A skin frames the current tab with its own bracket; without one, a hairline.
+        const ImVec2 from = at - ImVec2(10, 0) * scale, extent = size + ImVec2(20, 0) * scale;
+        if (active) {
+            if (!skinBand("tab", from, extent))
+                skinRule(ImVec2(at.x, at.y + size.y - 2 * scale), ImVec2(at.x + size.x, at.y + size.y - 2 * scale));
+        } else if (hover)
+            skinBand("tab", from, extent, IM_COL32(255, 255, 255, 90));
+        const auto measure = font()->CalcTextSizeA(18 * scale, 1e5f, 0, title.c_str());
+        text(at + (size - measure) * .5f, title, 18,
+             active  ? palette().ink
+             : hover ? alpha(palette().ink, .85f)
+                     : alpha(palette().muted, .8f));
+        return hit;
+    }
     if (ImGui::IsItemHovered() || ImGui::IsItemFocused())
         d->AddRectFilled(at, at + size, alpha(palette().selection, .20f));
-    if (active && (theme == 2 || theme == 4 || palette().frame != FrameStyle::Classic)) {
+    if (active && (theme == 2 || theme == 4)) {
         const auto colour = theme == 4 ? rgb(0xa56c30, 32) : alpha(palette().selection, .40f);
         const auto top = at + ImVec2(0, size.y * .2f);
         d->AddRectFilledMultiColor(top, at + size, colour & 0xffffff, colour & 0xffffff, colour, colour);
@@ -276,16 +248,6 @@ bool App::sectionTab(const char* id, const std::string& title, ImVec2 at, ImVec2
         const float centre = at.x + size.x * .5f, y = at.y + size.y - (theme == 2 ? 1.f : 2.f) * scale;
         d->AddRectFilledMultiColor(ImVec2(at.x, y), ImVec2(centre, at.y + size.y), edge, colour, colour, edge);
         d->AddRectFilledMultiColor(ImVec2(centre, y), at + size, colour, edge, edge, colour);
-        if (palette().frame == FrameStyle::Oathvein) {
-            d->AddLine(at + ImVec2(0, size.y * .24f), at + ImVec2(0, size.y), alpha(palette().selection, .9f),
-                       2 * scale);
-        } else if (palette().frame == FrameStyle::Veldun) {
-            d->AddLine(at + ImVec2(0, size.y - 8 * scale), at + ImVec2(0, size.y), palette().accent, 2 * scale);
-            d->AddLine(at + size - ImVec2(0, 8 * scale), at + size, palette().accent, 2 * scale);
-        } else if (palette().frame == FrameStyle::Norden) {
-            d->AddLine(at + ImVec2(0, size.y - 7 * scale), at + ImVec2(7 * scale, size.y), palette().accent, scale);
-            d->AddLine(at + size - ImVec2(7 * scale, 0), at + size - ImVec2(0, 7 * scale), palette().accent, scale);
-        }
     }
     return hit;
 }
@@ -315,15 +277,24 @@ bool App::button(const char* id, const char* label, ImVec2 at, ImVec2 size, bool
     const bool hover = ImGui::IsItemHovered(), focused = ImGui::IsItemFocused() && ImGui::GetIO().NavVisible;
     ImGui::EndDisabled();
     auto* draw = ImGui::GetWindowDrawList();
-    if (active || hover || focused) {
-        if (palette().frame == FrameStyle::Classic)
-            draw->AddRectFilled(at, at + size, alpha(palette().selection, active ? .82f : .48f), 2);
-        else {
-            const auto top = alpha(palette().selection, active ? .36f : .14f),
-                       bottom = alpha(palette().selection, active ? .72f : .38f);
-            draw->AddRectFilledMultiColor(at, at + size, top, top, bottom, bottom);
-        }
+    if (skinned()) {
+        // The skin's band marks the primary or hovered action; idle ones sit on a hairline.
+        if (active || hover || focused) {
+            const auto tint = IM_COL32(255, 255, 255, active && (hover || focused) ? 255 : active ? 215 : 150);
+            bool drawn = false;
+            for (int pass = 0; pass < (active ? 2 : 1); ++pass) drawn = skinBand("selector", at, size, tint);
+            if (!drawn) draw->AddRectFilled(at, at + size, alpha(palette().selection, active ? .7f : .4f));
+        } else
+            skinRule(ImVec2(at.x, at.y + size.y - 1), ImVec2(at.x + size.x, at.y + size.y - 1), enabled ? .6f : .25f);
+        const ImVec2 measure = font()->CalcTextSizeA(19 * scale, 1e5f, 0, label);
+        text(at + ImVec2((size.x - measure.x) * .5f, (size.y - measure.y) * .5f), label, 19,
+             !enabled                     ? alpha(palette().muted, .45f)
+             : active || hover || focused ? palette().ink
+                                          : alpha(palette().ink, .86f));
+        return pressed && enabled;
     }
+    if (active || hover || focused)
+        draw->AddRectFilled(at, at + size, alpha(palette().selection, active ? .82f : .48f), 2);
     controlBorder(at, size, active ? palette().accent : palette().line);
     if (focused) draw->AddRect(at - ImVec2(3, 3), at + size + ImVec2(3, 3), palette().accent, 3);
     const ImVec2 measure = font()->CalcTextSizeA(19 * scale, 1e5f, 0, label);
@@ -347,20 +318,20 @@ void App::style() {
     if (p.frame != FrameStyle::Classic) s.FrameRounding = s.PopupRounding = s.ScrollbarRounding = 0;
     s.Colors[ImGuiCol_Text] = ImGui::ColorConvertU32ToFloat4(p.ink);
     s.Colors[ImGuiCol_TextDisabled] = ImGui::ColorConvertU32ToFloat4(p.muted);
-    s.Colors[ImGuiCol_FrameBg] = ImGui::ColorConvertU32ToFloat4(p.background);
+    s.Colors[ImGuiCol_FrameBg] = ImGui::ColorConvertU32ToFloat4(skinned() ? IM_COL32(0, 0, 0, 70) : p.background);
     s.Colors[ImGuiCol_FrameBgHovered] = ImGui::ColorConvertU32ToFloat4(p.selection);
     s.Colors[ImGuiCol_FrameBgActive] = ImGui::ColorConvertU32ToFloat4(p.selection);
     s.Colors[ImGuiCol_Border] = ImGui::ColorConvertU32ToFloat4(p.line);
     s.Colors[ImGuiCol_Header] = ImGui::ColorConvertU32ToFloat4(p.selection);
     s.Colors[ImGuiCol_HeaderHovered] = ImGui::ColorConvertU32ToFloat4(p.selection);
     s.Colors[ImGuiCol_HeaderActive] = ImGui::ColorConvertU32ToFloat4(p.selection);
-    s.Colors[ImGuiCol_Button] = ImGui::ColorConvertU32ToFloat4(p.background);
+    s.Colors[ImGuiCol_Button] = ImGui::ColorConvertU32ToFloat4(skinned() ? IM_COL32(0, 0, 0, 70) : p.background);
     s.Colors[ImGuiCol_ButtonHovered] = ImGui::ColorConvertU32ToFloat4(p.selection);
     s.Colors[ImGuiCol_ButtonActive] = ImGui::ColorConvertU32ToFloat4(p.selection);
     s.Colors[ImGuiCol_PopupBg] = ImGui::ColorConvertU32ToFloat4(p.background);
     s.Colors[ImGuiCol_DragDropTarget] = ImGui::ColorConvertU32ToFloat4(p.accent);
     s.Colors[ImGuiCol_NavCursor] = ImGui::ColorConvertU32ToFloat4(p.accent);
-    s.Colors[ImGuiCol_ModalWindowDimBg] = ImVec4(.012f, .019f, .015f, .76f);
+    s.Colors[ImGuiCol_ModalWindowDimBg] = skinned() ? ImVec4(0, 0, 0, .68f) : ImVec4(.012f, .019f, .015f, .76f);
     s.Colors[ImGuiCol_ScrollbarBg] = ImVec4(0, 0, 0, 0);
     s.Colors[ImGuiCol_ScrollbarGrab] = ImGui::ColorConvertU32ToFloat4(alpha(p.accent, .65f));
     s.Colors[ImGuiCol_ScrollbarGrabHovered] = ImGui::ColorConvertU32ToFloat4(p.accent);
@@ -446,7 +417,8 @@ void App::card(int index, ImVec2 at, ImVec2 size, bool chosen, bool foil, int ow
                                     matchAppearance.strength);
     }
     d->AddRectFilled(at + ImVec2(3, 5), at + size + ImVec2(3, 5), rgb(0x000000, 55), 2);
-    d->AddRectFilled(at, at + size, rgb(0x14201c), 2);
+    const bool skin = skinned();
+    d->AddRectFilled(at, at + size, skin ? rgb(0x151515) : rgb(0x14201c), 2);
     if (texture.id) {
         const float ratio = float(texture.width) / texture.height, target = size.x / size.y;
         ImVec2 uv0(0, 0), uv1(1, 1);
@@ -461,14 +433,28 @@ void App::card(int index, ImVec2 at, ImVec2 size, bool chosen, bool foil, int ow
         }
         d->AddImage(texture.id, at, at + size, uv0, uv1);
     }
-    if ((face.names || face.groups) && face.nameplate != 2) drawCardShade(d, at, size);
+    const float unit = size.x / 180.f;
+    if ((face.names || face.groups) && face.nameplate != 2) drawCardShade(d, at, size, skin ? 0x0a0a0a : 0x101d16);
+    if (skin && owner >= 0 && face.names) {
+        // The nameplate carries the owner's colour, so control reads without relying on the outline.
+        const ImVec2 top = at + ImVec2(0, size.y * .805f), end = at + ImVec2(size.x, size.y * .96f);
+        d->AddRectFilled(top, end, IM_COL32(8, 8, 8, 150));
+        d->AddRectFilled(top, end, alpha(controlColour(owner), owner == 0 ? .20f : .42f));
+        d->AddRectFilled(top, ImVec2(end.x, top.y + std::max(1.f, 1.6f * unit)), alpha(controlColour(owner), .9f));
+    }
     if (owner >= 0)
         controlFrame(at, size, owner);
     else
-        d->AddRect(at, at + size, rgb(0x6f979a), 1, 0, 1.2f * scale);
-    if (chosen)
-        d->AddRect(at - ImVec2(5, 5) * scale, at + size + ImVec2(5, 5) * scale, palette().accent, 5, 0, 2 * scale);
-    const float unit = size.x / 180.f;
+        d->AddRect(at, at + size, skin ? alpha(palette().accent, .25f) : rgb(0x6f979a), skin ? 0.f : 1.f, 0,
+                   1.2f * scale);
+    if (chosen) {
+        if (skin) {
+            d->AddRect(at - ImVec2(6, 6) * scale, at + size + ImVec2(6, 6) * scale, alpha(palette().selection, .55f), 0,
+                       0, 4 * scale);
+            d->AddRect(at - ImVec2(3, 3) * scale, at + size + ImVec2(3, 3) * scale, palette().ink, 0, 0, 1.5f * scale);
+        } else
+            d->AddRect(at - ImVec2(5, 5) * scale, at + size + ImVec2(5, 5) * scale, palette().accent, 5, 0, 2 * scale);
+    }
     const float digitSize = 29 * unit;
     const auto number = [&](int side, ImVec2 pos) {
         std::string value = c.sides[side] == 10 ? "A" : std::to_string(c.sides[side]);
@@ -493,6 +479,10 @@ void App::card(int index, ImVec2 at, ImVec2 size, bool chosen, bool foil, int ow
                 d->AddText(f, digitSize, pos + ImVec2(std::cos(a), std::sin(a)) * face.stroke * unit,
                            rgb(0x101815, 210), value.c_str());
             }
+        // Jost and Lato are bundled in regular weight only; thicken their numerals so they hold against artwork.
+        if (f == jost || f == lato)
+            for (float shift : {-.55f, .55f})
+                d->AddText(f, digitSize, pos + ImVec2(shift * unit, 0), rgb(0xf4eedb), value.c_str());
         d->AddText(f, digitSize, pos, rgb(0xf4eedb), value.c_str());
     };
     if (face.classic) {
@@ -516,8 +506,9 @@ void App::card(int index, ImVec2 at, ImVec2 size, bool chosen, bool foil, int ow
     d->AddCircleFilled(badge + ImVec2(0, 2) * unit, 7.5f * unit, rgb(pigment[1]));
     d->AddCircle(badge, 10 * unit, rarity(c), 32, 1.1f * unit);
     d->AddCircle(badge, 7.8f * unit, alpha(rarity(c), .55f), 32, .55f * unit);
-    auto tier = serif->CalcTextSizeA(10 * unit, 1e5f, 0, romans[c.tier]);
-    d->AddText(serif, 10 * unit, badge - tier * .5f, rarity(c), romans[c.tier]);
+    auto* tierFont = skin ? font() : serif;
+    auto tier = tierFont->CalcTextSizeA(10 * unit, 1e5f, 0, romans[c.tier]);
+    d->AddText(tierFont, 10 * unit, badge - tier * .5f, rarity(c), romans[c.tier]);
     int offset = 0;
     for (int i = 0; i < 5; ++i)
         if (c.affinityMask & (1u << i)) {
@@ -528,6 +519,6 @@ void App::card(int index, ImVec2 at, ImVec2 size, bool chosen, bool foil, int ow
         }
     if (face.names || face.groups)
         drawCardName(d, cardNameFont ? cardNameFont : serif, at, size, face.names ? c.name : "", face.nameplate,
-                     face.lettering, scale, face.groups ? groups(c) : "");
+                     face.lettering, scale, face.groups ? groups(c) : "", skin ? 0x0c0c0c : 0x101b16);
 }
 }

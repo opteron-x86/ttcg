@@ -320,7 +320,7 @@ std::pair<ImVec2, ImVec2> GameApp::table(const Json& data, ImVec2 at, ImVec2 siz
     const auto boardColour = colours[surface - 1];
     boardSurface(surface, boardAt, ImVec2(boardW, boardH));
     d->AddRect(boardAt, boardAt + ImVec2(boardW, boardH), boardColour.edge);
-    if (palette().frame == FrameStyle::Classic)
+    if (!skinned())
         d->AddRect(boardAt - ImVec2(5, 5) * scale, boardAt + ImVec2(boardW, boardH) + ImVec2(5, 5) * scale,
                    boardColour.edge);
     const char* materials[]{"", "", "slate", "fine", "paper", "leather", "wood"};
@@ -329,8 +329,13 @@ std::pair<ImVec2, ImVec2> GameApp::table(const Json& data, ImVec2 at, ImVec2 siz
         d->AddImage(texture.id, boardAt, boardAt + ImVec2(boardW, boardH), ImVec2(0, 0), ImVec2(1, 1),
                     IM_COL32(255, 255, 255, int(face.grain * 255 * .75f)));
     }
-    if (palette().frame != FrameStyle::Classic)
-        panelFrame(boardAt - ImVec2(5, 5) * scale, ImVec2(boardW, boardH) + ImVec2(10, 10) * scale);
+    if (skinned()) {
+        const ImVec2 a = boardAt - ImVec2(5, 5) * scale, b = boardAt + ImVec2(boardW, boardH) + ImVec2(5, 5) * scale;
+        skinRule(a, ImVec2(b.x, a.y));
+        skinRule(ImVec2(a.x, b.y), b);
+        skinRule(a, ImVec2(a.x, b.y), .7f);
+        skinRule(ImVec2(b.x, a.y), b, .7f);
+    }
     const float handArea = (size.x - boardW) / 2 - 30 * scale;
     const bool stack = demo;
     const float hw = std::min(stack ? handArea * .70f : (handArea - gap) / 2, tileW * .84f), hh = hw / .75f;
@@ -370,6 +375,9 @@ std::pair<ImVec2, ImVec2> GameApp::table(const Json& data, ImVec2 at, ImVec2 siz
                                               std::max(1.f, font()->CalcTextSizeA(22 * scale, 1e5f, 0, name.c_str()).x),
                                           12.f, 22.f);
         const float nameWidth = font()->CalcTextSizeA(nameSize * scale, 1e5f, 0, name.c_str()).x;
+        // The skin's band sits behind whoever is to move.
+        if (skinned() && playerTurn == (player == 0) && !animating)
+            skinBand("selector", ImVec2(left, at.y - 4 * scale), ImVec2(handArea, 40 * scale));
         text(ImVec2(player ? left + handArea - nameWidth - 24 * scale : left + 24 * scale, at.y + 3 * scale), name,
              nameSize, firstGlow > 0 ? colour : palette().ink);
         text(ImVec2(player ? left + 8 * scale : left + handArea - 26 * scale, at.y - 3 * scale),

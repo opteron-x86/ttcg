@@ -81,8 +81,11 @@ void App::cardGrid(ImVec2 at, ImVec2 size, bool changed) {
                     const auto extent = measure + ImVec2(10, 6) * unit;
                     const auto badge = p + ImVec2(w - 5 * unit - extent.x, h * .75f - extent.y);
                     auto* draw = ImGui::GetWindowDrawList();
-                    draw->AddRectFilled(badge, badge + extent, IM_COL32(18, 29, 24, 182), unit);
-                    draw->AddRect(badge, badge + extent, IM_COL32(187, 166, 116, 110), unit);
+                    draw->AddRectFilled(badge, badge + extent,
+                                        skinned() ? IM_COL32(12, 12, 12, 200) : IM_COL32(18, 29, 24, 182), unit);
+                    draw->AddRect(
+                        badge, badge + extent,
+                        skinned() ? ((palette().accent & 0xffffff) | 0x46000000) : IM_COL32(187, 166, 116, 110), unit);
                     draw->AddText(font(), pixels, badge + ImVec2(5, 3) * unit, IM_COL32(239, 228, 204, 255),
                                   label.c_str());
                 }

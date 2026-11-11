@@ -143,7 +143,10 @@ void GameApp::nativeAlbum(ImVec2 at, ImVec2 size) {
     const float right = AlbumLayout::preview * scale, gap = AlbumLayout::gap * scale, width = size.x - right - gap;
     nativeFilters(at, width);
     cardGrid(at + ImVec2(0, 86) * scale, ImVec2(width, size.y - 86 * scale));
-    line(at + ImVec2(width + gap * .5f, 0), at + ImVec2(width + gap * .5f, size.y));
+    if (skinned())
+        skinRule(at + ImVec2(width + gap * .5f, 0), at + ImVec2(width + gap * .5f, size.y), .45f);
+    else
+        line(at + ImVec2(width + gap * .5f, 0), at + ImVec2(width + gap * .5f, size.y));
     drawDetail(at + ImVec2(width + gap, 0), ImVec2(right, size.y));
     int owned = 0;
     std::array<int, 2> known{}, total{};
@@ -186,22 +189,60 @@ void GameApp::drawDetail(ImVec2 at, ImVec2 size) {
     if (!known) return;
     auto mid = at.x + size.x / 2;
     float y = p.y + h + 22 * scale;
-    text(ImVec2(mid, y),
-         std::to_string(c.owned[selectedFoil]) + " owned · Tier " +
-             std::array<const char*, 11>{"", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"}[c.tier],
-         16, palette().muted, 0, true);
-    y += 33 * scale;
-    text(ImVec2(mid, y), c.rarity + (selectedFoil ? " · Foil" : ""), 19,
-         c.rarity == "Rare"   ? IM_COL32(86, 223, 255, 255)
-         : c.rarity == "Epic" ? IM_COL32(214, 132, 250, 255)
-                              : palette().accent,
-         0, true);
-    y += 36 * scale;
-    text(ImVec2(mid, y), join(member(state["cards"][selected], "groups")), 18, palette().muted, size.x, true);
-    y += 30 * scale;
-    text(ImVec2(mid, y), c.affinityMask ? join(member(state["cards"][selected], "affinities")) : "Neutral", 18,
-         palette().muted, size.x, true);
-    y += 47 * scale;
+    if (skinned()) {
+        // An item card in the skin's manner: a title band, then labelled values on a plate.
+        y -= 8 * scale;
+        if (!skinBand("band", ImVec2(at.x, y), ImVec2(size.x, 40 * scale)))
+            skinBand("selector", ImVec2(at.x, y), ImVec2(size.x, 40 * scale));
+        const float fit = std::min(19.f, 19.f * (size.x - 24 * scale) / std::max(1.f, capsWidth(c.name, 19, 1)));
+        textCaps(ImVec2(mid, y + (40 - fit * 1.25f) * .5f * scale), c.name, fit, palette().ink, 1, true);
+        y += 40 * scale;
+        if (!skinBand("plate", ImVec2(at.x, y), ImVec2(size.x, 34 * scale)))
+            skinRule(ImVec2(at.x, y + 34 * scale), ImVec2(at.x + size.x, y + 34 * scale), .4f);
+        const char* tiers[]{"", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"};
+        const std::pair<const char*, std::string> stats[]{{"Owned", std::to_string(c.owned[selectedFoil])},
+                                                          {"Tier", tiers[c.tier]}};
+        float total = 0;
+        for (const auto& [name, value] : stats)
+            total += capsWidth(name, 13, 1) + 8 * scale + font()->CalcTextSizeA(19 * scale, 1e5f, 0, value.c_str()).x;
+        float x = mid - (total + 30 * scale) * .5f;
+        for (const auto& [name, value] : stats) {
+            textCaps(ImVec2(x, y + 10 * scale), name, 13, palette().muted, 1);
+            x += capsWidth(name, 13, 1) + 8 * scale;
+            text(ImVec2(x, y + 5 * scale), value, 19, skin().value);
+            x += font()->CalcTextSizeA(19 * scale, 1e5f, 0, value.c_str()).x + 30 * scale;
+        }
+        y += 50 * scale;
+        text(ImVec2(mid, y), c.rarity + (selectedFoil ? " · Foil" : ""), 18,
+             c.rarity == "Rare"        ? IM_COL32(86, 223, 255, 255)
+             : c.rarity == "Epic"      ? IM_COL32(214, 132, 250, 255)
+             : c.rarity == "Legendary" ? IM_COL32(230, 188, 101, 255)
+                                       : palette().ink,
+             0, true);
+        y += 30 * scale;
+        text(ImVec2(mid, y), join(member(state["cards"][selected], "groups")), 17, palette().muted, size.x, true);
+        y += 27 * scale;
+        text(ImVec2(mid, y), c.affinityMask ? join(member(state["cards"][selected], "affinities")) : "Neutral", 17,
+             palette().muted, size.x, true);
+        y += 42 * scale;
+    } else {
+        text(ImVec2(mid, y),
+             std::to_string(c.owned[selectedFoil]) + " owned · Tier " +
+                 std::array<const char*, 11>{"", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"}[c.tier],
+             16, palette().muted, 0, true);
+        y += 33 * scale;
+        text(ImVec2(mid, y), c.rarity + (selectedFoil ? " · Foil" : ""), 19,
+             c.rarity == "Rare"   ? IM_COL32(86, 223, 255, 255)
+             : c.rarity == "Epic" ? IM_COL32(214, 132, 250, 255)
+                                  : palette().accent,
+             0, true);
+        y += 36 * scale;
+        text(ImVec2(mid, y), join(member(state["cards"][selected], "groups")), 18, palette().muted, size.x, true);
+        y += 30 * scale;
+        text(ImVec2(mid, y), c.affinityMask ? join(member(state["cards"][selected], "affinities")) : "Neutral", 18,
+             palette().muted, size.x, true);
+        y += 47 * scale;
+    }
     if (tab == 1) {
         int slot = deckSlot;
         if (slot < 0)

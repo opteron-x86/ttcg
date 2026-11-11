@@ -26,6 +26,10 @@ def ui_files(root):
     for name, path in files.items():
         if not path.is_file():
             raise FileNotFoundError(f'Missing native UI resource: {name}')
+    # Each skin ships its definition and the textures beside it.
+    for path in sorted((root / 'TesseraUI/skins').glob('*/*')):
+        if path.is_file() and path.suffix in ('.json', '.png'):
+            files[path.relative_to(root).as_posix()] = path
     return files
 
 

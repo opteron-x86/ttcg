@@ -90,7 +90,8 @@ inline void drawNameLines(ImDrawList* draw, ImFont* font, ImVec2 at, ImVec2 size
     draw->PopClipRect();
 }
 inline void drawCardName(ImDrawList* draw, ImFont* font, ImVec2 at, ImVec2 size, std::string_view name, int plate,
-                         int lettering, float scale, std::string_view group = {}) {
+                         int lettering, float scale, std::string_view group = {}, unsigned tone = 0x101b16) {
+    const int toneR = tone >> 16, toneG = (tone >> 8) & 255, toneB = tone & 255;
     float bottom = at.y + size.y * .96f;
     if (!group.empty()) {
         const float pixels = std::clamp(size.x * .056f, 9.f * scale, 18.f * scale), wrap = size.x * .78f;
@@ -128,7 +129,7 @@ inline void drawCardName(ImDrawList* draw, ImFont* font, ImVec2 at, ImVec2 size,
     if (plate == 0) {
         constexpr unsigned opacity[]{0, 153, 223, 153, 0};
         for (int n = 0; n < 4; ++n) {
-            const auto a = IM_COL32(16, 27, 22, opacity[n]), b = IM_COL32(16, 27, 22, opacity[n + 1]);
+            const auto a = IM_COL32(toneR, toneG, toneB, opacity[n]), b = IM_COL32(toneR, toneG, toneB, opacity[n + 1]);
             draw->AddRectFilledMultiColor(ImVec2(at.x + size.x * n * .25f, top),
                                           ImVec2(at.x + size.x * (n + 1) * .25f, bottom), a, b, b, a);
         }
@@ -136,9 +137,10 @@ inline void drawCardName(ImDrawList* draw, ImFont* font, ImVec2 at, ImVec2 size,
     const float y = (top + bottom - float(lines.size()) * lineHeight) * .5f;
     drawNameLines(draw, font, at, size, lines, y, pixels, scale, IM_COL32(245, 232, 205, 255));
 }
-inline void drawCardShade(ImDrawList* draw, ImVec2 at, ImVec2 size) {
+inline void drawCardShade(ImDrawList* draw, ImVec2 at, ImVec2 size, unsigned tone = 0x101d16) {
     const ImVec2 start = at + ImVec2(0, size.y * .58f), mid = at + ImVec2(size.x, size.y * .7564f);
-    const auto clear = IM_COL32(16, 29, 22, 0), middle = IM_COL32(16, 29, 22, 77), dark = IM_COL32(16, 29, 22, 179);
+    const int r = tone >> 16, g = (tone >> 8) & 255, b = tone & 255;
+    const auto clear = IM_COL32(r, g, b, 0), middle = IM_COL32(r, g, b, 77), dark = IM_COL32(r, g, b, 179);
     draw->AddRectFilledMultiColor(start, mid, clear, clear, middle, middle);
     draw->AddRectFilledMultiColor(ImVec2(at.x, mid.y), at + size, middle, middle, dark, dark);
 }

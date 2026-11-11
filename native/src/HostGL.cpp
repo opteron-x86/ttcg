@@ -6,7 +6,10 @@
 #include "App.h"
 #include "../tests/GameTestAccess.h"
 #include <array>
+#include <fstream>
 #include <iostream>
+#include <iterator>
+#include "../third_party/stb/stb_image.h"
 
 namespace preview {
 class GLRenderer final : public Renderer {
@@ -151,6 +154,17 @@ int runHost(const Options& o) {
         GLRenderer renderer;
         GameApp app(renderer, o);
         GameTestAccess::load(app, o);
+        Texture backdrop;
+        if (!o.backdrop.empty()) {
+            std::ifstream file(o.backdrop, std::ios::binary);
+            std::vector<unsigned char> data((std::istreambuf_iterator<char>(file)), {});
+            int w = 0, h = 0, channels = 0;
+            if (auto* pixels = stbi_load_from_memory(data.data(), int(data.size()), &w, &h, &channels, 4)) {
+                backdrop = renderer.upload(pixels, w, h);
+                stbi_image_free(pixels);
+            } else
+                throw std::runtime_error("Cannot read backdrop: " + o.backdrop.string());
+        }
         bool running = true;
         int frame = 0;
         while (running) {
@@ -171,6 +185,20 @@ int runHost(const Options& o) {
             ImGui_ImplSDL2_NewFrame();
             ImGui::NewFrame();
             GameTestAccess::captureFrame(app, o);
+            if (backdrop.id) {
+                // Cover the window, cropping the scene like a game frame.
+                const auto display = ImGui::GetIO().DisplaySize;
+                const float ratio = float(backdrop.width) / backdrop.height, target = display.x / display.y;
+                ImVec2 uv0(0, 0), uv1(1, 1);
+                if (ratio > target) {
+                    uv0.x = (1 - target / ratio) * .5f;
+                    uv1.x = 1 - uv0.x;
+                } else {
+                    uv0.y = (1 - ratio / target) * .5f;
+                    uv1.y = 1 - uv0.y;
+                }
+                ImGui::GetBackgroundDrawList()->AddImage(backdrop.id, ImVec2(0, 0), display, uv0, uv1);
+            }
             app.draw();
             ImGui::Render();
             int w, h;
@@ -193,6 +221,7 @@ int runHost(const Options& o) {
             const auto elapsed = SDL_GetTicks64() - start;
             if (elapsed < 16) SDL_Delay(Uint32(16 - elapsed));
         }
+        renderer.release(backdrop);
         std::cout << "Native frames: " << frame << "; missing artwork: " << app.missingAssets() << '\n';
     }
     ImGui_ImplOpenGL3_Shutdown();

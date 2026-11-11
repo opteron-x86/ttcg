@@ -152,14 +152,28 @@ void GameApp::applySettings() {
     matchAppearance.marker = flag(c, "controlMarker");
     preferredFont = interfaceFonts[std::clamp(
         number(c, "interfaceFont") ? number(c, "interfaceFont") : ((theme == 1 || theme == 2) ? 3 : 1), 0, 4)];
-    if (!number(c, "interfaceFont")) {
-        if (palette().frame == FrameStyle::Veldun)
-            preferredFont = lato;
-        else if (palette().frame != FrameStyle::Classic)
-            preferredFont = jost;
-    }
+    // A skin names its own typeface.
+    ImFont* skinFont = skin().font == "lato"    ? lato
+                       : skin().font == "serif" ? serif
+                       : skin().font == "sans"  ? sans
+                                                : jost;
+    if (skinned() && !number(c, "interfaceFont")) preferredFont = skinFont;
     cardNameFont = nameFonts[std::clamp(number(c, "cardNameFont", 1) ? number(c, "cardNameFont") : 1, 0, 4)];
     cardValueFont = valueFonts[std::clamp(number(c, "cardValueFont", 1) ? number(c, "cardValueFont") : 1, 0, 4)];
+    if (skinned()) {
+        // Unless the player picked fonts or colours, the card face follows the skin.
+        if (!number(c, "cardNameFont")) cardNameFont = skinFont;
+        if (!number(c, "nameCase")) face.lettering = 1;
+        // Light artwork swallows unstroked numerals.
+        if (!flag(c, "rankStroke")) face.stroke = 1;
+        if (!number(c, "cardValueFont")) cardValueFont = skinFont;
+        if (matchAppearance.palette == 0 && skin().player && skin().opponent) {
+            matchAppearance.palette = 4;
+            matchAppearance.playerColour = skin().player;
+            matchAppearance.opponentColour = skin().opponent;
+        }
+        if (number(c, "controlBorderWidth", 12) == 12) matchAppearance.borderWidth = 1.8f;
+    }
     customBack = label(state, "cardBack", "backs/mosaic.webp");
 }
 void GameApp::send(std::string_view verb, std::string args, bool exclusive) {
@@ -455,7 +469,7 @@ float GameApp::ruleChips(ImVec2 at, float width, unsigned flags, int trade, bool
         if (chip.change)
             help += (chip.active ? "\n\nProtected from removal until " : "\n\nCannot return until ") +
                     label(*chip.change, "until") + ".";
-        if (ImGui::IsItemHovered() || ImGui::IsItemFocused()) {
+        if (ImGui::IsItemHovered() || (ImGui::IsItemFocused() && ImGui::GetIO().NavVisible)) {
             ImGui::BeginTooltip();
             textBlock(help, 350 * scale, 17, palette().ink);
             ImGui::EndTooltip();
@@ -531,12 +545,25 @@ void GameApp::closeView() {
     send("close");
 }
 void GameApp::header(ImVec2 at, ImVec2 size) {
-    if (palette().frame != FrameStyle::Classic) {
-        auto* d = ImGui::GetWindowDrawList();
-        const auto colour =
-            (palette().frame == FrameStyle::Oathvein ? palette().selection : palette().accent) & 0xffffff;
-        const auto start = at - ImVec2(18, 12) * scale, end = at + ImVec2(size.x + 18 * scale, 45 * scale);
-        d->AddRectFilledMultiColor(start, end, colour | 0x18000000, colour | 0x05000000, colour, colour);
+    if (skinned()) {
+        // A skin titles the window with its own band, or a hairline; closing lives in the prompt bar.
+        const float k = skinUnit(), bandHeight = std::min(108 * k, 50 * scale);
+        if (!skinBand("title", ImVec2(frameAt.x, frameAt.y + 2 * k), ImVec2(frameSize.x, bandHeight)))
+            skinRule(ImVec2(at.x, frameAt.y + bandHeight + 4 * scale),
+                     ImVec2(at.x + size.x, frameAt.y + bandHeight + 4 * scale), .5f);
+        if (const auto sigil = skinArt("sigil"); sigil.id) {
+            const float w = 300 * scale, h = w * sigil.height / sigil.width;
+            ImGui::GetWindowDrawList()->AddImage(sigil.id, ImVec2(frameAt.x + frameSize.x - w - 20 * scale, frameAt.y),
+                                                 ImVec2(frameAt.x + frameSize.x - 20 * scale, frameAt.y + h),
+                                                 ImVec2(0, 0), ImVec2(1, 1),
+                                                 IM_COL32(255, 255, 255, int(255 * skinPiece("sigil")->opacity)));
+        }
+        textCaps(ImVec2(at.x, frameAt.y + 2 * k + (bandHeight - 26 * scale) * .5f), "Tessera", 26, palette().ink, 3);
+        if (flag(state, "musicAvailable") && (flag(state, "matchContext") || label(state, "screen") == "lobby"))
+            if (button("music", flag(state, "musicEnabled") ? "♪" : "♪ ×", at + ImVec2(size.x - 45 * scale, -3 * scale),
+                       ImVec2(45, 36) * scale))
+                send("music", flag(state, "musicEnabled") ? "0" : "1", false);
+        return;
     }
     text(at, "T E S S E R A", 22, palette().accent);
     if (flag(state, "musicAvailable") && (flag(state, "matchContext") || label(state, "screen") == "lobby"))
@@ -581,6 +608,10 @@ void GameApp::draw() {
         tickPresentation();
         return;
     }
+    if (skinned()) {
+        skinBackdrop();
+        trackInputDevice();
+    }
     ImGui::SetNextWindowPos(frameAt);
     ImGui::SetNextWindowSize(frameSize);
     ImGui::Begin("Tessera", nullptr,
@@ -588,7 +619,9 @@ void GameApp::draw() {
                      ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoBringToFrontOnFocus |
                      ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoScrollbar);
     auto* d = ImGui::GetWindowDrawList();
-    d->PushClipRect(frameAt, frameAt + frameSize, false);
+    // The skin's torn panel edge extends past the frame.
+    const ImVec2 bleed = skinned() ? ImVec2(40, 40) * skinUnit() : ImVec2(0, 0);
+    d->PushClipRect(frameAt - bleed, frameAt + frameSize + bleed, false);
     surface(frameAt, frameSize, true);
     panelFrame(frameAt, frameSize, true);
     d->PopClipRect();
@@ -603,6 +636,9 @@ void GameApp::draw() {
         closeView();
     ImVec2 body = at + ImVec2(0, 70 * scale), size(width, frameSize.y - 116 * scale);
     const auto page = label(state, "screen"), phase = label(state, "phase");
+    // The skin keeps a strip along the bottom for key prompts.
+    const float promptBar = skinned() ? 30 * scale : 0;
+    size.y -= promptBar;
     if (page == "album" && phase == "ready") {
         static const char* names[]{"Cards", "Decks", "Journal", "Rules", "Tournaments", "Settings"};
         const int order[]{0, 1, 2, 4, 3, 5};
@@ -622,7 +658,10 @@ void GameApp::draw() {
         if (flag(state, "matchContext") &&
             button("return", "Return to game", ImVec2(body.x + width - 160 * scale, body.y), ImVec2(160, 38) * scale))
             send("browse", "lobby");
-        line(body + ImVec2(0, 48 * scale), body + ImVec2(width, 48 * scale));
+        if (skinned())
+            skinRule(body + ImVec2(0, 48 * scale), body + ImVec2(width, 48 * scale), .5f);
+        else
+            line(body + ImVec2(0, 48 * scale), body + ImVec2(width, 48 * scale));
         body.y += 70 * scale;
         size.y -= 70 * scale;
         const auto& interrupted = member(state, "interruptedMatch");
@@ -669,7 +708,30 @@ void GameApp::draw() {
         else if (!arrayMember(state, "expansionErrors").empty())
             notice = "An expansion could not be loaded. See TTCG.log.";
     }
-    if (!notice.empty())
+    if (skinned()) {
+        // Prompts name only controls that exist: Escape or the pad's back button
+        // leaves, the right button inspects, the left plays or selects.
+        const float y = frameAt.y + frameSize.y - 50 * scale;
+        skinRule(ImVec2(at.x, y - 9 * scale), ImVec2(at.x + width, y - 9 * scale), .4f);
+        float x = at.x;
+        // Mirrors the screen dispatch above.
+        const bool inAlbum = page == "album" && phase == "ready";
+        const bool inMatch = !inAlbum && page != "shop" && page != "lesson" && phase != "ready";
+        bool leave = false;
+        x += keyPrompt("Esc", "360_B",
+                       inAlbum   ? (flag(state, "matchContext") ? "Back" : "Close")
+                       : inMatch ? "Leave"
+                                 : "Back",
+                       ImVec2(x, y), &leave) +
+             26 * scale;
+        if (leave) closeView();
+        if (page != "lesson") {
+            x += keyPrompt("Mouse1", "360_A", inMatch ? "Play card" : "Select", ImVec2(x, y)) + 26 * scale;
+            x += keyPrompt("Mouse2", "360_Y", "Inspect", ImVec2(x, y)) + 26 * scale;
+        }
+        if (!notice.empty())
+            text(ImVec2(x + 10 * scale, y + 6 * scale), notice, 16, skin().notice, at.x + width - x - 10 * scale);
+    } else if (!notice.empty())
         text(frameAt + ImVec2(28, frameSize.y / scale - 31) * scale, notice, 16, palette().accent, width);
     ImGui::End();
     deckModal();

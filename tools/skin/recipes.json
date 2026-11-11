@@ -1,0 +1,82 @@
+{
+  "oathvein": {
+    "mod": "Oathvein UI",
+    "art": {
+      "panel": [
+        "deardiary_dm/messagebox/messagebox_BG.swf",
+        9,
+        "trim"
+      ],
+      "title": [
+        "deardiary_dm/Inventory/inventorylists_BG.swf",
+        9,
+        "1680x120+75+0"
+      ],
+      "band": [
+        "deardiary_dm/Inventory/itemcard_1_BG.swf",
+        9,
+        "1329x126+43+152"
+      ],
+      "plate": [
+        "deardiary_dm/Inventory/itemcard_1_BG.swf",
+        9,
+        "1329x52+43+278"
+      ],
+      "selector": [
+        "skyui/inventorylists.swf",
+        1,
+        "trim"
+      ],
+      "tab": [
+        "deardiary_dm/Inventory/inventorylists_categoryCenter.swf",
+        89,
+        null
+      ],
+      "sigil": [
+        "tweenmenu.swf",
+        92,
+        null
+      ]
+    }
+  },
+  "veldun": {
+    "mod": "Vel'dun UI",
+    "art": {
+      "panel": [
+        "deardiary_dm/messagebox/messagebox_BG.swf",
+        9,
+        "trim"
+      ],
+      "selector": [
+        "skyui/inventorylists.swf",
+        1,
+        "trim"
+      ],
+      "tab": [
+        "deardiary_dm/Inventory/inventorylists_categoryCenter.swf",
+        89,
+        null
+      ]
+    }
+  },
+  "norden": {
+    "mod": "NordenUI",
+    "art": {
+      "panel": [
+        "deardiary_dm/messagebox/messagebox_BG.swf",
+        9,
+        "trim"
+      ],
+      "selector": [
+        "skyui/inventorylists.swf",
+        37,
+        "trim"
+      ],
+      "tab": [
+        "deardiary_dm/Inventory/inventorylists_categoryCenter.swf",
+        89,
+        null
+      ]
+    }
+  }
+}

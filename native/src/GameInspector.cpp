@@ -17,10 +17,7 @@ void GameApp::nativeInspector() {
     const auto origin = ImGui::GetWindowPos();
     auto* d = ImGui::GetWindowDrawList();
     surface(origin, extent);
-    if (palette().frame == FrameStyle::Classic)
-        d->AddRect(origin, origin + extent, palette().line);
-    else
-        panelFrame(origin, extent);
+    if (!skinned()) d->AddRect(origin, origin + extent, palette().line);
     const bool dismiss = closeButton("close-art", origin + ImVec2(extent.x - 42 * scale, 7 * scale));
     if (dismiss || ImGui::IsKeyPressed(ImGuiKey_Escape, false) ||
         ImGui::IsKeyPressed(ImGuiKey_GamepadFaceRight, false)) {

@@ -16,6 +16,8 @@ struct Texture {
 };
 struct Options {
     std::filesystem::path tesseraRoot, previewRoot, screenshot, snapshot;
+    std::filesystem::path backdrop; // Standalone review only: a game scene drawn behind the interface.
+    std::filesystem::path keyIcons; // Standalone review only: an ImGui Icons folder outside Data.
     std::string page, topic;
     int demoStep = 0;
     bool history = false; // Standalone review only.

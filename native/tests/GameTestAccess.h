@@ -6,6 +6,7 @@ struct GameTestAccess {
     static const auto& themeSurfaces(const GameApp& app) { return app.surfaces; }
     static const auto& boardSurfaces(const GameApp& app) { return app.boardSurfaces; }
     static int theme(const GameApp& app) { return app.theme; }
+    static const Skin& skin(const GameApp& app, int theme) { return app.skins[theme]; }
     static ImFont* interfaceFont(const GameApp& app) { return app.font(); }
     static void page(GameApp& app, const Options& o) {
         if (o.page == "cards")
