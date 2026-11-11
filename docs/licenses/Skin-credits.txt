@@ -17,6 +17,12 @@ Untarnished skin: a palette and layout after Untarnished UI by Vorganger, used
 with permission; it has no textures.
 https://www.nexusmods.com/skyrimspecialedition/mods/75188
 
+Nordic and Outlander skins: palettes and layout after NORDIC UI by outobugi and
+Outlander UI II by rbtRvlt; they have no textures, and their corner marks are
+drawn by Tessera.
+https://www.nexusmods.com/skyrimspecialedition/mods/49881
+https://www.nexusmods.com/skyrimspecialedition/mods/118815
+
 The textures in TesseraUI/skins are rendered from vector shapes in those mods'
 menu files by tools/build-skin.py; tools/skin/recipes.json lists the source
 file and shape for each texture. They are not covered by Tessera's GPL-3.0

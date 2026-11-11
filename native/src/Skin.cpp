@@ -63,6 +63,17 @@ void App::loadSkins() {
             s.opponent = plain(colour(j["control"], "opponent", 0));
         }
         s.font = j.value("font", std::string("jost"));
+        s.ground = alpha(s.palette.background, .96f);
+        s.dialog = s.ground;
+        if (j.contains("ground") && j["ground"].is_object()) {
+            const auto& g = j["ground"];
+            s.ground = colour(g, "fill", s.ground);
+            s.dialog = colour(g, "dialog", s.dialog);
+            s.border = g.value("border", true);
+            s.ruleSelector = g.value("selector", std::string()) == "rule";
+            const auto corner = g.value("corner", std::string());
+            s.corner = corner == "key" ? 1 : corner == "dot" ? 2 : 0;
+        }
         constexpr std::string_view boards[]{"", "plain", "slate", "felt", "parchment", "leather", "walnut", "slab"};
         for (int board = 1; board < int(std::size(boards)); ++board)
             if (j.value("board", std::string()) == boards[board]) s.board = board;
@@ -96,11 +107,34 @@ Texture App::skinArt(const char* name) {
 }
 void App::skinPanel(ImVec2 at, ImVec2 size, float density, ImU32 tint, const char* name) {
     auto* d = ImGui::GetWindowDrawList();
+    const bool main = std::string_view(name) == "window";
+    if (main && !skinPiece(name)) name = "panel";
     const auto* piece = skinPiece(name);
     const auto art = skinArt(name);
     if (!art.id || piece->margin <= 0) {
-        d->AddRectFilled(at, at + size, alpha(palette().background, .96f));
-        d->AddRect(at, at + size, palette().line);
+        const auto& s = skin();
+        const ImVec2 end = at + size;
+        d->AddRectFilled(at, end, main ? s.ground : s.dialog);
+        if (s.border) d->AddRect(at, end, palette().line);
+        const auto ink = alpha(palette().muted, .62f);
+        const float u = 3.2f * scale, weight = std::max(1.f, 1.3f * scale);
+        for (int i = 0; i < 4 && s.corner; ++i) {
+            const ImVec2 sign(i % 2 ? -1.f : 1.f, i / 2 ? -1.f : 1.f);
+            const ImVec2 origin =
+                ImVec2(i % 2 ? end.x : at.x, i / 2 ? end.y : at.y) + sign * (s.corner == 1 ? 4 * scale : 0);
+            const auto point = [&](float x, float y) { return origin + ImVec2(x * sign.x, y * sign.y) * u; };
+            if (s.corner == 2) {
+                d->AddCircleFilled(origin, 2.4f * scale, alpha(palette().ink, .85f));
+                continue;
+            }
+            // A meander bracket, the corner mark of Nordic-style panels.
+            const ImVec2 outer[]{point(0, 6), point(0, 0), point(6, 0)};
+            const ImVec2 inner[]{point(2, 6), point(2, 2), point(6, 2)};
+            const ImVec2 hook[]{point(4, 6), point(4, 4), point(6, 4)};
+            d->AddPolyline(outer, 3, ink, 0, weight);
+            d->AddPolyline(inner, 3, ink, 0, weight);
+            d->AddPolyline(hook, 3, ink, 0, weight);
+        }
         return;
     }
     // The frame line sits `inset` pixels inside the texture edge and lands on
@@ -157,7 +191,7 @@ bool App::skinBand(const char* name, ImVec2 at, ImVec2 size, ImU32 tint) {
 void App::skinRule(ImVec2 a, ImVec2 b, float strength) {
     auto* d = ImGui::GetWindowDrawList();
     const float weight = std::max(1.f, std::round(2.1f * skinUnit()));
-    const auto ink = alpha(palette().accent, .59f * std::clamp(strength, 0.f, 1.f)), clear = ink & 0xffffff;
+    const auto ink = alpha(palette().accent, .59f * std::clamp(strength, 0.f, 1.7f)), clear = ink & 0xffffff;
     if (a.y == b.y) {
         const float fade = (b.x - a.x) * .18f;
         d->AddRectFilledMultiColor(a, ImVec2(a.x + fade, a.y + weight), clear, ink, ink, clear);

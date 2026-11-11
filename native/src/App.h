@@ -29,6 +29,10 @@ struct Skin {
     ImU32 value = IM_COL32(126, 196, 112, 255), notice = IM_COL32(200, 72, 58, 255);
     unsigned player = 0, opponent = 0; // Control colours; zero keeps the palette setting.
     int board = 0;                     // Default game board; zero keeps the theme's.
+    // A skin without panel art draws flat grounds, as the minimalist UI mods do.
+    ImU32 ground = 0, dialog = 0;
+    bool border = true, ruleSelector = false;
+    int corner = 0; // 0 none, 1 key, 2 dot
     std::unordered_map<std::string, SkinArt> art;
 };
 struct Face {

@@ -18,7 +18,9 @@ inline constexpr std::array interfaceThemes{InterfaceTheme{"tessera", "Tessera",
                                             InterfaceTheme{"norden", "Norden", 2},
                                             InterfaceTheme{"untarnished", "Untarnished", 7},
                                             InterfaceTheme{"edge", "Edge", 5},
-                                            InterfaceTheme{"deardiary", "Dear Diary", 2}};
+                                            InterfaceTheme{"deardiary", "Dear Diary", 2},
+                                            InterfaceTheme{"nordic", "Nordic", 7},
+                                            InterfaceTheme{"outlander", "Outlander", 2}};
 inline constexpr int interfaceThemeCount = int(interfaceThemes.size());
 inline constexpr int interfaceThemeIndex(int value) { return value >= 0 && value < interfaceThemeCount ? value : 0; }
 }

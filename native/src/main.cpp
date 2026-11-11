@@ -107,7 +107,7 @@ int main(int argc, char** argv) {
                     << "Tessera native UI verification host\n"
                        "  --snapshot FILE.json --page cards|decks|journal|rules|tournaments|appearance|match-appearance|controls|gameplay|developer\n"
                        "  --topic RULE [--demo-step N] --history --inspect\n"
-                       "  --theme tessera|charcoal|oxblood|parchment|umber|oathvein|veldun|norden|untarnished|edge|deardiary\n"
+                       "  --theme tessera|charcoal|oxblood|parchment|umber|oathvein|veldun|norden|untarnished|edge|deardiary|nordic|outlander\n"
                        "  Shop snapshots: --page buy|sell|buyback\n"
                        "  --tessera-root PATH --size WIDTHxHEIGHT\n"
                        "  --frames N --screenshot FILE.bmp [--hidden]\n"

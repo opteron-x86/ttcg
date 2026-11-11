@@ -32,7 +32,11 @@ const Palette themes[]{{"Tessera", rgb(0x131e19), rgb(0x28372e), rgb(0xe7dec6), 
                        {"Edge", rgb(0x161613), rgb(0x2a2820), rgb(0xe6e1d3), rgb(0xa39e8f), rgb(0xc9b47a),
                         rgb(0xc9b47a, 64), rgb(0x5a4f2e), true, FrameStyle::Skinned},
                        {"Dear Diary", rgb(0x0c0c0c), rgb(0x1e1e1e), rgb(0xefefef), rgb(0xa9a9a9), rgb(0xe6e6e6),
-                        rgb(0xffffff, 42), rgb(0x3b3b3b), true, FrameStyle::Skinned}};
+                        rgb(0xffffff, 42), rgb(0x3b3b3b), true, FrameStyle::Skinned},
+                       {"Nordic", rgb(0x060606), rgb(0x161616), rgb(0xececec), rgb(0x8e8e8e), rgb(0xd6d6d6),
+                        rgb(0xffffff, 48), rgb(0x3a3a3a), true, FrameStyle::Skinned},
+                       {"Outlander", rgb(0x0c0c0e), rgb(0x1a1b20), rgb(0xf2efe8), rgb(0xa9a8a4), rgb(0xffffff),
+                        rgb(0xffffff, 56), rgb(0x3f4a66), true, FrameStyle::Skinned}};
 static_assert(std::size(themes) == ttcg::interfaceThemeCount);
 const char* romans[]{"", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"};
 ImU32 rarity(const CardView& card) {
@@ -112,7 +116,7 @@ App::~App() {
 }
 void App::surface(ImVec2 at, ImVec2 size, bool main) {
     if (skinned()) {
-        skinPanel(at, size, main ? 1.f : .62f, IM_COL32_WHITE, main && skinPiece("window") ? "window" : "panel");
+        skinPanel(at, size, main ? 1.f : .62f, IM_COL32_WHITE, main ? "window" : "panel");
         return;
     }
     auto& texture = surfaces[theme];
@@ -291,7 +295,10 @@ bool App::button(const char* id, const char* label, ImVec2 at, ImVec2 size, bool
             const auto tint = IM_COL32(255, 255, 255, active && (hover || focused) ? 255 : active ? 215 : 150);
             bool drawn = false;
             for (int pass = 0; pass < (active ? 2 : 1); ++pass) drawn = skinBand("selector", at, size, tint);
-            if (!drawn) draw->AddRectFilled(at, at + size, alpha(palette().selection, active ? .7f : .4f));
+            if (!drawn && skin().ruleSelector)
+                skinRule(ImVec2(at.x, at.y + size.y - 1), ImVec2(at.x + size.x, at.y + size.y - 1), 1.7f);
+            else if (!drawn)
+                draw->AddRectFilled(at, at + size, alpha(palette().selection, active ? .7f : .4f));
         } else
             skinRule(ImVec2(at.x, at.y + size.y - 1), ImVec2(at.x + size.x, at.y + size.y - 1), enabled ? .6f : .25f);
         const ImVec2 measure = font()->CalcTextSizeA(19 * scale, 1e5f, 0, label);

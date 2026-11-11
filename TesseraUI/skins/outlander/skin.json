@@ -1,0 +1,30 @@
+{
+  "schema": 1,
+  "id": "outlander",
+  "name": "Outlander",
+  "credit": "Outlander UI II by rbtRvlt",
+  "font": "serif",
+  "palette": {
+    "background": "#0c0c0e",
+    "centre": "#1a1b20",
+    "text": "#f2efe8",
+    "muted": "#a9a8a4",
+    "accent": "#ffffff",
+    "line": "#ffffff38",
+    "selection": "#3f4a66",
+    "value": "#f2efe8",
+    "notice": "#a8443f"
+  },
+  "board": "slate",
+  "control": {
+    "player": "#8f9fc4",
+    "opponent": "#a8443f"
+  },
+  "ground": {
+    "fill": "#0a0a0cb8",
+    "dialog": "#0c0c0ef4",
+    "border": false,
+    "corner": "dot"
+  },
+  "art": {}
+}

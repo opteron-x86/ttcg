@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "id": "nordic",
+  "name": "Nordic",
+  "credit": "NORDIC UI by outobugi",
+  "font": "jost",
+  "palette": {
+    "background": "#060606",
+    "centre": "#161616",
+    "text": "#ececec",
+    "muted": "#8e8e8e",
+    "accent": "#d6d6d6",
+    "line": "#ffffff30",
+    "selection": "#3a3a3a",
+    "value": "#ececec",
+    "notice": "#b9483c"
+  },
+  "board": "slab",
+  "control": {
+    "player": "#dcdcdc",
+    "opponent": "#b9483c"
+  },
+  "ground": {
+    "fill": "#000000d2",
+    "dialog": "#040404f2",
+    "border": false,
+    "selector": "rule",
+    "corner": "key"
+  },
+  "art": {}
+}

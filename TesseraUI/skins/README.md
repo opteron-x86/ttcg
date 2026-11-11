@@ -31,6 +31,14 @@ Colours are `#rrggbb` or `#rrggbbaa`. `font` is `jost`, `lato`, `serif` or `sans
 
 A nine-slice piece may set `opacity` to let the blurred scene show through. Every piece is optional; a missing one falls back to a flat fill or a hairline. Textures are authored at three times Skyrim's 720p stage, so one texture pixel is one screen pixel at 2160p. `passes` draws a translucent band more than once to deepen it.
 
+A skin with no panel art can describe a flat ground instead, as the minimalist UI mods do:
+
+```json
+"ground": {"fill": "#1b1b1bb4", "dialog": "#1b1b1bee", "border": false, "selector": "rule", "corner": "key"}
+```
+
+`fill` is the main window and `dialog` the popups; `border` draws the hairline outline; `selector: "rule"` underlines the hovered or primary button instead of filling it; `corner` is `key` (a meander bracket) or `dot`.
+
 `board` names the skin's default game board: `plain`, `slate`, `felt`, `parchment`, `leather`, `walnut` or `slab`.
 
-The textures here are artwork from Oathvein UI, Vel'dun UI and Norden UI by Nithog, Edge UI by EugeneUI and Dear Diary Dark Mode by uranreactor, used with permission and not covered by Tessera's GPL-3.0 licence. Untarnished follows Vorganger's Untarnished UI with a palette alone. `tools/build-skin.py` regenerates them from installed copies of those mods using `tools/skin/recipes.json`.
+The textures here are artwork from Oathvein UI, Vel'dun UI and Norden UI by Nithog, Edge UI by EugeneUI and Dear Diary Dark Mode by uranreactor, used with permission and not covered by Tessera's GPL-3.0 licence. Untarnished, Nordic and Outlander follow Untarnished UI by Vorganger, NORDIC UI by outobugi and Outlander UI II by rbtRvlt with a palette and flat ground alone. `tools/build-skin.py` regenerates them from installed copies of those mods using `tools/skin/recipes.json`.

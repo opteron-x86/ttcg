@@ -196,11 +196,20 @@ python3 tools/package-release.py --build-dir build/linux-clangcl \
   --validation build/test-results/windows-tests.json --output-dir dist/<name>
 ```
 
+### Skins, boards and foil checkpoint (2026-11-11)
+
+- Edge now lays its lists on a translucent ground with no title band; Dear Diary uses the mod's own bronze-cornered panel and red plaques with a serif face. Both were checked against the mods' published screenshots.
+- Untarnished, Nordic (theme 11) and Outlander (theme 12) are flat-ground skins: `"ground"` in `skin.json` sets the translucent window fill, the dialog fill, whether a hairline border is drawn, underline-style selection and optional corner marks. They carry no textures. They were matched to player-supplied screenshots; their display fonts are not bundled, so Nordic uses Jost and Outlander the serif face.
+- Boards use painted fields from `tools/board-art/` (generated with the Codex CLI image tool, prompts in its README); rails, shadows and recesses are still drawn by `tools/build-board-textures.py`, and `--procedural` rebuilds the earlier set.
+- The foil shader in `native/src/Material.cpp` was rewritten: the film tints the printed art at constant brightness, with a moving sheen and flakes, so shadows stay dark. Not yet seen in game.
+- Card names never drop below nine real pixels. Shop tiles, pack reveals, the rule demo and the classic layout were checked on the framed face; tournament prize cards, the drag preview and the three deck densities were not.
+- The player decided to keep the drawn card frame for now.
+
 Hand over the absolute path of `dist/<name>/Tessera-<ver>-dev.<hash>-Main.zip`. Compare with the previous Main zip's file hashes to confirm only intended files changed. Skyrim UI mods' assets and the player's mod folder are at `/mnt/mods/Amaranth/mods` (profile `KINMUNE CS`); the player runs Oathvein UI, Dear Diary Dark Mode, Natural Typefaces and Quickslot, so Oathvein is the look to be judged against in game.
 
 ## Image generation
 
-Generated art is optional. Use the built-in image tool for painterly boards or a shared card-frame asset; keep the procedural board set available. Record the final prompt, tool and provenance beside any accepted asset. Implement code directly, as requested by the player.
+Generated art is optional. Use the Codex CLI image tool (`codex exec --skip-git-repo-check --sandbox workspace-write -C DIR "Use your image generation tool to create ONE image and save it as NAME.png …"`) for painterly boards or a shared card-frame asset; keep the procedural board set available. Record the final prompt, tool and provenance beside any accepted asset. Implement code directly, as requested by the player.
 
 ## Licensing rules
 

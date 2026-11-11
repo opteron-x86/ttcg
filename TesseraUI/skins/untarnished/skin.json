@@ -5,13 +5,13 @@
   "credit": "Untarnished UI by Vorganger",
   "font": "jost",
   "palette": {
-    "background": "#0b0b0b",
-    "centre": "#1c1c1c",
-    "text": "#f2f2f2",
-    "muted": "#a8a8a8",
+    "background": "#1c1c1c",
+    "centre": "#2a2a2a",
+    "text": "#f4f4f4",
+    "muted": "#a6a6a6",
     "accent": "#ffffff",
-    "line": "#ffffff30",
-    "selection": "#3d3d3d",
+    "line": "#ffffff3c",
+    "selection": "#565656",
     "value": "#ffffff",
     "notice": "#d0705e"
   },
@@ -19,6 +19,12 @@
   "control": {
     "player": "#e8e8e8",
     "opponent": "#c85a4a"
+  },
+  "ground": {
+    "fill": "#1b1b1bb4",
+    "dialog": "#1b1b1bee",
+    "border": false,
+    "selector": "rule"
   },
   "art": {}
 }

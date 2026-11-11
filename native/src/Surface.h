@@ -48,7 +48,8 @@ inline std::vector<unsigned char> surfacePixels(int theme, int width, int height
         {.20f, .05f, .62f, 0x493029, 0x2b201c, 0x1e1715}, {.45f, 0, .62f, 0x302626, 0x1b1b1c, 0x111213},
         {.10f, 0, .68f, 0x302d26, 0x1b1a17, 0x111210},    {.50f, 0, .76f, 0x2b3033, 0x161a1c, 0x0e1113},
         {.50f, 0, .70f, 0x1c1c1c, 0x0f0f0f, 0x0b0b0b},    {.50f, 0, .70f, 0x2a2820, 0x1a1915, 0x161613},
-        {.50f, 0, .70f, 0x1e1e1e, 0x111111, 0x0c0c0c}};
+        {.50f, 0, .70f, 0x1e1e1e, 0x111111, 0x0c0c0c},    {.50f, 0, .70f, 0x161616, 0x0a0a0a, 0x060606},
+        {.50f, 0, .70f, 0x1a1b20, 0x101013, 0x0c0c0e}};
     static_assert(std::size(gradients) == ttcg::interfaceThemeCount);
     return gradientPixels(gradients[ttcg::interfaceThemeIndex(theme)], width, height, theme == 1, theme);
 }
