@@ -11,38 +11,34 @@
 namespace preview {
 namespace {
 constexpr ImU32 rgb(unsigned n, unsigned alpha = 255) { return IM_COL32(n >> 16, (n >> 8) & 255, n & 255, alpha); }
-const Palette themes[]{{"Tessera", rgb(0x131e19), rgb(0x28372e), rgb(0xe7dec6), rgb(0xafa991), rgb(0xd0b474),
-                        rgb(0x586044, 130), rgb(0x4c5237), false},
-                       {"Charcoal", rgb(0x111417), rgb(0x292d31), rgb(0xeeeef0), rgb(0xa6acb1), rgb(0xe2e5e7),
-                        rgb(0x666a70, 120), rgb(0x41474d), true},
-                       {"Oxblood", rgb(0x19191a), rgb(0x2c2828), rgb(0xe7e5de), rgb(0xaaa7a0), rgb(0xdedbd2),
-                        rgb(0x625955, 120), rgb(0x683c35), true},
-                       {"Parchment", rgb(0xcfb88f), rgb(0xeee1c7), rgb(0x35291f), rgb(0x6b5843), rgb(0x765130),
-                        rgb(0x765130, 90), rgb(0xc5a475), false},
-                       {"Umber", rgb(0x1e1715), rgb(0x493029), rgb(0xe9d8bc), rgb(0xb69b81), rgb(0xd1a76e),
-                        rgb(0x92704e, 115), rgb(0x604633), false},
+// Indexed by theme; the five retired themes keep empty places so later indices stay put.
+const Palette themes[]{{},
+                       {},
+                       {},
+                       {},
+                       {},
                        {"Oathvein", rgb(0x161616), rgb(0x302626), rgb(0xe9e6dd), rgb(0xa3a19c), rgb(0xe9e6dd),
-                        rgb(0xe9e6dd, 46), rgb(0x8f3229), true, FrameStyle::Skinned},
+                        rgb(0xe9e6dd, 46), rgb(0x8f3229), true},
                        {"Vel'dun", rgb(0x151612), rgb(0x302d26), rgb(0xece8d9), rgb(0xb4b3a5), rgb(0xbeb18a),
-                        rgb(0x938d77, 165), rgb(0x625b43), true, FrameStyle::Skinned},
+                        rgb(0x938d77, 165), rgb(0x625b43), true},
                        {"Norden", rgb(0x101315), rgb(0x2b3033), rgb(0xe9e6dd), rgb(0xb4b8bb), rgb(0xd2d5d4),
-                        rgb(0xa9b0b3, 135), rgb(0x464f55), true, FrameStyle::Skinned},
+                        rgb(0xa9b0b3, 135), rgb(0x464f55), true},
                        {"Untarnished", rgb(0x0b0b0b), rgb(0x1c1c1c), rgb(0xf2f2f2), rgb(0xa8a8a8), rgb(0xffffff),
-                        rgb(0xffffff, 48), rgb(0x3d3d3d), true, FrameStyle::Skinned},
+                        rgb(0xffffff, 48), rgb(0x3d3d3d), true},
                        {"Edge", rgb(0x161613), rgb(0x2a2820), rgb(0xe6e1d3), rgb(0xa39e8f), rgb(0xc9b47a),
-                        rgb(0xc9b47a, 64), rgb(0x5a4f2e), true, FrameStyle::Skinned},
+                        rgb(0xc9b47a, 64), rgb(0x5a4f2e), true},
                        {"Dear Diary", rgb(0x0c0c0c), rgb(0x1e1e1e), rgb(0xefefef), rgb(0xa9a9a9), rgb(0xe6e6e6),
-                        rgb(0xffffff, 42), rgb(0x3b3b3b), true, FrameStyle::Skinned},
+                        rgb(0xffffff, 42), rgb(0x3b3b3b), true},
                        {"Nordic", rgb(0x060606), rgb(0x161616), rgb(0xececec), rgb(0x8e8e8e), rgb(0xd6d6d6),
-                        rgb(0xffffff, 48), rgb(0x3a3a3a), true, FrameStyle::Skinned},
+                        rgb(0xffffff, 48), rgb(0x3a3a3a), true},
                        {"Outlander", rgb(0x0c0c0e), rgb(0x1a1b20), rgb(0xf2efe8), rgb(0xa9a8a4), rgb(0xffffff),
-                        rgb(0xffffff, 56), rgb(0x3f4a66), true, FrameStyle::Skinned},
+                        rgb(0xffffff, 56), rgb(0x3f4a66), true},
                        {"Skyrim", rgb(0x000000), rgb(0x151515), rgb(0xffffff), rgb(0xa8a8a8), rgb(0xffffff),
-                        rgb(0xffffff, 89), rgb(0x4a4a4a), true, FrameStyle::Skinned},
+                        rgb(0xffffff, 89), rgb(0x4a4a4a), true},
                        {"Dear Diary", rgb(0xb4a698), rgb(0xc4b8ab), rgb(0x231a14), rgb(0x463a31), rgb(0x6e2a1c),
-                        rgb(0x3a261c, 89), rgb(0x8f7d6c), false, FrameStyle::Skinned},
+                        rgb(0x3a261c, 89), rgb(0x8f7d6c), false},
                        {"Wood and Paper", rgb(0x8f866a), rgb(0xa39a7e), rgb(0x1d150d), rgb(0x33281a), rgb(0x5a2f14),
-                        rgb(0x2e1d0e, 102), rgb(0x6f6247), false, FrameStyle::Skinned}};
+                        rgb(0x2e1d0e, 102), rgb(0x6f6247), false}};
 static_assert(std::size(themes) == ttcg::interfaceThemeCount);
 const char* romans[]{"", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"};
 ImU32 rarity(const CardView& card) {
@@ -116,28 +112,17 @@ App::App(Renderer& r, const Options& o) : renderer(r), options(o), assets(r, o.t
     visible = filter.results();
 }
 App::~App() {
-    for (auto texture : surfaces)
-        if (texture.id) renderer.release(texture);
     for (auto texture : boardSurfaces)
         if (texture.id) renderer.release(texture);
 }
 void App::surface(ImVec2 at, ImVec2 size, bool main) {
-    if (skinned()) {
-        // A painted frame and its shadow reach past the rectangle they surround.
-        const auto* piece = skinPiece(main ? "window" : "panel");
-        const float reach = piece ? (piece->inset + piece->pad) * piece->scale * skinUnit() : 0;
-        auto* d = ImGui::GetWindowDrawList();
-        if (!main && reach > 0) d->PushClipRect(at - ImVec2(reach, reach), at + size + ImVec2(reach, reach), false);
-        skinPanel(at, size, main ? 1.f : .62f, IM_COL32_WHITE, main ? "window" : "panel");
-        if (!main && reach > 0) d->PopClipRect();
-        return;
-    }
-    auto& texture = surfaces[theme];
-    if (!texture.id) {
-        const auto pixels = surfacePixels(theme, 1024, 768);
-        texture = renderer.upload(pixels.data(), 1024, 768);
-    }
-    ImGui::GetWindowDrawList()->AddImage(texture.id, at, at + size);
+    // A painted frame and its shadow reach past the rectangle they surround.
+    const auto* piece = skinPiece(main ? "window" : "panel");
+    const float reach = piece ? (piece->inset + piece->pad) * piece->scale * skinUnit() : 0;
+    auto* d = ImGui::GetWindowDrawList();
+    if (!main && reach > 0) d->PushClipRect(at - ImVec2(reach, reach), at + size + ImVec2(reach, reach), false);
+    skinPanel(at, size, main ? 1.f : .62f, IM_COL32_WHITE, main ? "window" : "panel");
+    if (!main && reach > 0) d->PopClipRect();
 }
 void App::boardSurface(int material, ImVec2 at, ImVec2 size) {
     if (material == 0) material = ttcg::interfaceThemes[theme].boardSurface;
@@ -148,24 +133,7 @@ void App::boardSurface(int material, ImVec2 at, ImVec2 size) {
     }
     ImGui::GetWindowDrawList()->AddImage(texture.id, at, at + size);
 }
-void App::panelFrame(ImVec2 at, ImVec2 size, bool main) {
-    // A skin's panel texture carries its own frame.
-    if (skinned()) return;
-    auto* d = ImGui::GetWindowDrawList();
-    const auto& p = palette();
-    const auto end = at + size;
-    d->AddRect(at + ImVec2(1, 1), end - ImVec2(1, 1), p.accent);
-    if (main && theme > 0)
-        for (int i = 0; i < 4; ++i) {
-            const ImVec2 corner =
-                at + ImVec2(i % 2 ? size.x - 8 * scale : 8 * scale, i / 2 ? size.y - 8 * scale : 8 * scale);
-            const float sx = i % 2 ? -1.f : 1.f, sy = i / 2 ? -1.f : 1.f;
-            line(corner, corner + ImVec2(32 * sx, 0) * scale);
-            line(corner, corner + ImVec2(0, 32 * sy) * scale);
-        }
-}
 void App::popupSurface() {
-    if (!skinned()) return;
     const auto at = ImGui::GetWindowPos(), size = ImGui::GetWindowSize();
     // A torn edge reaches past the dialog's own clip rectangle.
     auto* d = ImGui::GetWindowDrawList();
@@ -174,14 +142,9 @@ void App::popupSurface() {
     d->PopClipRect();
 }
 void App::controlBorder(ImVec2 at, ImVec2 size, ImU32 colour) {
-    auto* d = ImGui::GetWindowDrawList();
     const auto end = at + size;
-    if (skinned()) {
-        // Controls rest on a hairline instead of sitting in a box.
-        skinRule(ImVec2(at.x, end.y - 1), ImVec2(end.x, end.y - 1), ((colour >> 24) & 255) > 100 ? 1.f : .55f);
-        return;
-    }
-    d->AddRect(at, end, colour, 2.f);
+    // Controls rest on a hairline instead of sitting in a box.
+    skinRule(ImVec2(at.x, end.y - 1), ImVec2(end.x, end.y - 1), ((colour >> 24) & 255) > 100 ? 1.f : .55f);
 }
 void App::text(ImVec2 at, const std::string& value, float size, ImU32 colour, float wrap, bool centre) {
     const float pixels = std::max(size, AlbumLayout::smallestText) * scale;
@@ -201,7 +164,6 @@ bool App::select(const char* id, int& value, const std::vector<std::string>& cho
     if (choices.empty()) return false;
     const auto at = ImGui::GetCursorScreenPos();
     const float height = ImGui::GetFrameHeight();
-    const bool framed = palette().frame != FrameStyle::Classic;
     ImGui::SetNextItemWidth(width);
     // Popups need their own padding: the absolute-layout root has none.
     const ImVec2 padding = ImVec2(12, 9) * scale;
@@ -214,7 +176,7 @@ bool App::select(const char* id, int& value, const std::vector<std::string>& cho
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, padding);
     ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
     ImGui::PushStyleVar(ImGuiStyleVar_SelectableTextAlign, ImVec2(0, .5f));
-    if (framed) ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0);
+    ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0);
     bool changed = false;
     const std::string widgetID = std::string_view(id).starts_with("##") ? id : std::string("##") + id;
     if (ImGui::BeginCombo(widgetID.c_str(), choices[std::clamp(value, 0, int(choices.size()) - 1)].c_str(),
@@ -229,10 +191,8 @@ bool App::select(const char* id, int& value, const std::vector<std::string>& cho
         }
         ImGui::EndCombo();
     }
-    if (framed) {
-        ImGui::PopStyleVar();
-        controlBorder(at, ImVec2(width, height), palette().line);
-    }
+    ImGui::PopStyleVar();
+    controlBorder(at, ImVec2(width, height), palette().line);
     ImGui::PopStyleVar(3);
     return changed;
 }
@@ -240,41 +200,21 @@ bool App::sectionTab(const char* id, const std::string& title, ImVec2 at, ImVec2
     ImGui::SetCursorScreenPos(at);
     const bool hit = ImGui::InvisibleButton(id, size, ImGuiButtonFlags_EnableNav);
     auto* d = ImGui::GetWindowDrawList();
-    if (skinned()) {
-        const bool hover = ImGui::IsItemHovered() || (ImGui::IsItemFocused() && ImGui::GetIO().NavVisible);
-        // A skin frames the current tab with its own bracket; without one, a hairline.
-        const ImVec2 from = at - ImVec2(10, 0) * scale, extent = size + ImVec2(20, 0) * scale;
-        if (active) {
-            if (!skinBand("tab", from, extent))
-                skinRule(ImVec2(at.x, at.y + size.y - 2 * scale), ImVec2(at.x + size.x, at.y + size.y - 2 * scale));
-        } else if (hover && !skinBand("tab", from, extent, IM_COL32(255, 255, 255, 90))) {
-            d->AddRectFilled(from, from + extent, alpha(palette().selection, .45f));
-            skinRule(ImVec2(at.x, at.y + size.y - 2 * scale), ImVec2(at.x + size.x, at.y + size.y - 2 * scale));
-        }
-        const auto measure = font()->CalcTextSizeA(18 * scale, 1e5f, 0, title.c_str());
-        text(at + (size - measure) * .5f, title, 18,
-             active  ? palette().ink
-             : hover ? alpha(palette().ink, .85f)
-                     : alpha(palette().muted, .8f));
-        return hit;
-    }
-    if (ImGui::IsItemHovered() || ImGui::IsItemFocused())
-        d->AddRectFilled(at, at + size, alpha(palette().selection, .20f));
-    if (active && (theme == 2 || theme == 4)) {
-        const auto colour = theme == 4 ? rgb(0xa56c30, 32) : alpha(palette().selection, .40f);
-        const auto top = at + ImVec2(0, size.y * .2f);
-        d->AddRectFilledMultiColor(top, at + size, colour & 0xffffff, colour & 0xffffff, colour, colour);
-    }
-    const float pixels = palette().sans ? 18 : 24;
-    const auto measure = font()->CalcTextSizeA(pixels * scale, 1e5f, 0, title.c_str());
-    text(at + (size - measure) * .5f, title, pixels, active ? palette().accent : palette().muted);
+    const bool hover = ImGui::IsItemHovered() || (ImGui::IsItemFocused() && ImGui::GetIO().NavVisible);
+    // A skin frames the current tab with its own bracket; without one, a hairline.
+    const ImVec2 from = at - ImVec2(10, 0) * scale, extent = size + ImVec2(20, 0) * scale;
     if (active) {
-        const auto colour = theme == 0 ? rgb(0xe2c58a) : theme == 2 ? rgb(0xdfd6c5) : palette().accent;
-        const auto edge = alpha(colour, theme == 0 ? .25f : 0.f);
-        const float centre = at.x + size.x * .5f, y = at.y + size.y - (theme == 2 ? 1.f : 2.f) * scale;
-        d->AddRectFilledMultiColor(ImVec2(at.x, y), ImVec2(centre, at.y + size.y), edge, colour, colour, edge);
-        d->AddRectFilledMultiColor(ImVec2(centre, y), at + size, colour, edge, edge, colour);
+        if (!skinBand("tab", from, extent))
+            skinRule(ImVec2(at.x, at.y + size.y - 2 * scale), ImVec2(at.x + size.x, at.y + size.y - 2 * scale));
+    } else if (hover && !skinBand("tab", from, extent, IM_COL32(255, 255, 255, 90))) {
+        d->AddRectFilled(from, from + extent, alpha(palette().selection, .45f));
+        skinRule(ImVec2(at.x, at.y + size.y - 2 * scale), ImVec2(at.x + size.x, at.y + size.y - 2 * scale));
     }
+    const auto measure = font()->CalcTextSizeA(18 * scale, 1e5f, 0, title.c_str());
+    text(at + (size - measure) * .5f, title, 18,
+         active  ? palette().ink
+         : hover ? alpha(palette().ink, .85f)
+                 : alpha(palette().muted, .8f));
     return hit;
 }
 void App::line(ImVec2 a, ImVec2 b, ImU32 colour) {
@@ -287,15 +227,6 @@ void App::itemTooltip(const std::string& label) {
     ImGui::SetTooltip("%s", label.c_str());
     ImGui::PopStyleVar();
 }
-bool App::closeButton(const char* id, ImVec2 at) {
-    ImGui::SetCursorScreenPos(at);
-    const bool pressed = ImGui::InvisibleButton(id, ImVec2(34, 34) * scale, ImGuiButtonFlags_EnableNav);
-    const auto colour = ImGui::IsItemHovered() || ImGui::IsItemFocused() ? palette().accent : palette().ink;
-    for (int side : {-1, 1})
-        ImGui::GetWindowDrawList()->AddLine(at + ImVec2(10, 17 - 7 * side) * scale,
-                                            at + ImVec2(24, 17 + 7 * side) * scale, colour, 1.5f * scale);
-    return pressed;
-}
 bool App::button(const char* id, const char* label, ImVec2 at, ImVec2 size, bool active, bool enabled) {
     ImGui::SetCursorScreenPos(at);
     ImGui::BeginDisabled(!enabled);
@@ -303,32 +234,22 @@ bool App::button(const char* id, const char* label, ImVec2 at, ImVec2 size, bool
     const bool hover = ImGui::IsItemHovered(), focused = ImGui::IsItemFocused() && ImGui::GetIO().NavVisible;
     ImGui::EndDisabled();
     auto* draw = ImGui::GetWindowDrawList();
-    if (skinned()) {
-        // The skin's band marks the primary or hovered action; idle ones sit on a hairline.
-        if (active || hover || focused) {
-            const auto tint = IM_COL32(255, 255, 255, active && (hover || focused) ? 255 : active ? 215 : 150);
-            bool drawn = false;
-            for (int pass = 0; pass < (active ? 2 : 1); ++pass) drawn = skinBand("selector", at, size, tint);
-            if (!drawn && skin().ruleSelector)
-                skinRule(ImVec2(at.x, at.y + size.y - 1), ImVec2(at.x + size.x, at.y + size.y - 1), 1.7f);
-            else if (!drawn)
-                draw->AddRectFilled(at, at + size, alpha(palette().selection, active ? .7f : .4f));
-        } else
-            skinRule(ImVec2(at.x, at.y + size.y - 1), ImVec2(at.x + size.x, at.y + size.y - 1), enabled ? .6f : .25f);
-        const ImVec2 measure = font()->CalcTextSizeA(19 * scale, 1e5f, 0, label);
-        text(at + ImVec2((size.x - measure.x) * .5f, (size.y - measure.y) * .5f), label, 19,
-             !enabled                     ? alpha(palette().muted, .45f)
-             : active || hover || focused ? palette().ink
-                                          : alpha(palette().ink, .86f));
-        return pressed && enabled;
-    }
-    if (active || hover || focused)
-        draw->AddRectFilled(at, at + size, alpha(palette().selection, active ? .82f : .48f), 2);
-    controlBorder(at, size, active ? palette().accent : palette().line);
-    if (focused) draw->AddRect(at - ImVec2(3, 3), at + size + ImVec2(3, 3), palette().accent, 3);
+    // The skin's band marks the primary or hovered action; idle ones sit on a hairline.
+    if (active || hover || focused) {
+        const auto tint = IM_COL32(255, 255, 255, active && (hover || focused) ? 255 : active ? 215 : 150);
+        bool drawn = false;
+        for (int pass = 0; pass < (active ? 2 : 1); ++pass) drawn = skinBand("selector", at, size, tint);
+        if (!drawn && skin().ruleSelector)
+            skinRule(ImVec2(at.x, at.y + size.y - 1), ImVec2(at.x + size.x, at.y + size.y - 1), 1.7f);
+        else if (!drawn)
+            draw->AddRectFilled(at, at + size, alpha(palette().selection, active ? .7f : .4f));
+    } else
+        skinRule(ImVec2(at.x, at.y + size.y - 1), ImVec2(at.x + size.x, at.y + size.y - 1), enabled ? .6f : .25f);
     const ImVec2 measure = font()->CalcTextSizeA(19 * scale, 1e5f, 0, label);
     text(at + ImVec2((size.x - measure.x) * .5f, (size.y - measure.y) * .5f), label, 19,
-         enabled ? palette().ink : alpha(palette().muted, .5f));
+         !enabled                     ? alpha(palette().muted, .45f)
+         : active || hover || focused ? palette().ink
+                                      : alpha(palette().ink, .86f));
     return pressed && enabled;
 }
 void App::style() {
@@ -343,24 +264,24 @@ void App::style() {
     s.ScrollbarRounding = 2;
     s.ChildBorderSize = 0;
     s.PopupRounding = 2;
-    s.PopupBorderSize = p.frame == FrameStyle::Classic ? 1.f : 0.f;
-    if (p.frame != FrameStyle::Classic) s.FrameRounding = s.PopupRounding = s.ScrollbarRounding = 0;
+    s.PopupBorderSize = 0;
+    s.FrameRounding = s.PopupRounding = s.ScrollbarRounding = 0;
     s.Colors[ImGuiCol_Text] = ImGui::ColorConvertU32ToFloat4(p.ink);
     s.Colors[ImGuiCol_TextDisabled] = ImGui::ColorConvertU32ToFloat4(p.muted);
-    s.Colors[ImGuiCol_FrameBg] = ImGui::ColorConvertU32ToFloat4(skinned() ? IM_COL32(0, 0, 0, 70) : p.background);
+    s.Colors[ImGuiCol_FrameBg] = ImGui::ColorConvertU32ToFloat4(IM_COL32(0, 0, 0, 70));
     s.Colors[ImGuiCol_FrameBgHovered] = ImGui::ColorConvertU32ToFloat4(p.selection);
     s.Colors[ImGuiCol_FrameBgActive] = ImGui::ColorConvertU32ToFloat4(p.selection);
     s.Colors[ImGuiCol_Border] = ImGui::ColorConvertU32ToFloat4(p.line);
     s.Colors[ImGuiCol_Header] = ImGui::ColorConvertU32ToFloat4(p.selection);
     s.Colors[ImGuiCol_HeaderHovered] = ImGui::ColorConvertU32ToFloat4(p.selection);
     s.Colors[ImGuiCol_HeaderActive] = ImGui::ColorConvertU32ToFloat4(p.selection);
-    s.Colors[ImGuiCol_Button] = ImGui::ColorConvertU32ToFloat4(skinned() ? IM_COL32(0, 0, 0, 70) : p.background);
+    s.Colors[ImGuiCol_Button] = ImGui::ColorConvertU32ToFloat4(IM_COL32(0, 0, 0, 70));
     s.Colors[ImGuiCol_ButtonHovered] = ImGui::ColorConvertU32ToFloat4(p.selection);
     s.Colors[ImGuiCol_ButtonActive] = ImGui::ColorConvertU32ToFloat4(p.selection);
     s.Colors[ImGuiCol_PopupBg] = ImGui::ColorConvertU32ToFloat4(p.background);
     s.Colors[ImGuiCol_DragDropTarget] = ImGui::ColorConvertU32ToFloat4(p.accent);
     s.Colors[ImGuiCol_NavCursor] = ImGui::ColorConvertU32ToFloat4(p.accent);
-    s.Colors[ImGuiCol_ModalWindowDimBg] = skinned() ? ImVec4(0, 0, 0, .68f) : ImVec4(.012f, .019f, .015f, .76f);
+    s.Colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0, 0, 0, .68f);
     s.Colors[ImGuiCol_ScrollbarBg] = ImVec4(0, 0, 0, 0);
     s.Colors[ImGuiCol_ScrollbarGrab] = ImGui::ColorConvertU32ToFloat4(alpha(p.accent, .65f));
     s.Colors[ImGuiCol_ScrollbarGrabHovered] = ImGui::ColorConvertU32ToFloat4(p.accent);
@@ -369,7 +290,7 @@ void App::style() {
     s.Colors[ImGuiCol_SliderGrabActive] = ImGui::ColorConvertU32ToFloat4(p.accent);
 }
 ImU32 App::controlColour(int owner, bool forText) const {
-    return rgb(matchAppearance.colour(owner, forText && theme == 3));
+    return rgb(matchAppearance.colour(owner, forText && lightGround()));
 }
 void App::controlFrame(ImVec2 at, ImVec2 size, int owner) {
     if (owner < 0) return;
@@ -433,6 +354,12 @@ void App::controlFrame(ImVec2 at, ImVec2 size, int owner) {
             d->AddPolyline(diamond, 4, controlColour(owner), ImDrawFlags_Closed, 1.4f * unit);
     }
 }
+void App::chosenOutline(ImVec2 at, ImVec2 size) {
+    auto* d = ImGui::GetWindowDrawList();
+    d->AddRect(at - ImVec2(6, 6) * scale, at + size + ImVec2(6, 6) * scale, alpha(palette().selection, .55f), 0, 0,
+               4 * scale);
+    d->AddRect(at - ImVec2(3, 3) * scale, at + size + ImVec2(3, 3) * scale, palette().ink, 0, 0, 1.5f * scale);
+}
 void App::card(int index, ImVec2 at, ImVec2 size, bool chosen, bool foil, int owner, int slot, bool large,
                CardContext context) {
     const auto& c = collection.cards[index];
@@ -451,8 +378,7 @@ void App::card(int index, ImVec2 at, ImVec2 size, bool chosen, bool foil, int ow
         return;
     }
     d->AddRectFilled(at + ImVec2(3, 5), at + size + ImVec2(3, 5), rgb(0x000000, 55), 2);
-    const bool skin = skinned();
-    d->AddRectFilled(at, at + size, skin ? rgb(0x151515) : rgb(0x14201c), 2);
+    d->AddRectFilled(at, at + size, rgb(0x151515), 2);
     if (texture.id) {
         const float ratio = float(texture.width) / texture.height, target = size.x / size.y;
         ImVec2 uv0(0, 0), uv1(1, 1);
@@ -468,8 +394,8 @@ void App::card(int index, ImVec2 at, ImVec2 size, bool chosen, bool foil, int ow
         artImage(texture, at, at + size, uv0, uv1);
     }
     const float unit = size.x / 180.f;
-    if ((face.names || face.groups) && face.nameplate != 2) drawCardShade(d, at, size, skin ? 0x0a0a0a : 0x101d16);
-    if (skin && owner >= 0 && face.names) {
+    if ((face.names || face.groups) && face.nameplate != 2) drawCardShade(d, at, size, 0x0a0a0a);
+    if (owner >= 0 && face.names) {
         // The nameplate carries the owner's colour, so control reads without relying on the outline.
         const ImVec2 top = at + ImVec2(0, size.y * .805f), end = at + ImVec2(size.x, size.y * .96f);
         d->AddRectFilled(top, end, IM_COL32(8, 8, 8, 150));
@@ -479,16 +405,8 @@ void App::card(int index, ImVec2 at, ImVec2 size, bool chosen, bool foil, int ow
     if (owner >= 0)
         controlFrame(at, size, owner);
     else
-        d->AddRect(at, at + size, skin ? alpha(palette().accent, .25f) : rgb(0x6f979a), skin ? 0.f : 1.f, 0,
-                   1.2f * scale);
-    if (chosen) {
-        if (skin) {
-            d->AddRect(at - ImVec2(6, 6) * scale, at + size + ImVec2(6, 6) * scale, alpha(palette().selection, .55f), 0,
-                       0, 4 * scale);
-            d->AddRect(at - ImVec2(3, 3) * scale, at + size + ImVec2(3, 3) * scale, palette().ink, 0, 0, 1.5f * scale);
-        } else
-            d->AddRect(at - ImVec2(5, 5) * scale, at + size + ImVec2(5, 5) * scale, palette().accent, 5, 0, 2 * scale);
-    }
+        d->AddRect(at, at + size, alpha(palette().accent, .25f), 0, 0, 1.2f * scale);
+    if (chosen) chosenOutline(at, size);
     const float digitSize = 29 * unit;
     const auto number = [&](int side, ImVec2 pos) {
         std::string value = c.sides[side] == 10 ? "A" : std::to_string(c.sides[side]);
@@ -530,7 +448,7 @@ void App::card(int index, ImVec2 at, ImVec2 size, bool chosen, bool foil, int ow
     d->AddCircleFilled(badge + ImVec2(0, 2) * unit, 7.5f * unit, rgb(pigment[1]));
     d->AddCircle(badge, 10 * unit, rarity(c), 32, 1.1f * unit);
     d->AddCircle(badge, 7.8f * unit, alpha(rarity(c), .55f), 32, .55f * unit);
-    auto* tierFont = skin ? font() : serif;
+    auto* tierFont = font();
     auto tier = tierFont->CalcTextSizeA(10 * unit, 1e5f, 0, romans[c.tier]);
     d->AddText(tierFont, 10 * unit, badge - tier * .5f, rarity(c), romans[c.tier]);
     int offset = 0;
@@ -543,6 +461,6 @@ void App::card(int index, ImVec2 at, ImVec2 size, bool chosen, bool foil, int ow
         }
     if (face.names || face.groups)
         drawCardName(d, cardNameFont ? cardNameFont : serif, at, size, face.names ? c.name : "", face.nameplate,
-                     face.lettering, scale, face.groups ? groups(c) : "", skin ? 0x0c0c0c : 0x101b16);
+                     face.lettering, scale, face.groups ? groups(c) : "", 0x0c0c0c);
 }
 }

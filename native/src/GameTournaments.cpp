@@ -119,8 +119,7 @@ void GameApp::tournaments(ImVec2 at, ImVec2 size) {
     const auto prizeAt = origin + ImVec2(width - prizes, top);
     line(prizeAt - ImVec2(gap / 2, 15 * scale), prizeAt + ImVec2(-gap / 2, availableH));
     textCaps(prizeAt, "Prize", 13.5f, palette().muted, 1.6f);
-    text(prizeAt + ImVec2(0, 26) * scale, std::to_string(number(e, "purse")) + " gold", 24,
-         skinned() ? skin().value : palette().accent);
+    text(prizeAt + ImVec2(0, 26) * scale, std::to_string(number(e, "purse")) + " gold", 24, skin().value);
     text(prizeAt + ImVec2(0, 62) * scale, label(e, "prize"), 18, palette().ink, prizes);
     if (arrayMember(e, "prizeCards").empty())
         if (const auto pack = assets.pack(1); pack.id) {
@@ -238,10 +237,7 @@ void GameApp::tournamentOutcome() {
                                                    : outcome;
         // A centred heading in the outcome's own colour, between two rules.
         const bool lost = flag(e, "eliminated") || std::string_view(title) == "Game lost";
-        const ImU32 tone = champion    ? IM_COL32(240, 196, 101, 255)
-                           : lost      ? (skinned() ? skin().notice : palette().muted)
-                           : skinned() ? skin().value
-                                       : palette().accent;
+        const ImU32 tone = champion ? IM_COL32(240, 196, 101, 255) : lost ? skin().notice : skin().value;
         const float middle = ImGui::GetWindowPos().x + width * .5f;
         const auto centred = [&](const std::string& value, float pixels, ImU32 colour, float gap) {
             const auto at = ImGui::GetCursorScreenPos();
@@ -269,7 +265,7 @@ void GameApp::tournamentOutcome() {
         }
         ImGui::Dummy(ImVec2(0, 16 * scale));
         if (champion) {
-            centred(std::to_string(number(e, "purse")) + " gold", 26, skinned() ? skin().value : palette().accent, 6);
+            centred(std::to_string(number(e, "purse")) + " gold", 26, skin().value, 6);
             if (!upgrades) centred(label(e, "prize"), 21, palette().ink, 4);
             const auto p = ImGui::GetCursorScreenPos() + ImVec2(0, 15 * scale);
             int slot = 0;
@@ -448,7 +444,6 @@ void GameApp::resultModal() {
         const auto panel = ImGui::GetWindowPos();
         surface(panel, extent);
         auto* d = ImGui::GetWindowDrawList();
-        panelFrame(panel, extent);
         const auto origin = panel + ImVec2(32, 28) * scale;
         const float width = extent.x - 64 * scale;
         if (done) {
@@ -457,8 +452,7 @@ void GameApp::resultModal() {
             const char* heading = outcome < 0 ? "Draw" : outcome == 0 ? "Victory" : "Defeat";
             const ImU32 tone = outcome == 0  ? IM_COL32(240, 196, 101, 255)
                                : outcome < 0 ? palette().ink
-                               : skinned()   ? skin().notice
-                                             : palette().muted;
+                                             : skin().notice;
             {
                 const float half = capsWidth(heading, 32, 5) * .5f + 26 * scale,
                             reach = std::max(0.f, extent.x * .5f - 44 * scale - half);

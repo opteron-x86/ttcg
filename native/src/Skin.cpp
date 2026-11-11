@@ -47,7 +47,6 @@ void App::loadSkins() {
         }
         auto& s = skins[index];
         s.palette = builtInPalette(index);
-        s.palette.frame = FrameStyle::Skinned;
         const auto& p = j.contains("palette") ? j["palette"] : Json();
         s.palette.background = colour(p, "background", s.palette.background);
         s.palette.centre = colour(p, "centre", s.palette.centre);
@@ -237,7 +236,7 @@ void App::gridFade(GridEdges edges) {
                  size = ImGui::GetWindowSize() - ImVec2(ImGui::GetStyle().ScrollbarSize + 4 * scale, 0);
     // A flat fade would show as a patch on painted paper, so paper skins let the rows meet the edge.
     if (lightGround()) return;
-    const ImU32 solid = alpha(skinned() ? skin().dialog : palette().background, .96f), clear = solid & 0xffffff;
+    const ImU32 solid = alpha(skin().dialog, .96f), clear = solid & 0xffffff;
     const float reach = 64 * scale;
     if (edges.above)
         d->AddRectFilledMultiColor(at, ImVec2(at.x + size.x, at.y + reach * .6f), solid, solid, clear, clear);

@@ -8,12 +8,10 @@
 #include <unordered_map>
 
 namespace preview {
-enum class FrameStyle { Classic, Skinned };
 struct Palette {
     const char* name;
     ImU32 background, centre, ink, muted, accent, line, selection;
     bool sans;
-    FrameStyle frame = FrameStyle::Classic;
 };
 // One texture of a skin and how it is drawn; see TesseraUI/skins/README.md.
 struct SkinArt {
@@ -58,7 +56,6 @@ protected:
     Options options;
     Assets assets;
     ImFont *serif = nullptr, *sans = nullptr, *bold = nullptr, *jost = nullptr, *jostBold = nullptr, *lato = nullptr;
-    std::array<Texture, ttcg::interfaceThemeCount> surfaces{};
     std::array<Skin, ttcg::interfaceThemeCount> skins{};
     bool padPrompts = false;
     int keyPromptStyle = 0; // 0 automatic, 1 drawn in the skin's style, 2 installed icons
@@ -104,13 +101,10 @@ protected:
     bool sectionTab(const char* id, const std::string& title, ImVec2 at, ImVec2 size, bool active);
     bool button(const char* id, const char* label, ImVec2 at, ImVec2 size, bool active = false, bool enabled = true);
     void itemTooltip(const std::string& label);
-    bool closeButton(const char* id, ImVec2 at);
     void line(ImVec2 a, ImVec2 b, ImU32 colour = 0);
     void surface(ImVec2 at, ImVec2 size, bool main = false);
-    void panelFrame(ImVec2 at, ImVec2 size, bool main = false);
     void popupSurface();
     // Textured skins. Source art is authored at three times Skyrim's 720p stage.
-    bool skinned() const { return palette().frame == FrameStyle::Skinned; }
     // A rarity's colour for text on the interface ground: bright on dark skins, inked on paper.
     ImU32 rarityInk(std::string_view rarity) const {
         const bool paper = lightGround();
@@ -160,10 +154,9 @@ protected:
     void textCaps(ImVec2 at, const std::string& value, float size, ImU32 colour, float tracking = 0,
                   bool centre = false);
     float capsWidth(const std::string& value, float size, float tracking = 0) const;
-    ImGuiWindowFlags popupFlags() const {
-        return palette().frame == FrameStyle::Classic ? ImGuiWindowFlags_None : ImGuiWindowFlags_NoBackground;
-    }
+    ImGuiWindowFlags popupFlags() const { return ImGuiWindowFlags_NoBackground; }
     void controlBorder(ImVec2 at, ImVec2 size, ImU32 colour);
+    void chosenOutline(ImVec2 at, ImVec2 size);
     void boardSurface(int material, ImVec2 at, ImVec2 size);
     ImU32 controlColour(int owner, bool forText = false) const;
     void controlFrame(ImVec2 at, ImVec2 size, int owner);

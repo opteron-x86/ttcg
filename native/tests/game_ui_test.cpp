@@ -450,14 +450,12 @@ int main(int argc, char** argv) {
             }
             {
                 std::vector<ImTextureID> textures;
-                int index = 0;
-                for (const auto& texture : preview::GameTestAccess::themeSurfaces(app)) {
-                    // Skins draw their panel texture and generate no background; retired themes never draw.
-                    const auto& entry = ttcg::interfaceThemes[index++];
+                for (int index = 0; index < ttcg::interfaceThemeCount; ++index) {
+                    // Every current theme is a skin; retired themes keep only their saved index.
+                    const auto& entry = ttcg::interfaceThemes[index];
                     const auto id = entry.id;
-                    require(!texture.id, "A theme generated an unused background");
                     if (entry.retired) continue;
-                    const auto& skin = preview::GameTestAccess::skin(app, index - 1);
+                    const auto& skin = preview::GameTestAccess::skin(app, index);
                     require(skin.loaded && skin.player && skin.opponent && skin.board,
                             "Bundled skin did not load its colours and board");
                     // Nithog's three carry a full set of textures; Untarnished is flat by design.

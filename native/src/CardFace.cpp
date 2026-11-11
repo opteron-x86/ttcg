@@ -257,7 +257,7 @@ void App::framedCard(const CardView& c, Texture texture, ImVec2 at, ImVec2 size,
     d->AddTriangleFilled(gem, east, south, mix(pigment, rgb(0x000000), .84f));
     diamond(g * .62f, mix(pigment, rgb(0x000000), .84f));
     diamond(g * .62f, alpha(mix(pigment, rgb(0xffffff), .1f), .8f), std::max(1.f, .8f * unit));
-    auto* tierFont = skinned() ? font() : serif;
+    auto* tierFont = font();
     const float tierSize = (c.tier == 8 ? 8.f : 10.f) * unit;
     const auto tier = tierFont->CalcTextSizeA(tierSize, 1e5f, 0, romans[c.tier]);
     d->AddText(tierFont, tierSize, gem - tier * .5f, rgb(0xf6f1e2), romans[c.tier]);
@@ -271,13 +271,6 @@ void App::framedCard(const CardView& c, Texture texture, ImVec2 at, ImVec2 size,
             ++offset;
         }
     if (owner >= 0 && matchAppearance.marker) controlFrame(at, size, owner);
-    if (chosen) {
-        if (skinned()) {
-            d->AddRect(at - ImVec2(6, 6) * scale, end + ImVec2(6, 6) * scale, alpha(palette().selection, .55f), 0, 0,
-                       4 * scale);
-            d->AddRect(at - ImVec2(3, 3) * scale, end + ImVec2(3, 3) * scale, palette().ink, 0, 0, 1.5f * scale);
-        } else
-            d->AddRect(at - ImVec2(5, 5) * scale, end + ImVec2(5, 5) * scale, palette().accent, 5, 0, 2 * scale);
-    }
+    if (chosen) chosenOutline(at, size);
 }
 }

@@ -203,10 +203,7 @@ void GameApp::nativeAlbum(ImVec2 at, ImVec2 size) {
     nativeFilters(at, width);
     const float top = 86 * scale + packStrip(at + ImVec2(0, 86 * scale), width);
     cardGrid(at + ImVec2(0, top), ImVec2(width, size.y - top));
-    if (skinned())
-        skinRule(at + ImVec2(width + gap * .5f, 0), at + ImVec2(width + gap * .5f, size.y), .45f);
-    else
-        line(at + ImVec2(width + gap * .5f, 0), at + ImVec2(width + gap * .5f, size.y));
+    skinRule(at + ImVec2(width + gap * .5f, 0), at + ImVec2(width + gap * .5f, size.y), .45f);
     drawDetail(at + ImVec2(width + gap, 0), ImVec2(right, size.y));
 }
 void GameApp::nativeDecks(ImVec2 at, ImVec2 size) {
@@ -223,7 +220,7 @@ void GameApp::drawDetail(ImVec2 at, ImVec2 size) {
     const float facts = factRows(c, {}, size.x, false);
     const float w = std::min(size.x - 12 * scale, (size.y - facts - 186 * scale) * .75f), h = w / .75f;
     const auto p = at + ImVec2((size.x - w) / 2, 8 * scale);
-    if (known && skinned() && skinPiece("detail"))
+    if (known && skinPiece("detail"))
         skinPanel(ImVec2(at.x - 8 * scale, p.y + h + 10 * scale), ImVec2(size.x + 16 * scale, facts + 66 * scale), .7f,
                   IM_COL32_WHITE, "detail");
     ImGui::SetCursorScreenPos(p);
@@ -238,8 +235,8 @@ void GameApp::drawDetail(ImVec2 at, ImVec2 size) {
     const float mid = at.x + size.x / 2;
     float y = p.y + h + 14 * scale;
     // An item card: a title band, then labelled facts.
-    const bool inset = skinned() && skinPiece("detail");
-    if (skinned() && !skinBand("band", ImVec2(at.x, y), ImVec2(size.x, 40 * scale)))
+    const bool inset = skinPiece("detail");
+    if (!skinBand("band", ImVec2(at.x, y), ImVec2(size.x, 40 * scale)))
         skinBand("selector", ImVec2(at.x, y), ImVec2(size.x, 40 * scale));
     const float fit = std::min(19.f, 19.f * (size.x - 24 * scale) / std::max(1.f, capsWidth(c.name, 19, 1)));
     textCaps(ImVec2(mid, y + (40 - fit * 1.25f) * .5f * scale), c.name, fit, palette().ink, 1, true);

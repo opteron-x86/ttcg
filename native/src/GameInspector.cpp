@@ -19,7 +19,6 @@ void GameApp::nativeInspector() {
     auto* d = ImGui::GetWindowDrawList();
     d->PushClipRectFullScreen();
     surface(origin, extent);
-    if (!skinned()) d->AddRect(origin, origin + extent, palette().line);
     d->PopClipRect();
     if (ImGui::IsKeyPressed(ImGuiKey_Escape, false) || ImGui::IsKeyPressed(ImGuiKey_GamepadFaceRight, false)) {
         inspecting = false;

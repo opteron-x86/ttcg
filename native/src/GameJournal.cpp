@@ -116,8 +116,7 @@ void GameApp::journal(ImVec2 at, ImVec2 size) {
         text(top, label(p, "name"), 25, palette().accent, detailWidth);
         float ry =
             top.y + font()->CalcTextSizeA(25 * scale, 1e5f, detailWidth, label(p, "name").c_str()).y + 12 * scale;
-        skinned() ? skinRule(ImVec2(top.x, ry), ImVec2(top.x + detailWidth, ry), .7f)
-                  : line(ImVec2(top.x, ry), ImVec2(top.x + detailWidth, ry));
+        skinRule(ImVec2(top.x, ry), ImVec2(top.x + detailWidth, ry), .7f);
         ry += 8 * scale;
         // The same labelled rows the card details use.
         const int wins = number(p, "wins"), losses = number(p, "losses"), draws = number(p, "draws"),

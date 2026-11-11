@@ -49,7 +49,6 @@ bool GameApp::ruleRequestModal() {
                                    ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoScrollbar | popupFlags())) {
         const auto at = ImGui::GetWindowPos();
         surface(at, extent);
-        panelFrame(at, extent);
         float y = at.y + 36 * scale;
         for (const auto& line : speaker) {
             text(ImVec2(at.x + width / 2, y), line, 26, palette().accent, 0, true);
@@ -166,10 +165,7 @@ void GameApp::lobby(ImVec2 at, ImVec2 size) {
     // Right: what is being played for, stated in full before the game begins.
     const ImVec2 terms(at.x + size.x - panel, top);
     const float edge = terms.x - gutter * .5f;
-    if (skinned())
-        skinRule(ImVec2(edge, top), ImVec2(edge, footerY - 14 * scale), .45f);
-    else
-        line(ImVec2(edge, top), ImVec2(edge, footerY - 14 * scale));
+    skinRule(ImVec2(edge, top), ImVec2(edge, footerY - 14 * scale), .45f);
     textCaps(terms + ImVec2(0, 8 * scale), "Rules of this game", 14, palette().muted, 1.6f);
     const int fixed = number(c, "fixedWager", -1),
               affordable = std::max(0, std::min({number(c, "gold"), number(c, "rivalGold"), number(c, "maxWager")}));
@@ -380,13 +376,10 @@ std::pair<ImVec2, ImVec2> GameApp::table(const Json& data, ImVec2 at, ImVec2 siz
     } else {
         d->AddRect(boardAt, boardAt + ImVec2(boardW, boardH), boardColour.edge);
         const ImVec2 a = boardAt - ImVec2(5, 5) * scale, b = boardAt + ImVec2(boardW, boardH) + ImVec2(5, 5) * scale;
-        if (skinned()) {
-            skinRule(a, ImVec2(b.x, a.y));
-            skinRule(ImVec2(a.x, b.y), b);
-            skinRule(a, ImVec2(a.x, b.y), .7f);
-            skinRule(ImVec2(b.x, a.y), b, .7f);
-        } else
-            d->AddRect(a, b, boardColour.edge);
+        skinRule(a, ImVec2(b.x, a.y));
+        skinRule(ImVec2(a.x, b.y), b);
+        skinRule(a, ImVec2(a.x, b.y), .7f);
+        skinRule(ImVec2(b.x, a.y), b, .7f);
     }
     const float handArea = (size.x - boardW) / 2 - 30 * scale;
     const bool stack = demo;
@@ -462,7 +455,7 @@ std::pair<ImVec2, ImVec2> GameApp::table(const Json& data, ImVec2 at, ImVec2 siz
                                           12.f, 22.f);
         const float nameWidth = font()->CalcTextSizeA(nameSize * scale, 1e5f, 0, name.c_str()).x;
         // The skin's band sits behind whoever is to move.
-        if (skinned() && playerTurn == (player == 0) && !animating)
+        if (playerTurn == (player == 0) && !animating)
             skinBand("selector", ImVec2(left, at.y - 4 * scale), ImVec2(handArea, 40 * scale));
         text(ImVec2(player ? left + handArea - nameWidth - 24 * scale : left + 24 * scale, at.y + 3 * scale), name,
              nameSize, firstGlow > 0 ? colour : palette().ink);

@@ -136,7 +136,7 @@ void GameApp::shop(ImVec2 at, ImVec2 size) {
     softShadow(art, ImVec2(dw, dh), 1, 10);
     displayCard(shopSelected, art, ImVec2(dw, dh), false, -1, 0, 0, true);
     float y = art.y + dh + 14 * scale;
-    if (skinned() && !skinBand("band", ImVec2(detail.x, y), ImVec2(right, 40 * scale)))
+    if (!skinBand("band", ImVec2(detail.x, y), ImVec2(right, 40 * scale)))
         skinBand("selector", ImVec2(detail.x, y), ImVec2(right, 40 * scale));
     const float fit = std::min(19.f, 19.f * (right - 24 * scale) / std::max(1.f, capsWidth(card.name, 19, 1)));
     textCaps(ImVec2(detail.x + right / 2, y + (40 - fit * 1.25f) * .5f * scale), card.name, fit, palette().ink, 1,

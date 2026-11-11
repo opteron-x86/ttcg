@@ -65,7 +65,7 @@ class GameApp final : public App {
                  std::string action = "Confirm");
     void confirmation();
     // Without a painted title band the title row sits a little lower, level with the side margins.
-    float titleDrop() const { return skinned() && !skinPiece("title") ? 7 * scale : 0; }
+    float titleDrop() const { return !skinPiece("title") ? 7 * scale : 0; }
     void header(ImVec2 at, ImVec2 size);
     bool chapter(const std::string& id, const std::string& title, ImVec2 at, ImVec2 size, bool active,
                  const std::string& detail = {}, float trailing = 0, int marker = 0);

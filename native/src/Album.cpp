@@ -77,8 +77,7 @@ void App::cardGrid(ImVec2 at, ImVec2 size, bool changed) {
                     if (std::find(collection.deck.begin(), collection.deck.end(), key) != collection.deck.end()) {
                         const float u = w / 180.f, fold = 40 * u;
                         auto* draw = ImGui::GetWindowDrawList();
-                        draw->AddTriangleFilled(p, p + ImVec2(fold, 0), p + ImVec2(0, fold),
-                                                skinned() ? skin().value : palette().accent);
+                        draw->AddTriangleFilled(p, p + ImVec2(fold, 0), p + ImVec2(0, fold), skin().value);
                         const ImVec2 tick[]{p + ImVec2(7, 15) * u, p + ImVec2(12, 20) * u, p + ImVec2(21, 8) * u};
                         draw->AddPolyline(tick, 3, IM_COL32(12, 12, 12, 255), 0, std::max(1.5f, 2.6f * u));
                     }
@@ -92,11 +91,8 @@ void App::cardGrid(ImVec2 at, ImVec2 size, bool changed) {
                     const auto badge = !face.legacy() ? p + ImVec2(w - 9 * unit - extent.x, 9 * unit)
                                                       : p + ImVec2(w - 5 * unit - extent.x, h * .75f - extent.y);
                     auto* draw = ImGui::GetWindowDrawList();
-                    draw->AddRectFilled(badge, badge + extent,
-                                        skinned() ? IM_COL32(12, 12, 12, 200) : IM_COL32(18, 29, 24, 182), unit);
-                    draw->AddRect(
-                        badge, badge + extent,
-                        skinned() ? ((palette().accent & 0xffffff) | 0x46000000) : IM_COL32(187, 166, 116, 110), unit);
+                    draw->AddRectFilled(badge, badge + extent, IM_COL32(12, 12, 12, 200), unit);
+                    draw->AddRect(badge, badge + extent, (palette().accent & 0xffffff) | 0x46000000, unit);
                     draw->AddText(font(), pixels, badge + ImVec2(5, 3) * unit, IM_COL32(239, 228, 204, 255),
                                   label.c_str());
                 }
@@ -147,12 +143,7 @@ void App::decks(ImVec2 at, ImVec2 size) {
     const ImVec2 mid = at + ImVec2(side + gap, 0);
     const float width = size.x - side - right - 2 * gap;
     auto* d = ImGui::GetWindowDrawList();
-    const auto divider = [&](float x) {
-        if (skinned())
-            skinRule(ImVec2(x, at.y), ImVec2(x, at.y + size.y), .45f);
-        else
-            line(ImVec2(x, at.y), ImVec2(x, at.y + size.y));
-    };
+    const auto divider = [&](float x) { skinRule(ImVec2(x, at.y), ImVec2(x, at.y + size.y), .45f); };
     divider(at.x + side + gap * .5f);
     auto active = std::find_if(collection.decks.begin(), collection.decks.end(),
                                [&](const auto& deck) { return deck.id == collection.activeDeck; });
@@ -374,10 +365,7 @@ void App::decks(ImVec2 at, ImVec2 size) {
             if (c.affinityMask & (1u << a)) ++affinities[a];
     }
     const ImVec2 summary(at.x, y + strip + 4 * scale);
-    if (skinned())
-        skinRule(summary, summary + ImVec2(side, 0), .5f);
-    else
-        line(summary, summary + ImVec2(side, 0));
+    skinRule(summary, summary + ImVec2(side, 0), .5f);
     textCaps(summary + ImVec2(0, 14 * scale), "Average ranks", 12.5f, palette().muted, 1.2f);
     {
         const ImVec2 centre = summary + ImVec2(52 * scale, 88 * scale);

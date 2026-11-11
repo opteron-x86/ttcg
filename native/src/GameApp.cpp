@@ -153,30 +153,27 @@ void GameApp::applySettings() {
     matchAppearance.borderWidth = std::clamp(number(c, "controlBorderWidth", 12), 0, 40) / 10.f;
     matchAppearance.borderOpacity = std::clamp(number(c, "controlBorderOpacity", 100), 0, 100) / 100.f;
     matchAppearance.marker = flag(c, "controlMarker");
-    preferredFont = interfaceFonts[std::clamp(
-        number(c, "interfaceFont") ? number(c, "interfaceFont") : ((theme == 1 || theme == 2) ? 3 : 1), 0, 4)];
+    preferredFont = interfaceFonts[std::clamp(number(c, "interfaceFont"), 0, 4)];
     // A skin names its own typeface.
     ImFont* skinFont = skin().font == "lato"    ? lato
                        : skin().font == "serif" ? serif
                        : skin().font == "sans"  ? sans
                                                 : jost;
-    if (skinned() && !number(c, "interfaceFont")) preferredFont = skinFont;
+    if (!number(c, "interfaceFont")) preferredFont = skinFont;
     cardNameFont = nameFonts[std::clamp(number(c, "cardNameFont", 1) ? number(c, "cardNameFont") : 1, 0, 4)];
     cardValueFont = valueFonts[std::clamp(number(c, "cardValueFont", 1) ? number(c, "cardValueFont") : 1, 0, 4)];
-    if (skinned()) {
-        // Unless the player picked fonts or colours, the card face follows the skin.
-        if (!number(c, "cardNameFont")) cardNameFont = skinFont;
-        if (!number(c, "nameCase")) face.lettering = 1;
-        // Light artwork swallows unstroked numerals.
-        if (!flag(c, "rankStroke")) face.stroke = 1;
-        if (!number(c, "cardValueFont")) cardValueFont = skinFont;
-        if (matchAppearance.palette == 0 && skin().player && skin().opponent) {
-            matchAppearance.palette = 4;
-            matchAppearance.playerColour = skin().player;
-            matchAppearance.opponentColour = skin().opponent;
-        }
-        if (number(c, "controlBorderWidth", 12) == 12) matchAppearance.borderWidth = 1.8f;
+    // Unless the player picked fonts or colours, the card face follows the skin.
+    if (!number(c, "cardNameFont")) cardNameFont = skinFont;
+    if (!number(c, "nameCase")) face.lettering = 1;
+    // Light artwork swallows unstroked numerals.
+    if (!flag(c, "rankStroke")) face.stroke = 1;
+    if (!number(c, "cardValueFont")) cardValueFont = skinFont;
+    if (matchAppearance.palette == 0 && skin().player && skin().opponent) {
+        matchAppearance.palette = 4;
+        matchAppearance.playerColour = skin().player;
+        matchAppearance.opponentColour = skin().opponent;
     }
+    if (number(c, "controlBorderWidth", 12) == 12) matchAppearance.borderWidth = 1.8f;
     customBack = label(state, "cardBack", "backs/mosaic.webp");
 }
 void GameApp::send(std::string_view verb, std::string args, bool exclusive) {
@@ -364,7 +361,7 @@ float GameApp::factRows(const CardView& c, ImVec2 at, float width, bool draw, bo
             {"Owned",
              std::to_string(c.owned[selectedFoil ? 1 : 0]) +
                  (other ? std::string(" · ") + std::to_string(other) + (selectedFoil ? " standard" : " foil") : ""),
-             skinned() ? skin().value : palette().accent});
+             skin().value});
     }
     if (c.unique) rows.push_back({"Unique", "One per deck", palette().muted});
     if (inspectionModifier && inspecting)
@@ -405,9 +402,7 @@ float GameApp::metadata(const CardView& c, ImVec2 at, float width, bool draw) {
     float y = at.y;
     if (draw) text(ImVec2(at.x, y), c.name, 28, palette().ink, width);
     y += font()->CalcTextSizeA(28 * scale, 1e6f, width, c.name.c_str()).y + 12 * scale;
-    if (draw)
-        skinned() ? skinRule(ImVec2(at.x, y), ImVec2(at.x + width, y), .7f)
-                  : line(ImVec2(at.x, y), ImVec2(at.x + width, y));
+    if (draw) skinRule(ImVec2(at.x, y), ImVec2(at.x + width, y), .7f);
     y += 8 * scale;
     y += factRows(c, ImVec2(at.x, y), width, draw);
     return y - at.y;
@@ -628,58 +623,40 @@ GameApp::FooterPrompts GameApp::footerPrompts() const {
     return {"Close", "Select", false};
 }
 void GameApp::header(ImVec2 at, ImVec2 size) {
-    if (skinned()) {
-        // A skin titles the window with its own band, or a hairline; closing lives in the prompt bar.
-        const float k = skinUnit(), bandHeight = std::min(108 * k, 50 * scale), drop = titleDrop();
-        if (!skinBand("title", ImVec2(frameAt.x, frameAt.y + 2 * k), ImVec2(frameSize.x, bandHeight))) {
-            const float y = frameAt.y + bandHeight + 4 * scale + drop;
-            skinRule(ImVec2(at.x, y), ImVec2(at.x + size.x, y), .5f);
-            if (skin().ornament) {
-                // Skyrim's own dividers carry a small diamond at their middle.
-                auto* d = ImGui::GetWindowDrawList();
-                const ImVec2 centre(at.x + size.x * .5f, y + std::max(1.f, std::round(2.1f * k)) * .5f);
-                const auto diamond = [&](float r, ImU32 colour, float line) {
-                    const ImVec2 points[]{centre + ImVec2(0, -r), centre + ImVec2(r, 0), centre + ImVec2(0, r),
-                                          centre + ImVec2(-r, 0)};
-                    if (line > 0)
-                        d->AddPolyline(points, 4, colour, ImDrawFlags_Closed, line);
-                    else
-                        d->AddConvexPolyFilled(points, 4, colour);
-                };
-                diamond(7 * scale, (palette().background & 0xffffff) | 0xff000000, 0);
-                diamond(6 * scale, (palette().accent & 0xffffff) | 0xb0000000, std::max(1.f, 1.2f * scale));
-                diamond(2.2f * scale, (palette().accent & 0xffffff) | 0xd0000000, 0);
-            }
+    // A skin titles the window with its own band, or a hairline; closing lives in the prompt bar.
+    const float k = skinUnit(), bandHeight = std::min(108 * k, 50 * scale), drop = titleDrop();
+    if (!skinBand("title", ImVec2(frameAt.x, frameAt.y + 2 * k), ImVec2(frameSize.x, bandHeight))) {
+        const float y = frameAt.y + bandHeight + 4 * scale + drop;
+        skinRule(ImVec2(at.x, y), ImVec2(at.x + size.x, y), .5f);
+        if (skin().ornament) {
+            // Skyrim's own dividers carry a small diamond at their middle.
+            auto* d = ImGui::GetWindowDrawList();
+            const ImVec2 centre(at.x + size.x * .5f, y + std::max(1.f, std::round(2.1f * k)) * .5f);
+            const auto diamond = [&](float r, ImU32 colour, float line) {
+                const ImVec2 points[]{centre + ImVec2(0, -r), centre + ImVec2(r, 0), centre + ImVec2(0, r),
+                                      centre + ImVec2(-r, 0)};
+                if (line > 0)
+                    d->AddPolyline(points, 4, colour, ImDrawFlags_Closed, line);
+                else
+                    d->AddConvexPolyFilled(points, 4, colour);
+            };
+            diamond(7 * scale, (palette().background & 0xffffff) | 0xff000000, 0);
+            diamond(6 * scale, (palette().accent & 0xffffff) | 0xb0000000, std::max(1.f, 1.2f * scale));
+            diamond(2.2f * scale, (palette().accent & 0xffffff) | 0xd0000000, 0);
         }
-        if (const auto sigil = skinArt("sigil"); sigil.id) {
-            const float w = 300 * scale, h = w * sigil.height / sigil.width;
-            ImGui::GetWindowDrawList()->AddImage(sigil.id, ImVec2(frameAt.x + frameSize.x - w - 20 * scale, frameAt.y),
-                                                 ImVec2(frameAt.x + frameSize.x - 20 * scale, frameAt.y + h),
-                                                 ImVec2(0, 0), ImVec2(1, 1),
-                                                 IM_COL32(255, 255, 255, int(255 * skinPiece("sigil")->opacity)));
-        }
-        textCaps(ImVec2(at.x, frameAt.y + 2 * k + (bandHeight - 26 * scale) * .5f + drop), "Tessera", 26, palette().ink,
-                 3);
-        if (flag(state, "musicAvailable") && (flag(state, "matchContext") || label(state, "screen") == "lobby"))
-            if (button("music", flag(state, "musicEnabled") ? "♪" : "♪ ×", at + ImVec2(size.x - 45 * scale, -3 * scale),
-                       ImVec2(45, 36) * scale))
-                send("music", flag(state, "musicEnabled") ? "0" : "1", false);
-        return;
     }
-    text(at, "T E S S E R A", 22, palette().accent);
+    if (const auto sigil = skinArt("sigil"); sigil.id) {
+        const float w = 300 * scale, h = w * sigil.height / sigil.width;
+        ImGui::GetWindowDrawList()->AddImage(sigil.id, ImVec2(frameAt.x + frameSize.x - w - 20 * scale, frameAt.y),
+                                             ImVec2(frameAt.x + frameSize.x - 20 * scale, frameAt.y + h), ImVec2(0, 0),
+                                             ImVec2(1, 1),
+                                             IM_COL32(255, 255, 255, int(255 * skinPiece("sigil")->opacity)));
+    }
+    textCaps(ImVec2(at.x, frameAt.y + 2 * k + (bandHeight - 26 * scale) * .5f + drop), "Tessera", 26, palette().ink, 3);
     if (flag(state, "musicAvailable") && (flag(state, "matchContext") || label(state, "screen") == "lobby"))
-        if (button("music", flag(state, "musicEnabled") ? "♪" : "♪ ×", at + ImVec2(size.x - 265 * scale, -3 * scale),
+        if (button("music", flag(state, "musicEnabled") ? "♪" : "♪ ×", at + ImVec2(size.x - 45 * scale, -3 * scale),
                    ImVec2(45, 36) * scale))
             send("music", flag(state, "musicEnabled") ? "0" : "1", false);
-    text(at + ImVec2(size.x - 206 * scale, 6 * scale), "Size", 17, palette().muted);
-    ImGui::SetCursorScreenPos(at + ImVec2(size.x - 160 * scale, -3 * scale));
-    ImGui::SetNextItemWidth(105 * scale);
-    const int percent = number(member(state, "settings"), "windowSize", 90);
-    int choice = std::clamp((percent - 60) / 5, 0, 8);
-    if (select("##size", choice, {"60%", "65%", "70%", "75%", "80%", "85%", "90%", "95%", "100%"}, 105 * scale))
-        send("settings", "window-size " + std::to_string(60 + choice * 5));
-    if (closeButton("close", at + ImVec2(size.x - 34 * scale, -3 * scale))) closeView();
-    line(at + ImVec2(0, 45 * scale), at + ImVec2(size.x, 45 * scale));
 }
 void GameApp::prepareFrame() {
     // ImGui dismisses non-modal popups in NewFrame. Remember that B/Escape
@@ -699,7 +676,7 @@ void GameApp::draw() {
     const auto display = ImGui::GetIO().DisplaySize;
     const int percent = number(member(state, "settings"), "windowSize", 90);
     // A skin's painted frame is drawn around the window, so the window gives up that much room.
-    const auto* painted = skinned() ? skinPiece("window") : nullptr;
+    const auto* painted = skinPiece("window");
     const float around = painted ? painted->pad * painted->scale * skinUnit() : 0;
     const ImVec2 room = display - ImVec2(around, around) * 2;
     scale = std::min(room.x / 1400, room.y / 920) * (percent / 100.f);
@@ -718,10 +695,8 @@ void GameApp::draw() {
         tickPresentation();
         return;
     }
-    if (skinned()) {
-        skinBackdrop();
-        trackInputDevice();
-    }
+    skinBackdrop();
+    trackInputDevice();
     ImGui::SetNextWindowPos(frameAt);
     ImGui::SetNextWindowSize(frameSize);
     ImGui::Begin("Tessera", nullptr,
@@ -731,10 +706,9 @@ void GameApp::draw() {
     auto* d = ImGui::GetWindowDrawList();
     // The skin's torn panel edge extends past the frame.
     const float reach = std::max(40.f, painted ? (painted->pad + painted->inset) * painted->scale : 0.f);
-    const ImVec2 bleed = skinned() ? ImVec2(reach, reach) * skinUnit() : ImVec2(0, 0);
+    const ImVec2 bleed = ImVec2(reach, reach) * skinUnit();
     d->PushClipRect(frameAt - bleed, frameAt + frameSize + bleed, false);
     surface(frameAt, frameSize, true);
-    panelFrame(frameAt, frameSize, true);
     d->PopClipRect();
     const auto at = frameAt + ImVec2(28, 21) * scale;
     const float width = frameSize.x - 56 * scale;
@@ -748,19 +722,15 @@ void GameApp::draw() {
     ImVec2 body = at + ImVec2(0, 70 * scale), size(width, frameSize.y - 116 * scale);
     const auto page = label(state, "screen"), phase = label(state, "phase");
     // The skin keeps a strip along the bottom for key prompts.
-    const float promptBar = skinned() ? 30 * scale : 0;
+    const float promptBar = 30 * scale;
     size.y -= promptBar;
     if (page == "album" && phase == "ready") {
         // The tabs share the title's row, so every page keeps the height a second bar would take.
         static const char* names[]{"Cards", "Decks", "Journal", "Rules", "Tournaments", "Settings"};
         const int order[]{0, 1, 2, 4, 3, 5};
         const float k = skinUnit(), band = std::min(108 * k, 50 * scale);
-        const float tabHeight = 40 * scale,
-                    tabY = skinned() ? frameAt.y + 2 * k + (band - tabHeight) * .5f + titleDrop() : at.y - 6 * scale;
-        float x =
-            at.x +
-            (skinned() ? capsWidth("Tessera", 26, 3) : font()->CalcTextSizeA(22 * scale, 1e5f, 0, "T E S S E R A").x) +
-            54 * scale;
+        const float tabHeight = 40 * scale, tabY = frameAt.y + 2 * k + (band - tabHeight) * .5f + titleDrop();
+        float x = at.x + capsWidth("Tessera", 26, 3) + 54 * scale;
         const bool free = !popupBeforeFrame && !ImGui::GetIO().WantTextInput && !inspecting &&
                           !ImGui::IsPopupOpen(nullptr, ImGuiPopupFlags_AnyPopupId | ImGuiPopupFlags_AnyPopupLevel);
         // Bumpers, or Q and E, step through the tabs.
@@ -776,7 +746,7 @@ void GameApp::draw() {
             tab = order[(position + step + 6) % 6];
             selectedPack = -1;
         }
-        if (skinned()) x += keyPrompt("Q", "360_LB", "", ImVec2(x, tabY + 5 * scale)) + 2 * scale;
+        x += keyPrompt("Q", "360_LB", "", ImVec2(x, tabY + 5 * scale)) + 2 * scale;
         for (int i : order) {
             std::string name = names[i];
             if (palette().sans)
@@ -789,9 +759,9 @@ void GameApp::draw() {
             }
             x += w + 24 * scale;
         }
-        if (skinned()) keyPrompt("E", "360_RB", "", ImVec2(x - 6 * scale, tabY + 5 * scale));
+        keyPrompt("E", "360_RB", "", ImVec2(x - 6 * scale, tabY + 5 * scale));
         if (flag(state, "matchContext") &&
-            button("return", "Return to game", ImVec2(at.x + width - (skinned() ? 215 : 440) * scale, tabY + scale),
+            button("return", "Return to game", ImVec2(at.x + width - 215 * scale, tabY + scale),
                    ImVec2(160, 38) * scale))
             send("browse", "lobby");
         const auto& interrupted = member(state, "interruptedMatch");
@@ -842,7 +812,7 @@ void GameApp::draw() {
         else if (!arrayMember(state, "expansionErrors").empty())
             notice = "An expansion could not be loaded. See TTCG.log.";
     }
-    if (skinned()) {
+    {
         // Modal dialogs own their controls; don't advertise actions on the dimmed screen behind them.
         const float y = frameAt.y + frameSize.y - 50 * scale;
         skinRule(ImVec2(at.x, y - 9 * scale), ImVec2(at.x + width, y - 9 * scale), .4f);
@@ -859,8 +829,7 @@ void GameApp::draw() {
         }
         if (!notice.empty())
             text(ImVec2(x + 10 * scale, y + 6 * scale), notice, 16, skin().notice, at.x + width - x - 10 * scale);
-    } else if (!notice.empty())
-        text(frameAt + ImVec2(28, frameSize.y / scale - 31) * scale, notice, 16, palette().accent, width);
+    }
     ImGui::End();
     deckModal();
     packModal();
