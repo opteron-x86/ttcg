@@ -106,6 +106,8 @@ void App::skinPanel(ImVec2 at, ImVec2 size, float density, ImU32 tint, const cha
     // The frame line sits `inset` pixels inside the texture edge and lands on
     // the requested rectangle.
     const float inset = piece->inset, margin = piece->margin;
+    // A piece may be translucent, like Edge's inventory ground over the blurred scene.
+    tint = (tint & 0xffffff) | (ImU32(((tint >> 24) & 255) * piece->opacity) << 24);
     const float k = std::min({skinUnit() * density, size.x / (2.4f * margin), size.y / (2.4f * margin)});
     nineSlice(art, at - ImVec2(inset, inset) * k, size + ImVec2(inset, inset) * (2 * k), margin, k, piece->tile, tint);
 }
