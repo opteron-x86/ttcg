@@ -35,6 +35,29 @@ def ui_files(root):
     return files
 
 
+NOTICES = 'licenses/Tessera/THIRD-PARTY-NOTICES.txt'
+
+
+def write_notices(root):
+    """One file holding every licence the package must carry; GitHub keeps them separately in docs/licenses."""
+    notices = root / 'docs/licenses'
+    parts = [('Tessera Trading Card Game', root / 'LICENSE')]
+    parts += [(path.relative_to(notices).as_posix(), path) for path in sorted(notices.rglob('*'))
+              if path.is_file() and path.suffix in ('.txt', '.md') and not path.name.startswith('.')]
+    if len(parts) < 2:
+        raise ValueError('Release requires its third-party notices')
+    rule = '=' * 78
+    text = ('Licences and notices for the software, fonts and artwork in this package.\n'
+            'Source and the individual files: https://github.com/opteron-x86/ttcg (docs/licenses).\n')
+    for title, path in parts:
+        text += f'\n{rule}\n{title}\n{rule}\n\n' + path.read_text(encoding='utf-8').strip() + '\n'
+    out = root / 'build/notices/THIRD-PARTY-NOTICES.txt'
+    out.parent.mkdir(parents=True, exist_ok=True)
+    if not out.is_file() or out.read_text(encoding='utf-8') != text:
+        out.write_text(text, encoding='utf-8', newline='\n')
+    return out
+
+
 def collect_release(root=ROOT, *, artwork=True, dll=None):
     root = root.resolve()
     cards = validate_runtime_inputs(root, artwork=artwork)
@@ -64,11 +87,8 @@ def collect_release(root=ROOT, *, artwork=True, dll=None):
     # Default music track.
     music = 'Music/TTCG/RPG Medieval Animated Music.xwm'
     main[music] = root / music
-    notices = root / 'docs/licenses'
-    for path in notices.rglob('*'):
-        if path.is_file() and path.suffix in ('.txt', '.md') and not path.name.startswith('.'):
-            main['licenses/Tessera/' + path.relative_to(notices).as_posix()] = path
-    if not voices or not any(n.startswith('Music/') for n in main) or not any(n.startswith('licenses/') for n in main):
+    main[NOTICES] = write_notices(root)
+    if not voices or not any(n.startswith('Music/') for n in main):
         raise ValueError('Release requires its voice, music and third-party notices')
     # Nexus card-art download.
     art = {}

@@ -73,7 +73,6 @@ def main():
         if art:
             raise ValueError('Card art is distributed through Nexus')
         runtime['TesseraUI/INSTALL.txt'] = ROOT / 'docs/INSTALL.txt'
-        runtime['licenses/Tessera/LICENSE'] = ROOT / 'LICENSE'
         public_source = source_files()
         file_list = Path(temporary) / 'SOURCE-FILES.json'
         file_list.write_text(json.dumps(sorted(public_source), indent=2) + '\n', encoding='utf-8')

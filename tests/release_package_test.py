@@ -52,7 +52,12 @@ class ReleaseTests(unittest.TestCase):
             self.assertNotIn(Path(name).parts[0], {'docs', 'data', 'tests', 'tools', 'build'})
             self.assertNotIn(Path(name).suffix, {'.psc', '.py', '.map'})
             self.assertNotIn('prompt', name.lower())
-        self.assertTrue(any(name.startswith('licenses/') for name in main))
+        # One combined notices file stands in for the licence folder; it carries every licence text.
+        self.assertEqual([name for name in main if name.startswith('licenses/')],
+                         ['licenses/Tessera/THIRD-PARTY-NOTICES.txt'])
+        notices = main['licenses/Tessera/THIRD-PARTY-NOTICES.txt'].read_text(encoding='utf-8')
+        for name in ('GNU GENERAL PUBLIC LICENSE', 'SIL OPEN FONT LICENSE', 'native/Jost-OFL.txt', 'Skin-credits.txt'):
+            self.assertIn(name, notices)
         voices = json.loads((ROOT / 'data/voice-manifest.json').read_text())
         self.assertEqual({v['destination'] for v in voices}, {name for name in main if name.startswith('Sound/Voice/')})
         cards = json.loads((ROOT / 'data/cards.json').read_text())['cards']
