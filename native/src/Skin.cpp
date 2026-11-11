@@ -73,6 +73,7 @@ void App::loadSkins() {
             s.ruleSelector = g.value("selector", std::string()) == "rule";
             const auto corner = g.value("corner", std::string());
             s.corner = corner == "key" ? 1 : corner == "dot" ? 2 : 0;
+            s.ornament = g.value("rule", std::string()) == "diamond";
         }
         constexpr std::string_view boards[]{"", "plain", "slate", "felt", "parchment", "leather", "walnut", "slab"};
         for (int board = 1; board < int(std::size(boards)); ++board)
@@ -89,6 +90,8 @@ void App::loadSkins() {
                 art.inset = std::clamp(entry.value("inset", 0.f), 0.f, 512.f);
                 art.cap = std::clamp(entry.value("cap", .1f), 0.f, .5f);
                 art.opacity = std::clamp(entry.value("opacity", 1.f), 0.f, 1.f);
+                art.scale = std::clamp(entry.value("scale", 1.f), .25f, 8.f);
+                art.pad = std::clamp(entry.value("pad", 0.f), 0.f, 256.f);
                 art.tile = entry.value("tile", false);
                 art.passes = std::clamp(entry.value("passes", 1), 1, 4);
                 s.art.emplace(name, std::move(art));
@@ -139,10 +142,10 @@ void App::skinPanel(ImVec2 at, ImVec2 size, float density, ImU32 tint, const cha
     }
     // The frame line sits `inset` pixels inside the texture edge and lands on
     // the requested rectangle.
-    const float inset = piece->inset, margin = piece->margin;
+    const float inset = piece->inset + piece->pad, margin = piece->margin;
     // A piece may be translucent, like Edge's inventory ground over the blurred scene.
     tint = (tint & 0xffffff) | (ImU32(((tint >> 24) & 255) * piece->opacity) << 24);
-    const float k = std::min({skinUnit() * density, size.x / (2.4f * margin), size.y / (2.4f * margin)});
+    const float k = std::min({skinUnit() * density * piece->scale, size.x / (2.4f * margin), size.y / (2.4f * margin)});
     nineSlice(art, at - ImVec2(inset, inset) * k, size + ImVec2(inset, inset) * (2 * k), margin, k, piece->tile, tint);
 }
 void App::nineSlice(Texture art, ImVec2 a, ImVec2 size, float margin, float k, bool tile, ImU32 tint) {
@@ -369,13 +372,15 @@ float App::keyPrompt(const char* key, const char* pad, const char* label, ImVec2
         hover = ImGui::IsItemHovered();
     }
     if (art.id)
-        d->AddImage(art.id, at, at + ImVec2(keyWidth, height));
+        // Icon packs are drawn light for dark interfaces; on paper they take the ink's colour.
+        d->AddImage(art.id, at, at + ImVec2(keyWidth, height), ImVec2(0, 0), ImVec2(1, 1),
+                    lightGround() ? palette().ink : IM_COL32_WHITE);
     else {
         const ImVec2 a = at + ImVec2(0, 2 * scale), b = at + ImVec2(keyWidth, height - 2 * scale);
-        d->AddRectFilled(a, b, IM_COL32(0, 0, 0, 120), 3 * scale);
+        d->AddRectFilled(a, b, lightGround() ? alpha(palette().ink, .82f) : IM_COL32(0, 0, 0, 120), 3 * scale);
         d->AddRect(a, b, alpha(palette().accent, .55f), 3 * scale);
-        d->AddText(font(), 15 * scale, at + ImVec2((keyWidth - captionWidth) * .5f, 7 * scale), palette().ink,
-                   caption.c_str());
+        d->AddText(font(), 15 * scale, at + ImVec2((keyWidth - captionWidth) * .5f, 7 * scale),
+                   lightGround() ? IM_COL32(244, 240, 232, 255) : palette().ink, caption.c_str());
     }
     d->AddText(font(), 18 * scale, at + ImVec2(keyWidth + 9 * scale, 5 * scale),
                hover ? palette().ink : alpha(palette().ink, .78f), label);

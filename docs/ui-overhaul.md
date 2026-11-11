@@ -161,9 +161,9 @@ Typography
 ### Phase 5: in-game integration
 
 - Scene blur: implemented (`UIBlurManager` Increment/Decrement in `Menu.cpp`, unit-stubbed in `tests/native_input_test.py`) and player-confirmed in Skyrim. Unexpected-close cleanup and paused/unpaused coverage remain on the checklist.
-- Neutral **Skyrim** skin as the shipped default (vanilla/SkyUI idiom: dark translucent ground, hairlines, Jost, caps labels, prompt bar). Changing the default theme index needs care: `Theme=0` in saved INIs currently means Tessera. Decide: keep index 0 as the old theme and change only the default for new installs (INI default), or migrate. Existing players must not have their look silently changed.
+- Done: the neutral **Skyrim** skin is the shipped default and the five classic themes are retired; see the skins and retirement checkpoint below.
 - First-run detection of the installed UI mod (Oathvein, Vel'dun, Norden, Edge, Dear Diary, Untarnished, SkyUI) to pick a skin; only for new installs, and overridable.
-- Fold Charcoal, Oxblood and Umber into colour options of the neutral skin without breaking saved theme indices (indices are append-only; hide them from the picker but still honour them).
+- Dropped: Charcoal, Oxblood and Umber were retired with the other classic themes instead of becoming colour options.
 - Packaging: skins are globbed by `tools/release_files.py`, boards are listed. Keep `tests/release_package_test.py` and `tests/github_package_test.py` current. The Main zip size is dominated by art; the new assets add ~1.5 MB.
 - Update `docs/reference-guide.md`, `README.md`, `CHANGELOG.md` and `docs/TESTING.md` (add an in-game checklist for the new UI) when the work ships. `docs/TESTING.md` should record Skyrim 1.6.1170 and 1.7.104 coverage.
 
@@ -238,6 +238,15 @@ The player found the drawn bezel and value plates lacking in quality, compared f
 - The tier gem has four lit facets. `valueAnchor` gained positions for both faces.
 - Mockup renders that led here were made with a throwaway script; the bake script is its descendant.
 - Not yet seen in game. The player has not chosen between the two; when they do, the other can stay as an option or go.
+
+### Skins and retirement checkpoint (2026-11-11)
+
+- **Skyrim** (`skyrim`, index 13) is the default: black translucent ground, hairline border, Jost, underline selector and a diamond on the title rule (`"ground": {"rule": "diamond"}`). It has no textures.
+- **Dear Diary** (`diarypaper`, 14) and **Wood and Paper** (`woodpaper`, 15) are the first light skins: dark ink on a paper ground. The existing `deardiary` skin is now named Dear Diary Dark. All three mods are by uranreactor.
+- Their panels are 720p bitmaps inside the mods' SWF files, not vector shapes. `tools/build-skin.py` copies a bitmap when a recipe's shape is `"bitmap"`, and `{"mirror_top": N}` drops the tab that overhangs the map panel used for the window. In `skin.json`, `"scale": 3` says the art is authored at 720p and `"pad"` is the thickness of a painted frame: `GameApp::draw` shrinks the layout by that much and the art is drawn around it, so nothing lands on the frame at any window size.
+- Light grounds: `App::lightGround()` tells fixed light-on-dark details to swap (keycaps, tinted key icons), and `App::rarityInk()` gives rarity text an inked colour on paper. Anything new that hardcodes a light text colour on the window ground should go through one of these.
+- **Retirement**: Tessera, Charcoal, Oxblood, Parchment and Umber keep their indices in `include/InterfaceTheme.h` with `retired = true`. `interfaceThemeIndex` and `InterfaceSettings::Field::valid` send a retired or unknown index to `defaultInterfaceTheme`, so a saved `Theme=0..4` opens Skyrim, and the settings menu lists only current skins with the default first. The player asked for this; it does change the look for anyone who had a classic theme saved.
+- The classic drawing code (`FrameStyle::Classic`, the `skinned() ? … : …` branches, the first five rows of `themes[]` and of the `Surface.h` gradients) is now unreachable and still in the tree.
 
 Hand over the absolute path of `dist/<name>/Tessera-<ver>-dev.<hash>-Main.zip`. Compare with the previous Main zip's file hashes to confirm only intended files changed. Skyrim UI mods' assets and the player's mod folder are at `/mnt/mods/Amaranth/mods` (profile `KINMUNE CS`); the player runs Oathvein UI, Dear Diary Dark Mode, Natural Typefaces and Quickslot, so Oathvein is the look to be judged against in game.
 

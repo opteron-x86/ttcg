@@ -19,6 +19,8 @@ struct Palette {
 struct SkinArt {
     std::string path;
     float margin = 0, inset = 0, cap = .1f, opacity = 1;
+    float scale = 1; // Screen pixels per texture pixel at 2160p; 3 for art authored at 720p.
+    float pad = 0;   // Thickness of a painted frame, kept clear of the window's contents.
     bool tile = false;
     int passes = 1;
 };
@@ -32,7 +34,8 @@ struct Skin {
     // A skin without panel art draws flat grounds, as the minimalist UI mods do.
     ImU32 ground = 0, dialog = 0;
     bool border = true, ruleSelector = false;
-    int corner = 0; // 0 none, 1 key, 2 dot
+    int corner = 0;        // 0 none, 1 key, 2 dot
+    bool ornament = false; // A diamond on the title rule.
     std::unordered_map<std::string, SkinArt> art;
 };
 struct Face {
@@ -107,6 +110,19 @@ protected:
     void popupSurface();
     // Textured skins. Source art is authored at three times Skyrim's 720p stage.
     bool skinned() const { return palette().frame == FrameStyle::Skinned; }
+    // A rarity's colour for text on the interface ground: bright on dark skins, inked on paper.
+    ImU32 rarityInk(std::string_view rarity) const {
+        const bool paper = lightGround();
+        return rarity == "Rare"        ? (paper ? IM_COL32(22, 98, 128, 255) : IM_COL32(86, 223, 255, 255))
+               : rarity == "Epic"      ? (paper ? IM_COL32(104, 44, 150, 255) : IM_COL32(214, 132, 250, 255))
+               : rarity == "Legendary" ? (paper ? IM_COL32(128, 86, 8, 255) : IM_COL32(240, 196, 101, 255))
+                                       : palette().ink;
+    }
+    // Paper skins put dark ink on a light ground; fixed light-on-dark details check this.
+    bool lightGround() const {
+        const ImU32 c = palette().background;
+        return (c & 255) * 299 + ((c >> 8) & 255) * 587 + ((c >> 16) & 255) * 114 > 128000;
+    }
     const Skin& skin() const { return skins[theme]; }
     void loadSkins();
     float skinUnit() const;

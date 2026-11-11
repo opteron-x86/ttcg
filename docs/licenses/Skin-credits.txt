@@ -9,9 +9,17 @@ https://www.nexusmods.com/skyrimspecialedition/mods/166086
 Edge skin: artwork from Edge UI by EugeneUI, used with permission.
 https://www.nexusmods.com/skyrimspecialedition/mods/130983
 
-Dear Diary skin: artwork from Dear Diary Dark Mode by uranreactor, used with
-permission.
+Dear Diary Dark skin: artwork from Dear Diary Dark Mode by uranreactor, used
+with permission.
 https://www.nexusmods.com/skyrimspecialedition/mods/60837
+
+Dear Diary and Wood and Paper skins: artwork from Dear Diary and from Wood and
+Paper - A Dear Diary Skin, both by uranreactor.
+https://www.nexusmods.com/skyrimspecialedition/mods/23010
+https://www.nexusmods.com/skyrimspecialedition/mods/44174
+
+Skyrim skin: a palette and layout after Skyrim's own interface; it has no
+textures.
 
 Untarnished skin: a palette and layout after Untarnished UI by Vorganger, used
 with permission; it has no textures.
@@ -24,7 +32,7 @@ https://www.nexusmods.com/skyrimspecialedition/mods/49881
 https://www.nexusmods.com/skyrimspecialedition/mods/118815
 
 The textures in TesseraUI/skins are rendered from vector shapes in those mods'
-menu files by tools/build-skin.py; tools/skin/recipes.json lists the source
+menu files, or copied from the bitmaps in them, by tools/build-skin.py; tools/skin/recipes.json lists the source
 file and shape for each texture. They are not covered by Tessera's GPL-3.0
 licence. Complete upstream menus, SWF files and plugins are not included.
 

@@ -52,21 +52,26 @@ int main() {
            stored == "Appearance/CardNameFont=2");
     assert(settings.set("card-value-font", 4, write) && settings.cardValueFont == 4 &&
            stored == "Appearance/CardValueFont=4");
-    assert(defaults.theme == 0 && defaults.boardSurface == 0 && defaults.boardTexture == 10);
-    assert(settings.set("theme", 2, write) && settings.theme == 2 && stored == "Appearance/Theme=2");
+    assert(defaults.theme == unsigned(ttcg::defaultInterfaceTheme) && defaults.boardSurface == 0 &&
+           defaults.boardTexture == 10);
+    assert(settings.set("theme", 6, write) && settings.theme == 6 && stored == "Appearance/Theme=6");
     assert(settings.set("board-surface", 6, write) && settings.boardSurface == 6 &&
            stored == "Appearance/BoardSurface=6");
     assert(settings.set("board-texture", 37, write) && settings.boardTexture == 37 &&
            stored == "Appearance/BoardTexture=37");
-    assert(!settings.set("theme", 1, failed) && settings.theme == 2);
+    assert(!settings.set("theme", 7, failed) && settings.theme == 6);
     for (unsigned theme = 0; theme < ttcg::interfaceThemes.size(); ++theme) {
         auto roundTrip = settings;
-        assert(roundTrip.set("theme", theme, write) && roundTrip.theme == theme);
+        const bool retired = ttcg::interfaceThemes[theme].retired;
+        // A retired theme cannot be chosen, and one saved before its retirement loads as the default.
+        assert(roundTrip.set("theme", theme, write) == !retired);
         roundTrip.load([&](const char*, const char* key, int fallback) {
             return std::string_view(key) == "Theme" ? int(theme) : fallback;
         });
-        assert(roundTrip.theme == theme);
+        assert(roundTrip.theme == (retired ? unsigned(ttcg::defaultInterfaceTheme) : theme));
     }
+    for (int theme = 0; theme < 5; ++theme) assert(ttcg::interfaceThemes[theme].retired);
+    assert(!ttcg::interfaceThemes[ttcg::defaultInterfaceTheme].retired);
     // Existing theme IDs remain stable across upgrades.
     assert(ttcg::interfaceThemes[2].id == "oxblood" && ttcg::interfaceThemes[4].id == "umber");
     assert(ttcg::interfaceThemes[5].id == "oathvein" && ttcg::interfaceThemes[6].id == "veldun" &&
@@ -76,7 +81,7 @@ int main() {
     assert(settings.rankShadowOpacity == 100 && !settings.rankStroke && settings.rankStrokeWeight == 10);
     assert(settings.nameplateStyle == 2 && settings.nameCase == 2); // Reset only affects values.
     assert(settings.interfaceFont == 3 && settings.cardNameFont == 2 && settings.cardValueFont == 4);
-    assert(settings.theme == 2 && settings.boardSurface == 6 && settings.boardTexture == 37);
+    assert(settings.theme == 6 && settings.boardSurface == 6 && settings.boardTexture == 37);
     assert(!settings.resetRankFinish(failed));
     assert(settings.set("match-art-treatment", 3, write) && settings.opponentTreatment == 3);
     assert(settings.set("match-art-scope", 1, write) && settings.opponentScope == 1);
@@ -89,7 +94,7 @@ int main() {
     assert(settings.resetMatchAppearance(write));
     for (const auto& f : ttcg::InterfaceSettings::fields)
         if (f.command.starts_with("match-")) assert(settings.get(f) == f.defaultValue);
-    assert(settings.theme == 2 && settings.boardTexture == 37 && settings.nameplateStyle == 2);
+    assert(settings.theme == 6 && settings.boardTexture == 37 && settings.nameplateStyle == 2);
     settings.load([](const char*, const char* key, int fallback) {
         return std::string_view(key) == "PlayerColour" ? 0x102030 : fallback;
     });

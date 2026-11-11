@@ -1,0 +1,30 @@
+{
+  "schema": 1,
+  "id": "skyrim",
+  "name": "Skyrim",
+  "credit": "After Skyrim's own interface",
+  "font": "jost",
+  "palette": {
+    "background": "#000000",
+    "centre": "#151515",
+    "text": "#ffffff",
+    "muted": "#a8a8a8",
+    "accent": "#ffffff",
+    "line": "#ffffff59",
+    "selection": "#4a4a4a",
+    "value": "#ffffff",
+    "notice": "#d6d6d6"
+  },
+  "ground": {
+    "fill": "#000000a6",
+    "dialog": "#000000e0",
+    "border": true,
+    "selector": "rule",
+    "rule": "diamond"
+  },
+  "board": "slab",
+  "control": {
+    "player": "#e8e8e8",
+    "opponent": "#c8483a"
+  }
+}

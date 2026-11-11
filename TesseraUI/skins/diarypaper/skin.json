@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "id": "diarypaper",
+  "name": "Dear Diary",
+  "credit": "Dear Diary by uranreactor",
+  "font": "serif",
+  "palette": {
+    "background": "#b4a698",
+    "centre": "#c4b8ab",
+    "text": "#231a14",
+    "muted": "#463a31",
+    "accent": "#6e2a1c",
+    "line": "#3a261c59",
+    "selection": "#8f7d6c",
+    "value": "#6e2a1c",
+    "notice": "#8a2a1c"
+  },
+  "board": "leather",
+  "control": {
+    "player": "#2f4d6b",
+    "opponent": "#8a2a1c"
+  },
+  "art": {
+    "window": {
+      "file": "window.png",
+      "margin": 72,
+      "inset": 41,
+      "scale": 3,
+      "tile": true,
+      "pad": 12
+    },
+    "panel": {
+      "file": "panel.png",
+      "margin": 64,
+      "inset": 40,
+      "scale": 3
+    },
+    "detail": {
+      "file": "detail.png",
+      "margin": 48,
+      "inset": 20,
+      "scale": 3
+    }
+  }
+}

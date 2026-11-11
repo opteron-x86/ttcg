@@ -124,7 +124,7 @@ void App::packModal() {
                                 (tone(c.rarity) & 0xffffff) | (ImU32(255 * .5f * flare * flare) << 24));
         if (shown)
             text(p + ImVec2(w * .5f, h + 17 * scale), c.rarity + (foil ? " · Foil" : ""), 18,
-                 rank > 0 ? tone(c.rarity) : palette().muted, 0, true);
+                 rank > 0 ? rarityInk(c.rarity) : palette().muted, 0, true);
         fadeVertices(start, fade);
         ImGui::PopID();
     }

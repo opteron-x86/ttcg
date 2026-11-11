@@ -419,6 +419,8 @@ int main(int argc, char** argv) {
             // Theme selection must reach the persisted settings command, not only
             // change the desktop preview. Each new choice is reached through the menu.
             for (int theme = 5; theme < ttcg::interfaceThemeCount; ++theme) {
+                // The default is already chosen, so the menu has nothing to submit for it.
+                if (theme == ttcg::defaultInterfaceTheme) continue;
                 load("album", "appearance");
                 click("##theme");
                 click(std::string(ttcg::interfaceThemes[theme].name));
@@ -450,23 +452,24 @@ int main(int argc, char** argv) {
                 std::vector<ImTextureID> textures;
                 int index = 0;
                 for (const auto& texture : preview::GameTestAccess::themeSurfaces(app)) {
-                    // Skinned themes draw their panel texture and generate no background.
-                    const auto id = ttcg::interfaceThemes[index++].id;
-                    if (index > 5) {
-                        require(!texture.id, "Skinned theme generated an unused background");
-                        const auto& skin = preview::GameTestAccess::skin(app, index - 1);
-                        require(skin.loaded && skin.player && skin.opponent && skin.board,
-                                "Bundled skin did not load its colours and board");
-                        // Nithog's three carry a full set of textures; Untarnished is flat by design.
-                        if (id == "oathvein" || id == "veldun" || id == "norden")
-                            require(skin.art.contains("panel") && skin.art.at("panel").margin > 0 &&
-                                        skin.art.contains("selector") && skin.art.contains("tab"),
-                                    "Bundled skin did not load its panel and bands");
-                        continue;
-                    }
-                    require(texture.id && texture.width == 1024 && texture.height == 768,
-                            "Theme background was replaced by a board material");
-                    textures.push_back(texture.id);
+                    // Skins draw their panel texture and generate no background; retired themes never draw.
+                    const auto& entry = ttcg::interfaceThemes[index++];
+                    const auto id = entry.id;
+                    require(!texture.id, "A theme generated an unused background");
+                    if (entry.retired) continue;
+                    const auto& skin = preview::GameTestAccess::skin(app, index - 1);
+                    require(skin.loaded && skin.player && skin.opponent && skin.board,
+                            "Bundled skin did not load its colours and board");
+                    // Nithog's three carry a full set of textures; Untarnished is flat by design.
+                    if (id == "oathvein" || id == "veldun" || id == "norden")
+                        require(skin.art.contains("panel") && skin.art.at("panel").margin > 0 &&
+                                    skin.art.contains("selector") && skin.art.contains("tab"),
+                                "Bundled skin did not load its panel and bands");
+                    // The paper skins bring a painted window whose frame the layout keeps clear of.
+                    if (id == "diarypaper" || id == "woodpaper")
+                        require(skin.art.contains("window") && skin.art.at("window").pad > 0 &&
+                                    skin.art.at("window").scale == 3 && skin.art.contains("detail"),
+                                "Paper skin did not load its window and detail panel");
                 }
                 for (const auto& texture : preview::GameTestAccess::boardSurfaces(app)) {
                     require(texture.id && texture.width == 512 && texture.height == 512,
@@ -495,7 +498,30 @@ int main(int argc, char** argv) {
                 s["settings"]["theme"] = 999;
                 app.receive(s.dump());
                 frame();
-                require(preview::GameTestAccess::theme(app) == 0, "Invalid theme does not fall back to Tessera");
+                require(preview::GameTestAccess::theme(app) == ttcg::defaultInterfaceTheme,
+                        "Invalid theme does not fall back to the default skin");
+                // A theme saved before the old five were retired opens the default skin, and is not offered.
+                for (int theme = 0; theme < ttcg::interfaceThemeCount; ++theme) {
+                    if (!ttcg::interfaceThemes[theme].retired) continue;
+                    s["settings"]["theme"] = theme;
+                    app.receive(s.dump());
+                    frame();
+                    require(preview::GameTestAccess::theme(app) == ttcg::defaultInterfaceTheme,
+                            "Retired theme did not open the default skin");
+                }
+                load("album", "appearance");
+                click("##theme");
+                frame();
+                // The menu scrolls, so only what it must never show is checked, and that the default leads it.
+                const auto offered = [&](std::string_view name) {
+                    return std::any_of(hits.begin(), hits.end(), [&](const Hit& h) {
+                        return h.window.starts_with("##Combo") && matches(h, std::string(name));
+                    });
+                };
+                for (const auto& theme : ttcg::interfaceThemes)
+                    require(!theme.retired || !offered(theme.name), "Theme menu offers a retired theme");
+                require(offered(ttcg::interfaceThemes[ttcg::defaultInterfaceTheme].name),
+                        "Theme menu does not offer the default skin");
             }
             // Saved appearance values flow through the real hand/board renderer.
             load("match");

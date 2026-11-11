@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "id": "woodpaper",
+  "name": "Wood and Paper",
+  "credit": "Wood and Paper - A Dear Diary Skin",
+  "font": "serif",
+  "palette": {
+    "background": "#8f866a",
+    "centre": "#a39a7e",
+    "text": "#1d150d",
+    "muted": "#33281a",
+    "accent": "#5a2f14",
+    "line": "#2e1d0e66",
+    "selection": "#6f6247",
+    "value": "#5a2f14",
+    "notice": "#7a2412"
+  },
+  "board": "walnut",
+  "control": {
+    "player": "#27455e",
+    "opponent": "#7a2412"
+  },
+  "art": {
+    "window": {
+      "file": "window.png",
+      "margin": 76,
+      "inset": 40,
+      "scale": 3,
+      "tile": true,
+      "pad": 20
+    },
+    "panel": {
+      "file": "panel.png",
+      "margin": 64,
+      "inset": 38,
+      "scale": 3
+    },
+    "detail": {
+      "file": "detail.png",
+      "margin": 48,
+      "inset": 20,
+      "scale": 3
+    }
+  }
+}

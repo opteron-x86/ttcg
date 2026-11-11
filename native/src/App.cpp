@@ -36,7 +36,13 @@ const Palette themes[]{{"Tessera", rgb(0x131e19), rgb(0x28372e), rgb(0xe7dec6), 
                        {"Nordic", rgb(0x060606), rgb(0x161616), rgb(0xececec), rgb(0x8e8e8e), rgb(0xd6d6d6),
                         rgb(0xffffff, 48), rgb(0x3a3a3a), true, FrameStyle::Skinned},
                        {"Outlander", rgb(0x0c0c0e), rgb(0x1a1b20), rgb(0xf2efe8), rgb(0xa9a8a4), rgb(0xffffff),
-                        rgb(0xffffff, 56), rgb(0x3f4a66), true, FrameStyle::Skinned}};
+                        rgb(0xffffff, 56), rgb(0x3f4a66), true, FrameStyle::Skinned},
+                       {"Skyrim", rgb(0x000000), rgb(0x151515), rgb(0xffffff), rgb(0xa8a8a8), rgb(0xffffff),
+                        rgb(0xffffff, 89), rgb(0x4a4a4a), true, FrameStyle::Skinned},
+                       {"Dear Diary", rgb(0xb4a698), rgb(0xc4b8ab), rgb(0x231a14), rgb(0x463a31), rgb(0x6e2a1c),
+                        rgb(0x3a261c, 89), rgb(0x8f7d6c), false, FrameStyle::Skinned},
+                       {"Wood and Paper", rgb(0x8f866a), rgb(0xa39a7e), rgb(0x1d150d), rgb(0x33281a), rgb(0x5a2f14),
+                        rgb(0x2e1d0e, 102), rgb(0x6f6247), false, FrameStyle::Skinned}};
 static_assert(std::size(themes) == ttcg::interfaceThemeCount);
 const char* romans[]{"", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"};
 ImU32 rarity(const CardView& card) {

@@ -128,5 +128,51 @@
         "trim"
       ]
     }
+  },
+  "diarypaper": {
+    "mod": "Dear Diary",
+    "art": {
+      "window": [
+        "deardiary/map/map_local_BG.swf",
+        "bitmap",
+        "1046x634+0+39",
+        {
+          "mirror_top": 40
+        }
+      ],
+      "panel": [
+        "deardiary/tutorialmenu/tutorialmenu_BG.swf",
+        "bitmap",
+        null
+      ],
+      "detail": [
+        "deardiary/inventory/itemcard_1_BG.swf",
+        "bitmap",
+        null
+      ]
+    }
+  },
+  "woodpaper": {
+    "mod": "Wood and Paper - SkyUI - Dear Diary Skin",
+    "art": {
+      "window": [
+        "deardiary/map/map_local_BG.swf",
+        "bitmap",
+        "1046x635+0+38",
+        {
+          "mirror_top": 39
+        }
+      ],
+      "panel": [
+        "deardiary/tutorialmenu/tutorialmenu_BG.swf",
+        "bitmap",
+        null
+      ],
+      "detail": [
+        "deardiary/inventory/itemcard_1_BG.swf",
+        "bitmap",
+        null
+      ]
+    }
   }
 }

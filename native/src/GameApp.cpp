@@ -336,10 +336,7 @@ void GameApp::inspectCard(int display, bool meta, int modifier) {
 }
 float GameApp::factRows(const CardView& c, ImVec2 at, float width, bool draw, bool compact) {
     const char* tiers[]{"", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"};
-    const ImU32 rarity = c.rarity == "Rare"        ? IM_COL32(86, 223, 255, 255)
-                         : c.rarity == "Epic"      ? IM_COL32(214, 132, 250, 255)
-                         : c.rarity == "Legendary" ? IM_COL32(240, 196, 101, 255)
-                                                   : palette().ink;
+    const ImU32 rarity = rarityInk(c.rarity);
     struct Row {
         const char* name;
         std::string value;
@@ -633,9 +630,26 @@ void GameApp::header(ImVec2 at, ImVec2 size) {
     if (skinned()) {
         // A skin titles the window with its own band, or a hairline; closing lives in the prompt bar.
         const float k = skinUnit(), bandHeight = std::min(108 * k, 50 * scale);
-        if (!skinBand("title", ImVec2(frameAt.x, frameAt.y + 2 * k), ImVec2(frameSize.x, bandHeight)))
-            skinRule(ImVec2(at.x, frameAt.y + bandHeight + 4 * scale),
-                     ImVec2(at.x + size.x, frameAt.y + bandHeight + 4 * scale), .5f);
+        if (!skinBand("title", ImVec2(frameAt.x, frameAt.y + 2 * k), ImVec2(frameSize.x, bandHeight))) {
+            const float y = frameAt.y + bandHeight + 4 * scale;
+            skinRule(ImVec2(at.x, y), ImVec2(at.x + size.x, y), .5f);
+            if (skin().ornament) {
+                // Skyrim's own dividers carry a small diamond at their middle.
+                auto* d = ImGui::GetWindowDrawList();
+                const ImVec2 centre(at.x + size.x * .5f, y + std::max(1.f, std::round(2.1f * k)) * .5f);
+                const auto diamond = [&](float r, ImU32 colour, float line) {
+                    const ImVec2 points[]{centre + ImVec2(0, -r), centre + ImVec2(r, 0), centre + ImVec2(0, r),
+                                          centre + ImVec2(-r, 0)};
+                    if (line > 0)
+                        d->AddPolyline(points, 4, colour, ImDrawFlags_Closed, line);
+                    else
+                        d->AddConvexPolyFilled(points, 4, colour);
+                };
+                diamond(7 * scale, (palette().background & 0xffffff) | 0xff000000, 0);
+                diamond(6 * scale, (palette().accent & 0xffffff) | 0xb0000000, std::max(1.f, 1.2f * scale));
+                diamond(2.2f * scale, (palette().accent & 0xffffff) | 0xd0000000, 0);
+            }
+        }
         if (const auto sigil = skinArt("sigil"); sigil.id) {
             const float w = 300 * scale, h = w * sigil.height / sigil.width;
             ImGui::GetWindowDrawList()->AddImage(sigil.id, ImVec2(frameAt.x + frameSize.x - w - 20 * scale, frameAt.y),
@@ -682,8 +696,12 @@ void GameApp::draw() {
     applySettings();
     const auto display = ImGui::GetIO().DisplaySize;
     const int percent = number(member(state, "settings"), "windowSize", 90);
-    scale = std::min(display.x / 1400, display.y / 920) * (percent / 100.f);
-    frameSize = percent == 100 ? display : ImVec2(1400, 920) * scale;
+    // A skin's painted frame is drawn around the window, so the window gives up that much room.
+    const auto* painted = skinned() ? skinPiece("window") : nullptr;
+    const float around = painted ? painted->pad * painted->scale * skinUnit() : 0;
+    const ImVec2 room = display - ImVec2(around, around) * 2;
+    scale = std::min(room.x / 1400, room.y / 920) * (percent / 100.f);
+    frameSize = percent == 100 ? room : ImVec2(1400, 920) * scale;
     frameAt = (display - frameSize) * .5f;
     style();
     ImGui::PushFont(font(), 18 * scale);
@@ -710,7 +728,8 @@ void GameApp::draw() {
                      ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoScrollbar);
     auto* d = ImGui::GetWindowDrawList();
     // The skin's torn panel edge extends past the frame.
-    const ImVec2 bleed = skinned() ? ImVec2(40, 40) * skinUnit() : ImVec2(0, 0);
+    const float reach = std::max(40.f, painted ? (painted->pad + painted->inset) * painted->scale : 0.f);
+    const ImVec2 bleed = skinned() ? ImVec2(reach, reach) * skinUnit() : ImVec2(0, 0);
     d->PushClipRect(frameAt - bleed, frameAt + frameSize + bleed, false);
     surface(frameAt, frameSize, true);
     panelFrame(frameAt, frameSize, true);

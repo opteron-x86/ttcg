@@ -11,7 +11,7 @@ struct InterfaceSettings {
          rankStroke = false;
     unsigned residents = 1, rankLayout = 0, nameplateStyle = 0, nameCase = 0, cardFrame = 0;
     unsigned interfaceFont = 0, cardNameFont = 0, cardValueFont = 0;
-    unsigned theme = 0, boardSurface = 0, boardTexture = 10, windowSize = 90;
+    unsigned theme = defaultInterfaceTheme, boardSurface = 0, boardTexture = 10, windowSize = 90;
     unsigned rankShadowOpacity = 100, rankShadowBlur = 2, rankShadowOffset = 1, rankStrokeWeight = 10;
     bool controlMarker = false;
     unsigned opponentTreatment = 0, opponentScope = 2, opponentStrength = 100;
@@ -24,8 +24,10 @@ struct InterfaceSettings {
         std::variant<bool InterfaceSettings::*, unsigned InterfaceSettings::*> member;
         int maximum, defaultValue;
         bool valid(int value) const {
-            return command == "window-size" ? value >= 60 && value <= 100 && value % 5 == 0
-                                            : value >= 0 && value <= maximum;
+            if (command == "window-size") return value >= 60 && value <= 100 && value % 5 == 0;
+            // A retired theme no longer loads or saves; the default takes its place.
+            if (command == "theme") return interfaceThemeAvailable(value);
+            return value >= 0 && value <= maximum;
         }
         bool boolean() const { return std::holds_alternative<bool InterfaceSettings::*>(member); }
     };
@@ -47,7 +49,8 @@ struct InterfaceSettings {
         Field{"card-name-font", "cardNameFont", "Appearance", "CardNameFont", &InterfaceSettings::cardNameFont, 4, 0},
         Field{"card-value-font", "cardValueFont", "Appearance", "CardValueFont", &InterfaceSettings::cardValueFont, 4,
               0},
-        Field{"theme", "theme", "Appearance", "Theme", &InterfaceSettings::theme, interfaceThemeCount - 1, 0},
+        Field{"theme", "theme", "Appearance", "Theme", &InterfaceSettings::theme, interfaceThemeCount - 1,
+              defaultInterfaceTheme},
         Field{"board-surface", "boardSurface", "Appearance", "BoardSurface", &InterfaceSettings::boardSurface, 7, 0},
         Field{"board-texture", "boardTexture", "Appearance", "BoardTexture", &InterfaceSettings::boardTexture, 100, 10},
         Field{"rank-shadow-opacity", "rankShadowOpacity", "Appearance", "RankShadowOpacity",

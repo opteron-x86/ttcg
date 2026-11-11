@@ -198,9 +198,16 @@ void GameApp::settings(ImVec2 at, ImVec2 size) {
                   {"60%", "65%", "70%", "75%", "80%", "85%", "90%", "95%", "100%"}, width))
             send("settings", "window-size " + std::to_string(60 + 5 * sizeIndex));
         heading("Theme");
+        // Retired themes are not offered; the default leads the list.
+        std::vector<int> themeIndices{ttcg::defaultInterfaceTheme};
+        for (int index = 0; index < ttcg::interfaceThemeCount; ++index)
+            if (ttcg::interfaceThemeAvailable(index) && index != ttcg::defaultInterfaceTheme)
+                themeIndices.push_back(index);
         std::vector<std::string> themeNames;
-        for (const auto& theme : ttcg::interfaceThemes) themeNames.emplace_back(theme.name);
-        select("Interface", "theme", "theme", themeNames);
+        for (int index : themeIndices) themeNames.emplace_back(ttcg::interfaceThemes[index].name);
+        int themeChoice = int(std::find(themeIndices.begin(), themeIndices.end(), theme) - themeIndices.begin());
+        if (combo("theme", "Interface", themeChoice, themeNames, width))
+            send("settings", "theme " + std::to_string(themeIndices[themeChoice]));
         select("Game board", "board-surface", "boardSurface",
                {"Theme default", "Plain", "Slate", "Felt", "Parchment", "Leather", "Walnut", "Dark slab"});
         slider("Board texture", "board-texture", "boardTexture", 100, "%d%%");
