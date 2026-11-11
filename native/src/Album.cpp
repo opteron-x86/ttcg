@@ -11,15 +11,13 @@ void App::cardGrid(ImVec2 at, ImVec2 size, bool changed) {
     ImGui::BeginChild("catalog", ImVec2(size.x + 10 * scale, size.y), ImGuiChildFlags_NavFlattened,
                       ImGuiWindowFlags_NoScrollWithMouse);
     const float gap = 18 * scale, content = ImGui::GetContentRegionAvail().x - 24 * scale;
-    const float target = screen == 3 ? std::array<float, 3>{185, 116, 86}[deckDensity] : 185.f;
+    const bool editing = screen == 3;
+    const float target =
+        editing ? std::array<float, 3>{150, 112, 84}[deckDensity] : std::array<float, 3>{185, 140, 104}[cardDensity];
     const int columns = std::clamp(int((content + gap) / (target * scale + gap)), 2, 10);
     const float w = (content - gap * (columns - 1)) / columns, h = w / .75f, rowH = h + gap;
     const auto edges = gridScroll(rowH, changed);
-    std::vector<unsigned> packs;
-    if (collection.connected && screen == 0)
-        for (unsigned kind = 0; kind < 2; ++kind)
-            if (collection.packs[kind] > 0) packs.push_back(kind);
-    const int count = int(visible.size() + packs.size());
+    const int count = int(visible.size());
     ImGuiListClipper clip;
     clip.Begin((count + columns - 1) / columns, rowH);
     int material = MaterialSlot::grid;
@@ -30,18 +28,7 @@ void App::cardGrid(ImVec2 at, ImVec2 size, bool changed) {
                 const int item = row * columns + col;
                 if (item >= count) break;
                 const ImVec2 p = origin + ImVec2(col * (w + gap), 0);
-                if (item < int(packs.size())) {
-                    const unsigned kind = packs[item];
-                    ImGui::PushID(kind == 0 ? "pack-standard" : "pack-tournament");
-                    ImGui::SetCursorScreenPos(p);
-                    if (ImGui::InvisibleButton("pack", ImVec2(w, h), ImGuiButtonFlags_EnableNav))
-                        selectedPack = int(kind);
-                    packTile(kind, p, ImVec2(w, h),
-                             selectedPack == int(kind) || (ImGui::IsItemFocused() && ImGui::GetIO().NavVisible));
-                    ImGui::PopID();
-                    continue;
-                }
-                const int display = visible[item - packs.size()], id = display % int(collection.cards.size());
+                const int display = visible[item], id = display % int(collection.cards.size());
                 const bool foil = display >= int(collection.cards.size());
                 const auto& c = collection.cards[id];
                 const bool known = !collection.connected || c.known[foil ? 1 : 0] || c.owned[foil ? 1 : 0] > 0;
@@ -52,10 +39,19 @@ void App::cardGrid(ImVec2 at, ImVec2 size, bool changed) {
                     selectedFoil = foil;
                     selectedPack = -1;
                 }
+                const bool twice = ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0);
+                const bool held = ImGui::IsItemFocused();
+                // In the deck editor a double click, Enter or X puts the card straight into the deck.
+                if (editing && known && c.owned[foil ? 1 : 0] > 0 &&
+                    (twice || (held && (ImGui::IsKeyPressed(ImGuiKey_Enter, false) ||
+                                        ImGui::IsKeyPressed(ImGuiKey_GamepadFaceLeft, false))))) {
+                    selected = id;
+                    selectedFoil = foil;
+                    addToDeck(c.id | (foil ? ttcg::foilFlag : 0));
+                }
                 if (known &&
-                    ((ImGui::IsItemHovered() && (ImGui::IsMouseDoubleClicked(0) || ImGui::IsMouseClicked(1))) ||
-                     (ImGui::IsItemFocused() &&
-                      (ImGui::IsKeyPressed(ImGuiKey_I) || ImGui::IsKeyPressed(ImGuiKey_GamepadFaceUp)))))
+                    ((ImGui::IsItemHovered() && ((twice && !editing) || ImGui::IsMouseClicked(1))) ||
+                     (held && (ImGui::IsKeyPressed(ImGuiKey_I) || ImGui::IsKeyPressed(ImGuiKey_GamepadFaceUp)))))
                     inspectCard(display, false);
                 if (known && collection.connected && collection.writable && !collection.busy &&
                     c.owned[foil ? 1 : 0] > 0 && ImGui::BeginDragDropSource()) {
@@ -74,6 +70,18 @@ void App::cardGrid(ImVec2 at, ImVec2 size, bool changed) {
                     if (chosen)
                         ImGui::GetWindowDrawList()->AddRect(p - ImVec2(3, 3), p + ImVec2(w + 3, h + 3),
                                                             palette().accent);
+                }
+                if (editing && known) {
+                    // A folded corner marks cards already in the deck.
+                    const auto key = c.id | (foil ? ttcg::foilFlag : 0);
+                    if (std::find(collection.deck.begin(), collection.deck.end(), key) != collection.deck.end()) {
+                        const float u = w / 180.f, fold = 40 * u;
+                        auto* draw = ImGui::GetWindowDrawList();
+                        draw->AddTriangleFilled(p, p + ImVec2(fold, 0), p + ImVec2(0, fold),
+                                                skinned() ? skin().value : palette().accent);
+                        const ImVec2 tick[]{p + ImVec2(7, 15) * u, p + ImVec2(12, 20) * u, p + ImVec2(21, 8) * u};
+                        draw->AddPolyline(tick, 3, IM_COL32(12, 12, 12, 255), 0, std::max(1.5f, 2.6f * u));
+                    }
                 }
                 if (collection.connected && c.owned[foil ? 1 : 0] > 0) {
                     const auto label = "×" + std::to_string(c.owned[foil ? 1 : 0]);
@@ -112,59 +120,47 @@ void App::dragCard(int index, bool foil, int owner, CardContext context) {
     card(index, at, size, false, foil && face.foil, owner, MaterialSlot::drag, false, context);
     dragPreviewDrawn = true;
 }
+bool App::addToDeck(ttcg::CardID id) {
+    if (!collection.ready || !collection.writable || collection.busy) return false;
+    // A chosen slot is replaced; otherwise the card fills the first empty one.
+    int slot = deckSlot;
+    for (int i = 0; slot < 0 && i < 5; ++i)
+        if (!collection.deck[i]) slot = i;
+    if (slot < 0) {
+        collection.notice = "The deck is full. Choose the slot to replace first.";
+        return false;
+    }
+    if (!collection.canUse(id, slot)) {
+        collection.notice = "That card cannot fill this slot. Check your owned copies and the deck limit.";
+        return false;
+    }
+    auto hand = collection.deck;
+    hand[slot] = id;
+    deckSlot = -1;
+    request({{"action", "deck"}, {"cards", hand}});
+    return true;
+}
 void App::decks(ImVec2 at, ImVec2 size) {
+    // Three columns: the deck itself, the cards to choose from, and the card being considered.
     const bool editable = collection.ready && collection.writable && !collection.busy;
-    const float side = AlbumLayout::navigation * scale, right = AlbumLayout::preview * scale,
-                gap = AlbumLayout::gap * scale;
+    const float side = AlbumLayout::deck * scale, right = AlbumLayout::preview * scale, gap = AlbumLayout::gap * scale;
     const ImVec2 mid = at + ImVec2(side + gap, 0);
     const float width = size.x - side - right - 2 * gap;
-    line(at + ImVec2(side + gap * .5f, 0), at + ImVec2(side + gap * .5f, size.y));
-    if (button("new-deck", "+  New deck", at, ImVec2(side, 40 * scale), false,
-               editable && collection.decks.size() < collection.maxDecks)) {
-        deckDialog = "new";
-        std::snprintf(deckName, sizeof(deckName), "Deck %zu", collection.decks.size() + 1);
-    }
-    ImGui::SetCursorScreenPos(at + ImVec2(0, 60) * scale);
-    ImGui::BeginChild("saved-decks", ImVec2(side, size.y - 60 * scale), ImGuiChildFlags_NavFlattened);
-    const float listWidth = side - 20 * scale;
-    for (const auto& deck : collection.decks) {
-        const auto pos = ImGui::GetCursorScreenPos();
-        const auto count = std::count_if(deck.cards.begin(), deck.cards.end(), [](auto id) { return id != 0; });
-        ImGui::SetCursorScreenPos(pos);
-        const bool hit = ImGui::InvisibleButton(("saved" + std::to_string(deck.id)).c_str(),
-                                                ImVec2(listWidth, 119 * scale), ImGuiButtonFlags_EnableNav);
-        auto* d = ImGui::GetWindowDrawList();
-        const bool active = deck.id == collection.activeDeck;
-        if (active || ImGui::IsItemHovered() || ImGui::IsItemFocused()) {
-            const auto colour = (palette().selection & 0xffffff) | 0x60000000;
-            d->AddRectFilledMultiColor(pos, pos + ImVec2(listWidth, 119 * scale), colour, colour & 0xffffff,
-                                       colour & 0xffffff, colour);
-        }
-        line(pos, pos + ImVec2(0, 119 * scale), active ? palette().accent : palette().line);
-        text(pos + ImVec2(10, 8) * scale, deck.name, 20, palette().ink, listWidth - 20 * scale);
-        const float thumb = (listWidth - 32 * scale) / 5;
-        for (int i = 0; i < 5; ++i) {
-            const int index = collection.index(deck.cards[i]);
-            const auto p = pos + ImVec2(10 * scale + i * (thumb + 3 * scale), 40 * scale);
-            if (index >= 0) {
-                const auto texture = assets.get(collection.cards[index].thumbnail);
-                d->AddImage(texture.id, p, p + ImVec2(thumb, thumb / .75f));
-            } else
-                d->AddRect(p, p + ImVec2(thumb, thumb / .75f), palette().line);
-        }
-        text(pos + ImVec2(10, 98) * scale, std::to_string(count) + " / 5", 14, palette().muted);
-        if (hit && editable) request({{"action", "select"}, {"deckID", deck.id}});
-        ImGui::SetCursorScreenPos(pos + ImVec2(0, 132) * scale);
-        ImGui::Dummy(ImVec2(1, 1));
-    }
-    ImGui::EndChild();
+    auto* d = ImGui::GetWindowDrawList();
+    const auto divider = [&](float x) {
+        if (skinned())
+            skinRule(ImVec2(x, at.y), ImVec2(x, at.y + size.y), .45f);
+        else
+            line(ImVec2(x, at.y), ImVec2(x, at.y + size.y));
+    };
+    divider(at.x + side + gap * .5f);
     auto active = std::find_if(collection.decks.begin(), collection.decks.end(),
-                               [&](const auto& d) { return d.id == collection.activeDeck; });
+                               [&](const auto& deck) { return deck.id == collection.activeDeck; });
     if (renamingDeck && renamingDeckID != collection.activeDeck) renamingDeck = false;
-    const float titleWidth = width - 200 * scale;
+    // Which deck, and what to do with it.
     if (renamingDeck) {
-        ImGui::SetCursorScreenPos(mid);
-        ImGui::SetNextItemWidth(titleWidth);
+        ImGui::SetCursorScreenPos(at);
+        ImGui::SetNextItemWidth(side);
         if (focusDeckName) {
             ImGui::SetKeyboardFocusHere();
             focusDeckName = false;
@@ -183,72 +179,89 @@ void App::decks(ImVec2 at, ImVec2 size) {
             renamingDeck = false;
         }
     } else {
-        ImGui::SetCursorScreenPos(mid);
-        const bool rename =
-            ImGui::InvisibleButton("rename", ImVec2(titleWidth, 38 * scale), ImGuiButtonFlags_EnableNav);
-        const auto title = active == collection.decks.end() ? "Your deck" : active->name;
-        auto* d = ImGui::GetWindowDrawList();
-        d->PushClipRect(mid, mid + ImVec2(titleWidth, 38 * scale), true);
-        text(mid + ImVec2(0, 3) * scale, title, 28, palette().ink);
-        d->PopClipRect();
-        if (editable) {
-            const bool hover = ImGui::IsItemHovered(), focus = ImGui::IsItemFocused() && ImGui::GetIO().NavVisible;
-            itemTooltip("Rename deck");
-            if (hover || focus) {
-                const float titleSize =
-                    std::min(titleWidth, font()->CalcTextSizeA(28 * scale, 1e5f, 0, title.c_str()).x);
-                line(mid + ImVec2(0, 35 * scale), mid + ImVec2(titleSize, 35 * scale), palette().muted);
-                if (hover) ImGui::SetMouseCursor(ImGuiMouseCursor_TextInput);
-            }
+        std::vector<std::string> names;
+        int chosen = 0;
+        for (const auto& deck : collection.decks) {
+            if (deck.id == collection.activeDeck) chosen = int(names.size());
+            const auto count = std::count_if(deck.cards.begin(), deck.cards.end(), [](auto id) { return id != 0; });
+            names.push_back(deck.name + (count < 5 ? "  (" + std::to_string(count) + "/5)" : ""));
         }
-        if (rename && editable && active != collection.decks.end()) {
+        if (names.empty()) names.push_back("Your deck");
+        ImGui::SetCursorScreenPos(at);
+        ImGui::BeginDisabled(!editable || collection.decks.size() < 2);
+        if (select("##deck-pick", chosen, names, side - 48 * scale) && chosen < int(collection.decks.size()))
+            request({{"action", "select"}, {"deckID", collection.decks[chosen].id}});
+        ImGui::EndDisabled();
+        if (button("new-deck", "+", at + ImVec2(side - 40 * scale, 0), ImVec2(40, 38) * scale, false,
+                   editable && collection.decks.size() < collection.maxDecks)) {
+            deckDialog = "new";
+            std::snprintf(deckName, sizeof(deckName), "Deck %zu", collection.decks.size() + 1);
+        }
+        itemTooltip("New deck");
+    }
+    {
+        const float each = (side - 16 * scale) / 3;
+        const ImVec2 row = at + ImVec2(0, 46 * scale);
+        if (button("rename", "Rename", row, ImVec2(each, 32 * scale), false,
+                   editable && active != collection.decks.end()) &&
+            !renamingDeck) {
             renamingDeck = true;
             focusDeckName = true;
             renamingDeckID = collection.activeDeck;
             std::snprintf(deckName, sizeof(deckName), "%s", active->name.c_str());
         }
-    }
-    float x = mid.x + width - 169 * scale;
-    for (const auto& item :
-         std::array<std::pair<const char*, const char*>, 2>{{{"copy", "Copy"}, {"delete", "Delete"}}}) {
-        const bool enabled = editable && (std::string_view(item.first) != "delete" || collection.decks.size() > 1) &&
-                             (std::string_view(item.first) != "copy" || collection.decks.size() < collection.maxDecks);
-        if (button(item.first, item.second, ImVec2(x, mid.y), ImVec2(79, 34) * scale, false, enabled)) {
-            deckDialog = item.first;
-            std::snprintf(deckName, sizeof(deckName), "%s",
-                          active == collection.decks.end() ? "Deck" : active->name.c_str());
-            if (deckDialog == "copy")
-                std::snprintf(deckName, sizeof(deckName), "Copy of %s",
+        int n = 1;
+        for (const auto& item :
+             std::array<std::pair<const char*, const char*>, 2>{{{"copy", "Copy"}, {"delete", "Delete"}}}) {
+            const bool enabled =
+                editable && (std::string_view(item.first) != "delete" || collection.decks.size() > 1) &&
+                (std::string_view(item.first) != "copy" || collection.decks.size() < collection.maxDecks);
+            if (button(item.first, item.second, row + ImVec2(n * (each + 8 * scale), 0), ImVec2(each, 32 * scale),
+                       false, enabled)) {
+                deckDialog = item.first;
+                std::snprintf(deckName, sizeof(deckName), "%s",
                               active == collection.decks.end() ? "Deck" : active->name.c_str());
+                if (deckDialog == "copy")
+                    std::snprintf(deckName, sizeof(deckName), "Copy of %s",
+                                  active == collection.decks.end() ? "Deck" : active->name.c_str());
+            }
+            ++n;
         }
-        x += 90 * scale;
     }
-    const float slotWidth = (width - 4 * 14 * scale) / 5, w = std::min(slotWidth, 135 * scale), h = w / .75f;
+    // The five slots, in the order they are held.
+    const char* tiers[]{"", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"};
+    const float slotsTop = at.y + 92 * scale, strip = 40 * scale, profile = 158 * scale;
+    const float rowH = std::clamp((at.y + size.y - slotsTop - strip - profile) / 5, 70 * scale, 128 * scale);
+    int next = deckSlot;
+    for (int i = 0; next < 0 && i < 5; ++i)
+        if (!collection.deck[i]) next = i;
     for (int slot = 0; slot < 5; ++slot) {
-        const auto pos = mid + ImVec2(slot * (slotWidth + 14 * scale) + (slotWidth - w) / 2, 60 * scale);
+        const ImVec2 pos(at.x, slotsTop + slot * rowH), extent(side, rowH - 6 * scale);
         const int index = collection.index(collection.deck[slot]);
+        const bool foil = ttcg::isFoil(collection.deck[slot]);
         ImGui::PushID(slot);
         ImGui::SetCursorScreenPos(pos);
-        if (ImGui::InvisibleButton("slot", ImVec2(w, h), ImGuiButtonFlags_EnableNav))
-            deckSlot = deckSlot == slot ? -1 : slot;
-        if (index >= 0 && ((ImGui::IsItemHovered() && (ImGui::IsMouseDoubleClicked(0) || ImGui::IsMouseClicked(1))) ||
+        if (ImGui::InvisibleButton("slot", extent, ImGuiButtonFlags_EnableNav)) deckSlot = deckSlot == slot ? -1 : slot;
+        const bool hover = ImGui::IsItemHovered(), focus = ImGui::IsItemFocused() && ImGui::GetIO().NavVisible;
+        if (index >= 0 && ((hover && (ImGui::IsMouseDoubleClicked(0) || ImGui::IsMouseClicked(1))) ||
                            (ImGui::IsItemFocused() &&
-                            (ImGui::IsKeyPressed(ImGuiKey_I) || ImGui::IsKeyPressed(ImGuiKey_GamepadFaceUp))))) {
-            inspectCard(index + (ttcg::isFoil(collection.deck[slot]) ? collection.cards.size() : 0), false);
-        }
+                            (ImGui::IsKeyPressed(ImGuiKey_I) || ImGui::IsKeyPressed(ImGuiKey_GamepadFaceUp)))))
+            inspectCard(index + (foil ? collection.cards.size() : 0), false);
         if (index >= 0 && editable && ImGui::BeginDragDropSource()) {
             ImGui::SetDragDropPayload("TESSERA_SLOT", &slot, sizeof(slot));
-            dragCard(index, ttcg::isFoil(collection.deck[slot]));
+            dragCard(index, foil);
             ImGui::EndDragDropSource();
         }
+        bool receiving = false;
         if (ImGui::BeginDragDropTarget()) {
+            receiving = true;
             if (const auto* payload = ImGui::AcceptDragDropPayload("TESSERA_CARD"))
                 if (payload->DataSize == sizeof(ttcg::CardID)) {
                     const auto id = *static_cast<const ttcg::CardID*>(payload->Data);
                     if (collection.canUse(id, slot)) {
                         auto hand = collection.deck;
                         hand[slot] = id;
-                        deckSlot = slot;
+                        deckSlot = -1;
                         request({{"action", "deck"}, {"cards", hand}});
                     } else
                         collection.notice =
@@ -266,87 +279,145 @@ void App::decks(ImVec2 at, ImVec2 size) {
                 }
             ImGui::EndDragDropTarget();
         }
-        if (index >= 0)
-            card(index, pos, ImVec2(w, h), deckSlot == slot, ttcg::isFoil(collection.deck[slot]) && face.foil, -1,
-                 1 + slot);
-        else {
-            ImGui::GetWindowDrawList()->AddRect(pos, pos + ImVec2(w, h),
-                                                deckSlot == slot ? palette().accent : palette().line);
-            text(pos + ImVec2(w * .5f, h * .5f - 12 * scale), collection.deck[slot] ? "Unavailable" : "+", 24,
-                 palette().muted, 0, true);
+        const bool chosen = deckSlot == slot;
+        if (chosen || hover || focus || receiving) {
+            const ImU32 wash = (palette().selection & 0xffffff) | (chosen ? 0x90000000 : 0x48000000);
+            d->AddRectFilledMultiColor(pos, pos + extent, wash, wash & 0xffffff, wash & 0xffffff, wash);
+        }
+        d->AddRectFilled(pos, pos + ImVec2(std::max(2.f, 2.5f * scale), extent.y),
+                         chosen                         ? palette().accent
+                         : slot == next && deckSlot < 0 ? palette().muted
+                                                        : palette().line);
+        const float ch = extent.y - 10 * scale, cw = ch * .75f;
+        const ImVec2 art = pos + ImVec2(12 * scale, 5 * scale);
+        const float textX = art.x + cw + 14 * scale, cross = 70 * scale, textW = pos.x + side - cross - textX;
+        const std::string place = "Slot " + std::to_string(slot + 1);
+        if (index >= 0) {
+            const auto& c = collection.cards[index];
+            card(index, art, ImVec2(cw, ch), false, foil && face.foil, -1, 1 + slot);
+            d->PushClipRect(ImVec2(textX, pos.y), ImVec2(textX + textW, pos.y + extent.y), true);
+            const float block = 68 * scale, ty = pos.y + (extent.y - block) * .5f;
+            text(ImVec2(textX, ty), c.name, 18, palette().ink);
+            text(ImVec2(textX, ty + 27 * scale),
+                 place + " · Tier " + tiers[std::clamp(c.tier, 0, 10)] + (foil ? " · Foil" : ""), 14, palette().muted);
+            float ix = textX;
+            for (int a = 0; a < 5; ++a)
+                if (c.affinityMask & (1u << a)) {
+                    const auto icon = assets.get("../icons/affinity-" + std::to_string(a) + ".png");
+                    d->AddImage(icon.id, ImVec2(ix, ty + 49 * scale), ImVec2(ix + 17 * scale, ty + 66 * scale));
+                    ix += 21 * scale;
+                }
+            std::string group;
+            for (unsigned g = 0; g < ttcg::creatureGroups.size(); ++g)
+                if (c.groups & (1ull << g)) group += (group.empty() ? "" : ", ") + std::string(ttcg::creatureGroups[g]);
+            text(ImVec2(ix + (ix > textX ? 4 * scale : 0), ty + 49 * scale), group, 14, palette().muted);
+            d->PopClipRect();
+            // The four ranks again, at a size that reads without leaning in.
+            const ImVec2 centre(pos.x + side - cross * .5f - 2 * scale, pos.y + extent.y * .5f);
+            const float reach = 19 * scale;
+            const ImVec2 offsets[]{ImVec2(0, -reach), ImVec2(reach, 0), ImVec2(0, reach), ImVec2(-reach, 0)};
+            for (int n = 0; n < 4; ++n) {
+                const std::string rank = c.sides[n] == 10 ? "A" : std::to_string(c.sides[n]);
+                const auto measure = font()->CalcTextSizeA(19 * scale, 1e5f, 0, rank.c_str());
+                text(centre + offsets[n] - measure * .5f, rank, 19, palette().ink);
+            }
+        } else {
+            d->AddRect(art, art + ImVec2(cw, ch), slot == next ? palette().muted : palette().line, 2 * scale);
+            text(art + ImVec2(cw * .5f, ch * .5f - 15 * scale), "+", 24, palette().muted, 0, true);
+            text(ImVec2(textX, pos.y + extent.y * .5f - 24 * scale), collection.deck[slot] ? "Unavailable" : "Empty",
+                 18, palette().muted);
+            text(ImVec2(textX, pos.y + extent.y * .5f + 3 * scale), place, 14, palette().muted);
         }
         ImGui::PopID();
     }
-    // One reserved strip: selecting a slot never changes the collection layout.
-    const float y = mid.y + 60 * scale + h + 16 * scale;
+    // One reserved strip: choosing a slot never moves the rest of the panel.
+    const float y = slotsTop + 5 * rowH + 2 * scale;
     if (deckSlot >= 0) {
-        text(ImVec2(mid.x, y + 5 * scale), "Slot " + std::to_string(deckSlot + 1), 17, palette().muted);
-        if (button("slot-left", "←", ImVec2(mid.x + width - 220 * scale, y), ImVec2(40, 32) * scale, false,
-                   editable && deckSlot > 0)) {
-            auto hand = collection.deck;
-            std::swap(hand[deckSlot], hand[deckSlot - 1]);
-            --deckSlot;
-            request({{"action", "deck"}, {"cards", hand}});
-        }
-        if (button("slot-right", "→", ImVec2(mid.x + width - 170 * scale, y), ImVec2(40, 32) * scale, false,
-                   editable && deckSlot < 4)) {
-            auto hand = collection.deck;
-            std::swap(hand[deckSlot], hand[deckSlot + 1]);
-            ++deckSlot;
-            request({{"action", "deck"}, {"cards", hand}});
-        }
-        if (button("slot-remove", "Remove", ImVec2(mid.x + width - 110 * scale, y), ImVec2(110, 32) * scale, false,
+        text(ImVec2(at.x, y + 6 * scale), "Slot " + std::to_string(deckSlot + 1), 16, palette().muted);
+        const auto move = [&](const char* id, const char* label, float x, int to) {
+            if (button(id, label, ImVec2(at.x + side - x * scale, y), ImVec2(38, 32) * scale, false,
+                       editable && to >= 0 && to < 5)) {
+                auto hand = collection.deck;
+                std::swap(hand[deckSlot], hand[to]);
+                deckSlot = to;
+                request({{"action", "deck"}, {"cards", hand}});
+            }
+        };
+        move("slot-left", "↑", 194, deckSlot - 1);
+        itemTooltip("Move up");
+        move("slot-right", "↓", 150, deckSlot + 1);
+        itemTooltip("Move down");
+        if (button("slot-remove", "Remove", ImVec2(at.x + side - 104 * scale, y), ImVec2(104, 32) * scale, false,
                    editable && collection.deck[deckSlot] != 0)) {
             auto hand = collection.deck;
             hand[deckSlot] = 0;
             request({{"action", "deck"}, {"cards", hand}});
         }
-    }
+    } else
+        text(ImVec2(at.x, y + 6 * scale),
+             next >= 0 ? "Choose a card to fill slot " + std::to_string(next + 1) : "Choose a slot to change it", 15,
+             palette().muted);
+    // What the deck adds up to.
     std::array<int, ttcg::creatureGroups.size()> groups{};
     std::array<int, 5> affinities{};
+    std::array<int, 4> totals{};
+    int held = 0;
     for (auto id : collection.deck) {
         const auto i = collection.index(id);
         if (i < 0) continue;
         const auto& c = collection.cards[i];
+        ++held;
+        for (int n = 0; n < 4; ++n) totals[n] += c.sides[n];
         for (unsigned g = 0; g < groups.size(); ++g)
             if (c.groups & (1ull << g)) ++groups[g];
         for (int a = 0; a < 5; ++a)
             if (c.affinityMask & (1u << a)) ++affinities[a];
     }
+    const ImVec2 summary(at.x, y + strip + 4 * scale);
+    if (skinned())
+        skinRule(summary, summary + ImVec2(side, 0), .5f);
+    else
+        line(summary, summary + ImVec2(side, 0));
+    textCaps(summary + ImVec2(0, 14 * scale), "Average ranks", 12.5f, palette().muted, 1.2f);
+    {
+        const ImVec2 centre = summary + ImVec2(52 * scale, 88 * scale);
+        const float reach = 30 * scale;
+        const ImVec2 offsets[]{ImVec2(0, -reach), ImVec2(reach, 0), ImVec2(0, reach), ImVec2(-reach, 0)};
+        const ImVec2 diamond[]{centre + ImVec2(0, -9 * scale), centre + ImVec2(9 * scale, 0),
+                               centre + ImVec2(0, 9 * scale), centre + ImVec2(-9 * scale, 0)};
+        d->AddPolyline(diamond, 4, palette().line, ImDrawFlags_Closed, std::max(1.f, scale));
+        for (int n = 0; n < 4; ++n) {
+            char value[16];
+            std::snprintf(value, sizeof(value), held ? "%.1f" : "–", held ? totals[n] / float(held) : 0.f);
+            const auto measure = font()->CalcTextSizeA(18 * scale, 1e5f, 0, value);
+            text(centre + offsets[n] - measure * .5f, value, 18, held ? palette().ink : palette().muted);
+        }
+    }
+    const float factsX = summary.x + 118 * scale, factsW = side - 118 * scale;
+    float ax = factsX;
+    for (int a = 0; a < 5; ++a)
+        if (affinities[a]) {
+            const ImVec2 pos(ax, summary.y + 40 * scale);
+            ImGui::SetCursorScreenPos(pos);
+            ImGui::InvisibleButton(("deck-affinity-" + std::to_string(a)).c_str(), ImVec2(35, 22) * scale);
+            itemTooltip(std::string(ttcg::attributeNames[a]) + ": " + std::to_string(affinities[a]));
+            auto icon = assets.get("../icons/affinity-" + std::to_string(a) + ".png");
+            d->AddImage(icon.id, pos, pos + ImVec2(20, 20) * scale);
+            text(pos + ImVec2(23, 2) * scale, std::to_string(affinities[a]), 15, palette().muted);
+            ax += 39 * scale;
+        }
     std::string groupSummary;
     for (unsigned g = 0; g < groups.size(); ++g)
-        if (groups[g]) {
-            if (!groupSummary.empty()) groupSummary += " · ";
-            groupSummary += std::string(ttcg::creatureGroups[g]) + " " + std::to_string(groups[g]);
-        }
-    const int affinityCount =
-        int(std::count_if(affinities.begin(), affinities.end(), [](int count) { return count > 0; }));
-    const float groupWidth = width - (affinityCount ? affinityCount * 39 + 25 : 0) * scale;
-    const auto measure = font()->CalcTextSizeA(14 * scale, 1e5f, groupWidth, groupSummary.c_str());
-    const ImVec2 summary(mid.x, y + 45 * scale);
-    text(summary + ImVec2(0, 3) * scale, groupSummary, 14, palette().muted, groupWidth);
-    if (affinityCount) {
-        float x = summary.x + std::min(groupWidth, measure.x) + 25 * scale;
-        line(ImVec2(x - 13 * scale, summary.y + 2 * scale), ImVec2(x - 13 * scale, summary.y + 19 * scale));
-        for (int a = 0; a < 5; ++a)
-            if (affinities[a]) {
-                const ImVec2 pos(x, summary.y);
-                ImGui::SetCursorScreenPos(pos);
-                ImGui::InvisibleButton(("deck-affinity-" + std::to_string(a)).c_str(), ImVec2(35, 22) * scale);
-                itemTooltip(std::string(ttcg::attributeNames[a]) + ": " + std::to_string(affinities[a]));
-                auto icon = assets.get("../icons/affinity-" + std::to_string(a) + ".png");
-                ImGui::GetWindowDrawList()->AddImage(icon.id, pos, pos + ImVec2(20, 20) * scale);
-                text(pos + ImVec2(23, 3) * scale, std::to_string(affinities[a]), 14, palette().muted);
-                x += 39 * scale;
-            }
-    }
-    const float summaryBottom = summary.y + std::max(22 * scale, measure.y + 6 * scale);
-    line(ImVec2(mid.x, summaryBottom + 10 * scale), ImVec2(mid.x + width, summaryBottom + 10 * scale));
-    const auto filters = ImVec2(mid.x, summaryBottom + 26 * scale);
-    pickerFilters(filters, width);
-    const auto grid = filters + ImVec2(0, 86 * scale);
+        if (groups[g])
+            groupSummary += (groupSummary.empty() ? "" : " · ") + std::string(ttcg::creatureGroups[g]) + " " +
+                            std::to_string(groups[g]);
+    d->PushClipRect(ImVec2(factsX, summary.y), ImVec2(factsX + factsW, at.y + size.y), true);
+    text(ImVec2(factsX, summary.y + (ax > factsX ? 70 : 40) * scale), groupSummary, 14, palette().muted, factsW);
+    d->PopClipRect();
+    pickerFilters(mid, width);
+    const auto grid = mid + ImVec2(0, 86 * scale);
     cardGrid(grid, ImVec2(width, at.y + size.y - grid.y));
-    line(at + ImVec2(size.x - right - gap * .5f, 0), at + ImVec2(size.x - right - gap * .5f, size.y));
+    divider(at.x + size.x - right - gap * .5f);
     drawDetail(at + ImVec2(size.x - right, 0), ImVec2(right, size.y));
 }
 void App::pickerFilters(ImVec2 at, float width) {

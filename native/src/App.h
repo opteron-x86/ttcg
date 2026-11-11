@@ -43,7 +43,7 @@ struct Face {
     float shadow = 0.8f, stroke = 0.6f, foilStrength = 0.72f, grain = 0.10f;
 };
 struct AlbumLayout {
-    static constexpr float navigation = 196, gap = 30, preview = 260;
+    static constexpr float navigation = 196, gap = 30, preview = 260, deck = 310;
 };
 class App {
 protected:
@@ -66,7 +66,7 @@ protected:
     bool dragPreviewDrawn = false;
     bool resetPopups = false;
     int deckSlot = -1;
-    int deckDensity = 1;
+    int deckDensity = 1, cardDensity = 1;
     bool renamingDeck = false, focusDeckName = false;
     unsigned renamingDeckID = 0;
     std::string deckDialog;
@@ -153,8 +153,10 @@ protected:
     void framedCard(const CardView& card, Texture texture, ImVec2 at, ImVec2 size, bool chosen, int owner);
     void cardGrid(ImVec2 at, ImVec2 size, bool changed = false);
     void dragCard(int index, bool foil, int owner = -1, CardContext context = CardContext::General);
-    void packTile(unsigned kind, ImVec2 at, ImVec2 size, bool chosen);
-    void packDetail(ImVec2 at, ImVec2 size);
+    // Unopened packs, each with its own Open button; returns the height used.
+    float packStrip(ImVec2 at, float width);
+    // Puts a card in the chosen slot, or the first empty one.
+    bool addToDeck(ttcg::CardID id);
     void packModal();
     void decks(ImVec2 at, ImVec2 size);
     void deckModal();

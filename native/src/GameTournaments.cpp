@@ -400,9 +400,19 @@ void GameApp::resultModal() {
                                           : std::string(outcome == 0 ? " and won " : " and lost ")) +
                       std::to_string(wager) + " gold";
     if (!settlement.empty()) settlement += ".";
-    const float summaryHeight = (settlement.empty() ? 84 : 118) * scale;
+    // The cards that changed hands are shown, not just counted.
+    std::vector<int> wonCards, lostCards;
+    for (int origin = 0; origin < 10; ++origin) {
+        const int id = hands.is_array() ? itemNumber(hands[origin / 5], origin % 5) : -1;
+        if (id < 0) continue;
+        if (origin >= 5 && destinations[origin] == 0) wonCards.push_back(id);
+        if (origin < 5 && destinations[origin] == 1) lostCards.push_back(id);
+    }
+    const float prizeW = 104 * scale, prizeH = prizeW / .75f;
+    const int prizeRows = int(!wonCards.empty()) + int(!lostCards.empty());
+    const float summaryHeight = (settlement.empty() ? 96 : 132) * scale + prizeRows * (prizeH + 46 * scale);
     const auto extent = done
-                            ? ImVec2(560 * scale, 150 * scale + summaryHeight + reasonHeight + (event ? 78 * scale : 0))
+                            ? ImVec2(660 * scale, 150 * scale + summaryHeight + reasonHeight + (event ? 78 * scale : 0))
                             : ImVec2(1220, 724) * scale;
     if (!ImGui::IsPopupOpen("Game result")) ImGui::OpenPopup("Game result");
     ImGui::SetNextWindowPos(frameAt + frameSize * .5f, ImGuiCond_Always, ImVec2(.5f, .5f));
@@ -420,16 +430,48 @@ void GameApp::resultModal() {
         if (done) {
             float y = origin.y + 4 * scale;
             const float middle = panel.x + extent.x / 2;
-            text(ImVec2(middle, y),
-                 outcome < 0    ? "Draw"
-                 : outcome == 0 ? "Victory"
-                                : "Defeat",
-                 34, outcome == 0 ? palette().accent : palette().ink, 0, true);
+            const char* heading = outcome < 0 ? "Draw" : outcome == 0 ? "Victory" : "Defeat";
+            const ImU32 tone = outcome == 0  ? IM_COL32(240, 196, 101, 255)
+                               : outcome < 0 ? palette().ink
+                               : skinned()   ? skin().notice
+                                             : palette().muted;
+            {
+                const float half = capsWidth(heading, 32, 5) * .5f + 26 * scale,
+                            reach = std::max(0.f, extent.x * .5f - 44 * scale - half);
+                textCaps(ImVec2(middle, y), heading, 32, tone, 5, true);
+                gradientLine(d, ImVec2(middle - half - reach, y + 21 * scale), reach, fade(tone, .7f));
+                gradientLine(d, ImVec2(middle + half, y + 21 * scale), reach, fade(tone, .7f));
+            }
             const auto& score = member(state, "score");
-            text(ImVec2(middle, y + 46 * scale),
-                 std::to_string(itemNumber(score, 0)) + " – " + std::to_string(itemNumber(score, 1)), 22,
-                 palette().muted, 0, true);
-            if (!settlement.empty()) text(ImVec2(middle, y + 82 * scale), settlement, 18, palette().ink, 0, true);
+            text(ImVec2(middle, y + 52 * scale),
+                 std::to_string(itemNumber(score, 0)) + " – " + std::to_string(itemNumber(score, 1)), 24, palette().ink,
+                 0, true);
+            float rowY = y + 96 * scale;
+            if (!settlement.empty()) {
+                text(ImVec2(middle, rowY), settlement, 18, palette().muted, 0, true);
+                rowY += 36 * scale;
+            }
+            int slot = 0;
+            const auto prizes = [&](const std::vector<int>& cards, const char* caption, int owner) {
+                if (cards.empty()) return;
+                textCaps(ImVec2(middle, rowY), caption, 13, owner == 0 ? fade(tone, .9f) : palette().muted, 1.6f, true);
+                const float gap = 12 * scale, total = cards.size() * prizeW + (cards.size() - 1) * gap;
+                for (int i = 0; i < int(cards.size()); ++i) {
+                    const ImVec2 pos(middle - total * .5f + i * (prizeW + gap), rowY + 26 * scale);
+                    ImGui::PushID(slot);
+                    ImGui::SetCursorScreenPos(pos);
+                    if (ImGui::InvisibleButton("result-card", ImVec2(prizeW, prizeH), ImGuiButtonFlags_EnableNav))
+                        inspectCard(cards[i], false);
+                    softShadow(pos, ImVec2(prizeW, prizeH), 1, 7);
+                    displayCard(cards[i], pos, ImVec2(prizeW, prizeH),
+                                ImGui::IsItemFocused() && ImGui::GetIO().NavVisible, owner, 150 + slot);
+                    ImGui::PopID();
+                    ++slot;
+                }
+                rowY += prizeH + 46 * scale;
+            };
+            prizes(wonCards, "Won", 0);
+            prizes(lostCards, "Lost", 1);
             y += summaryHeight;
             if (!reason.empty()) {
                 text(ImVec2(panel.x + extent.x / 2, y), reason, 19, palette().muted, width, true);

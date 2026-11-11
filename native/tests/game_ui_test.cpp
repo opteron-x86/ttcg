@@ -756,19 +756,20 @@ int main(int argc, char** argv) {
                             std::abs(cardPreview.GetWidth() - deckPreview.GetWidth()) < 1 &&
                             std::abs(cardPreview.GetHeight() - deckPreview.GetHeight()) < 1,
                         "Cards and Decks disagree on preview size or position");
-                const float navigation = child("saved-decks")->Size.x, contentX = bounds("rename").Min.x;
+                // The deck editor has its own wider deck panel; the other tabs share one navigation column.
+                load("album", "journal");
+                const float navigation = child("holds")->Size.x;
+                load("album", "rules");
+                const float contentX = child("rule-content")->Pos.x;
                 for (const auto& [page, name] : std::array<std::pair<const char*, const char*>, 3>{
                          {{"journal", "holds"}, {"rules", "rule-chapters"}, {"tournaments", "tournament-list"}}}) {
                     load(page == std::string_view("tournaments") ? "tournaments" : "album", page);
                     require(std::abs(child(name)->Size.x - navigation) < 1,
                             "Navigation column changes width between tabs");
-                    if (page == std::string_view("rules"))
-                        require(std::abs(child("rule-content")->Pos.x - contentX) < 1,
-                                "Rules content does not align with Decks");
                 }
                 load("album", "gameplay");
                 require(std::abs(child("settings-body")->Pos.x - contentX) < 1,
-                        "Settings content does not align with Decks");
+                        "Settings content does not align with Rules");
             }
             load("album", "gameplay");
             {

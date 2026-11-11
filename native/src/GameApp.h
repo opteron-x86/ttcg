@@ -51,6 +51,8 @@ class GameApp final : public App {
         const char* back = "Close";
         const char* action = "Select";
         bool inspect = false;
+        // One more action the page answers to: keyboard key, pad button and label.
+        const char *extraKey = nullptr, *extraPad = nullptr, *extra = nullptr;
     };
     FooterPrompts footerPrompts() const;
     void send(std::string_view verb, std::string args = {}, bool exclusive = true);
@@ -72,7 +74,8 @@ class GameApp final : public App {
     // Labelled facts about a card, one per row; returns the height used.
     float factRows(const CardView& card, ImVec2 at, float width, bool draw = true, bool compact = false);
     float ruleChips(ImVec2 at, float width, unsigned flags, int trade = -1, bool casual = false,
-                    bool interactive = false, const Json* changes = nullptr, bool centred = false);
+                    bool interactive = false, const Json* changes = nullptr, bool centred = false,
+                    bool explained = false);
     const Json* tournament(unsigned id) const;
     void journal(ImVec2 at, ImVec2 size);
     void tournaments(ImVec2 at, ImVec2 size);

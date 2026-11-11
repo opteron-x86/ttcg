@@ -96,42 +96,44 @@ bool GameApp::ruleRequestModal() {
 }
 void GameApp::lobby(ImVec2 at, ImVec2 size) {
     const auto& c = member(state, "collection");
-    text(at, label(state, "opponent"), 35, palette().ink);
-    const auto subtitle = label(c, "hold") + " · " + (number(c, "tournamentID") ? "Tournament" : label(c, "skill"));
-    text(at + ImVec2(0, 46) * scale, subtitle, 18, palette().muted, size.x);
-    const float ruleX = font()->CalcTextSizeA(18 * scale, 1e5f, 0, subtitle.c_str()).x + 16 * scale;
-    const float rulesHeight =
-        ruleChips(at + ImVec2(ruleX, 41 * scale), size.x - ruleX, number(state, "rules"),
-                  number(c, "tournamentID") ? -1 : number(c, "fixedTrade"), flag(c, "practice"), true);
-    float y = at.y + std::max(100 * scale, 62 * scale + rulesHeight);
     const auto& culture = member(c, "culture");
     const int offer = number(culture, "offerRule");
+    const bool tournamentGame = number(c, "tournamentID") != 0, casual = flag(c, "practice");
+    // Who you are facing, and how you have fared against them.
+    text(at, label(state, "opponent"), 35, palette().ink);
+    auto subtitle = label(c, "hold") + " · " + (tournamentGame ? "Tournament" : label(c, "skill"));
+    for (const auto& rival : arrayMember(c, "roster"))
+        if (label(rival, "name") == label(state, "opponent") &&
+            number(rival, "wins") + number(rival, "losses") + number(rival, "draws") > 0)
+            subtitle += " · " + std::to_string(number(rival, "wins")) + " W · " +
+                        std::to_string(number(rival, "losses")) + " L · " + std::to_string(number(rival, "draws")) +
+                        " D";
+    text(at + ImVec2(0, 46) * scale, subtitle, 18, palette().muted, size.x);
+    const float top = at.y + 92 * scale, footerY = at.y + size.y - 73 * scale;
+    const float panel = std::min(400 * scale, size.x * .31f), gutter = 40 * scale, left = size.x - panel - gutter;
+    // Left: the deck you will play.
+    float y = top;
     text(ImVec2(at.x, y + 7 * scale), "Deck", 18, palette().muted);
-    ImGui::SetCursorScreenPos(ImVec2(at.x + 55 * scale, y));
-    ImGui::SetNextItemWidth(295 * scale);
     std::vector<std::string> decks;
     int active = 0;
     for (const auto& deck : collection.decks) {
         if (deck.id == collection.activeDeck) active = int(decks.size());
         decks.push_back(deck.name);
     }
+    ImGui::SetCursorScreenPos(ImVec2(at.x + 55 * scale, y));
     if (select("##lobby-deck", active, decks, 295 * scale))
         request({{"action", "select"}, {"deckID", collection.decks[active].id}});
-    if (button("edit-deck", "Edit deck", ImVec2(at.x + size.x - 125 * scale, y), ImVec2(125, 38) * scale)) {
+    if (button("edit-deck", "Edit deck", ImVec2(at.x + left - 125 * scale, y), ImVec2(125, 38) * scale)) {
         tab = 1;
         send("browse", "album");
     }
     y += 58 * scale;
-    const float gap = 22 * scale, room = at.y + size.y - y - 73 * scale,
-                w = std::min((size.x - 4 * gap) / 5, (room - 60 * scale) * .75f), h = w / .75f;
-    const float left = at.x + (size.x - (w * 5 + gap * 4)) / 2;
-    // The deck sits in the middle of the space between the controls and the footer.
+    const float gap = 18 * scale, room = footerY - y, w = std::min((left - 4 * gap) / 5, (room - 60 * scale) * .75f),
+                h = w / .75f;
+    const float first = at.x + (left - (w * 5 + gap * 4)) / 2;
     y += std::max(14 * scale, (room - h - 30 * scale) * .5f);
-    textRight(ImVec2(at.x + size.x, at.y + 6 * scale), std::to_string(number(c, "gold")) + " gold", 22,
-              skinned() ? skin().value : palette().accent);
-    textRight(ImVec2(at.x + size.x, at.y + 38 * scale), "Your purse", 14, palette().muted);
     for (int i = 0; i < 5; ++i) {
-        const auto p = ImVec2(left + i * (w + gap), y);
+        const auto p = ImVec2(first + i * (w + gap), y);
         const int id = itemNumber(member(c, "deck"), i);
         ImGui::PushID(i);
         ImGui::SetCursorScreenPos(p);
@@ -158,10 +160,75 @@ void GameApp::lobby(ImVec2 at, ImVec2 size) {
             ImGui::GetWindowDrawList()->AddRect(p, p + ImVec2(w, h), focused ? palette().accent : palette().line);
             text(p + ImVec2(w / 2, h / 2), "+", 30, palette().muted, 0, true);
         }
-        text(p + ImVec2(0, h + 12 * scale), std::to_string(i + 1), 13, palette().muted);
+        text(p + ImVec2(w * .5f, h + 12 * scale), std::to_string(i + 1), 14, palette().muted, 0, true);
         ImGui::PopID();
     }
-    const auto footer = at + ImVec2(0, size.y - 73 * scale);
+    // Right: what is being played for, stated in full before the game begins.
+    const ImVec2 terms(at.x + size.x - panel, top);
+    const float edge = terms.x - gutter * .5f;
+    if (skinned())
+        skinRule(ImVec2(edge, top), ImVec2(edge, footerY - 14 * scale), .45f);
+    else
+        line(ImVec2(edge, top), ImVec2(edge, footerY - 14 * scale));
+    textCaps(terms + ImVec2(0, 8 * scale), "Rules of this game", 14, palette().muted, 1.6f);
+    const int fixed = number(c, "fixedWager", -1),
+              affordable = std::max(0, std::min({number(c, "gold"), number(c, "rivalGold"), number(c, "maxWager")}));
+    if (fixed < 0 && (wager > affordable || !flag(c, "canStake"))) wager = 0;
+    const bool stakes = !tournamentGame && !casual;
+    const float actions = (stakes ? 150 : 96) * scale, listHeight = footerY - 14 * scale - top - 40 * scale - actions;
+    ImGui::SetCursorScreenPos(terms + ImVec2(-8 * scale, 40 * scale));
+    ImGui::BeginChild("terms", ImVec2(panel + 8 * scale, listHeight), ImGuiChildFlags_NavFlattened);
+    const auto listAt = ImGui::GetCursorScreenPos() + ImVec2(8 * scale, 0);
+    const float used = ruleChips(listAt, panel - 22 * scale, number(state, "rules"),
+                                 tournamentGame ? -1 : number(c, "fixedTrade"), casual, true, nullptr, false, true);
+    ImGui::SetCursorScreenPos(listAt + ImVec2(0, used));
+    ImGui::Dummy(ImVec2(1, 1));
+    ImGui::EndChild();
+    float ay = footerY - 14 * scale - actions + 12 * scale;
+    if (stakes) {
+        textCaps(ImVec2(terms.x, ay + 11 * scale), "Wager", 14, palette().muted, 1.6f);
+        if (fixed < 0 && number(c, "maxWager")) {
+            std::vector<std::string> amounts;
+            std::vector<int> values;
+            int chosen = 0;
+            for (int value : ttcg::wagerAmounts)
+                if (value <= affordable) {
+                    if (wager == value) chosen = int(values.size());
+                    values.push_back(value);
+                    amounts.push_back(std::to_string(value) + " gold");
+                }
+            ImGui::SetCursorScreenPos(ImVec2(terms.x + panel - 150 * scale, ay));
+            ImGui::BeginDisabled(!flag(c, "canStake"));
+            if (select("##wager", chosen, amounts, 150 * scale)) wager = values[chosen];
+            ImGui::EndDisabled();
+        } else
+            textRight(ImVec2(terms.x + panel, ay + 8 * scale), fixed > 0 ? std::to_string(fixed) + " gold" : "None", 18,
+                      palette().ink);
+        textRight(ImVec2(terms.x + panel, ay + 44 * scale), "You carry " + std::to_string(number(c, "gold")) + " gold",
+                  14, palette().muted);
+        ay += 72 * scale;
+    }
+    const bool complete = std::all_of(collection.deck.begin(), collection.deck.end(), [](auto id) { return id != 0; });
+    const bool ready = !pendingCommand && !offer && !number(c, "ruleRequest") &&
+                       (!complete || (flag(c, "canPlay") && fixed <= affordable));
+    if (button("play", complete ? "Play" : "Complete deck", ImVec2(terms.x, ay), ImVec2(panel, 50 * scale), true,
+               ready)) {
+        if (!complete) {
+            tab = 1;
+            deckSlot = -1;
+            send("browse", "album");
+        } else {
+            std::string args = std::to_string(number(state, "rules")) + " " + std::to_string(number(c, "fixedTrade")) +
+                               " " + std::to_string(tournamentGame || casual ? 0 : wager);
+            for (const auto& id : member(c, "deck")) args += " " + std::to_string(id.get<int>());
+            send("start", args);
+        }
+    }
+    if (!ready && complete) {
+        auto reason = fixed > affordable ? "Not enough gold for this wager." : label(c, "playUnavailableReason");
+        text(ImVec2(terms.x, ay + 56 * scale), reason, 15, palette().muted, panel);
+    }
+    const auto footer = ImVec2(at.x, footerY);
     line(footer, footer + ImVec2(size.x, 0));
     if (button("album", "Album", footer + ImVec2(0, 23) * scale, ImVec2(95, 38) * scale)) {
         tab = 0;
@@ -189,49 +256,6 @@ void GameApp::lobby(ImVec2 at, ImVec2 size) {
     if (number(c, "ruleLesson") || number(member(member(state, "settings"), "development"), "RuleLesson"))
         if (button("lesson", "Practice rule", footer + ImVec2(390, 23) * scale, ImVec2(150, 38) * scale))
             send("rule-lesson");
-    const bool tournamentGame = number(c, "tournamentID") != 0, casual = flag(c, "practice");
-    const int fixed = number(c, "fixedWager", -1),
-              affordable = std::max(0, std::min({number(c, "gold"), number(c, "rivalGold"), number(c, "maxWager")}));
-    if (fixed < 0 && (wager > affordable || !flag(c, "canStake"))) wager = 0;
-    if (!tournamentGame && !casual && fixed < 0 && number(c, "maxWager")) {
-        text(footer + ImVec2(size.x - 349 * scale, 33 * scale), "Wager", 17, palette().muted);
-        ImGui::SetCursorScreenPos(footer + ImVec2(size.x - 290 * scale, 23 * scale));
-        ImGui::SetNextItemWidth(110 * scale);
-        std::vector<std::string> amounts;
-        std::vector<int> values;
-        int chosen = 0;
-        for (int value : ttcg::wagerAmounts)
-            if (value <= affordable) {
-                if (wager == value) chosen = int(values.size());
-                values.push_back(value);
-                amounts.push_back(std::to_string(value) + " gold");
-            }
-        ImGui::BeginDisabled(!flag(c, "canStake"));
-        if (select("##wager", chosen, amounts, 125 * scale)) wager = values[chosen];
-        ImGui::EndDisabled();
-    } else if (!tournamentGame && !casual && fixed > 0)
-        text(footer + ImVec2(size.x - 350 * scale, 33 * scale), "Wager: " + std::to_string(fixed) + " gold", 17,
-             palette().muted);
-    const bool complete = std::all_of(collection.deck.begin(), collection.deck.end(), [](auto id) { return id != 0; });
-    const bool ready = !pendingCommand && !offer && !number(c, "ruleRequest") &&
-                       (!complete || (flag(c, "canPlay") && fixed <= affordable));
-    if (button("play", complete ? "Play" : "Complete deck", footer + ImVec2(size.x - 165 * scale, 23 * scale),
-               ImVec2(165, 38) * scale, true, ready)) {
-        if (!complete) {
-            tab = 1;
-            deckSlot = -1;
-            send("browse", "album");
-        } else {
-            std::string args = std::to_string(number(state, "rules")) + " " + std::to_string(number(c, "fixedTrade")) +
-                               " " + std::to_string(tournamentGame || casual ? 0 : wager);
-            for (const auto& id : member(c, "deck")) args += " " + std::to_string(id.get<int>());
-            send("start", args);
-        }
-    }
-    if (!ready && complete) {
-        auto reason = fixed > affordable ? "Not enough gold for this wager." : label(c, "playUnavailableReason");
-        text(footer + ImVec2(size.x - 390 * scale, -30 * scale), reason, 16, palette().muted, 390 * scale);
-    }
 }
 void GameApp::place(int hand, int square) {
     if (hand < 0 || hand >= 5 || square < 0 || square >= 9 || pendingCommand || presentation.pending(state) ||
@@ -398,7 +422,9 @@ std::pair<ImVec2, ImVec2> GameApp::table(const Json& data, ImVec2 at, ImVec2 siz
         strip(edge, edge + out * reach, lit, clear);
         strip(edge, edge + out * weight, bright, bright);
     }
-    const float hw = std::min(stack ? handArea * .70f : (handArea - gap) / 2, tileW * .84f), hh = hw / .75f;
+    // Hand cards are as large as board cards: their values matter most before they are played.
+    const float hw = stack ? std::min(handArea * .70f, tileW * .84f) : std::min((handArea - gap) / 2, tileW),
+                hh = hw / .75f;
     const float handY = at.y + 55 * scale + (boardH - (stack ? hh * 2.15f : hh * 3 + 2 * gap)) * .5f;
     const double elapsed = ImGui::GetTime() - clock.start;
     const double swapLength =
@@ -470,7 +496,14 @@ std::pair<ImVec2, ImVec2> GameApp::table(const Json& data, ImVec2 at, ImVec2 siz
             const float y = handY + (stack ? h * hh * .29f : (h / 2) * (hh + gap)) - firstGlow * 6 * scale;
             const ImVec2 pos(x, y);
             handPositions[player][h] = pos;
-            if (display == -1) continue;
+            if (display == -1) {
+                // A played card leaves its place marked, so the hand keeps its shape to the last card.
+                if (!stack && !collected) {
+                    d->AddRectFilled(pos, pos + ImVec2(hw, hh), IM_COL32(0, 0, 0, 38), 3 * scale);
+                    d->AddRect(pos, pos + ImVec2(hw, hh), fade(palette().line, .55f), 3 * scale);
+                }
+                continue;
+            }
             if (!demo && !collected) {
                 const int origin = member(data, "handOrigins").is_array()
                                        ? itemNumber(data["handOrigins"][player], h, player * 5 + h)
@@ -728,16 +761,18 @@ void GameApp::matchPanel(ImVec2 at, ImVec2 size) {
     const auto [boardAt, boardSize] =
         table(state, at + ImVec2(0, tableTop), ImVec2(size.x, size.y - tableTop - 40 * scale));
     const auto foot = at + ImVec2(0, size.y - 24 * scale);
-    text(foot,
-         label(state, "phase") == "result" ? ""
-         : flag(state, "thinking")         ? label(state, "opponent") + " is thinking…"
-         : number(state, "turn") == 0      ? "Your turn"
-                                           : label(state, "opponent") + "’s turn",
-         17, palette().muted);
+    // Whose move it is reads from the middle of the table, in that player's colour.
+    const bool thinking = flag(state, "thinking"), yours = number(state, "turn") == 0;
+    const auto status = label(state, "phase") == "result" ? std::string()
+                        : thinking                        ? label(state, "opponent") + " is thinking…"
+                        : yours                           ? std::string("Your turn")
+                                                          : label(state, "opponent") + "’s turn";
+    if (!status.empty() && !presentation.pending(state))
+        text(ImVec2(boardAt.x + boardSize.x * .5f, foot.y - 7 * scale), status, 21, controlColour(yours ? 0 : 1, true),
+             0, true);
     const auto group = label(state, "activeGroup");
     if (!group.empty())
-        text(foot + ImVec2(size.x * .38f, 0), group + " " + (number(state, "groupModifier") > 0 ? "+1" : "−1"), 18,
-             palette().accent);
+        text(foot, group + " " + (number(state, "groupModifier") > 0 ? "+1" : "−1"), 18, palette().accent);
     if (button("reference", "Rules", foot + ImVec2(size.x - 100 * scale, -7 * scale), ImVec2(100, 32) * scale, false,
                !presentation.pending(state))) {
         showRuleReference = true;

@@ -1,4 +1,5 @@
 #include "GameApp.h"
+#include "Announcements.h"
 #include <bit>
 namespace preview {
 void GameApp::nativeFilters(ImVec2 at, float width, bool editing) {
@@ -17,21 +18,26 @@ void GameApp::nativeFilters(ImVec2 at, float width, bool editing) {
     const std::vector<std::string> ownership{"Owned", "Discovered", "Missing", "Extras"},
         tiers{"Tier", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"},
         sorts{"Low to high", "High to low", "Name", "Quantity", "Rarity"};
-    const float ownW = choiceWidth(ownership), tierW = choiceWidth(tiers), sortW = choiceWidth(sorts),
-                searchW = width - ownW - tierW - sortW - 120 * scale;
+    // The deck editor only offers cards you own, so it has no ownership choice.
+    if (editing) filter.ownership = 0;
+    const float ownW = editing ? 0 : choiceWidth(ownership) + 10 * scale, tierW = choiceWidth(tiers),
+                sortW = choiceWidth(sorts), tools = 80 * scale + 10 * scale + 118 * scale,
+                searchW = width - ownW - tierW - sortW - 30 * scale - tools;
     ImGui::SetCursorScreenPos(at);
     ImGui::SetNextItemWidth(searchW);
     ImGui::InputTextWithHint("##search", "Search cards", query, sizeof(query));
     float x = searchW + 10 * scale;
-    ImGui::SetCursorScreenPos(at + ImVec2(x, 0));
-    select("##ownership", filter.ownership, ownership, ownW);
-    x += ownW + 10 * scale;
+    if (!editing) {
+        ImGui::SetCursorScreenPos(at + ImVec2(x, 0));
+        select("##ownership", filter.ownership, ownership, ownW - 10 * scale);
+        x += ownW;
+    }
     ImGui::SetCursorScreenPos(at + ImVec2(x, 0));
     select("##tier", filter.tier, tiers, tierW);
     x += tierW + 10 * scale;
     ImGui::SetCursorScreenPos(at + ImVec2(x, 0));
     select("##sort", filter.sort, sorts, sortW);
-    if (button("filters", "Filters", at + ImVec2(width - 80 * scale, 0), ImVec2(80, 38) * scale))
+    if (button("filters", "Filters", at + ImVec2(width - 208 * scale, 0), ImVec2(80, 38) * scale))
         ImGui::OpenPopup("Card filters");
     ImGui::SetNextWindowSize(ImVec2(370 * scale, 0));
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(20, 20) * scale);
@@ -65,12 +71,14 @@ void GameApp::nativeFilters(ImVec2 at, float width, bool editing) {
     }
     ImGui::PopStyleVar();
     filter.text = query;
-    if (editing) {
+    {
+        // Card size, on both the album and the deck editor.
+        int& density = editing ? deckDensity : cardDensity;
         const char* ids[]{"view-large", "view-medium", "view-small"};
         const char* labels[]{"Large cards", "Medium cards", "Small cards"};
         for (int i = 0; i < 3; ++i) {
-            const auto pos = at + ImVec2(i * 40.f, 47) * scale;
-            if (button(ids[i], "", pos, ImVec2(34, 32) * scale, deckDensity == i)) deckDensity = i;
+            const auto pos = at + ImVec2(width - (118 - i * 40.f) * scale, 3 * scale);
+            if (button(ids[i], "", pos, ImVec2(34, 32) * scale, density == i)) density = i;
             itemTooltip(labels[i]);
             const int columns = i + 1;
             const float gap = 2 * scale, unit = (18 * scale - gap * i) / columns;
@@ -79,14 +87,65 @@ void GameApp::nativeFilters(ImVec2 at, float width, bool editing) {
                 for (int col = 0; col < columns; ++col) {
                     const auto cell = origin + ImVec2(col * (unit + gap), row * (unit + gap));
                     ImGui::GetWindowDrawList()->AddRectFilled(cell, cell + ImVec2(unit, unit),
-                                                              deckDensity == i ? palette().accent : palette().muted,
+                                                              density == i ? palette().accent : palette().muted,
                                                               scale * .5f);
                 }
         }
     }
+    {
+        // Filters set in the popup stay visible as chips; a click clears one.
+        static const char* rarities[]{"", "Common", "Rare", "Epic", "Legendary"};
+        static const char* finishes[]{"", "Standard", "Foil"};
+        struct Chip {
+            std::string name;
+            int kind;
+        };
+        std::vector<Chip> chips;
+        if (filter.group >= 0 && filter.group < int(ttcg::creatureGroups.size()))
+            chips.push_back({std::string(ttcg::creatureGroups[filter.group]), 0});
+        if (filter.rarity > 0 && filter.rarity < 5) chips.push_back({rarities[filter.rarity], 1});
+        if (filter.finish > 0 && filter.finish < 3) chips.push_back({finishes[filter.finish], 2});
+        if (filter.affinity == 0) chips.push_back({"Neutral", 3});
+        if (filter.affinity > 0 && filter.affinity <= 5)
+            chips.push_back({ttcg::attributeNames[filter.affinity - 1], 3});
+        if (!filter.set.empty()) {
+            std::string name = filter.set == "tessera" ? "Tessera" : filter.set;
+            for (const auto& c : collection.cards)
+                if (c.setKey == filter.set) name = c.set;
+            chips.push_back({name, 4});
+        }
+        float cx = at.x;
+        for (const auto& chip : chips) {
+            const auto shown = chip.name + "  ×";
+            const float w = font()->CalcTextSizeA(15 * scale, 1e5f, 0, shown.c_str()).x + 20 * scale;
+            const ImVec2 pos(cx, at.y + 49 * scale);
+            ImGui::PushID(chip.kind);
+            ImGui::SetCursorScreenPos(pos);
+            const bool hit = ImGui::InvisibleButton("filter-chip", ImVec2(w, 28 * scale), ImGuiButtonFlags_EnableNav);
+            const bool lit = ImGui::IsItemHovered() || (ImGui::IsItemFocused() && ImGui::GetIO().NavVisible);
+            auto* d = ImGui::GetWindowDrawList();
+            d->AddRectFilled(pos, pos + ImVec2(w, 28 * scale), fade(palette().selection, lit ? .8f : .45f), 14 * scale);
+            d->AddRect(pos, pos + ImVec2(w, 28 * scale), fade(palette().accent, lit ? .7f : .3f), 14 * scale);
+            text(pos + ImVec2(10, 4) * scale, shown, 15, palette().ink);
+            ImGui::PopID();
+            if (hit) {
+                if (chip.kind == 0) filter.group = -1;
+                if (chip.kind == 1) filter.rarity = 0;
+                if (chip.kind == 2) filter.finish = 0;
+                if (chip.kind == 3) filter.affinity = -1;
+                if (chip.kind == 4) filter.set.clear();
+            }
+            cx += w + 8 * scale;
+        }
+    }
     const auto countLabel = [&] {
-        textRight(at + ImVec2(width - 14 * scale, 56 * scale), std::to_string(visible.size()) + " cards", 16,
-                  palette().muted);
+        std::string total = std::to_string(visible.size()) + " cards";
+        if (!editing) {
+            int known = 0;
+            for (const auto& c : collection.cards) known += c.known[0] || c.known[1];
+            total += " · " + std::to_string(known) + " of " + std::to_string(collection.cards.size()) + " discovered";
+        }
+        textRight(at + ImVec2(width - 14 * scale, 54 * scale), total, 16, palette().muted);
     };
     if (!filterDirty && filter == appliedFilter) {
         countLabel();
@@ -142,25 +201,13 @@ void GameApp::nativeFilters(ImVec2 at, float width, bool editing) {
 void GameApp::nativeAlbum(ImVec2 at, ImVec2 size) {
     const float right = AlbumLayout::preview * scale, gap = AlbumLayout::gap * scale, width = size.x - right - gap;
     nativeFilters(at, width);
-    cardGrid(at + ImVec2(0, 86) * scale, ImVec2(width, size.y - 86 * scale));
+    const float top = 86 * scale + packStrip(at + ImVec2(0, 86 * scale), width);
+    cardGrid(at + ImVec2(0, top), ImVec2(width, size.y - top));
     if (skinned())
         skinRule(at + ImVec2(width + gap * .5f, 0), at + ImVec2(width + gap * .5f, size.y), .45f);
     else
         line(at + ImVec2(width + gap * .5f, 0), at + ImVec2(width + gap * .5f, size.y));
     drawDetail(at + ImVec2(width + gap, 0), ImVec2(right, size.y));
-    int owned = 0;
-    std::array<int, 2> known{}, total{};
-    for (const auto& c : collection.cards) {
-        const int set = c.setKey.empty() ? 0 : 1;
-        owned += c.owned[0] + c.owned[1] > 0;
-        known[set] += c.known[0] || c.known[1];
-        ++total[set];
-    }
-    const auto progress = total[1] ? "Tessera " + std::to_string(known[0]) + "/" + std::to_string(total[0]) +
-                                         " · Expansions " + std::to_string(known[1]) + "/" + std::to_string(total[1])
-                                   : std::to_string(owned) + " owned · " + std::to_string(known[0]) + "/" +
-                                         std::to_string(total[0]) + " discovered";
-    textRight(at + ImVec2(size.x, -55 * scale), progress, 16, palette().muted);
 }
 void GameApp::nativeDecks(ImVec2 at, ImVec2 size) {
     if (!member(state, "interruptedMatch").is_null()) {
@@ -170,15 +217,11 @@ void GameApp::nativeDecks(ImVec2 at, ImVec2 size) {
     decks(at, size);
 }
 void GameApp::drawDetail(ImVec2 at, ImVec2 size) {
-    if (selectedPack >= 0 && tab == 0) {
-        packDetail(at, size);
-        return;
-    }
     if (collection.cards.empty() || selected < 0) return;
     const auto& c = collection.cards[selected];
     const bool known = c.known[selectedFoil] || c.owned[selectedFoil];
     const float facts = factRows(c, {}, size.x, false);
-    const float w = std::min(size.x - 12 * scale, (size.y - facts - 150 * scale) * .75f), h = w / .75f;
+    const float w = std::min(size.x - 12 * scale, (size.y - facts - 186 * scale) * .75f), h = w / .75f;
     const auto p = at + ImVec2((size.x - w) / 2, 8 * scale);
     if (known && skinned() && skinPiece("detail"))
         skinPanel(ImVec2(at.x - 8 * scale, p.y + h + 10 * scale), ImVec2(size.x + 16 * scale, facts + 66 * scale), .7f,
@@ -204,22 +247,40 @@ void GameApp::drawDetail(ImVec2 at, ImVec2 size) {
     y += factRows(c, ImVec2(at.x + (inset ? 10 : 2) * scale, y), size.x - (inset ? 20 : 4) * scale) + 16 * scale;
     if (tab == 1) {
         int slot = deckSlot;
-        if (slot < 0)
-            for (int i = 0; i < 5; ++i)
-                if (!collection.deck[i]) {
-                    slot = i;
-                    break;
-                }
-        if (slot < 0) return;
+        for (int i = 0; slot < 0 && i < 5; ++i)
+            if (!collection.deck[i]) slot = i;
         const auto id = c.id | (selectedFoil ? ttcg::foilFlag : 0);
-        const auto title = collection.deck[slot] ? "Replace slot " + std::to_string(slot + 1) : "Add to deck";
-        if (button("add", title.c_str(), ImVec2(at.x, y), ImVec2(size.x, 40 * scale), true,
-                   collection.canUse(id, slot) && !pendingCommand)) {
-            auto hand = collection.deck;
-            hand[slot] = id;
-            request({{"action", "deck"}, {"cards", hand}});
+        // Against the card it would replace: what each rank gains or gives up.
+        const int held = slot >= 0 ? collection.index(collection.deck[slot]) : -1;
+        if (held >= 0 && collection.deck[slot] != id) {
+            const auto& other = collection.cards[held];
+            textCaps(ImVec2(at.x + 2 * scale, y + 5 * scale), "Vs slot " + std::to_string(slot + 1), 12.5f,
+                     palette().muted, 1.2f);
+            const char* arrows[]{"↑", "→", "↓", "←"};
+            float x = at.x + size.x - 2 * scale;
+            for (int n = 3; n >= 0; --n) {
+                const int change = c.sides[n] - other.sides[n];
+                const auto value = std::string(arrows[n]) +
+                                   (change > 0   ? "+"
+                                    : change < 0 ? "−"
+                                                 : "") +
+                                   std::to_string(std::abs(change));
+                x -= font()->CalcTextSizeA(16 * scale, 1e5f, 0, value.c_str()).x;
+                text(ImVec2(x, y + 2 * scale), value, 16,
+                     change > 0   ? IM_COL32(150, 214, 128, 255)
+                     : change < 0 ? IM_COL32(236, 132, 112, 255)
+                                  : palette().muted);
+                x -= 9 * scale;
+            }
         }
-    } else if (button("deck-card", "Use in deck", ImVec2(at.x, y), ImVec2(size.x, 40 * scale), false,
+        y += 34 * scale;
+        const auto title = slot < 0                ? std::string("Choose a slot")
+                           : collection.deck[slot] ? "Replace slot " + std::to_string(slot + 1)
+                                                   : "Add to slot " + std::to_string(slot + 1);
+        if (button("add", title.c_str(), ImVec2(at.x, y), ImVec2(size.x, 40 * scale), true,
+                   slot >= 0 && collection.canUse(id, slot) && !pendingCommand))
+            addToDeck(id);
+    } else if (button("deck-card", "Use in deck", ImVec2(at.x, y + 34 * scale), ImVec2(size.x, 40 * scale), false,
                       collection.writable && c.owned[selectedFoil] > 0)) {
         tab = 1;
         screen = 3;

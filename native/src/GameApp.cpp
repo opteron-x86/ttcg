@@ -437,7 +437,7 @@ void GameApp::displayCard(int display, ImVec2 at, ImVec2 size, bool chosen, int 
     }
 }
 float GameApp::ruleChips(ImVec2 at, float width, unsigned flags, int trade, bool casual, bool interactive,
-                         const Json* changes, bool centred) {
+                         const Json* changes, bool centred, bool explained) {
     struct Chip {
         std::string name;
         int rule = -1, trade = -1;
@@ -485,21 +485,6 @@ float GameApp::ruleChips(ImVec2 at, float width, unsigned flags, int trade, bool
     for (const auto& chip : chips) {
         const auto& name = chip.name;
         const std::string shown = caption(chip);
-        const auto w = widths[index];
-        if (x + w > at.x + width + .5f && x > at.x) {
-            ++row;
-            x = at.x + (centred ? (width - rows[row]) * .5f : 0);
-            y += 32 * scale;
-        }
-        if (centred && x > at.x + (width - rows[row]) * .5f + .5f)
-            ImGui::GetWindowDrawList()->AddCircleFilled(ImVec2(x - 2 * scale, y + 15 * scale), .75f * scale,
-                                                        palette().muted);
-        ImGui::PushID(index++);
-        ImGui::SetCursorScreenPos(ImVec2(x, y));
-        const bool hit = ImGui::InvisibleButton("rule", ImVec2(w, 30 * scale), ImGuiButtonFlags_EnableNav);
-        const auto ink = chip.change && chip.active ? palette().accent : palette().muted;
-        text(ImVec2(x + 8 * scale, y + 5 * scale), shown, 17, ink);
-        if (!chip.active) line(ImVec2(x + 26 * scale, y + 15 * scale), ImVec2(x + w - 10 * scale, y + 15 * scale), ink);
         std::string help, chapterID = "trade";
         for (const auto& page : reference.at("pages"))
             if (label(page, "title") == name) {
@@ -509,6 +494,47 @@ float GameApp::ruleChips(ImVec2 at, float width, unsigned flags, int trade, bool
         for (const auto& page : reference.at("trades"))
             if (label(page, "title") == name) help = label(page, "copy");
         if (name == "Casual") help = "Games with children have no card trades or gold wagers.";
+        bool hit = false;
+        if (explained) {
+            // One rule to a row, with the sentence that says what it does.
+            auto summary = help;
+            if (const auto stop = summary.find(". "); stop != std::string::npos) summary.erase(stop + 1);
+            const float lines = font()->CalcTextSizeA(15.5f * scale, 1e5f, width - 4 * scale, summary.c_str()).y;
+            const float rowHeight = 30 * scale + lines + 12 * scale;
+            ImGui::PushID(index++);
+            ImGui::SetCursorScreenPos(ImVec2(x, y));
+            hit = ImGui::InvisibleButton("rule", ImVec2(width, rowHeight - 6 * scale), ImGuiButtonFlags_EnableNav);
+            const bool lit = ImGui::IsItemHovered() || (ImGui::IsItemFocused() && ImGui::GetIO().NavVisible);
+            if (lit)
+                ImGui::GetWindowDrawList()->AddRectFilled(ImVec2(x - 8 * scale, y),
+                                                          ImVec2(x + width, y + rowHeight - 6 * scale),
+                                                          fade(palette().selection, .35f));
+            const auto ink = chip.change && chip.active ? palette().accent : palette().ink;
+            text(ImVec2(x, y + 3 * scale), shown, 20, ink);
+            if (!chip.active) {
+                const float w = font()->CalcTextSizeA(20 * scale, 1e5f, 0, shown.c_str()).x;
+                line(ImVec2(x, y + 16 * scale), ImVec2(x + w, y + 16 * scale), ink);
+            }
+            text(ImVec2(x, y + 30 * scale), summary, 15.5f, palette().muted, width - 4 * scale);
+            y += rowHeight;
+        } else {
+            const auto w = widths[index];
+            if (x + w > at.x + width + .5f && x > at.x) {
+                ++row;
+                x = at.x + (centred ? (width - rows[row]) * .5f : 0);
+                y += 32 * scale;
+            }
+            if (centred && x > at.x + (width - rows[row]) * .5f + .5f)
+                ImGui::GetWindowDrawList()->AddCircleFilled(ImVec2(x - 2 * scale, y + 15 * scale), .75f * scale,
+                                                            palette().muted);
+            ImGui::PushID(index++);
+            ImGui::SetCursorScreenPos(ImVec2(x, y));
+            hit = ImGui::InvisibleButton("rule", ImVec2(w, 30 * scale), ImGuiButtonFlags_EnableNav);
+            const auto ink = chip.change && chip.active ? palette().accent : fade(palette().ink, .86f);
+            text(ImVec2(x + 8 * scale, y + 5 * scale), shown, 17, ink);
+            if (!chip.active)
+                line(ImVec2(x + 26 * scale, y + 15 * scale), ImVec2(x + w - 10 * scale, y + 15 * scale), ink);
+        }
         if (chip.change)
             help += (chip.active ? "\n\nProtected from removal until " : "\n\nCannot return until ") +
                     label(*chip.change, "until") + ".";
@@ -523,10 +549,10 @@ float GameApp::ruleChips(ImVec2 at, float width, unsigned flags, int trade, bool
             demoSelected = false;
             showRuleReference = true;
         }
-        x += w;
+        if (!explained) x += widths[index - 1];
         ImGui::PopID();
     }
-    return y - at.y + 32 * scale;
+    return y - at.y + (explained ? 0 : 32 * scale);
 }
 const Json* GameApp::tournament(unsigned id) const {
     for (const auto& e : arrayMember(member(member(state, "collection"), "tournaments"), "events"))
@@ -591,7 +617,12 @@ GameApp::FooterPrompts GameApp::footerPrompts() const {
     if (capturing()) return {"Cancel", nullptr, false};
     const auto page = label(state, "screen"), phase = label(state, "phase");
     if (page == "album" && phase == "ready")
-        return {flag(state, "matchContext") ? "Back" : "Close", "Select", tab == 0 || tab == 1};
+        return {flag(state, "matchContext") ? "Back" : "Close",
+                "Select",
+                tab == 0 || tab == 1,
+                tab == 1 ? "Enter" : nullptr,
+                "360_X",
+                tab == 1 ? "Add to deck" : nullptr};
     if (page == "shop") return {"Close", "Select", true};
     if (page == "lesson") return {"Close", "Select", false};
     if (phase == "ready") return {"Close", "Select", true};
@@ -699,30 +730,49 @@ void GameApp::draw() {
     const float promptBar = skinned() ? 30 * scale : 0;
     size.y -= promptBar;
     if (page == "album" && phase == "ready") {
+        // The tabs share the title's row, so every page keeps the height a second bar would take.
         static const char* names[]{"Cards", "Decks", "Journal", "Rules", "Tournaments", "Settings"};
         const int order[]{0, 1, 2, 4, 3, 5};
-        float x = body.x;
+        const float k = skinUnit(), band = std::min(108 * k, 50 * scale);
+        const float tabHeight = 40 * scale,
+                    tabY = skinned() ? frameAt.y + 2 * k + (band - tabHeight) * .5f : at.y - 6 * scale;
+        float x =
+            at.x +
+            (skinned() ? capsWidth("Tessera", 26, 3) : font()->CalcTextSizeA(22 * scale, 1e5f, 0, "T E S S E R A").x) +
+            54 * scale;
+        const bool free = !popupBeforeFrame && !ImGui::GetIO().WantTextInput && !inspecting &&
+                          !ImGui::IsPopupOpen(nullptr, ImGuiPopupFlags_AnyPopupId | ImGuiPopupFlags_AnyPopupLevel);
+        // Bumpers, or Q and E, step through the tabs.
+        int step = 0;
+        if (free) {
+            if (ImGui::IsKeyPressed(ImGuiKey_GamepadL1, false) || ImGui::IsKeyPressed(ImGuiKey_Q, false)) step = -1;
+            if (ImGui::IsKeyPressed(ImGuiKey_GamepadR1, false) || ImGui::IsKeyPressed(ImGuiKey_E, false)) step = 1;
+        }
+        if (step) {
+            int position = 0;
+            for (int i = 0; i < 6; ++i)
+                if (order[i] == tab) position = i;
+            tab = order[(position + step + 6) % 6];
+            selectedPack = -1;
+        }
+        if (skinned()) x += keyPrompt("Q", "360_LB", "", ImVec2(x, tabY + 5 * scale)) + 2 * scale;
         for (int i : order) {
             std::string name = names[i];
             if (palette().sans)
                 for (auto& ch : name) ch = char(std::toupper(static_cast<unsigned char>(ch)));
             const float w =
                 font()->CalcTextSizeA((palette().sans ? 18 : 24) * scale, 1e5f, 0, name.c_str()).x + 12 * scale;
-            if (sectionTab(names[i], name, ImVec2(x, body.y), ImVec2(w, 48 * scale), tab == i)) {
+            if (sectionTab(names[i], name, ImVec2(x, tabY), ImVec2(w, tabHeight), tab == i)) {
                 tab = i;
                 selectedPack = -1;
             }
-            x += w + 28 * scale;
+            x += w + 24 * scale;
         }
+        if (skinned()) keyPrompt("E", "360_RB", "", ImVec2(x - 6 * scale, tabY + 5 * scale));
         if (flag(state, "matchContext") &&
-            button("return", "Return to game", ImVec2(body.x + width - 160 * scale, body.y), ImVec2(160, 38) * scale))
+            button("return", "Return to game", ImVec2(at.x + width - (skinned() ? 215 : 440) * scale, tabY + scale),
+                   ImVec2(160, 38) * scale))
             send("browse", "lobby");
-        if (skinned())
-            skinRule(body + ImVec2(0, 48 * scale), body + ImVec2(width, 48 * scale), .5f);
-        else
-            line(body + ImVec2(0, 48 * scale), body + ImVec2(width, 48 * scale));
-        body.y += 70 * scale;
-        size.y -= 70 * scale;
         const auto& interrupted = member(state, "interruptedMatch");
         if (!interrupted.is_null() && !interrupted.empty()) {
             // The offer and its answers sit together, clear of the page's own totals on the right.
@@ -783,6 +833,8 @@ void GameApp::draw() {
             if (leave) closeView();
             if (prompts.action) x += keyPrompt("Mouse1", "360_A", prompts.action, ImVec2(x, y)) + 26 * scale;
             if (prompts.inspect) x += keyPrompt("Mouse2", "360_Y", "Inspect", ImVec2(x, y)) + 26 * scale;
+            if (prompts.extra)
+                x += keyPrompt(prompts.extraKey, prompts.extraPad, prompts.extra, ImVec2(x, y)) + 26 * scale;
         }
         if (!notice.empty())
             text(ImVec2(x + 10 * scale, y + 6 * scale), notice, 16, skin().notice, at.x + width - x - 10 * scale);

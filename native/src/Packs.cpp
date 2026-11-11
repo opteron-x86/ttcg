@@ -11,28 +11,26 @@ void fitImage(Texture texture, ImVec2 at, ImVec2 size) {
     ImGui::GetWindowDrawList()->AddImage(texture.id, p, p + image);
 }
 }
-void App::packTile(unsigned kind, ImVec2 at, ImVec2 size, bool chosen) {
+float App::packStrip(ImVec2 at, float width) {
+    if (!collection.connected || collection.packs[0] + collection.packs[1] <= 0) return 0;
     auto* draw = ImGui::GetWindowDrawList();
-    if (chosen) draw->AddRectFilled(at, at + size, palette().selection, 2);
-    draw->AddRect(at, at + size, chosen ? palette().accent : palette().line, 2);
-    const float foot = 34 * scale;
-    fitImage(assets.pack(kind), at + ImVec2(7, 7) * scale, ImVec2(size.x - 14 * scale, size.y - foot - 12 * scale));
-    text(at + ImVec2(size.x * .5f, size.y - foot + 5 * scale),
-         std::string(packName(kind)) + "  ×" + std::to_string(collection.packs[kind]), 16, palette().ink, 0, true);
-}
-void App::packDetail(ImVec2 at, ImVec2 size) {
-    const unsigned kind = static_cast<unsigned>(selectedPack);
-    const float h = std::min(size.x * 1.31f, size.y - 185 * scale);
-    fitImage(assets.pack(kind), at + ImVec2(12, 8) * scale, ImVec2(size.x - 24 * scale, h));
-    float y = at.y + h + 35 * scale;
-    text(ImVec2(at.x + size.x * .5f, y), packName(kind), 25, palette().ink, 0, true);
-    y += 44 * scale;
-    text(ImVec2(at.x + size.x * .5f, y), "×" + std::to_string(collection.packs[kind]), 19, palette().muted, 0, true);
-    y += 48 * scale;
-    const bool enabled = collection.ready && collection.writable && !collection.busy && collection.packs[kind] > 0;
-    if (button("open-pack", collection.busy ? "Opening..." : "Open pack", ImVec2(at.x + 24 * scale, y),
-               ImVec2(size.x - 48 * scale, 42 * scale), true, enabled))
-        request({{"action", "open-pack"}, {"kind", kind}});
+    const float height = 62 * scale, tile = std::min(350 * scale, (width - 14 * scale) * .5f);
+    const bool enabled = collection.ready && collection.writable && !collection.busy;
+    float x = at.x;
+    for (unsigned kind = 0; kind < 2; ++kind) {
+        if (collection.packs[kind] <= 0) continue;
+        const ImVec2 pos(x, at.y);
+        draw->AddRectFilled(pos, pos + ImVec2(tile, height), IM_COL32(0, 0, 0, 46), 3 * scale);
+        draw->AddRect(pos, pos + ImVec2(tile, height), palette().line, 3 * scale);
+        fitImage(assets.pack(kind), pos + ImVec2(8, 4) * scale, ImVec2(46, 54) * scale);
+        text(pos + ImVec2(64, 9) * scale, packName(kind), 18, palette().ink);
+        text(pos + ImVec2(64, 34) * scale, std::to_string(collection.packs[kind]) + " unopened", 14, palette().muted);
+        if (button(kind ? "open-pack-tournament" : "open-pack", collection.busy ? "Opening…" : "Open",
+                   pos + ImVec2(tile - 104 * scale, 13 * scale), ImVec2(94, 36) * scale, true, enabled))
+            request({{"action", "open-pack"}, {"kind", kind}});
+        x += tile + 14 * scale;
+    }
+    return height + 14 * scale;
 }
 void App::packModal() {
     if (collection.revealID && !ImGui::IsPopupOpen("Pack contents")) ImGui::OpenPopup("Pack contents");
