@@ -1,0 +1,72 @@
+name: Upload release to Nexus
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Published standard release tag (for example, v0.33.0)
+        type: string
+        required: true
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: nexus-upload
+  cancel-in-progress: false
+
+jobs:
+  upload:
+    name: Upload tested release
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    environment: nexus
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Check publishing configuration
+        env:
+          NEXUSMODS_API_KEY: ${{ secrets.NEXUSMODS_API_KEY }}
+          NEXUSMODS_FILE_ID: ${{ vars.NEXUSMODS_FILE_ID }}
+          NEXUSMODS_MOD_ID: ${{ vars.NEXUSMODS_MOD_ID }}
+        run: |
+          python3 - <<'PY'
+          import os
+          if os.environ['GITHUB_REF'] != 'refs/heads/master':
+              raise SystemExit('Run this workflow from master')
+          required = ('NEXUSMODS_API_KEY', 'NEXUSMODS_FILE_ID', 'NEXUSMODS_MOD_ID')
+          missing = [name for name in required if not os.environ.get(name, '').strip()]
+          if missing:
+              raise SystemExit('Configure the nexus environment: ' + ', '.join(missing))
+          PY
+      - name: Download and verify the published build
+        id: release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.tag }}
+        run: python3 tools/prepare-nexus-upload.py --repo "$GITHUB_REPOSITORY" --tag "$RELEASE_TAG" --output build/nexus-upload
+      - name: Upload to Nexus Mods
+        id: nexus
+        uses: Nexus-Mods/upload-action@98532f7670c27cbecc78fae03fa3e278147827e2
+        with:
+          api_key: ${{ secrets.NEXUSMODS_API_KEY }}
+          file_id: ${{ vars.NEXUSMODS_FILE_ID }}
+          mod_id: ${{ vars.NEXUSMODS_MOD_ID }}
+          filename: ${{ steps.release.outputs.filename }}
+          version: ${{ steps.release.outputs.version }}
+          display_name: Tessera Trading Card Game
+          description: Tessera main package. Install the separate Card Art download too. See the Changelog tab for release notes.
+          category: main
+          archive_existing_version: 'true'
+          primary_mod_manager_download: 'true'
+          allow_mod_manager_download: 'true'
+          update_mod_version: 'true'
+          changelog: ${{ steps.release.outputs.changelog }}
+      - name: Record uploaded version
+        env:
+          RELEASE_VERSION: ${{ steps.release.outputs.version }}
+          NEXUS_VERSION_ID: ${{ steps.nexus.outputs.version_id }}
+        run: |
+          printf 'Uploaded Tessera %s to Nexus Mods (version ID: %s).\n' "$RELEASE_VERSION" "$NEXUS_VERSION_ID" >> "$GITHUB_STEP_SUMMARY"
