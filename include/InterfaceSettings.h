@@ -39,7 +39,7 @@ struct InterfaceSettings {
         Field{"card-groups", "showCardGroups", "Appearance", "ShowCardGroups", &InterfaceSettings::showCardGroups, 1,
               0},
         Field{"card-ranks", "rankLayout", "Appearance", "RankLayout", &InterfaceSettings::rankLayout, 1, 0},
-        Field{"card-frame", "cardFrame", "Appearance", "CardFrame", &InterfaceSettings::cardFrame, 1, 0},
+        Field{"card-frame", "cardFrame", "Appearance", "CardFrame", &InterfaceSettings::cardFrame, 2, 0},
         Field{"nameplate", "nameplateStyle", "Appearance", "NameplateStyle", &InterfaceSettings::nameplateStyle, 2, 0},
         Field{"name-case", "nameCase", "Appearance", "NameCase", &InterfaceSettings::nameCase, 2, 0},
         Field{"interface-font", "interfaceFont", "Appearance", "InterfaceFont", &InterfaceSettings::interfaceFont, 4,

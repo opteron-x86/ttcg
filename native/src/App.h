@@ -38,7 +38,9 @@ struct Skin {
 struct Face {
     bool classic = false, names = true, groups = false, foil = true;
     int nameplate = 0, lettering = 0, back = 0;
-    int frame = 0; // 0 framed, 1 the earlier borderless face.
+    int frame = 0; // 0 medallions, 1 the earlier borderless face, 2 printed.
+    bool legacy() const { return frame == 1; }
+    bool printed() const { return frame == 2; }
     float shadowBlur = 2, shadowOffset = 1;
     float shadow = 0.8f, stroke = 0.6f, foilStrength = 0.72f, grain = 0.10f;
 };
@@ -52,7 +54,7 @@ protected:
     Renderer& renderer;
     Options options;
     Assets assets;
-    ImFont *serif = nullptr, *sans = nullptr, *bold = nullptr, *jost = nullptr, *lato = nullptr;
+    ImFont *serif = nullptr, *sans = nullptr, *bold = nullptr, *jost = nullptr, *jostBold = nullptr, *lato = nullptr;
     std::array<Texture, ttcg::interfaceThemeCount> surfaces{};
     std::array<Skin, ttcg::interfaceThemeCount> skins{};
     bool padPrompts = false;

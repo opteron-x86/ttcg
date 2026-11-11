@@ -102,9 +102,10 @@ App::App(Renderer& r, const Options& o) : renderer(r), options(o), assets(r, o.t
     // Lato or the system fonts at the same nominal control height.
     jost = loadFont("Jost-Regular.ttf", 1.2f);
     if (jost) symbolFallback();
+    jostBold = loadFont("Jost-Bold.ttf", 1.2f);
     lato = loadFont("Lato-Regular.ttf");
     if (lato) symbolFallback();
-    if (!serif || !sans || !bold || !jost || !lato) throw std::runtime_error("Tessera fonts are missing");
+    if (!serif || !sans || !bold || !jost || !jostBold || !lato) throw std::runtime_error("Tessera fonts are missing");
     selected = findCard("Assembled Sanitizer");
     visible = filter.results();
 }
@@ -433,7 +434,7 @@ void App::card(int index, ImVec2 at, ImVec2 size, bool chosen, bool foil, int ow
                                     foil ? face.foilStrength : 0, treated ? matchAppearance.treatment : 0,
                                     matchAppearance.strength);
     }
-    if (face.frame == 0) {
+    if (!face.legacy()) {
         framedCard(c, texture, at, size, chosen, owner);
         return;
     }

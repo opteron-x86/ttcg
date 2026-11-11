@@ -93,7 +93,7 @@ A material is a field (`surface.webp`, stretched), a rail (`frame.png`, 512x512 
 
 ### Card face
 
-`App::card` routes to `framedCard` unless `face.frame == 1` (Settings > Card face > Frame > Borderless). Bezel colour is rarity metal in the album and the controlling player's colour in a match; footer holds the tier gem, bottom value and affinities; each value sits on a plate on its edge. `App::valueAnchor(side, size)` is the single source of value positions (used by the face and by the rule-demo highlight circles).
+`App::card` routes to `framedCard` unless `face.frame == 1` (Settings > Card face > Frame > Borderless). `framedCard` draws two faces, Medallions (0) and Printed (2); see the card face checkpoint below. Frame colour is rarity metal in the album and the controlling player's colour in a match; the footer row holds the tier gem, bottom value and affinities; each value sits on its edge. `App::valueAnchor(side, size)` is the single source of value positions (used by the face and by the rule-demo highlight circles).
 
 ## Remaining work
 
@@ -227,6 +227,17 @@ Shared helpers live in `native/src/Skin.cpp`: `softShadow`, `glow`, `cornerMarks
 - **Smaller**: no interface text under `AlbumLayout::smallestText` (15) or caps under 13.5; the rules paragraph is held to a readable width; the bracket has connector lines and shows the prize pack; the journal's player panel uses labelled rows.
 - The test that every tab shares one navigation width now excludes the deck editor, which has its own panel.
 - Not yet seen in game. The frameless match table was discussed and not done.
+
+### Card face checkpoint (2026-11-11)
+
+The player found the drawn bezel and value plates lacking in quality, compared four mockups and preferred two; both shipped as choices of Settings > Card face > Frame so they can be judged in game. The earlier hexagonal plates are gone.
+
+- **Medallions** (`cardFrame` 0): a slim metal bezel and a round medallion on each edge holding the value on dark enamel, with the footer strip as before. The metal is baked, not drawn: `tools/bake-card-frame.py` lights a height field and writes `TesseraUI/assets/card/frame-{1,2,4,8}.png` (pixels per card unit; `framedCard` picks the level nearest the drawn size, so no mipmaps are needed). Each piece comes as a grey base, multiplied by the frame's colour, and an untinted layer of highlights and shadows. The bezel is nine-sliced; pieces are clipped to the card by hand because a clip rectangle would not follow the inspector's tilt. The layout constants live in the `atlas` namespace of `CardFace.cpp` and must match the script. The script needs numpy, scipy and Pillow, which nothing else in the build does, so the atlases are committed.
+- **Printed** (`cardFrame` 2): no plates and no footer strip. Two fine lines, the values straight on the art over a soft dark halo, and one gradient that carries the name and the footer row. Drawn entirely with ImGui primitives.
+- Values use a real bold weight (`Jost-Bold.ttf`, the 700 instance of the OFL variable font) wherever the value font is Jost, instead of the regular weight drawn twice.
+- The tier gem has four lit facets. `valueAnchor` gained positions for both faces.
+- Mockup renders that led here were made with a throwaway script; the bake script is its descendant.
+- Not yet seen in game. The player has not chosen between the two; when they do, the other can stay as an option or go.
 
 Hand over the absolute path of `dist/<name>/Tessera-<ver>-dev.<hash>-Main.zip`. Compare with the previous Main zip's file hashes to confirm only intended files changed. Skyrim UI mods' assets and the player's mod folder are at `/mnt/mods/Amaranth/mods` (profile `KINMUNE CS`); the player runs Oathvein UI, Dear Diary Dark Mode, Natural Typefaces and Quickslot, so Oathvein is the look to be judged against in game.
 

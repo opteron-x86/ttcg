@@ -17,9 +17,10 @@ def ui_files(root):
     names = ['TesseraUI/rules.json']
     names += [f'TesseraUI/fonts/{font}.ttf' for font in
               ('LiberationSerif-Regular', 'LiberationSerif-Bold', 'LiberationSans-Regular',
-               'Jost-Regular', 'Lato-Regular')]
+               'Jost-Regular', 'Jost-Bold', 'Lato-Regular')]
     names += [f'TesseraUI/icons/affinity-{i}.png' for i in range(5)]
     names += ['TesseraUI/assets/boards/cell.png']
+    names += [f'TesseraUI/assets/card/frame-{level}.png' for level in (1, 2, 4, 8)]
     for board in ('slate', 'felt', 'parchment', 'leather', 'walnut', 'slab'):
         names += [f'TesseraUI/assets/boards/{board}/surface.webp', f'TesseraUI/assets/boards/{board}/frame.png']
     names += [f'TesseraUI/assets/packs/{pack}.png' for pack in ('standard', 'tournament')]

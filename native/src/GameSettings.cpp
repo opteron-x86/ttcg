@@ -215,15 +215,15 @@ void GameApp::settings(ImVec2 at, ImVec2 size) {
         select("Card names", "card-name-font", "cardNameFont", fonts);
         select("Card values", "card-value-font", "cardValueFont", fonts);
         heading("Card face");
-        select("Frame", "card-frame", "cardFrame", {"Framed", "Borderless"});
+        select("Frame", "card-frame", "cardFrame", {"Medallions", "Borderless", "Printed"});
         select("Values", "card-ranks", "rankLayout", {"Edge values", "Classic values"});
         toggle("Card names", "card-names", "showCardNames");
         toggle("Card groups", "card-groups", "showCardGroups");
-        if (face.frame != 0)
+        if (face.legacy())
             select("Nameplate", "nameplate", "nameplateStyle", {"Shaded band", "Soft fade", "Printed on art"});
         select("Lettering", "name-case", "nameCase",
                {skinned() ? "Skin: Title case" : "Small caps", "Title case", "Uppercase"});
-        if (face.frame != 0) {
+        if (face.legacy()) {
             heading("Card values");
             slider("Shadow opacity", "rank-shadow-opacity", "rankShadowOpacity", 100, "%d%%");
             slider("Shadow blur", "rank-shadow-blur", "rankShadowBlur", 8);
@@ -286,8 +286,8 @@ void GameApp::settings(ImVec2 at, ImVec2 size) {
             colour("Opponent", "match-opponent-colour", "opponentColour");
         }
         heading("Card borders");
-        if (face.frame != 0 || matchAppearance.marker) {
-            if (face.frame == 0) textBlock("Extra border around the frame.", width, 17, palette().muted);
+        if (face.legacy() || matchAppearance.marker) {
+            if (!face.legacy()) textBlock("Extra border around the frame.", width, 17, palette().muted);
             select("Style", "match-border-style", "controlBorderStyle",
                    {"Single line", "Double line", "Clipped corners", "Corner brackets", "Original Tessera"});
             const bool skinWidth = skinned() && valueOf("controlBorderWidth") == 12;

@@ -179,6 +179,11 @@ int main(int argc, char** argv) {
                 frame();
                 require(has("##nameplate") && has("rank-stroke") && has("##rank-shadow-opacity"),
                         "Borderless card settings lost their appearance controls");
+                s["settings"]["cardFrame"] = 2;
+                app.receive(s.dump());
+                frame();
+                require(!has("##nameplate") && !has("rank-stroke") && !has("##rank-shadow-opacity"),
+                        "Printed card settings offer the borderless face's controls");
                 s["matchContext"] = true;
                 app.receive(s.dump());
                 require(std::string_view(preview::GameTestAccess::footerPrompts(app).back) == "Back",
