@@ -14,6 +14,15 @@ public:
                       RE::UI_MENU_FLAGS::kUsesMenuContext, RE::UI_MENU_FLAGS::kCustomRendering,
                       RE::UI_MENU_FLAGS::kDisablePauseMenu, RE::UI_MENU_FLAGS::kDontHideCursorWhenTopmost);
         inputContext.set(RE::UserEvents::INPUT_CONTEXT_ID::kMenuMode);
+        // Blur the scene as Skyrim's own menus do, for as long as this menu exists.
+        if (auto* blur = RE::UIBlurManager::GetSingleton()) {
+            blur->IncrementBlurCount();
+            blurred = true;
+        }
+    }
+    ~Menu() override {
+        if (blurred)
+            if (auto* blur = RE::UIBlurManager::GetSingleton()) blur->DecrementBlurCount();
     }
     void RefreshPlatform() override {
         // Native widgets support mouse and controller together. The base
@@ -38,6 +47,9 @@ public:
         return RE::IMenu::ProcessMessage(message);
     }
     static RE::IMenu* create() { return new Menu; }
+
+private:
+    bool blurred = false;
 };
 }
 void registerMenu() {

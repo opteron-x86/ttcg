@@ -61,6 +61,12 @@ namespace RE {
   virtual void RefreshPlatform(){++refreshes;}
   bool UsesMenuContext()const{return menuFlags.has(UI_MENU_FLAGS::kUsesMenuContext);}
  };
+ struct UIBlurManager {
+  int blurCount=0;
+  static UIBlurManager* GetSingleton(){static UIBlurManager manager;return &manager;}
+  void IncrementBlurCount(){++blurCount;}
+  void DecrementBlurCount(){--blurCount;}
+ };
  struct MenuCursor {
   struct Runtime {int showCursorCount=-3;} data;
   Runtime& GetRuntimeData(){return data;}
@@ -137,8 +143,12 @@ int main(){
   assert(ui->gameCursorVisible);
   assert(REX::W32::count==-3&&cursor->data.showCursorCount==-3&&REX::W32::calls==0);
  };
+ // The scene stays blurred exactly as long as a menu instance exists.
+ {Menu brief;assert(RE::UIBlurManager::GetSingleton()->blurCount==1);}
+ assert(RE::UIBlurManager::GetSingleton()->blurCount==0);
  auto menu=std::make_shared<Menu>();ui->menus[menuName]=menu;
  assert(menu->menuFlags.has(RE::UI_MENU_FLAGS::kUsesCursor));
+ assert(RE::UIBlurManager::GetSingleton()->blurCount==1);
  assert(menu->menuFlags.has(RE::UI_MENU_FLAGS::kDontHideCursorWhenTopmost));
  auto cursorMenu=std::make_shared<RE::IMenu>();ui->menus[RE::CursorMenu::MENU_NAME]=cursorMenu;
  RE::UIMessage show{RE::UI_MESSAGE_TYPE::kShow};

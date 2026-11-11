@@ -198,8 +198,11 @@ void GameApp::tournamentOutcome() {
     eventID = number(e, "id");
     if (!ImGui::IsPopupOpen("Tournament result")) ImGui::OpenPopup("Tournament result");
     const float width = 850 * scale;
+    // Only prize cards and foil upgrades need the tall dialog.
+    const bool tall = !arrayMember(e, "prizeCards").empty() || number(e, "foilUpgrades");
     ImGui::SetNextWindowPos(ImGui::GetIO().DisplaySize * .5f, ImGuiCond_Always, ImVec2(.5f, .5f));
-    ImGui::SetNextWindowSize(ImVec2(width, std::min(775 * scale, ImGui::GetIO().DisplaySize.y - 45 * scale)));
+    ImGui::SetNextWindowSize(
+        ImVec2(width, std::min((tall ? 775 : 400) * scale, ImGui::GetIO().DisplaySize.y - 45 * scale)));
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(30, 28) * scale);
     if (ImGui::BeginPopupModal("Tournament result", nullptr, ImGuiWindowFlags_NoDecoration | popupFlags())) {
         popupSurface();
@@ -362,8 +365,26 @@ void GameApp::resultModal() {
     const auto* event = tournament(number(member(c, "tournaments"), "notification"));
     const float reasonHeight =
         reason.empty() ? 0 : font()->CalcTextSizeA(19 * scale, 1e5f, 490 * scale, reason.c_str()).y + 24 * scale;
-    const auto extent =
-        done ? ImVec2(560 * scale, 150 * scale + reasonHeight + (event ? 78 * scale : 0)) : ImVec2(1220, 724) * scale;
+    // The closing dialog says how the game ended and what changed hands.
+    int won = 0, lost = 0;
+    for (int origin = 0; origin < 10; ++origin) {
+        if (origin >= 5 && destinations[origin] == 0) ++won;
+        if (origin < 5 && destinations[origin] == 1) ++lost;
+    }
+    const int wager = number(c, "wager");
+    std::string settlement;
+    const auto cards = [](int n) { return std::to_string(n) + (n == 1 ? " card" : " cards"); };
+    if (won) settlement = "You won " + cards(won);
+    if (lost) settlement = settlement.empty() ? "You lost " + cards(lost) : settlement + " and lost " + cards(lost);
+    if (wager && outcome >= 0)
+        settlement += (settlement.empty() ? std::string(outcome == 0 ? "You won " : "You lost ")
+                                          : std::string(outcome == 0 ? " and won " : " and lost ")) +
+                      std::to_string(wager) + " gold";
+    if (!settlement.empty()) settlement += ".";
+    const float summaryHeight = (settlement.empty() ? 84 : 118) * scale;
+    const auto extent = done
+                            ? ImVec2(560 * scale, 150 * scale + summaryHeight + reasonHeight + (event ? 78 * scale : 0))
+                            : ImVec2(1220, 724) * scale;
     if (!ImGui::IsPopupOpen("Game result")) ImGui::OpenPopup("Game result");
     ImGui::SetNextWindowPos(frameAt + frameSize * .5f, ImGuiCond_Always, ImVec2(.5f, .5f));
     ImGui::SetNextWindowSize(extent);
@@ -379,6 +400,18 @@ void GameApp::resultModal() {
         const float width = extent.x - 64 * scale;
         if (done) {
             float y = origin.y + 4 * scale;
+            const float middle = panel.x + extent.x / 2;
+            text(ImVec2(middle, y),
+                 outcome < 0    ? "Draw"
+                 : outcome == 0 ? "Victory"
+                                : "Defeat",
+                 34, outcome == 0 ? palette().accent : palette().ink, 0, true);
+            const auto& score = member(state, "score");
+            text(ImVec2(middle, y + 46 * scale),
+                 std::to_string(itemNumber(score, 0)) + " – " + std::to_string(itemNumber(score, 1)), 22,
+                 palette().muted, 0, true);
+            if (!settlement.empty()) text(ImVec2(middle, y + 82 * scale), settlement, 18, palette().ink, 0, true);
+            y += summaryHeight;
             if (!reason.empty()) {
                 text(ImVec2(panel.x + extent.x / 2, y), reason, 19, palette().muted, width, true);
                 y += reasonHeight;

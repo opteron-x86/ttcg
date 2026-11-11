@@ -428,9 +428,14 @@ float GameApp::ruleChips(ImVec2 at, float width, unsigned flags, int trade, bool
                 if (!name.empty()) chips.push_back({name, rule, changedTrade, false, &change});
             }
         }
+    // The trade rule decides which cards change hands, so it is named apart from the rules of play.
+    const auto caption = [](const Chip& chip) {
+        return std::string(chip.change ? (chip.active ? "+ " : "− ") : "") + (chip.trade >= 0 ? "Trade: " : "") +
+               chip.name;
+    };
     std::vector<float> widths, rows{0};
     for (const auto& chip : chips) {
-        const auto shown = (chip.change ? (chip.active ? "+ " : "− ") : "") + chip.name;
+        const auto shown = caption(chip);
         const float w = font()->CalcTextSizeA(17 * scale, 1e5f, 0, shown.c_str()).x + 20 * scale;
         widths.push_back(w);
         if (rows.back() > 0 && rows.back() + w > width) rows.push_back(0);
@@ -442,7 +447,7 @@ float GameApp::ruleChips(ImVec2 at, float width, unsigned flags, int trade, bool
     if (centred) x += (width - rows[0]) * .5f;
     for (const auto& chip : chips) {
         const auto& name = chip.name;
-        const std::string shown = (chip.change ? (chip.active ? "+ " : "− ") : "") + name;
+        const std::string shown = caption(chip);
         const auto w = widths[index];
         if (x + w > at.x + width + .5f && x > at.x) {
             ++row;
