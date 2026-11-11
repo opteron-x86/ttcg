@@ -8,12 +8,13 @@ void App::refreshFilter() {
 }
 void App::cardGrid(ImVec2 at, ImVec2 size, bool changed) {
     ImGui::SetCursorScreenPos(at - ImVec2(5, 0) * scale);
-    ImGui::BeginChild("catalog", ImVec2(size.x + 10 * scale, size.y), ImGuiChildFlags_NavFlattened);
-    if (changed) ImGui::SetScrollY(0);
+    ImGui::BeginChild("catalog", ImVec2(size.x + 10 * scale, size.y), ImGuiChildFlags_NavFlattened,
+                      ImGuiWindowFlags_NoScrollWithMouse);
     const float gap = 18 * scale, content = ImGui::GetContentRegionAvail().x - 24 * scale;
     const float target = screen == 3 ? std::array<float, 3>{185, 116, 86}[deckDensity] : 185.f;
     const int columns = std::clamp(int((content + gap) / (target * scale + gap)), 2, 10);
     const float w = (content - gap * (columns - 1)) / columns, h = w / .75f, rowH = h + gap;
+    const auto edges = gridScroll(rowH, changed);
     std::vector<unsigned> packs;
     if (collection.connected && screen == 0)
         for (unsigned kind = 0; kind < 2; ++kind)
@@ -99,6 +100,7 @@ void App::cardGrid(ImVec2 at, ImVec2 size, bool changed) {
         }
     if (count == 0)
         text(ImGui::GetCursorScreenPos() + ImVec2(10, 30) * scale, "No matching cards", 24, palette().muted);
+    gridFade(edges);
     ImGui::EndChild();
 }
 void App::dragCard(int index, bool foil, int owner, CardContext context) {

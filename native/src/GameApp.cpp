@@ -1,4 +1,5 @@
 #include "GameApp.h"
+#include "Announcements.h"
 #include "CardName.h"
 #include <fstream>
 #include <cmath>
@@ -333,48 +334,84 @@ void GameApp::inspectCard(int display, bool meta, int modifier) {
     yaw = pitch = turnTarget = 0;
     autoRotate = false;
 }
-float GameApp::metadata(const CardView& c, ImVec2 at, float width, bool draw) {
-    float y = at.y;
-    const auto row = [&](const std::string& value, float pixels, ImU32 colour, float gap) {
-        if (draw) text(ImVec2(at.x, y), value, pixels, colour, width);
-        y += font()->CalcTextSizeA(pixels * scale, 1e6f, width, value.c_str()).y + gap * scale;
-    };
-    row(c.name, 30, palette().ink, 24);
+float GameApp::factRows(const CardView& c, ImVec2 at, float width, bool draw, bool compact) {
     const char* tiers[]{"", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"};
-    row(std::string("Tier ") + tiers[c.tier] + " · " + c.rarity + (selectedFoil ? " · Foil" : ""), 18, palette().muted,
-        20);
+    const ImU32 rarity = c.rarity == "Rare"        ? IM_COL32(86, 223, 255, 255)
+                         : c.rarity == "Epic"      ? IM_COL32(214, 132, 250, 255)
+                         : c.rarity == "Legendary" ? IM_COL32(240, 196, 101, 255)
+                                                   : palette().ink;
+    struct Row {
+        const char* name;
+        std::string value;
+        ImU32 colour;
+        unsigned icons = 0;
+    };
+    std::vector<Row> rows;
+    rows.push_back({"Rarity", c.rarity + (selectedFoil ? " · Foil" : ""), rarity});
+    if (!compact) rows.push_back({"Tier", tiers[std::clamp(c.tier, 0, 10)], palette().ink});
     std::string group;
     for (unsigned i = 0; i < ttcg::creatureGroups.size(); ++i)
-        if (c.groups & (1ull << i)) {
-            if (!group.empty()) group += " · ";
-            group += ttcg::creatureGroups[i];
-        }
-    row(group, 20, palette().ink, 20);
+        if (c.groups & (1ull << i)) group += (group.empty() ? "" : ", ") + std::string(ttcg::creatureGroups[i]);
+    if (!group.empty()) rows.push_back({"Group", group, palette().ink});
+    std::string affinity;
     for (int a = 0; a < 5; ++a)
-        if (c.affinityMask & (1u << a)) {
-            if (draw) {
-                const ImVec2 p(at.x, y);
-                auto image = assets.get("../icons/affinity-" + std::to_string(a) + ".png");
-                ImGui::GetWindowDrawList()->AddImage(image.id, p, p + ImVec2(25, 25) * scale);
-                text(p + ImVec2(33, 2) * scale, ttcg::attributeNames[a], 18, palette().muted);
-            }
-            y += 35 * scale;
+        if (c.affinityMask & (1u << a))
+            affinity += (affinity.empty() ? "" : ", ") + std::string(ttcg::attributeNames[a]);
+    rows.push_back({"Affinity", affinity.empty() ? "Neutral" : affinity,
+                    affinity.empty() ? palette().muted : palette().ink, c.affinityMask});
+    if (!c.set.empty() && !compact) rows.push_back({"Set", c.set, palette().ink});
+    if (collection.connected) {
+        const int other = c.owned[selectedFoil ? 0 : 1];
+        rows.push_back(
+            {"Owned",
+             std::to_string(c.owned[selectedFoil ? 1 : 0]) +
+                 (other ? std::string(" · ") + std::to_string(other) + (selectedFoil ? " standard" : " foil") : ""),
+             skinned() ? skin().value : palette().accent});
+    }
+    if (c.unique) rows.push_back({"Unique", "One per deck", palette().muted});
+    if (inspectionModifier && inspecting)
+        rows.push_back({"On this square",
+                        std::string(inspectionModifier > 0 ? "+" : "−") + std::to_string(std::abs(inspectionModifier)) +
+                            " to all sides",
+                        palette().accent});
+    const float rowHeight = 31 * scale;
+    auto* d = ImGui::GetWindowDrawList();
+    float y = at.y;
+    for (const auto& row : rows) {
+        if (draw) {
+            textCaps(ImVec2(at.x, y + 9 * scale), row.name, 12.5f, palette().muted, 1.2f);
+            const float room = width - capsWidth(row.name, 12.5f, 1.2f) - 14 * scale;
+            float icons = 0;
+            for (int a = 0; a < 5; ++a)
+                if (row.icons & (1u << a)) icons += 23 * scale;
+            const float natural = font()->CalcTextSizeA(17 * scale, 1e5f, 0, row.value.c_str()).x;
+            const float pixels = std::clamp(17.f * (room - icons) / std::max(1.f, natural), 11.f, 17.f);
+            const float measured = font()->CalcTextSizeA(pixels * scale, 1e5f, 0, row.value.c_str()).x;
+            float x = at.x + width - measured;
+            text(ImVec2(x, y + (31 - pixels * 1.3f) * .5f * scale), row.value, pixels, row.colour);
+            for (int a = 4; a >= 0; --a)
+                if (row.icons & (1u << a)) {
+                    x -= 23 * scale;
+                    const auto image = assets.get("../icons/affinity-" + std::to_string(a) + ".png");
+                    d->AddImage(image.id, ImVec2(x, y + 6 * scale), ImVec2(x + 19 * scale, y + 25 * scale));
+                }
+            if (&row != &rows.back())
+                d->AddLine(ImVec2(at.x, y + rowHeight - 1), ImVec2(at.x + width, y + rowHeight - 1),
+                           fade(palette().line, .55f));
         }
-    if (!c.affinityMask) row("Neutral", 18, palette().muted, 10);
-    y += 14 * scale;
-    std::string values;
-    for (int i = 0; i < 4; ++i) {
-        if (i) values += "   ";
-        values += std::array<const char*, 4>{"↑ ", "→ ", "↓ ", "← "}[i];
-        values += c.sides[i] == 10 ? "A" : std::to_string(c.sides[i]);
+        y += rowHeight;
     }
-    row(values, 22, palette().ink, 0);
-    if (inspectionModifier) {
-        y += 12 * scale;
-        row(std::string("All sides ") + (inspectionModifier > 0 ? "+" : "−") +
-                std::to_string(std::abs(inspectionModifier)),
-            19, palette().accent, 0);
-    }
+    return y - at.y;
+}
+float GameApp::metadata(const CardView& c, ImVec2 at, float width, bool draw) {
+    float y = at.y;
+    if (draw) text(ImVec2(at.x, y), c.name, 28, palette().ink, width);
+    y += font()->CalcTextSizeA(28 * scale, 1e6f, width, c.name.c_str()).y + 12 * scale;
+    if (draw)
+        skinned() ? skinRule(ImVec2(at.x, y), ImVec2(at.x + width, y), .7f)
+                  : line(ImVec2(at.x, y), ImVec2(at.x + width, y));
+    y += 8 * scale;
+    y += factRows(c, ImVec2(at.x, y), width, draw);
     return y - at.y;
 }
 void GameApp::displayCard(int display, ImVec2 at, ImVec2 size, bool chosen, int owner, int slot, int modifier,

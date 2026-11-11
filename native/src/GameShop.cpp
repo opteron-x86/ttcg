@@ -71,11 +71,13 @@ void GameApp::shop(ImVec2 at, ImVec2 size) {
         shopQuantity = 1;
     }
     ImGui::SetCursorScreenPos(top);
-    ImGui::BeginChild("shop-cards", ImVec2(width, at.y + size.y - top.y), ImGuiChildFlags_NavFlattened);
+    ImGui::BeginChild("shop-cards", ImVec2(width, at.y + size.y - top.y), ImGuiChildFlags_NavFlattened,
+                      ImGuiWindowFlags_NoScrollWithMouse);
     const float spacing = 17 * scale;
     const float gridWidth = ImGui::GetContentRegionAvail().x - 18 * scale;
     const int columns = std::max(2, int(gridWidth / (180 * scale)));
     const float w = (gridWidth - spacing * (columns - 1)) / columns, h = w / .75f, rowH = h + 70 * scale;
+    const auto edges = gridScroll(rowH);
     ImGuiListClipper clip;
     clip.Begin((int(rows.size()) + columns - 1) / columns, rowH);
     int material = 22;
@@ -115,6 +117,7 @@ void GameApp::shop(ImVec2 at, ImVec2 size) {
              shopTab == 1 && shopSurplus ? "No surplus cards. Choose All cards to see your collection."
                                          : "No cards match these filters.",
              21, palette().muted, width - 24 * scale);
+    gridFade(edges);
     ImGui::EndChild();
     const auto detail = at + ImVec2(size.x - right, 144 * scale);
     line(detail - ImVec2(gap / 2, 0), at + ImVec2(size.x - right - gap / 2, size.y));
@@ -122,20 +125,25 @@ void GameApp::shop(ImVec2 at, ImVec2 size) {
         std::find_if(rows.begin(), rows.end(), [&](const auto& r) { return number(r, "id") == shopSelected; });
     if (chosen == rows.end()) return;
     const auto& row = *chosen;
-    const float dw = std::min(right, (size.y - 400 * scale) * .75f), dh = dw / .75f;
+    const auto& card = collection.cards[shopSelected % collection.cards.size()];
+    const bool wasFoil = selectedFoil;
+    selectedFoil = shopSelected >= int(collection.cards.size());
+    const float facts = factRows(card, {}, right, false, true);
+    const float dw = std::min(right, (size.y - facts - 262 * scale) * .75f), dh = dw / .75f;
     auto art = detail + ImVec2((right - dw) / 2, 0);
     ImGui::SetCursorScreenPos(art);
     if (ImGui::InvisibleButton("shop-preview", ImVec2(dw, dh), ImGuiButtonFlags_EnableNav)) inspectCard(shopSelected);
+    softShadow(art, ImVec2(dw, dh), 1, 10);
     displayCard(shopSelected, art, ImVec2(dw, dh), false, -1, 0, 0, true);
-    float y = art.y + dh + 22 * scale;
-    const auto& card = collection.cards[shopSelected % collection.cards.size()];
-    text(ImVec2(detail.x, y),
-         std::to_string(card.owned[shopSelected >= int(collection.cards.size())]) + " owned · Tier " + tiers[card.tier],
-         17, palette().muted, right);
-    y += 31 * scale;
-    text(ImVec2(detail.x, y), card.rarity + " · " + join(member(state["cards"][shopSelected], "groups")), 18,
-         palette().accent, right);
-    y += 43 * scale;
+    float y = art.y + dh + 14 * scale;
+    if (skinned() && !skinBand("band", ImVec2(detail.x, y), ImVec2(right, 40 * scale)))
+        skinBand("selector", ImVec2(detail.x, y), ImVec2(right, 40 * scale));
+    const float fit = std::min(19.f, 19.f * (right - 24 * scale) / std::max(1.f, capsWidth(card.name, 19, 1)));
+    textCaps(ImVec2(detail.x + right / 2, y + (40 - fit * 1.25f) * .5f * scale), card.name, fit, palette().ink, 1,
+             true);
+    y += 44 * scale;
+    y += factRows(card, ImVec2(detail.x + 2 * scale, y), right - 4 * scale, true, true) + 14 * scale;
+    selectedFoil = wasFoil;
     const int price = number(row, "price");
     const int max = std::max(1, std::min({99, number(row, "count"), price ? 1000000 / price : 99}));
     shopQuantity = std::clamp(shopQuantity, 1, max);

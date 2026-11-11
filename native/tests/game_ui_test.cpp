@@ -1112,7 +1112,7 @@ int main(int argc, char** argv) {
                 s["collection"]["revealed"] = {0, 1, 2, 3, 4, 5, 6, 7};
                 s["collection"]["revealID"] = 2;
                 app.receive(s.dump());
-                frame(2.f);
+                frame(8.f);
                 frame();
                 const auto footer = bounds("pack-continue");
                 int cards = 0;
@@ -1150,6 +1150,11 @@ int main(int argc, char** argv) {
             auto identical = app.snapshot();
             app.receive(identical.dump());
             frame();
+            // The first press turns the remaining cards over; only the next one dismisses the receipt.
+            click("pack-continue");
+            frame();
+            require(std::any_of(hits.begin(), hits.end(), [](const auto& h) { return h.label == "pack-continue"; }),
+                    "Revealing a pack dismissed it");
             click("pack-continue");
             frame();
             app.receive(identical.dump());
@@ -1163,7 +1168,7 @@ int main(int argc, char** argv) {
                 receipt["collection"]["revealKind"] = kind;
                 app.reset();
                 app.receive(receipt.dump());
-                frame(2.f);
+                frame(8.f);
                 frame();
                 require(std::count_if(hits.begin(), hits.end(),
                                       [](const auto& h) { return h.label == "revealed-card"; }) == 5,
@@ -1187,7 +1192,7 @@ int main(int argc, char** argv) {
                 receipt["session"] = reopened["session"];
                 receipt["collection"]["revealID"] = receipt["collection"]["revealID"].get<std::uint64_t>() + 1;
                 app.receive(receipt.dump());
-                frame(2.f);
+                frame(8.f);
                 frame();
                 require(std::count_if(hits.begin(), hits.end(),
                                       [](const auto& h) { return h.label == "revealed-card"; }) == 5,

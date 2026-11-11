@@ -121,10 +121,15 @@ void GameApp::lobby(ImVec2 at, ImVec2 size) {
         tab = 1;
         send("browse", "album");
     }
-    y += 72 * scale;
-    const float gap = 22 * scale, w = std::min((size.x - 4 * gap) / 5, (at.y + size.y - y - 114 * scale) * .75f),
-                h = w / .75f;
+    y += 58 * scale;
+    const float gap = 22 * scale, room = at.y + size.y - y - 73 * scale,
+                w = std::min((size.x - 4 * gap) / 5, (room - 60 * scale) * .75f), h = w / .75f;
     const float left = at.x + (size.x - (w * 5 + gap * 4)) / 2;
+    // The deck sits in the middle of the space between the controls and the footer.
+    y += std::max(14 * scale, (room - h - 30 * scale) * .5f);
+    textRight(ImVec2(at.x + size.x, at.y + 6 * scale), std::to_string(number(c, "gold")) + " gold", 22,
+              skinned() ? skin().value : palette().accent);
+    textRight(ImVec2(at.x + size.x, at.y + 38 * scale), "Your purse", 14, palette().muted);
     for (int i = 0; i < 5; ++i) {
         const auto p = ImVec2(left + i * (w + gap), y);
         const int id = itemNumber(member(c, "deck"), i);
@@ -144,9 +149,12 @@ void GameApp::lobby(ImVec2 at, ImVec2 size) {
                          (ImGui::IsKeyPressed(ImGuiKey_I) || ImGui::IsKeyPressed(ImGuiKey_GamepadFaceUp)))))
             inspectCard(id);
         const bool focused = ImGui::IsItemFocused() && ImGui::GetIO().NavVisible;
-        if (id >= 0)
-            displayCard(id, p, ImVec2(w, h), focused, -1, 1 + i);
-        else {
+        if (id >= 0) {
+            const bool hovered = ImGui::IsItemHovered();
+            const ImVec2 drawn = p - ImVec2(0, (hovered || focused ? 6 : 0) * scale);
+            softShadow(drawn, ImVec2(w, h), hovered || focused ? 1.4f : 1, hovered || focused ? 14 : 10);
+            displayCard(id, drawn, ImVec2(w, h), focused, -1, 1 + i);
+        } else {
             ImGui::GetWindowDrawList()->AddRect(p, p + ImVec2(w, h), focused ? palette().accent : palette().line);
             text(p + ImVec2(w / 2, h / 2), "+", 30, palette().muted, 0, true);
         }
@@ -358,6 +366,38 @@ std::pair<ImVec2, ImVec2> GameApp::table(const Json& data, ImVec2 at, ImVec2 siz
     }
     const float handArea = (size.x - boardW) / 2 - 30 * scale;
     const bool stack = demo;
+    const bool live = !demo && label(state, "phase") == "match";
+    if (!demo) {
+        const auto session = state.value("session", 0ull);
+        if (session != lastMoveSession) {
+            lastMoveSession = session;
+            lastMove = -1;
+            shownScores = {-1, -1};
+        }
+        if (clock.placedSquare >= 0) lastMove = clock.placedSquare;
+        const auto& cells = arrayMember(data, "board");
+        if (lastMove >= int(cells.size()) || (lastMove >= 0 && cells[lastMove].is_null())) lastMove = -1;
+    }
+    const float breath = .5f + .5f * std::sin(float(ImGui::GetTime()) * 2.1f);
+    if (live && !animating && !flag(state, "thinking")) {
+        // The board's edge nearest whoever is to move is lit in their colour.
+        const ImU32 tone = controlColour(playerTurn ? 0 : 1, true);
+        const ImU32 lit = fade(tone, .10f + .07f * breath), clear = lit & 0xffffff;
+        const ImU32 bright = fade(tone, .55f + .35f * breath);
+        const float reach = 30 * scale, rail = 15 * scale, weight = std::max(2.f, 2.5f * scale);
+        const float edge = playerTurn ? boardAt.x - rail : boardAt.x + boardW + rail, out = playerTurn ? -1.f : 1.f;
+        const float top = boardAt.y - rail, bottom = boardAt.y + boardH + rail, taper = (bottom - top) * .22f;
+        const auto strip = [&](float x0, float x1, ImU32 inner, ImU32 outer) {
+            const float l = std::min(x0, x1), r = std::max(x0, x1);
+            const ImU32 lc = x0 < x1 ? inner : outer, rc = x0 < x1 ? outer : inner;
+            d->AddRectFilledMultiColor(ImVec2(l, top), ImVec2(r, top + taper), lc & 0xffffff, rc & 0xffffff, rc, lc);
+            d->AddRectFilledMultiColor(ImVec2(l, top + taper), ImVec2(r, bottom - taper), lc, rc, rc, lc);
+            d->AddRectFilledMultiColor(ImVec2(l, bottom - taper), ImVec2(r, bottom), lc, rc, rc & 0xffffff,
+                                       lc & 0xffffff);
+        };
+        strip(edge, edge + out * reach, lit, clear);
+        strip(edge, edge + out * weight, bright, bright);
+    }
     const float hw = std::min(stack ? handArea * .70f : (handArea - gap) / 2, tileW * .84f), hh = hw / .75f;
     const float handY = at.y + 55 * scale + (boardH - (stack ? hh * 2.15f : hh * 3 + 2 * gap)) * .5f;
     const double elapsed = ImGui::GetTime() - clock.start;
@@ -400,8 +440,19 @@ std::pair<ImVec2, ImVec2> GameApp::table(const Json& data, ImVec2 at, ImVec2 siz
             skinBand("selector", ImVec2(left, at.y - 4 * scale), ImVec2(handArea, 40 * scale));
         text(ImVec2(player ? left + handArea - nameWidth - 24 * scale : left + 24 * scale, at.y + 3 * scale), name,
              nameSize, firstGlow > 0 ? colour : palette().ink);
-        text(ImVec2(player ? left + 8 * scale : left + handArea - 26 * scale, at.y - 3 * scale),
-             std::to_string(scores[player]), 36, colour);
+        float pop = 0;
+        if (!demo) {
+            if (shownScores[player] != scores[player]) {
+                if (shownScores[player] >= 0) scoreChanged[player] = ImGui::GetTime();
+                shownScores[player] = scores[player];
+            }
+            pop = std::clamp(1 - float(ImGui::GetTime() - scoreChanged[player]) / .45f, 0.f, 1.f);
+            pop *= pop;
+        }
+        const auto score = std::to_string(scores[player]);
+        const float scoreWidth = font()->CalcTextSizeA((36 + 12 * pop) * scale, 1e5f, 0, score.c_str()).x;
+        text(ImVec2(player ? left + 8 * scale : left + handArea - 8 * scale - scoreWidth, at.y - (3 + 7 * pop) * scale),
+             score, 36 + 12 * pop, colour);
         line(ImVec2(left, at.y + 35 * scale), ImVec2(left + handArea, at.y + 35 * scale),
              playerTurn == (player == 0) ? colour : palette().line);
         const auto& hand = member(data, "hands");
@@ -473,7 +524,11 @@ std::pair<ImVec2, ImVec2> GameApp::table(const Json& data, ImVec2 at, ImVec2 siz
                         d->AddRect(pos - ImVec2(padding, padding), pos + ImVec2(hw + padding, hh + padding),
                                    fade(colour, firstGlow * .065f * (1 - r / 17.f)), padding, 0, 2 * scale);
                     }
-                displayCard(display, pos, ImVec2(hw, hh),
+                // The chosen card rises out of the hand; a hovered one stirs.
+                const bool hovered = hittable && selectable && ImGui::IsItemHovered();
+                const ImVec2 drawn = pos - ImVec2(0, stack ? 0 : (selected ? 9 : hovered ? 4 : 0) * scale);
+                if (!stack) softShadow(drawn, ImVec2(hw, hh), selected ? 1.5f : .8f, selected ? 14 : 8);
+                displayCard(display, drawn, ImVec2(hw, hh),
                             selected || (hittable && ImGui::IsItemFocused() && ImGui::GetIO().NavVisible), player,
                             (demo ? 110 : 1) + player * 5 + h,
                             itemNumber(member(data, "handModifiers").is_array() ? member(data, "handModifiers")[player]
@@ -507,7 +562,7 @@ std::pair<ImVec2, ImVec2> GameApp::table(const Json& data, ImVec2 at, ImVec2 siz
                 }
             }
             int owner = number(cell, "owner");
-            float turnWidth = 1;
+            float turnWidth = 1, flash = 0, lift = 0;
             bool highlight = false;
             if (animating) {
                 const auto& stages = arrayMember(animation, "stages");
@@ -521,21 +576,33 @@ std::pair<ImVec2, ImVec2> GameApp::table(const Json& data, ImVec2 at, ImVec2 siz
                     if (number(stage, "captures") & (1 << square)) {
                         const double progress = (elapsed - start - labelDelay) / .4;
                         if (progress < .5) owner = 1 - owner;
-                        if (progress >= 0 && progress < 1)
+                        if (progress >= 0 && progress < 1) {
                             turnWidth = std::max(.025f, float(std::abs(std::cos(progress * std::numbers::pi))));
+                            lift = float(std::sin(progress * std::numbers::pi));
+                        }
+                        // The captor's colour flares as the card lands, then drains away.
+                        if (progress >= .5 && progress < 2.4) flash = std::max(flash, float(1 - (progress - .5) / 1.9));
                     }
                 }
             }
             const int firstVertex = d->VtxBuffer.Size;
             const bool moving = square == clock.placedSquare && clock.placedHand >= 0 && animating && elapsed < .36;
+            if (!moving) softShadow(pos, cardSize, .9f + lift, 7 + 7 * lift);
             if (!moving)
                 displayCard(number(cell, "card", -1), pos, cardSize,
                             highlight || (ImGui::IsItemFocused() && ImGui::GetIO().NavVisible), owner,
                             (demo ? 120 : 11) + square, itemNumber(member(data, "modifiers"), square, 0), false,
                             CardContext::Board);
-            if (turnWidth < 1)
-                for (int v = firstVertex; v < d->VtxBuffer.Size; ++v)
-                    d->VtxBuffer[v].pos.x = pos.x + tileW / 2 + (d->VtxBuffer[v].pos.x - pos.x - tileW / 2) * turnWidth;
+            if (turnWidth < 1 || lift > 0)
+                scaleVertices(firstVertex, pos + cardSize * .5f,
+                              ImVec2(turnWidth * (1 + .07f * lift), 1 + .07f * lift));
+            if (flash > 0 && !moving) {
+                const ImU32 tone = controlColour(owner, true);
+                d->AddRectFilled(pos, pos + cardSize, fade(tone, .42f * flash * flash));
+                glow(pos, cardSize, tone, 1.6f * flash, 16);
+            }
+            if (!demo && square == lastMove && !animating && live)
+                cornerMarks(pos, cardSize, fade(palette().ink, .78f + .22f * breath), 13, 4);
             if ((hit || ImGui::IsItemHovered() && ImGui::IsMouseClicked(1) ||
                  ImGui::IsItemFocused() &&
                      (ImGui::IsKeyPressed(ImGuiKey_I) || ImGui::IsKeyPressed(ImGuiKey_GamepadFaceUp))) &&
@@ -550,12 +617,20 @@ std::pair<ImVec2, ImVec2> GameApp::table(const Json& data, ImVec2 at, ImVec2 siz
             }
             const int affinity = itemNumber(member(data, "tiles"), square, 0);
             if (affinity) {
+                // The square's affinity is carved into the board inside a ring, not laid on top of it.
                 const int a = std::countr_zero(unsigned(affinity));
-                const float icon = tileW * .24f;
+                const float icon = tileW * .30f, ring = icon * .86f, cut = std::max(1.f, 1.3f * scale);
+                const auto centre = pos + cardSize * .5f;
                 auto image = assets.get("../icons/affinity-" + std::to_string(a) + ".png");
-                d->AddImage(image.id, pos + (cardSize - ImVec2(icon, icon)) * .5f,
-                            pos + (cardSize + ImVec2(icon, icon)) * .5f, ImVec2(0, 0), ImVec2(1, 1),
-                            IM_COL32(255, 255, 255, 150));
+                const ImVec2 half(icon * .5f, icon * .5f);
+                d->AddCircleFilled(centre, ring, IM_COL32(0, 0, 0, 62), 48);
+                d->AddCircle(centre + ImVec2(0, cut), ring, IM_COL32(255, 255, 255, 26), 48, cut);
+                d->AddCircle(centre, ring, IM_COL32(0, 0, 0, 150), 48, cut);
+                d->AddCircle(centre, ring - 4 * scale, fade(boardColour.mark, .30f), 48, std::max(1.f, scale));
+                d->AddImage(image.id, centre - half + ImVec2(cut, cut * 1.4f), centre + half + ImVec2(cut, cut * 1.4f),
+                            ImVec2(0, 0), ImVec2(1, 1), IM_COL32(0, 0, 0, 170));
+                d->AddImage(image.id, centre - half, centre + half, ImVec2(0, 0), ImVec2(1, 1),
+                            IM_COL32(205, 200, 188, 150));
             } else {
                 const auto centre = pos + cardSize * .5f;
                 const float r = 3 * scale;
@@ -564,8 +639,21 @@ std::pair<ImVec2, ImVec2> GameApp::table(const Json& data, ImVec2 at, ImVec2 siz
             }
             const bool target = !busy && playerTurn && selectedHand >= 0 &&
                                 (!demo || !staticDemo && demoSelected && square == number(data, "square", -1));
-            if ((target && (ImGui::IsItemHovered() || demo)) || (ImGui::IsItemFocused() && ImGui::GetIO().NavVisible))
+            const bool aimed =
+                (target && (ImGui::IsItemHovered() || demo)) || (ImGui::IsItemFocused() && ImGui::GetIO().NavVisible);
+            if (aimed && target && !demo) {
+                // A ghost of the chosen card shows where it would land.
+                const int ghost = itemNumber(member(data, "hands")[0], selectedHand);
+                if (ghost >= 0) {
+                    const int first = d->VtxBuffer.Size;
+                    displayCard(ghost, pos, cardSize, false, 0, 161, 0, false, CardContext::Board);
+                    fadeVertices(first, .42f);
+                }
+            }
+            if (aimed) {
+                glow(pos, cardSize, palette().accent, .9f, 10);
                 d->AddRect(pos, pos + cardSize, palette().accent, 2, 0, 2 * scale);
+            }
             if (hit && target) {
                 if (demo) {
                     if (liveLesson) {

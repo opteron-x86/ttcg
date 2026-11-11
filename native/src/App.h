@@ -79,6 +79,9 @@ protected:
     MatchAppearance matchAppearance;
     bool inspecting = false, autoRotate = false, showMetrics = false, closing = false;
     float yaw = 0, pitch = 0, turnTarget = 0;
+    // Set while the inspector draws, so the foil answers the card's tilt and not the clock.
+    bool foilLightSet = false;
+    ImVec2 foilLight{.5f, .5f};
     static const Palette& builtInPalette(int index);
     const Palette& palette() const;
     ImFont* font() const;
@@ -109,9 +112,26 @@ protected:
     bool skinBand(const char* name, ImVec2 at, ImVec2 size, ImU32 tint = IM_COL32_WHITE);
     void skinRule(ImVec2 a, ImVec2 b, float strength = 1);
     void skinBackdrop();
+    // Card grids scroll a whole row per wheel notch and fade out where more rows lie beyond the edge.
+    // Call gridScroll inside the grid's child window; it reports which edges hide rows.
+    struct GridEdges {
+        bool above = false, below = false;
+    };
+    GridEdges gridScroll(float rowHeight, bool reset = false);
+    // Call last inside the same child window.
+    void gridFade(GridEdges edges);
+    // Shared presentation effects.
+    void softShadow(ImVec2 at, ImVec2 size, float strength = 1, float reach = 10);
+    void glow(ImVec2 at, ImVec2 size, ImU32 colour, float strength, float reach = 14);
+    void cornerMarks(ImVec2 at, ImVec2 size, ImU32 colour, float length = 12, float offset = 4);
+    // Multiplies the alpha of everything drawn since `firstVertex`.
+    void fadeVertices(int firstVertex, float amount);
+    // Scales everything drawn since `firstVertex` about `centre`.
+    void scaleVertices(int firstVertex, ImVec2 centre, ImVec2 factor);
     void trackInputDevice();
     // Keycaps come from the player's ImGui Icons installation; a drawn cap stands in without one.
-    float keyPrompt(const char* key, const char* pad, const char* label, ImVec2 at, bool* pressed = nullptr);
+    float keyPrompt(const char* key, const char* pad, const char* label, ImVec2 at, bool* pressed = nullptr,
+                    const char* id = nullptr);
     void textCaps(ImVec2 at, const std::string& value, float size, ImU32 colour, float tracking = 0,
                   bool centre = false);
     float capsWidth(const std::string& value, float size, float tracking = 0) const;

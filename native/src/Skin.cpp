@@ -204,6 +204,87 @@ void App::skinRule(ImVec2 a, ImVec2 b, float strength) {
         d->AddRectFilledMultiColor(ImVec2(a.x, b.y - fade), ImVec2(a.x + weight, b.y), ink, ink, clear, clear);
     }
 }
+App::GridEdges App::gridScroll(float rowHeight, bool reset) {
+    auto& target = *ImGui::GetStateStorage()->GetFloatRef(ImGui::GetID("row-scroll"), -1);
+    const float limit = ImGui::GetScrollMaxY(), wheel = ImGui::GetIO().MouseWheel;
+    if (reset) {
+        target = -1;
+        ImGui::SetScrollY(0);
+    }
+    if (wheel != 0 && ImGui::IsWindowHovered(ImGuiHoveredFlags_ChildWindows) &&
+        !ImGui::IsPopupOpen("", ImGuiPopupFlags_AnyPopup)) {
+        const float from = target >= 0 ? target : ImGui::GetScrollY();
+        const float rows = std::round(from / rowHeight) - (wheel > 0 ? 1 : -1);
+        target = std::clamp(rows * rowHeight, 0.f, limit);
+    }
+    if (target >= 0) {
+        const float current = ImGui::GetScrollY(),
+                    step = (target - current) * std::min(1.f, ImGui::GetIO().DeltaTime * 16);
+        if (std::abs(target - current) < 1) {
+            ImGui::SetScrollY(target);
+            target = -1;
+        } else
+            ImGui::SetScrollY(current + step);
+    }
+    return {ImGui::GetScrollY() > 2, ImGui::GetScrollY() < limit - 2};
+}
+void App::gridFade(GridEdges edges) {
+    auto* d = ImGui::GetWindowDrawList();
+    const ImVec2 at = ImGui::GetWindowPos(),
+                 size = ImGui::GetWindowSize() - ImVec2(ImGui::GetStyle().ScrollbarSize + 4 * scale, 0);
+    const ImU32 solid = alpha(skinned() ? skin().dialog : palette().background, .96f), clear = solid & 0xffffff;
+    const float reach = 64 * scale;
+    if (edges.above)
+        d->AddRectFilledMultiColor(at, ImVec2(at.x + size.x, at.y + reach * .6f), solid, solid, clear, clear);
+    if (edges.below)
+        d->AddRectFilledMultiColor(ImVec2(at.x, at.y + size.y - reach), at + size, clear, clear, solid, solid);
+}
+void App::softShadow(ImVec2 at, ImVec2 size, float strength, float reach) {
+    auto* d = ImGui::GetWindowDrawList();
+    const ImVec2 drop(0, reach * .35f * scale);
+    constexpr int layers = 7;
+    for (int i = layers; i > 0; --i) {
+        const float r = reach * scale * i / layers, weight = 1 - float(i) / (layers + 1);
+        d->AddRectFilled(at - ImVec2(r, r) + drop, at + size + ImVec2(r, r) + drop,
+                         IM_COL32(0, 0, 0, int(255 * .11f * strength * weight)), r + 2 * scale);
+    }
+}
+void App::glow(ImVec2 at, ImVec2 size, ImU32 colour, float strength, float reach) {
+    if (strength <= 0) return;
+    auto* d = ImGui::GetWindowDrawList();
+    const int layers = std::max(4, int(reach));
+    for (int i = layers; i > 0; --i) {
+        const float r = reach * scale * i / layers;
+        d->AddRect(at - ImVec2(r, r), at + size + ImVec2(r, r),
+                   alpha(colour, strength * .09f * (1 - float(i) / (layers + 1))), r, 0, 2.2f * scale);
+    }
+}
+void App::cornerMarks(ImVec2 at, ImVec2 size, ImU32 colour, float length, float offset) {
+    auto* d = ImGui::GetWindowDrawList();
+    const float l = length * scale, o = offset * scale, weight = std::max(1.5f, 2 * scale);
+    for (int i = 0; i < 4; ++i) {
+        const ImVec2 sign(i % 2 ? -1.f : 1.f, i / 2 ? -1.f : 1.f);
+        const ImVec2 corner = ImVec2(i % 2 ? at.x + size.x + o : at.x - o, i / 2 ? at.y + size.y + o : at.y - o);
+        const ImVec2 points[]{corner + ImVec2(l * sign.x, 0), corner, corner + ImVec2(0, l * sign.y)};
+        d->AddPolyline(points, 3, colour, 0, weight);
+    }
+}
+void App::fadeVertices(int firstVertex, float amount) {
+    auto* d = ImGui::GetWindowDrawList();
+    amount = std::clamp(amount, 0.f, 1.f);
+    for (int i = firstVertex; i < d->VtxBuffer.Size; ++i) {
+        auto& colour = d->VtxBuffer[i].col;
+        colour = (colour & ~IM_COL32_A_MASK) |
+                 (unsigned(((colour & IM_COL32_A_MASK) >> IM_COL32_A_SHIFT) * amount) << IM_COL32_A_SHIFT);
+    }
+}
+void App::scaleVertices(int firstVertex, ImVec2 centre, ImVec2 factor) {
+    auto* d = ImGui::GetWindowDrawList();
+    for (int i = firstVertex; i < d->VtxBuffer.Size; ++i) {
+        auto& pos = d->VtxBuffer[i].pos;
+        pos = centre + ImVec2((pos.x - centre.x) * factor.x, (pos.y - centre.y) * factor.y);
+    }
+}
 void App::skinBackdrop() {
     // Skyrim blurs the scene behind its own menus; this adds the matching dim.
     const auto display = ImGui::GetIO().DisplaySize;
@@ -251,7 +332,7 @@ void App::trackInputDevice() {
     for (int key = ImGuiKey_Keyboard_BEGIN; key < ImGuiKey_Keyboard_END; ++key)
         if (ImGui::IsKeyPressed(ImGuiKey(key), false)) padPrompts = false;
 }
-float App::keyPrompt(const char* key, const char* pad, const char* label, ImVec2 at, bool* pressed) {
+float App::keyPrompt(const char* key, const char* pad, const char* label, ImVec2 at, bool* pressed, const char* id) {
     auto* d = ImGui::GetWindowDrawList();
     const char* name = padPrompts ? pad : key;
     const auto folder =
@@ -270,7 +351,7 @@ float App::keyPrompt(const char* key, const char* pad, const char* label, ImVec2
     bool hover = false;
     if (pressed) {
         ImGui::SetCursorScreenPos(at);
-        *pressed = ImGui::InvisibleButton(label, ImVec2(width, height));
+        *pressed = ImGui::InvisibleButton(id ? id : label, ImVec2(width, height));
         hover = ImGui::IsItemHovered();
     }
     if (art.id)

@@ -15,6 +15,11 @@ class GameApp final : public App {
     double previewCapturedAt = -1;
     int shopTab = 0, shopSelected = -1, shopQuantity = 1, shopTier = 0, shopRarity = 0, shopSurplus = 1;
     unsigned eventID = 0, foilSelection = 0, claimMask = 0;
+    // Match feedback: the last square played and when each score last changed.
+    int lastMove = -1;
+    std::uint64_t lastMoveSession = ~0ull;
+    std::array<int, 2> shownScores{-1, -1};
+    std::array<double, 2> scoreChanged{};
     bool history = false, showRuleReference = false;
     std::set<unsigned> seenEvents;
     std::string topic = "play";
@@ -64,6 +69,8 @@ class GameApp final : public App {
                      int modifier = 0, bool large = false, CardContext context = CardContext::General);
     void inspectCard(int display, bool metadata = true, int modifier = 0) override;
     float metadata(const CardView& card, ImVec2 at, float width, bool draw = true);
+    // Labelled facts about a card, one per row; returns the height used.
+    float factRows(const CardView& card, ImVec2 at, float width, bool draw = true, bool compact = false);
     float ruleChips(ImVec2 at, float width, unsigned flags, int trade = -1, bool casual = false,
                     bool interactive = false, const Json* changes = nullptr, bool centred = false);
     const Json* tournament(unsigned id) const;

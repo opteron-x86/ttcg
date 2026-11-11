@@ -427,7 +427,8 @@ void App::card(int index, ImVec2 at, ImVec2 size, bool chosen, bool foil, int ow
     const bool treated = matchAppearance.treats(owner, context);
     if ((foil || treated) && texture.id) {
         const float t = float(ImGui::GetTime());
-        texture = renderer.material(texture, slot, .5f + std::sin(t * .32f) * .36f, .5f + std::cos(t * .21f) * .27f,
+        texture = renderer.material(texture, slot, foilLightSet ? foilLight.x : .5f + std::sin(t * .32f) * .36f,
+                                    foilLightSet ? foilLight.y : .5f + std::cos(t * .21f) * .27f,
                                     foil ? face.foilStrength : 0, treated ? matchAppearance.treatment : 0,
                                     matchAppearance.strength);
     }

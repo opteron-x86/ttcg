@@ -1,12 +1,13 @@
 #include "GameApp.h"
+#include "Announcements.h"
 #include <cmath>
 #include <numbers>
 namespace preview {
 void GameApp::nativeInspector() {
     if (!inspecting || selected < 0 || selected >= int(collection.cards.size())) return;
     const bool gallery = inspectionList.size() > 1;
-    const ImVec2 extent = showTableDetails ? ImVec2(700, 520 + (gallery ? 44 : 0)) * scale
-                                           : ImVec2(600, 645 + (gallery ? 44 : 0)) * scale;
+    const ImVec2 extent = showTableDetails ? ImVec2(708, 540 + (gallery ? 40 : 0)) * scale
+                                           : ImVec2(600, 672 + (gallery ? 40 : 0)) * scale;
     ImGui::SetNextWindowPos(frameAt + frameSize * .5f, ImGuiCond_Always, ImVec2(.5f, .5f));
     ImGui::SetNextWindowSize(extent);
     if (!ImGui::IsPopupOpen("Artwork")) ImGui::OpenPopup("Artwork");
@@ -16,21 +17,23 @@ void GameApp::nativeInspector() {
         return;
     const auto origin = ImGui::GetWindowPos();
     auto* d = ImGui::GetWindowDrawList();
+    d->PushClipRectFullScreen();
     surface(origin, extent);
     if (!skinned()) d->AddRect(origin, origin + extent, palette().line);
-    const bool dismiss = closeButton("close-art", origin + ImVec2(extent.x - 42 * scale, 7 * scale));
-    if (dismiss || ImGui::IsKeyPressed(ImGuiKey_Escape, false) ||
-        ImGui::IsKeyPressed(ImGuiKey_GamepadFaceRight, false)) {
+    d->PopClipRect();
+    if (ImGui::IsKeyPressed(ImGuiKey_Escape, false) || ImGui::IsKeyPressed(ImGuiKey_GamepadFaceRight, false)) {
         inspecting = false;
         ImGui::CloseCurrentPopup();
     }
-    const float h = (showTableDetails ? 440.f : 490.f) * scale, w = h * .75f;
+    const float h = (showTableDetails ? 430.f : 480.f) * scale, w = h * .75f;
     const ImVec2 artAt =
-        showTableDetails ? origin + ImVec2(36, 40) * scale : origin + ImVec2((extent.x - w) / 2, 66 * scale);
+        showTableDetails ? origin + ImVec2(40, 36) * scale : origin + ImVec2((extent.x - w) / 2, 70 * scale);
     const ImVec2 centre = artAt + ImVec2(w, h) * .5f;
+    const auto& c = collection.cards[selected];
     if (!showTableDetails)
-        text(origin + ImVec2(extent.x / 2, 22 * scale), collection.cards[selected].name, 26, palette().ink,
-             extent.x - 100 * scale, true);
+        textCaps(origin + ImVec2(extent.x / 2, 26 * scale), c.name,
+                 std::min(24.f, 24.f * (extent.x - 90 * scale) / std::max(1.f, capsWidth(c.name, 24, 2))),
+                 palette().ink, 2, true);
     ImGui::SetCursorScreenPos(artAt);
     ImGui::InvisibleButton("rotate-art", ImVec2(w, h), ImGuiButtonFlags_EnableNav);
     if (ImGui::IsItemHovered()) ImGui::SetMouseCursor(ImGuiMouseCursor_ResizeAll);
@@ -45,53 +48,70 @@ void GameApp::nativeInspector() {
     if (ImGui::IsKeyDown(ImGuiKey_GamepadRStickDown)) pitch += ImGui::GetIO().DeltaTime;
     yaw += (turnTarget - yaw) * std::min(1.f, ImGui::GetIO().DeltaTime * 8);
     const bool back = std::cos(yaw) * std::cos(pitch) < 0;
-    auto texture = back ? assets.get(customBack) : assets.get(collection.cards[selected].art);
-    if (face.foil && selectedFoil)
-        texture =
-            renderer.material(texture, 21, .5f + std::sin(yaw) * .45f, .5f + std::sin(pitch) * .45f, face.foilStrength);
-    auto project = [&](float u, float v) {
-        float x = (u - .5f) * w, y = (v - .5f) * h, z = -x * std::sin(yaw);
+    // The card is drawn flat with its full face, then every vertex is tilted into place.
+    const float depth = 3200 * scale;
+    const auto project = [&](ImVec2 flat) {
+        float x = flat.x - centre.x, y = flat.y - centre.y, z = -x * std::sin(yaw);
         x *= std::cos(yaw);
         const float yy = y * std::cos(pitch) - z * std::sin(pitch);
         z = y * std::sin(pitch) + z * std::cos(pitch);
-        const float perspective = 1500 * scale / (1500 * scale + z);
-        return centre + ImVec2(x, yy) * perspective;
+        return centre + ImVec2(x, yy) * (depth / (depth + z));
     };
-    for (int y = 0; y < 24; ++y)
-        for (int x = 0; x < 18; ++x) {
-            const float u = x / 18.f, v = y / 24.f, u1 = (x + 1) / 18.f, v1 = (y + 1) / 24.f;
-            auto uv = [&](float a, float b) { return ImVec2(back ? 1 - a : a, b); };
-            d->AddImageQuad(texture.id, project(u, v), project(u1, v), project(u1, v1), project(u, v1), uv(u, v),
-                            uv(u1, v), uv(u1, v1), uv(u, v1));
+    const float lean = std::min(1.f, std::abs(std::sin(yaw)) + std::abs(std::sin(pitch)));
+    softShadow(artAt + ImVec2(w, h) * (.06f * lean), ImVec2(w, h) * (1 - .12f * lean), 1.5f, 18);
+    const int first = d->VtxBuffer.Size;
+    if (back) {
+        const auto texture = assets.get(customBack);
+        d->AddImage(texture.id, artAt, artAt + ImVec2(w, h), ImVec2(1, 0), ImVec2(0, 1));
+        d->AddRect(artAt, artAt + ImVec2(w, h), IM_COL32(0, 0, 0, 220), 0, 0, std::max(1.f, 1.5f * scale));
+    } else {
+        foilLightSet = true;
+        foilLight = ImVec2(.5f + std::sin(yaw) * .45f, .5f + std::sin(pitch) * .45f);
+        card(selected, artAt, ImVec2(w, h), false, face.foil && selectedFoil, -1, 21, true);
+        foilLightSet = false;
+        // A sheen crosses the face as it turns.
+        const float sweep = std::sin(yaw) * 1.6f;
+        if (std::abs(sweep) > .02f && std::abs(sweep) < 1.3f) {
+            const float x = artAt.x + w * (.5f + sweep * .5f), band = w * .22f;
+            const ImU32 lit = IM_COL32(255, 255, 255, int(34 * (1 - std::abs(sweep) / 1.3f))), clear = lit & 0xffffff;
+            d->PushClipRect(artAt, artAt + ImVec2(w, h), true);
+            d->AddRectFilledMultiColor(ImVec2(x - band, artAt.y), ImVec2(x, artAt.y + h), clear, lit, lit, clear);
+            d->AddRectFilledMultiColor(ImVec2(x, artAt.y), ImVec2(x + band, artAt.y + h), lit, clear, clear, lit);
+            d->PopClipRect();
         }
-    const ImVec2 corners[]{project(0, 0), project(1, 0), project(1, 1), project(0, 1)};
-    for (int i = 0; i < 4; ++i)
-        d->AddLine(corners[i], corners[(i + 1) % 4], IM_COL32(184, 165, 117, 150), 1.5f * scale);
+    }
+    for (int i = first; i < d->VtxBuffer.Size; ++i) d->VtxBuffer[i].pos = project(d->VtxBuffer[i].pos);
+    const auto controls = [&](ImVec2 at) {
+        if (button("flip", "Turn over", at, ImVec2(132, 38) * scale)) turnTarget += std::numbers::pi_v<float>;
+        if (button("reset-art", "Reset", at + ImVec2(144, 0) * scale, ImVec2(96, 38) * scale)) turnTarget = pitch = 0;
+    };
     if (showTableDetails) {
-        const float infoWidth = 262 * scale,
-                    metadataHeight = metadata(collection.cards[selected], {}, infoWidth - 12 * scale, false);
-        const float infoHeight = std::min(440 * scale, metadataHeight + 64 * scale);
+        const float infoWidth = 262 * scale, metadataHeight = metadata(c, {}, infoWidth - 12 * scale, false);
+        const float infoHeight = std::min(430 * scale, metadataHeight + 64 * scale);
         const auto infoAt = ImVec2(origin.x + 402 * scale, artAt.y + (h - infoHeight) * .5f);
         ImGui::SetCursorScreenPos(infoAt);
         ImGui::BeginChild("inspection-details", ImVec2(infoWidth, infoHeight), ImGuiChildFlags_NavFlattened);
         const auto top = ImGui::GetCursorScreenPos();
-        metadata(collection.cards[selected], top, infoWidth - 12 * scale);
-        const auto controls = top + ImVec2(0, metadataHeight + 24 * scale);
-        if (button("flip", "Turn over", controls, ImVec2(125, 38) * scale)) turnTarget += std::numbers::pi_v<float>;
-        if (button("reset-art", "Reset", controls + ImVec2(137, 0) * scale, ImVec2(95, 38) * scale))
-            turnTarget = pitch = 0;
+        metadata(c, top, infoWidth - 12 * scale);
+        controls(top + ImVec2(0, metadataHeight + 22 * scale));
         ImGui::EndChild();
-    } else {
-        const auto controls = origin + ImVec2(extent.x / 2 - 125 * scale, 580 * scale);
-        if (button("flip", "Turn over", controls, ImVec2(135, 38) * scale)) turnTarget += std::numbers::pi_v<float>;
-        if (button("reset-art", "Reset", controls + ImVec2(149, 0) * scale, ImVec2(100, 38) * scale))
-            turnTarget = pitch = 0;
+    } else
+        controls(origin + ImVec2(extent.x / 2 - 120 * scale, 572 * scale));
+    // Prompts sit where the main window keeps its own.
+    bool leave = false;
+    const ImVec2 promptAt = origin + ImVec2(30 * scale, extent.y - 44 * scale);
+    keyPrompt("Esc", "360_B", "Close", promptAt, &leave, "close-art");
+    if (leave) {
+        inspecting = false;
+        ImGui::CloseCurrentPopup();
     }
+    textRight(origin + ImVec2(extent.x - 30 * scale, extent.y - 38 * scale),
+              padPrompts ? "Right stick turns the card" : "Drag the card to turn it", 14, fade(palette().muted, .8f));
     const int selectedDisplay = selected + (selectedFoil ? collection.cards.size() : 0);
     const auto found = std::find(inspectionList.begin(), inspectionList.end(), selectedDisplay);
     if (found != inspectionList.end() && inspectionList.size() > 1) {
         const int index = int(found - inspectionList.begin());
-        const auto nav = origin + ImVec2(extent.x / 2 - 115 * scale, extent.y - 45 * scale);
+        const auto nav = origin + ImVec2(extent.x / 2 - 115 * scale, extent.y - 86 * scale);
         const bool previous = button("previous-art", "←", nav, ImVec2(43, 32) * scale, false, index > 0);
         const bool next = button("next-art", "→", nav + ImVec2(187, 0) * scale, ImVec2(43, 32) * scale, false,
                                  index + 1 < int(inspectionList.size()));

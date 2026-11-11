@@ -177,75 +177,31 @@ void GameApp::drawDetail(ImVec2 at, ImVec2 size) {
     if (collection.cards.empty() || selected < 0) return;
     const auto& c = collection.cards[selected];
     const bool known = c.known[selectedFoil] || c.owned[selectedFoil];
-    const float w = std::min(size.x - 12 * scale, (size.y - 235 * scale) * .75f), h = w / .75f;
+    const float facts = factRows(c, {}, size.x, false);
+    const float w = std::min(size.x - 12 * scale, (size.y - facts - 150 * scale) * .75f), h = w / .75f;
     const auto p = at + ImVec2((size.x - w) / 2, 8 * scale);
     if (known && skinned() && skinPiece("detail"))
-        skinPanel(ImVec2(at.x - 8 * scale, p.y + h + 10 * scale), ImVec2(size.x + 16 * scale, 252 * scale), .7f,
+        skinPanel(ImVec2(at.x - 8 * scale, p.y + h + 10 * scale), ImVec2(size.x + 16 * scale, facts + 66 * scale), .7f,
                   IM_COL32_WHITE, "detail");
     ImGui::SetCursorScreenPos(p);
     if (ImGui::InvisibleButton("selected-art", ImVec2(w, h), ImGuiButtonFlags_EnableNav) && known)
         inspectCard(selected + (selectedFoil ? collection.cards.size() : 0), false);
-    if (known)
+    if (known) {
+        softShadow(p, ImVec2(w, h), 1, 10);
         card(selected, p, ImVec2(w, h), false, selectedFoil, -1, 0, true);
-    else
+    } else
         displayCard(-2, p, ImVec2(w, h));
     if (!known) return;
-    auto mid = at.x + size.x / 2;
-    float y = p.y + h + 22 * scale;
-    if (skinned()) {
-        // An item card in the skin's manner: a title band, then labelled values on a plate.
-        y -= 8 * scale;
-        if (!skinBand("band", ImVec2(at.x, y), ImVec2(size.x, 40 * scale)))
-            skinBand("selector", ImVec2(at.x, y), ImVec2(size.x, 40 * scale));
-        const float fit = std::min(19.f, 19.f * (size.x - 24 * scale) / std::max(1.f, capsWidth(c.name, 19, 1)));
-        textCaps(ImVec2(mid, y + (40 - fit * 1.25f) * .5f * scale), c.name, fit, palette().ink, 1, true);
-        y += 40 * scale;
-        if (!skinBand("plate", ImVec2(at.x, y), ImVec2(size.x, 34 * scale)))
-            skinRule(ImVec2(at.x, y + 34 * scale), ImVec2(at.x + size.x, y + 34 * scale), .4f);
-        const char* tiers[]{"", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"};
-        const std::pair<const char*, std::string> stats[]{{"Owned", std::to_string(c.owned[selectedFoil])},
-                                                          {"Tier", tiers[c.tier]}};
-        float total = 0;
-        for (const auto& [name, value] : stats)
-            total += capsWidth(name, 13, 1) + 8 * scale + font()->CalcTextSizeA(19 * scale, 1e5f, 0, value.c_str()).x;
-        float x = mid - (total + 30 * scale) * .5f;
-        for (const auto& [name, value] : stats) {
-            textCaps(ImVec2(x, y + 10 * scale), name, 13, palette().muted, 1);
-            x += capsWidth(name, 13, 1) + 8 * scale;
-            text(ImVec2(x, y + 5 * scale), value, 19, skin().value);
-            x += font()->CalcTextSizeA(19 * scale, 1e5f, 0, value.c_str()).x + 30 * scale;
-        }
-        y += 50 * scale;
-        text(ImVec2(mid, y), c.rarity + (selectedFoil ? " · Foil" : ""), 18,
-             c.rarity == "Rare"        ? IM_COL32(86, 223, 255, 255)
-             : c.rarity == "Epic"      ? IM_COL32(214, 132, 250, 255)
-             : c.rarity == "Legendary" ? IM_COL32(230, 188, 101, 255)
-                                       : palette().ink,
-             0, true);
-        y += 30 * scale;
-        text(ImVec2(mid, y), join(member(state["cards"][selected], "groups")), 17, palette().muted, size.x, true);
-        y += 27 * scale;
-        text(ImVec2(mid, y), c.affinityMask ? join(member(state["cards"][selected], "affinities")) : "Neutral", 17,
-             palette().muted, size.x, true);
-        y += 42 * scale;
-    } else {
-        text(ImVec2(mid, y),
-             std::to_string(c.owned[selectedFoil]) + " owned · Tier " +
-                 std::array<const char*, 11>{"", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"}[c.tier],
-             16, palette().muted, 0, true);
-        y += 33 * scale;
-        text(ImVec2(mid, y), c.rarity + (selectedFoil ? " · Foil" : ""), 19,
-             c.rarity == "Rare"   ? IM_COL32(86, 223, 255, 255)
-             : c.rarity == "Epic" ? IM_COL32(214, 132, 250, 255)
-                                  : palette().accent,
-             0, true);
-        y += 36 * scale;
-        text(ImVec2(mid, y), join(member(state["cards"][selected], "groups")), 18, palette().muted, size.x, true);
-        y += 30 * scale;
-        text(ImVec2(mid, y), c.affinityMask ? join(member(state["cards"][selected], "affinities")) : "Neutral", 18,
-             palette().muted, size.x, true);
-        y += 47 * scale;
-    }
+    const float mid = at.x + size.x / 2;
+    float y = p.y + h + 14 * scale;
+    // An item card: a title band, then labelled facts.
+    const bool inset = skinned() && skinPiece("detail");
+    if (skinned() && !skinBand("band", ImVec2(at.x, y), ImVec2(size.x, 40 * scale)))
+        skinBand("selector", ImVec2(at.x, y), ImVec2(size.x, 40 * scale));
+    const float fit = std::min(19.f, 19.f * (size.x - 24 * scale) / std::max(1.f, capsWidth(c.name, 19, 1)));
+    textCaps(ImVec2(mid, y + (40 - fit * 1.25f) * .5f * scale), c.name, fit, palette().ink, 1, true);
+    y += 44 * scale;
+    y += factRows(c, ImVec2(at.x + (inset ? 10 : 2) * scale, y), size.x - (inset ? 20 : 4) * scale) + 16 * scale;
     if (tab == 1) {
         int slot = deckSlot;
         if (slot < 0)
