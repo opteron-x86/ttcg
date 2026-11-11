@@ -6,6 +6,17 @@ https://www.nexusmods.com/skyrimspecialedition/mods/160916
 https://www.nexusmods.com/skyrimspecialedition/mods/176230
 https://www.nexusmods.com/skyrimspecialedition/mods/166086
 
+Edge skin: artwork from Edge UI by EugeneUI, used with permission.
+https://www.nexusmods.com/skyrimspecialedition/mods/130983
+
+Dear Diary skin: artwork from Dear Diary Dark Mode by uranreactor, used with
+permission.
+https://www.nexusmods.com/skyrimspecialedition/mods/60837
+
+Untarnished skin: a palette and layout after Untarnished UI by Vorganger, used
+with permission; it has no textures.
+https://www.nexusmods.com/skyrimspecialedition/mods/75188
+
 The textures in TesseraUI/skins are rendered from vector shapes in those mods'
 menu files by tools/build-skin.py; tools/skin/recipes.json lists the source
 file and shape for each texture. They are not covered by Tessera's GPL-3.0

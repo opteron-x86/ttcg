@@ -1,0 +1,38 @@
+{
+  "schema": 1,
+  "id": "edge",
+  "name": "Edge",
+  "credit": "Edge UI by EugeneUI",
+  "font": "jost",
+  "palette": {
+    "background": "#161613",
+    "centre": "#2a2820",
+    "text": "#e6e1d3",
+    "muted": "#a39e8f",
+    "accent": "#c9b47a",
+    "line": "#c9b47a40",
+    "selection": "#5a4f2e",
+    "value": "#c9b47a",
+    "notice": "#d08a5a"
+  },
+  "board": "leather",
+  "control": {
+    "player": "#d8cfae",
+    "opponent": "#b9573f"
+  },
+  "art": {
+    "panel": {
+      "file": "panel.png",
+      "margin": 80,
+      "inset": 6
+    },
+    "title": {
+      "file": "band.png",
+      "cap": 0.12
+    },
+    "band": {
+      "file": "band.png",
+      "cap": 0.12
+    }
+  }
+}

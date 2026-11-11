@@ -1,0 +1,24 @@
+{
+  "schema": 1,
+  "id": "untarnished",
+  "name": "Untarnished",
+  "credit": "Untarnished UI by Vorganger",
+  "font": "jost",
+  "palette": {
+    "background": "#0b0b0b",
+    "centre": "#1c1c1c",
+    "text": "#f2f2f2",
+    "muted": "#a8a8a8",
+    "accent": "#ffffff",
+    "line": "#ffffff30",
+    "selection": "#3d3d3d",
+    "value": "#ffffff",
+    "notice": "#d0705e"
+  },
+  "board": "slab",
+  "control": {
+    "player": "#e8e8e8",
+    "opponent": "#c85a4a"
+  },
+  "art": {}
+}

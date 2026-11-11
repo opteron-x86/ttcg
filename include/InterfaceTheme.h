@@ -8,11 +8,17 @@ struct InterfaceTheme {
     int boardSurface;
 };
 // The index is saved in TTCG.ini. Append themes; never reorder existing entries.
-inline constexpr std::array interfaceThemes{
-    InterfaceTheme{"tessera", "Tessera", 3}, InterfaceTheme{"charcoal", "Charcoal", 2},
-    InterfaceTheme{"oxblood", "Oxblood", 5}, InterfaceTheme{"parchment", "Parchment", 4},
-    InterfaceTheme{"umber", "Umber", 6},     InterfaceTheme{"oathvein", "Oathvein", 5},
-    InterfaceTheme{"veldun", "Vel'dun", 5},  InterfaceTheme{"norden", "Norden", 2}};
+inline constexpr std::array interfaceThemes{InterfaceTheme{"tessera", "Tessera", 3},
+                                            InterfaceTheme{"charcoal", "Charcoal", 2},
+                                            InterfaceTheme{"oxblood", "Oxblood", 5},
+                                            InterfaceTheme{"parchment", "Parchment", 4},
+                                            InterfaceTheme{"umber", "Umber", 6},
+                                            InterfaceTheme{"oathvein", "Oathvein", 5},
+                                            InterfaceTheme{"veldun", "Vel'dun", 5},
+                                            InterfaceTheme{"norden", "Norden", 2},
+                                            InterfaceTheme{"untarnished", "Untarnished", 7},
+                                            InterfaceTheme{"edge", "Edge", 5},
+                                            InterfaceTheme{"deardiary", "Dear Diary", 2}};
 inline constexpr int interfaceThemeCount = int(interfaceThemes.size());
 inline constexpr int interfaceThemeIndex(int value) { return value >= 0 && value < interfaceThemeCount ? value : 0; }
 }

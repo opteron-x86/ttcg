@@ -98,7 +98,8 @@ PauseWorldInMatchSetup=1
 PauseWorldDuringMatches=1
 
 [Appearance]
-; Window theme: 0 Tessera, 1 Charcoal, 2 Oxblood, 3 Parchment, 4 Umber, 5 Oathvein, 6 Vel'dun, 7 Norden.
+; Window theme: 0 Tessera, 1 Charcoal, 2 Oxblood, 3 Parchment, 4 Umber, 5 Oathvein, 6 Vel'dun, 7 Norden,
+; 8 Untarnished, 9 Edge, 10 Dear Diary.
 Theme=0
 ; Board: 0 match theme, 1 plain, 2 slate, 3 green felt, 4 parchment, 5 dark leather, 6 walnut, 7 dark slab.
 BoardSurface=0

@@ -30,4 +30,6 @@ Colours are `#rrggbb` or `#rrggbbaa`. `font` is `jost`, `lato`, `serif` or `sans
 
 Every piece is optional; a missing one falls back to a flat fill or a hairline. Textures are authored at three times Skyrim's 720p stage, so one texture pixel is one screen pixel at 2160p. `passes` draws a translucent band more than once to deepen it.
 
-The textures here are artwork from Oathvein UI, Vel'dun UI and Norden UI by Nithog, used with permission and not covered by Tessera's GPL-3.0 licence. `tools/build-skin.py` regenerates them from installed copies of those mods using `tools/skin/recipes.json`.
+`board` names the skin's default game board: `plain`, `slate`, `felt`, `parchment`, `leather`, `walnut` or `slab`.
+
+The textures here are artwork from Oathvein UI, Vel'dun UI and Norden UI by Nithog, Edge UI by EugeneUI and Dear Diary Dark Mode by uranreactor, used with permission and not covered by Tessera's GPL-3.0 licence. Untarnished follows Vorganger's Untarnished UI with a palette alone. `tools/build-skin.py` regenerates them from installed copies of those mods using `tools/skin/recipes.json`.

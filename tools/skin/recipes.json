@@ -78,5 +78,30 @@
         null
       ]
     }
+  },
+  "edge": {
+    "mod": "Edge UI",
+    "art": {
+      "panel": [
+        "deardiary_dm/messagebox/messagebox_BG.swf",
+        9,
+        "trim"
+      ],
+      "band": [
+        "deardiary_dm/Inventory/itemcard_1_BG.swf",
+        9,
+        "1300x118+70+50"
+      ]
+    }
+  },
+  "deardiary": {
+    "mod": "Dear Diary Dark Mode (white text)",
+    "art": {
+      "panel": [
+        "deardiary_dm/messagebox/messagebox_BG.swf",
+        9,
+        "trim"
+      ]
+    }
   }
 }

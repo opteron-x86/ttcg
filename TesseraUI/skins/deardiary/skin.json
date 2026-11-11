@@ -1,0 +1,30 @@
+{
+  "schema": 1,
+  "id": "deardiary",
+  "name": "Dear Diary",
+  "credit": "Dear Diary Dark Mode by uranreactor",
+  "font": "sans",
+  "palette": {
+    "background": "#0c0c0c",
+    "centre": "#1e1e1e",
+    "text": "#efefef",
+    "muted": "#a9a9a9",
+    "accent": "#e6e6e6",
+    "line": "#ffffff2a",
+    "selection": "#3b3b3b",
+    "value": "#e6e6e6",
+    "notice": "#d0705e"
+  },
+  "board": "slate",
+  "control": {
+    "player": "#e0e0e0",
+    "opponent": "#c05a4a"
+  },
+  "art": {
+    "panel": {
+      "file": "panel.png",
+      "margin": 60,
+      "inset": 0
+    }
+  }
+}

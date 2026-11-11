@@ -281,13 +281,16 @@ int main(int argc, char** argv) {
                 for (const auto& texture : preview::GameTestAccess::themeSurfaces(app)) {
                     // Skinned themes draw their panel texture and generate no background.
                     const auto id = ttcg::interfaceThemes[index++].id;
-                    if (id == "oathvein" || id == "veldun" || id == "norden") {
+                    if (index > 5) {
                         require(!texture.id, "Skinned theme generated an unused background");
                         const auto& skin = preview::GameTestAccess::skin(app, index - 1);
-                        require(skin.loaded && skin.art.contains("panel") && skin.art.at("panel").margin > 0 &&
-                                    skin.art.contains("selector") && skin.art.contains("tab") && skin.player &&
-                                    skin.opponent,
-                                "Bundled skin did not load its panel, bands and control colours");
+                        require(skin.loaded && skin.player && skin.opponent && skin.board,
+                                "Bundled skin did not load its colours and board");
+                        // Nithog's three carry a full set of textures; Untarnished is flat by design.
+                        if (id == "oathvein" || id == "veldun" || id == "norden")
+                            require(skin.art.contains("panel") && skin.art.at("panel").margin > 0 &&
+                                        skin.art.contains("selector") && skin.art.contains("tab"),
+                                    "Bundled skin did not load its panel and bands");
                         continue;
                     }
                     require(texture.id && texture.width == 1024 && texture.height == 768,
