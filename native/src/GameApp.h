@@ -22,7 +22,7 @@ class GameApp final : public App {
     bool demoSelected = false;
     double demoChanged = 0;
     bool pendingCommand = false, ruleAnswerPending = false, escapeRequested = false, showTableDetails = false,
-         previewBack = false;
+         previewBack = false, popupBeforeFrame = false;
     double sentAt = 0;
     std::uint64_t seenReveal = 0, dismissedReveal = 0;
     struct TradeView {
@@ -106,6 +106,7 @@ public:
     void receive(std::string_view);
     void reset();
     void escape() { escapeRequested = true; }
+    void prepareFrame();
     void draw() override;
     void captureKey(unsigned scan, unsigned modifiers);
     bool capturing() const { return !label(member(state, "settings"), "capturing").empty(); }

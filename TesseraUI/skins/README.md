@@ -22,6 +22,7 @@ Colours are `#rrggbb` or `#rrggbbaa`. `font` is `jost`, `lato`, `serif` or `sans
 | Art | Drawn as | Used for |
 |---|---|---|
 | `panel` | Nine-slice. `margin` is the corner size and `inset` the distance from the texture edge to its frame line, both in texture pixels. `tile` repeats the edges mirrored; otherwise they stretch. | Window and dialogs |
+| `window`, `detail` | Nine-slice, with the same fields as `panel` | Optional main-window backdrop and album detail panel; dialogs keep `panel` |
 | `title` | Band with fixed ends (`cap`, a fraction of the width) and a stretched middle | Top of the window |
 | `selector` | Band | Hovered and primary buttons, the player to move |
 | `tab` | Band | Current tab |

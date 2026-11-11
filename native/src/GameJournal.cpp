@@ -7,7 +7,7 @@ void GameApp::journal(ImVec2 at, ImVec2 size) {
     const float nav = AlbumLayout::navigation * scale, gap = AlbumLayout::gap * scale;
     line(at + ImVec2(nav + gap / 2, 0), at + ImVec2(nav + gap / 2, size.y));
     ImGui::SetCursorScreenPos(at);
-    ImGui::BeginChild("holds", ImVec2(nav, size.y));
+    ImGui::BeginChild("holds", ImVec2(nav, size.y), ImGuiChildFlags_NavFlattened);
     const float navWidth = nav - 20 * scale;
     ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 6 * scale));
     if (chapter("all", "All holds", ImGui::GetCursorScreenPos(), ImVec2(navWidth, 43 * scale), journalHold == 0)) {
@@ -75,7 +75,7 @@ void GameApp::journal(ImVec2 at, ImVec2 size) {
               std::to_string(rows.size()) + (rows.size() == 1 ? " player" : " players"), 15, palette().muted);
     y += 24 * scale;
     ImGui::SetCursorScreenPos(ImVec2(mid.x, y));
-    ImGui::BeginChild("players", ImVec2(listWidth, at.y + size.y - y));
+    ImGui::BeginChild("players", ImVec2(listWidth, at.y + size.y - y), ImGuiChildFlags_NavFlattened);
     ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 8 * scale));
     const float rowHeight = 68 * scale, rowWidth = ImGui::GetContentRegionAvail().x - 12 * scale;
     ImGuiListClipper clip;
@@ -110,7 +110,7 @@ void GameApp::journal(ImVec2 at, ImVec2 size) {
         // Give flowing text a real column origin and clip rectangle. A cursor
         // offset in the root window is lost at the next ImGui layout item.
         ImGui::SetCursorScreenPos(detail);
-        ImGui::BeginChild("player-details", ImVec2(detailWidth, at.y + size.y - y));
+        ImGui::BeginChild("player-details", ImVec2(detailWidth, at.y + size.y - y), ImGuiChildFlags_NavFlattened);
         textBlock(label(p, "name"), detailWidth, 25, palette().accent);
         ImGui::Dummy(ImVec2(0, 12 * scale));
         textBlock(label(p, "hold"), detailWidth, 19, palette().ink);

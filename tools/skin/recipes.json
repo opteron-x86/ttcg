@@ -88,9 +88,24 @@
         "trim"
       ],
       "band": [
-        "deardiary_dm/Inventory/itemcard_1_BG.swf",
+        "skyui/inventorylists.swf",
+        159,
+        "trim"
+      ],
+      "window": [
+        "deardiary_dm/Inventory/inventorylists_BG.swf",
         9,
-        "1300x118+70+50"
+        "trim"
+      ],
+      "selector": [
+        "skyui/inventorylists.swf",
+        1,
+        "trim"
+      ],
+      "tab": [
+        "skyui/inventorylists.swf",
+        1,
+        "trim"
       ]
     }
   },

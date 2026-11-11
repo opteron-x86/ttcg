@@ -5,14 +5,14 @@
   "credit": "Edge UI by EugeneUI",
   "font": "jost",
   "palette": {
-    "background": "#161613",
-    "centre": "#2a2820",
-    "text": "#e6e1d3",
-    "muted": "#a39e8f",
-    "accent": "#c9b47a",
-    "line": "#c9b47a40",
-    "selection": "#5a4f2e",
-    "value": "#c9b47a",
+    "background": "#0d1011",
+    "centre": "#202323",
+    "text": "#e9e6dd",
+    "muted": "#b1ada2",
+    "accent": "#c1ab70",
+    "line": "#92856380",
+    "selection": "#514a34",
+    "value": "#c1ab70",
     "notice": "#d08a5a"
   },
   "board": "leather",
@@ -28,11 +28,29 @@
     },
     "title": {
       "file": "band.png",
-      "cap": 0.12
+      "cap": 0.05
     },
     "band": {
       "file": "band.png",
-      "cap": 0.12
+      "cap": 0.05
+    },
+    "window": {
+      "file": "window.png",
+      "margin": 240,
+      "inset": 15
+    },
+    "detail": {
+      "file": "panel.png",
+      "margin": 80,
+      "inset": 6
+    },
+    "selector": {
+      "file": "selector.png",
+      "cap": 0.06
+    },
+    "tab": {
+      "file": "tab.png",
+      "cap": 0.06
     }
   }
 }

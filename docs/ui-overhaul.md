@@ -13,12 +13,12 @@ The goal is a complete overhaul of the native (ImGui/DirectX 11) interface so it
 | Game board | **Selectable materials in Settings**, plus a default board named by each skin. |
 | Skin source art | Convert real artwork from the author's mods with `tools/build-skin.py`. Permission granted for Oathvein UI, Vel'dun UI, Norden UI (Nithog), Edge UI (EugeneUI), Dear Diary Dark Mode (uranreactor), Untarnished UI (Vorganger). |
 | Keycaps | Read at runtime from the player's `Data/Interface/ImGuiIcons/Icons` (as Quickslot does); never bundled. |
-| Image generation | OpenRouter through `opencode` is available (key already updated by the player). Optional, for painterly board art only. See [Image generation](#image-generation). |
+| Image generation | Optional generated board art or a shared card-frame asset, using the built-in image tool. Preserve the procedural board set. See [Image generation](#image-generation). |
 | Commits | Committing on this branch is fine; package builds require a clean tree. |
 
 ## Status
 
-The three extra skins and preview tooling are committed in `04c0924`. The phase 1 software follow-ups are complete; real-controller and Skyrim validation remain open.
+The player confirmed scene blur in Skyrim on 10 November 2026. The controller/Edge follow-up fixes right-stick glyph switching, cursor activation and cross-panel navigation, and replaces Edge’s sparse treatment with its inventory backdrop, selection art and a separate detail panel. Physical-controller verification of this follow-up remains open.
 
 | Phase | Scope | State |
 |---|---|---|
@@ -29,21 +29,21 @@ The three extra skins and preview tooling are committed in `04c0924`. The phase 
 | 5 In-game integration | Blur, packaging, neutral default skin, theme migration | **Partly done** (blur, skin packaging); rest open |
 | Extra skins | Untarnished, Edge, Dear Diary | **Committed** (`04c0924`), desktop previews reviewed |
 
-Last verified: **89/89 native tests pass**, including new page-specific prompt checks, controller inspection in the lobby, device switching, and framed/borderless Settings visibility. Native build, formatting, and preview-script failure checks pass. **Rebuild and re-probe before handing a zip to the player** (see [Build](#build-test-and-package)); the checkpoint output directory is `dist/ui-phase1-followups/`, whose `build-info.json` records the exact tested source and DLL. `dist/skins-phase1/` is stale.
+Last verified: **89/89 native tests pass**, including right-stick cursor glyphs, cursor A/Y activation, held-button mode changes, disconnect cleanup, dropdown dismissal, cross-panel navigation and framed/borderless Settings visibility. Native build, formatting, and preview-script failure checks pass. **Rebuild and re-probe before handing a zip to the player** (see [Build](#build-test-and-package)); the checkpoint output directory is `dist/controller-edge-followups/`, whose `build-info.json` records the exact tested source and DLL. `dist/skins-phase1/` is stale.
 
 ### First actions for the next agent
 
-1. Check `git status` and the checkpoint's `dist/ui-phase1-followups/build-info.json`; if source has changed, rebuild/probe/package rather than handing over an older DLL.
-2. Have the player run the native UI checkpoint checklist in `docs/TESTING.md` with the new Main zip. Desktop previews and synthetic controller input do not establish in-game blur or physical-controller behaviour.
+1. Check `git status` and the checkpoint's `dist/controller-edge-followups/build-info.json`; if source has changed, rebuild/probe/package rather than handing over an older DLL.
+2. Have the player run the native UI checkpoint checklist in `docs/TESTING.md` with the new Main zip. Blur is confirmed in normal Skyrim use. Desktop previews and synthetic controller input do not establish physical-controller behaviour or unexpected-close blur cleanup.
 3. Continue with the phase 2 card-face verification list below, then the ordered board, layout and typography work. Keep existing theme indices and the agreed shared card design.
 
 ### Phase 1 follow-up checkpoint
 
-- Reviewed album, match, lobby and result screens for Untarnished, Edge and Dear Diary at 1080p, and their albums at 720p and 4K. No skin asset or metric changes were needed. Previews are under `build/previews/phase1-checkpoint/before/`.
+- Initial album, match, lobby and result previews are under `build/previews/phase1-checkpoint/before/`. Edge’s revised inventory backdrop, gold selection bands, tabs and detail panel use artwork from the installed Edge UI. The message-box frame remains on dialogs. Follow-up previews are under `build/previews/controller-edge/`: album, lobby, match and results at 1080p, plus the album at 720p and 4K.
 - Settings now names skin fonts and control colours, identifies inherited lettering/stroke/border defaults, and preserves saved setting values. Nameplate and numeral-finish controls appear only for the borderless face; additional-border controls appear on framed cards only when the control marker enables that border.
 - Footer prompts follow the active page. Inspection is advertised for card/deck views, shops, lobbies and matches; modal dialogs suppress background prompts. Lobby cards now accept focused `I`/pad Y inspection alongside the existing mouse action. Runtime icon names `360_A`, `360_B`, `360_Y`, `Esc`, `Mouse1`, `Mouse2` were confirmed in the installed icon pack; no icons are bundled.
 - `tools/preview-ui.sh` renders into a temporary directory, propagates host/conversion failure, and replaces the output PNG only after success. An invalid-fixture check confirmed that an older PNG is preserved and stale BMPs cannot produce a false success.
-- Updated Settings previews, including runtime keycaps, are under `build/previews/phase1-checkpoint/after/`. Real pad hardware, Skyrim menu blur, and the remaining phases still need verification.
+- Updated Settings previews, including runtime keycaps, are under `build/previews/phase1-checkpoint/after/`. Normal Skyrim blur is player-confirmed. The revised controller behavior and remaining phases still need in-game verification.
 
 ## Architecture
 
@@ -60,6 +60,7 @@ Last verified: **89/89 native tests pass**, including new page-specific prompt c
 | Window frame, header, prompt bar, settings sync | `native/src/GameApp.cpp` |
 | Album detail panel | `native/src/GameAlbum.cpp` |
 | Settings screens | `native/src/GameSettings.cpp` |
+| Controller cursor/navigation and input device | `native/skse/Host.cpp`, `native/skse/MenuInput.h` |
 | Menu object, scene blur | `native/skse/Menu.cpp` |
 | Preview host (desktop SDL/OpenGL, same screens) | `native/src/HostGL.cpp`, `native/src/main.cpp`, `tools/preview-ui.sh` |
 | Skin textures | `TesseraUI/skins/<id>/` (format: `TesseraUI/skins/README.md`) |
@@ -72,7 +73,7 @@ Last verified: **89/89 native tests pass**, including new page-specific prompt c
 
 A skin is `TesseraUI/skins/<theme id>/skin.json` plus textures. The folder name must equal a theme id in `InterfaceTheme.h`. `App::loadSkins()` reads them at startup; a skinned theme has `FrameStyle::Skinned` in its built-in palette row and the skin file overrides the palette, typeface (`jost|lato|serif|sans`), control colours, default board (`board`) and textures. Every texture is optional; missing ones fall back to flat fills or hairlines. Textures are authored at 3x Skyrim's 720p stage (1 texture pixel = 1 screen pixel at 2160p; `skinUnit()` = display height / 2160).
 
-Pieces: `panel` (nine-slice; `margin`, `inset`, `tile`), `title`, `band`, `plate`, `selector`, `tab` (bands with fixed ends given by `cap`), `sigil` (watermark, `opacity`). Full table in `TesseraUI/skins/README.md`.
+Pieces: `panel` (nine-slice; `margin`, `inset`, `tile`), optional `window`/`detail` panels, `title`, `band`, `plate`, `selector`, `tab` (bands with fixed ends given by `cap`), `sigil` (watermark, `opacity`). Full table in `TesseraUI/skins/README.md`.
 
 Behaviour of a skinned theme: no title bar or Size dropdown (a title band instead); a key-prompt bar at the bottom; card names and values in the skin's typeface; the player's own font, colour or border settings still win when changed from their defaults.
 
@@ -100,10 +101,11 @@ Ordered. Each item should end with preview screenshots reviewed by looking at th
 
 ### Phase 1 follow-ups
 
-- **Done:** previewed the three extra skins across album, match, lobby and dialogs; Edge's band and the flat/hairline fallbacks look intentional. Untarnished remains a clean white-on-black palette.
+- **Done:** Edge uses its own inventory backdrop and selection art, with a gold-framed detail panel and message-box dialogs. Untarnished remains a clean white-on-black palette.
 - **Done:** Settings displays effective skin defaults and hides framed-card controls that do not apply. Existing persisted meanings are unchanged; selecting a skin default still follows the skin.
 - **Done in automation:** page-specific Back/Close/Select/Play/Inspect prompts, keyboard/pad switching and focused pad Y inspection in the lobby. Icon files exist in the installed pack.
-- **Open:** verify controller glyph switching with a real pad and confirm keyboard/mouse fallback in Skyrim.
+- **Implemented and tested:** original SKSE input events determine glyphs; right-stick cursor movement preserves pad prompts. A/Y operate the cursor after right-stick use; left stick/D-pad resume focus navigation across panel boundaries. Mode changes and disconnect release controller clicks. Focus outlines remain visible on lobby cards, hands, board cells and shop cards. B closes a dropdown without closing the underlying screen.
+- **Open:** repeat these checks with a real pad and confirm keyboard/mouse fallback in Skyrim.
 
 ### Phase 2: card face
 
@@ -121,7 +123,7 @@ Ordered. Each item should end with preview screenshots reviewed by looking at th
 - Turn indication on the board (rail glow on the side of whoever moves).
 - Last-move highlight on the square just played.
 - Check every material at 720p, 1080p and 4K, and with Board texture at 0, 10 and 100.
-- Optional: painterly boards generated through OpenRouter (see below) to compare against the procedural ones; the procedural set is the shipping baseline and must remain.
+- Optional: painterly boards generated with the image tool (see below) to compare against the procedural ones; the procedural set is the shipping baseline and must remain.
 - `TesseraUI/assets/themes/*.png` are no longer shipped but are still referenced by the web tools and an old test; leave them or delete with the web UI (the web UI under `TesseraUI/*.js` is not shipped or tested by CI and is a deletion candidate; confirm with the owner first).
 
 ### Phase 4: layouts and typography
@@ -158,7 +160,7 @@ Typography
 
 ### Phase 5: in-game integration
 
-- Scene blur: implemented (`UIBlurManager` Increment/Decrement in `Menu.cpp`, unit-stubbed in `tests/native_input_test.py`). Not verified in Skyrim; check it works unpaused and that the count is released when the menu closes unexpectedly.
+- Scene blur: implemented (`UIBlurManager` Increment/Decrement in `Menu.cpp`, unit-stubbed in `tests/native_input_test.py`) and player-confirmed in Skyrim. Unexpected-close cleanup and paused/unpaused coverage remain on the checklist.
 - Neutral **Skyrim** skin as the shipped default (vanilla/SkyUI idiom: dark translucent ground, hairlines, Jost, caps labels, prompt bar). Changing the default theme index needs care: `Theme=0` in saved INIs currently means Tessera. Decide: keep index 0 as the old theme and change only the default for new installs (INI default), or migrate. Existing players must not have their look silently changed.
 - First-run detection of the installed UI mod (Oathvein, Vel'dun, Norden, Edge, Dear Diary, Untarnished, SkyUI) to pick a skin; only for new installs, and overridable.
 - Fold Charcoal, Oxblood and Umber into colour options of the neutral skin without breaking saved theme indices (indices are append-only; hide them from the picker but still honour them).
@@ -198,7 +200,7 @@ Hand over the absolute path of `dist/<name>/Tessera-<ver>-dev.<hash>-Main.zip`. 
 
 ## Image generation
 
-`opencode` 1.19.5 has an OpenRouter credential. At the time of writing `opencode models` listed only text models (deepseek, kimi, glm) under OpenRouter, so no image model was confirmed callable. Before relying on it, check `opencode models` and OpenRouter's image-capable models, then `opencode run -m openrouter/<model> "<prompt>"`. Generated art is optional; do not make shipping assets depend on it. Never print or store the API key. Any generated asset needs a recorded prompt and licence note beside it.
+Generated art is optional. Use the built-in image tool for painterly boards or a shared card-frame asset; keep the procedural board set available. Record the final prompt, tool and provenance beside any accepted asset. Implement code directly, as requested by the player.
 
 ## Licensing rules
 

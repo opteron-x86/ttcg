@@ -35,7 +35,7 @@ void GameApp::tournaments(ImVec2 at, ImVec2 size) {
     if (std::none_of(events.begin(), events.end(), [&](const auto* e) { return number(*e, "id") == int(eventID); }))
         eventID = events.empty() ? 0 : number(*events.front(), "id");
     ImGui::SetCursorScreenPos(at + ImVec2(0, 54) * scale);
-    ImGui::BeginChild("tournament-list", ImVec2(nav, size.y - 54 * scale));
+    ImGui::BeginChild("tournament-list", ImVec2(nav, size.y - 54 * scale), ImGuiChildFlags_NavFlattened);
     for (auto* e : events) {
         const int id = number(*e, "id");
         const bool won = number(*e, "champion") == 20;

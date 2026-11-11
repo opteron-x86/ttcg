@@ -1,5 +1,6 @@
 #include "Host.h"
 #include "Keys.h"
+#include "MenuInput.h"
 #include "GameApp.h"
 #include "RendererDX11.h"
 #include "DXIsolation.h"
@@ -58,10 +59,11 @@ struct Host::State {
         cursorRefreshQueued{false};
     std::atomic<HWND> window{nullptr};
     struct Input {
-        enum Kind { key, character, mouse, wheel, analog, capture } kind;
+        enum Kind { key, character, mouse, motion, wheel, analog, stick, capture } kind;
         int code;
         float value;
         std::uint64_t token;
+        float second = 0;
     };
     std::mutex inputMutex;
     std::vector<Input> input;
@@ -75,6 +77,8 @@ struct Host::State {
         std::unique_ptr<DXIsolation> isolation;
         std::unique_ptr<Renderer> renderer;
         std::unique_ptr<GameApp> app;
+        MenuInput input;
+        bool gamepad = false;
         unsigned missing = 0;
         double totalMs = 0, maxMs = 0;
         std::uint64_t frames = 0;
@@ -162,6 +166,7 @@ bool Host::focused() const { return state->ownsFocus; }
 bool Host::anyFocus() const { return focused() || foreignMenu(RE::UI::GetSingleton()); }
 bool Host::focus(bool pause) {
     auto& s = *state;
+    if (auto* devices = RE::BSInputDeviceManager::GetSingleton()) s.gamepad = devices->IsGamepadEnabled();
     if (!s.initialized) return false;
     s.pauseWorld = pause;
     s.ownsFocus = true;
@@ -349,6 +354,7 @@ void Host::draw() {
             io.ClearInputKeys();
             io.ClearInputMouse();
             io.ClearEventsQueue();
+            g.input.reset(s.gamepad);
             g.app->resume();
         }
         if (s.resetApp.exchange(false)) g.app->reset();
@@ -374,20 +380,14 @@ void Host::draw() {
         if (io.DisplaySize.x <= 0 || io.DisplaySize.y <= 0) return;
         if (size.x > 0 && size.y > 0)
             io.DisplayFramebufferScale = {size.x / io.DisplaySize.x, size.y / io.DisplaySize.y};
-        // CursorMenu provides the coordinates Skyrim displays. Win32's OS cursor
-        // can be locked at screen center while Skyrim uses a software cursor.
-        if (auto* cursor = RE::MenuCursor::GetSingleton(); inputActive && cursor) {
-            const auto& c = cursor->GetRuntimeData();
-            const float sx = c.screenWidthX > 0 ? io.DisplaySize.x / c.screenWidthX : 1.f;
-            const float sy = c.screenWidthY > 0 ? io.DisplaySize.y / c.screenWidthY : 1.f;
-            io.AddMousePosEvent(c.cursorPosX * sx, c.cursorPosY * sy);
-        } else
-            io.AddMousePosEvent(-FLT_MAX, -FLT_MAX);
         io.AddFocusEvent(inputActive);
         io.AddKeyEvent(ImGuiMod_Ctrl, inputActive && (GetAsyncKeyState(VK_CONTROL) & 0x8000) != 0);
         io.AddKeyEvent(ImGuiMod_Shift, inputActive && (GetAsyncKeyState(VK_SHIFT) & 0x8000) != 0);
         io.AddKeyEvent(ImGuiMod_Alt, inputActive && (GetAsyncKeyState(VK_MENU) & 0x8000) != 0);
-        if (s.gamepad)
+        const bool gamepad = s.gamepad;
+        if (g.gamepad && !gamepad) g.input.disconnect();
+        g.gamepad = gamepad;
+        if (gamepad)
             io.BackendFlags |= ImGuiBackendFlags_HasGamepad;
         else
             io.BackendFlags &= ~ImGuiBackendFlags_HasGamepad;
@@ -396,16 +396,25 @@ void Host::draw() {
             std::scoped_lock lock(s.inputMutex);
             input.swap(s.input);
         }
+        // CursorMenu provides the coordinates Skyrim displays. Win32's OS cursor
+        // can be locked at screen center while Skyrim uses a software cursor.
+        if (auto* cursor = RE::MenuCursor::GetSingleton(); inputActive && cursor) {
+            const auto& c = cursor->GetRuntimeData();
+            const float sx = c.screenWidthX > 0 ? io.DisplaySize.x / c.screenWidthX : 1.f;
+            const float sy = c.screenWidthY > 0 ? io.DisplaySize.y / c.screenWidthY : 1.f;
+            g.input.cursor({c.cursorPosX * sx, c.cursorPosY * sy});
+        } else
+            g.input.cursor({-FLT_MAX, -FLT_MAX});
         for (const auto& event : input) {
             if (!inputActive || event.token != token) continue;
             switch (event.kind) {
                 case State::Input::capture: g.app->captureKey(unsigned(event.code), unsigned(event.value)); break;
-                case State::Input::key: io.AddKeyEvent(ImGuiKey(event.code), event.value > 0); break;
-                case State::Input::analog:
-                    io.AddKeyAnalogEvent(ImGuiKey(event.code), event.value > .1f, event.value);
-                    break;
-                case State::Input::mouse: io.AddMouseButtonEvent(event.code, event.value > 0); break;
-                case State::Input::wheel: io.AddMouseWheelEvent(0, event.value); break;
+                case State::Input::key: g.input.keyboard(ImGuiKey(event.code), event.value > 0); break;
+                case State::Input::analog: g.input.gamepad(ImGuiKey(event.code), event.value); break;
+                case State::Input::stick: g.input.stick(event.code == 0, event.value, event.second); break;
+                case State::Input::motion: g.input.mouseMotion(float(event.code), event.value); break;
+                case State::Input::mouse: g.input.mouseButton(event.code, event.value > 0); break;
+                case State::Input::wheel: g.input.wheel(event.value); break;
                 case State::Input::character:
                     if (event.code <= 0xffff)
                         io.AddInputCharacterUTF16(ImWchar16(event.code));
@@ -414,6 +423,8 @@ void Host::draw() {
                     break;
             }
         }
+        g.app->inputDevice(g.input.controller());
+        g.app->prepareFrame();
         ImGui::NewFrame();
         frameStarted = true;
         g.app->draw();
@@ -464,8 +475,8 @@ RE::BSEventNotifyControl Host::ProcessEvent(RE::InputEvent* const* events, RE::B
     const auto token = s.session.token();
     if (manager) s.gamepad = manager->IsGamepadEnabled();
     std::vector<State::Input> batch;
-    const auto push = [&](State::Input::Kind kind, int code, float value) {
-        batch.push_back({kind, code, value, token});
+    const auto push = [&](State::Input::Kind kind, int code, float value, float second = 0) {
+        batch.push_back({kind, code, value, token, second});
     };
     for (auto* event = *events; event; event = event->next) {
         auto* button = event->AsButtonEvent();
@@ -476,27 +487,27 @@ RE::BSEventNotifyControl Host::ProcessEvent(RE::InputEvent* const* events, RE::B
             const auto code = button->GetIDCode();
             if (button->GetDevice() == RE::INPUT_DEVICE::kGamepad) {
                 const auto key = controllerKey(code);
-                if (key != ImGuiKey_None) push(State::Input::analog, key, std::clamp(button->Value(), 0.f, 1.f));
+                // A button already held while opening/resuming the menu must
+                // not activate its first control. Triggers retain analog pressure.
+                if (key != ImGuiKey_None &&
+                    (button->IsDown() || button->IsUp() || key == ImGuiKey_GamepadL2 || key == ImGuiKey_GamepadR2))
+                    push(State::Input::analog, key, std::clamp(button->Value(), 0.f, 1.f));
             } else if (button->IsDown() || button->IsUp()) {
                 if (button->GetDevice() == RE::INPUT_DEVICE::kKeyboard) {
                     if (button->IsDown()) push(State::Input::capture, int(code), float(modifiers));
                     const auto key = keyboardKey(code);
-                    if (key != ImGuiKey_None) push(State::Input::key, key, button->IsDown() ? 1.f : 0.f);
+                    push(State::Input::key, key, button->IsDown() ? 1.f : 0.f);
                 } else if (button->GetDevice() == RE::INPUT_DEVICE::kMouse) {
                     if (code < 5) push(State::Input::mouse, int(code), button->IsDown() ? 1.f : 0.f);
                     if (button->IsDown() && (code == 8 || code == 9))
                         push(State::Input::wheel, 0, (code == 8 ? 1.f : -1.f) * std::max(1.f, button->Value()));
                 }
             }
+        } else if (auto* move = event->AsMouseMoveEvent()) {
+            push(State::Input::motion, move->mouseInputX, float(move->mouseInputY));
         } else if (auto* stick = event->AsThumbstickEvent()) {
-            const auto analog = [&](ImGuiKey key, float v) {
-                push(State::Input::analog, key, std::clamp((v - .2f) / .8f, 0.f, 1.f));
-            };
-            const bool left = stick->IsLeft();
-            analog(left ? ImGuiKey_GamepadLStickLeft : ImGuiKey_GamepadRStickLeft, -stick->xValue);
-            analog(left ? ImGuiKey_GamepadLStickRight : ImGuiKey_GamepadRStickRight, stick->xValue);
-            analog(left ? ImGuiKey_GamepadLStickUp : ImGuiKey_GamepadRStickUp, stick->yValue);
-            analog(left ? ImGuiKey_GamepadLStickDown : ImGuiKey_GamepadRStickDown, -stick->yValue);
+            const int index = stick->IsLeft() ? 0 : 1;
+            push(State::Input::stick, index, stick->xValue, stick->yValue);
         }
     }
     if (!batch.empty()) {

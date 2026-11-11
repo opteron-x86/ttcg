@@ -1,4 +1,5 @@
 #include "GameTestAccess.h"
+#include "../skse/MenuInput.h"
 #include <imgui_internal.h>
 #include <iostream>
 #include <map>
@@ -70,6 +71,7 @@ int main(int argc, char** argv) {
                 hits.clear();
                 renderer.passes.clear();
                 io.DeltaTime = dt;
+                app.prepareFrame();
                 ImGui::NewFrame();
                 app.draw();
                 ImGui::Render();
@@ -212,6 +214,108 @@ int main(int argc, char** argv) {
                 require(!preview::GameTestAccess::padPrompts(app), "Keyboard input did not restore keyboard prompts");
                 io.AddKeyEvent(ImGuiKey_Escape, false);
                 frame();
+            }
+            // Exercise the Skyrim input adapter against actual controls, including
+            // the cursor that Skyrim moves independently of ImGui's gamepad keys.
+            load("album", "cards");
+            {
+                preview::skyrim::MenuInput input;
+                input.reset(true);
+                const auto padFrame = [&] {
+                    app.inputDevice(input.controller());
+                    frame();
+                };
+                const auto padKey = [&](ImGuiKey key) {
+                    input.gamepad(key, 1);
+                    padFrame();
+                    input.gamepad(key, 0);
+                    padFrame();
+                    padFrame();
+                };
+                auto s = app.snapshot();
+                s["settings"]["theme"] = 9;
+                app.receive(s.dump());
+                padFrame();
+                const auto target = bounds("card", 1).GetCenter();
+                const auto cardHit =
+                    std::find_if(hits.begin(), hits.end(), [&](const Hit& h) { return matches(h, "card"); });
+                auto* catalog = ImGui::FindWindowByName(cardHit->window.c_str());
+                ImGui::FocusWindow(catalog);
+                ImGui::SetFocusID(cardHit->id, catalog);
+                input.cursor(target);
+                input.stick(false, .8f, 0);
+                input.gamepad(ImGuiKey_GamepadFaceDown, 1);
+                padFrame();
+                input.gamepad(ImGuiKey_GamepadFaceDown, 0);
+                padFrame();
+                input.stick(false, 0, 0);
+                input.cursor({target.x + 2, target.y});
+                padFrame();
+                require(preview::GameTestAccess::padPrompts(app), "Right-stick cursor selected mouse prompts");
+                const int clicked = preview::GameTestAccess::inspected(app);
+                padKey(ImGuiKey_GamepadFaceUp);
+                require(preview::GameTestAccess::inspecting(app) && preview::GameTestAccess::inspected(app) == clicked,
+                        "Cursor A and Y targeted different cards");
+                padKey(ImGuiKey_GamepadFaceRight);
+                require(!preview::GameTestAccess::inspecting(app) && !command("close"),
+                        "B closed the album along with its inspector");
+                // Neutral axes and key-up events are not a change of device.
+                input.keyboard(ImGuiKey_LeftShift, false);
+                input.stick(true, .05f, .03f);
+                padFrame();
+                require(preview::GameTestAccess::padPrompts(app), "Neutral input changed prompt device");
+                input.mouseMotion(3, 0);
+                padFrame();
+                require(!preview::GameTestAccess::padPrompts(app), "Physical mouse did not restore mouse prompts");
+                input.stick(false, .7f, 0);
+                input.gamepad(ImGuiKey_GamepadFaceDown, 1);
+                padFrame();
+                require(io.MouseDown[0], "Controller A did not begin a pointer click");
+                input.stick(true, 0, -.8f);
+                padFrame();
+                require(!io.MouseDown[0] && !input.pointerMode(), "Left-stick navigation retained a pointer drag");
+                input.gamepad(ImGuiKey_GamepadFaceDown, 1);
+                padFrame();
+                require(!io.MouseDown[0] && !ImGui::IsKeyDown(ImGuiKey_GamepadFaceDown),
+                        "Held A activated again when changing modes");
+                input.gamepad(ImGuiKey_GamepadFaceDown, 0);
+                input.stick(true, 0, 0);
+                padFrame();
+                input.keyboard(ImGuiKey_Space, true);
+                padFrame();
+                require(!preview::GameTestAccess::padPrompts(app), "Keyboard did not restore keyboard prompts");
+                input.keyboard(ImGuiKey_Space, false);
+                input.cursor(target);
+                padFrame();
+                require(!ImGui::IsMousePosValid(), "Polled cursor stole keyboard navigation focus");
+                input.stick(false, .7f, 0);
+                input.gamepad(ImGuiKey_GamepadFaceDown, 1);
+                padFrame();
+                input.disconnect();
+                padFrame();
+                require(!io.MouseDown[0] && !preview::GameTestAccess::padPrompts(app),
+                        "Disconnect retained a controller click or controller prompts");
+                // A dropdown consumes B before the app draws the underlying screen.
+                load("album", "appearance");
+                click("##theme");
+                require(ImGui::IsPopupOpen(nullptr, ImGuiPopupFlags_AnyPopupId | ImGuiPopupFlags_AnyPopupLevel),
+                        "Theme dropdown did not open");
+                padKey(ImGuiKey_GamepadFaceRight);
+                require(!ImGui::IsPopupOpen(nullptr, ImGuiPopupFlags_AnyPopupId | ImGuiPopupFlags_AnyPopupLevel) &&
+                            !command("close"),
+                        "B dismissed a dropdown and closed the album");
+                // Moving between a scrolling panel and its parent needs no extra
+                // A/B presses to enter or exit the panel.
+                load("album", "cards");
+                auto first = std::find_if(hits.begin(), hits.end(), [&](const Hit& h) { return matches(h, "card"); });
+                catalog = ImGui::FindWindowByName(first->window.c_str());
+                ImGui::FocusWindow(catalog);
+                ImGui::SetFocusID(first->id, catalog);
+                padKey(ImGuiKey_GamepadDpadUp);
+                require(GImGui->NavWindow != catalog, "D-pad cannot leave the card grid for its filters");
+                io.ClearInputKeys();
+                io.ClearInputMouse();
+                io.ClearEventsQueue();
             }
             // Collection deletion requires the Developer gate and an explicit,
             // revision-bound confirmation. Missing-set recovery is available normally.

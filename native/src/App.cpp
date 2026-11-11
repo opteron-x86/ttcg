@@ -112,7 +112,7 @@ App::~App() {
 }
 void App::surface(ImVec2 at, ImVec2 size, bool main) {
     if (skinned()) {
-        skinPanel(at, size, main ? 1.f : .62f);
+        skinPanel(at, size, main ? 1.f : .62f, IM_COL32_WHITE, main && skinPiece("window") ? "window" : "panel");
         return;
     }
     auto& texture = surfaces[theme];
@@ -229,8 +229,10 @@ bool App::sectionTab(const char* id, const std::string& title, ImVec2 at, ImVec2
         if (active) {
             if (!skinBand("tab", from, extent))
                 skinRule(ImVec2(at.x, at.y + size.y - 2 * scale), ImVec2(at.x + size.x, at.y + size.y - 2 * scale));
-        } else if (hover)
-            skinBand("tab", from, extent, IM_COL32(255, 255, 255, 90));
+        } else if (hover && !skinBand("tab", from, extent, IM_COL32(255, 255, 255, 90))) {
+            d->AddRectFilled(from, from + extent, alpha(palette().selection, .45f));
+            skinRule(ImVec2(at.x, at.y + size.y - 2 * scale), ImVec2(at.x + size.x, at.y + size.y - 2 * scale));
+        }
         const auto measure = font()->CalcTextSizeA(18 * scale, 1e5f, 0, title.c_str());
         text(at + (size - measure) * .5f, title, 18,
              active  ? palette().ink

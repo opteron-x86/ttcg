@@ -143,10 +143,11 @@ void GameApp::lobby(ImVec2 at, ImVec2 size) {
                         (ImGui::IsItemFocused() &&
                          (ImGui::IsKeyPressed(ImGuiKey_I) || ImGui::IsKeyPressed(ImGuiKey_GamepadFaceUp)))))
             inspectCard(id);
+        const bool focused = ImGui::IsItemFocused() && ImGui::GetIO().NavVisible;
         if (id >= 0)
-            displayCard(id, p, ImVec2(w, h), false, -1, 1 + i);
+            displayCard(id, p, ImVec2(w, h), focused, -1, 1 + i);
         else {
-            ImGui::GetWindowDrawList()->AddRect(p, p + ImVec2(w, h), palette().line);
+            ImGui::GetWindowDrawList()->AddRect(p, p + ImVec2(w, h), focused ? palette().accent : palette().line);
             text(p + ImVec2(w / 2, h / 2), "+", 30, palette().muted, 0, true);
         }
         text(p + ImVec2(0, h + 12 * scale), std::to_string(i + 1), 13, palette().muted);
@@ -472,7 +473,9 @@ std::pair<ImVec2, ImVec2> GameApp::table(const Json& data, ImVec2 at, ImVec2 siz
                         d->AddRect(pos - ImVec2(padding, padding), pos + ImVec2(hw + padding, hh + padding),
                                    fade(colour, firstGlow * .065f * (1 - r / 17.f)), padding, 0, 2 * scale);
                     }
-                displayCard(display, pos, ImVec2(hw, hh), selected, player, (demo ? 110 : 1) + player * 5 + h,
+                displayCard(display, pos, ImVec2(hw, hh),
+                            selected || (hittable && ImGui::IsItemFocused() && ImGui::GetIO().NavVisible), player,
+                            (demo ? 110 : 1) + player * 5 + h,
                             itemNumber(member(data, "handModifiers").is_array() ? member(data, "handModifiers")[player]
                                                                                 : Json{},
                                        h, 0),
@@ -526,8 +529,10 @@ std::pair<ImVec2, ImVec2> GameApp::table(const Json& data, ImVec2 at, ImVec2 siz
             const int firstVertex = d->VtxBuffer.Size;
             const bool moving = square == clock.placedSquare && clock.placedHand >= 0 && animating && elapsed < .36;
             if (!moving)
-                displayCard(number(cell, "card", -1), pos, cardSize, highlight, owner, (demo ? 120 : 11) + square,
-                            itemNumber(member(data, "modifiers"), square, 0), false, CardContext::Board);
+                displayCard(number(cell, "card", -1), pos, cardSize,
+                            highlight || (ImGui::IsItemFocused() && ImGui::GetIO().NavVisible), owner,
+                            (demo ? 120 : 11) + square, itemNumber(member(data, "modifiers"), square, 0), false,
+                            CardContext::Board);
             if (turnWidth < 1)
                 for (int v = firstVertex; v < d->VtxBuffer.Size; ++v)
                     d->VtxBuffer[v].pos.x = pos.x + tileW / 2 + (d->VtxBuffer[v].pos.x - pos.x - tileW / 2) * turnWidth;
@@ -559,7 +564,7 @@ std::pair<ImVec2, ImVec2> GameApp::table(const Json& data, ImVec2 at, ImVec2 siz
             }
             const bool target = !busy && playerTurn && selectedHand >= 0 &&
                                 (!demo || !staticDemo && demoSelected && square == number(data, "square", -1));
-            if (target && (ImGui::IsItemHovered() || ImGui::IsItemFocused() || demo))
+            if ((target && (ImGui::IsItemHovered() || demo)) || (ImGui::IsItemFocused() && ImGui::GetIO().NavVisible))
                 d->AddRect(pos, pos + cardSize, palette().accent, 2, 0, 2 * scale);
             if (hit && target) {
                 if (demo) {

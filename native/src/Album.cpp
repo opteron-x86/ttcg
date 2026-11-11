@@ -8,7 +8,7 @@ void App::refreshFilter() {
 }
 void App::cardGrid(ImVec2 at, ImVec2 size, bool changed) {
     ImGui::SetCursorScreenPos(at - ImVec2(5, 0) * scale);
-    ImGui::BeginChild("catalog", ImVec2(size.x + 10 * scale, size.y), ImGuiChildFlags_None);
+    ImGui::BeginChild("catalog", ImVec2(size.x + 10 * scale, size.y), ImGuiChildFlags_NavFlattened);
     if (changed) ImGui::SetScrollY(0);
     const float gap = 18 * scale, content = ImGui::GetContentRegionAvail().x - 24 * scale;
     const float target = screen == 3 ? std::array<float, 3>{185, 116, 86}[deckDensity] : 185.f;
@@ -123,7 +123,7 @@ void App::decks(ImVec2 at, ImVec2 size) {
         std::snprintf(deckName, sizeof(deckName), "Deck %zu", collection.decks.size() + 1);
     }
     ImGui::SetCursorScreenPos(at + ImVec2(0, 60) * scale);
-    ImGui::BeginChild("saved-decks", ImVec2(side, size.y - 60 * scale));
+    ImGui::BeginChild("saved-decks", ImVec2(side, size.y - 60 * scale), ImGuiChildFlags_NavFlattened);
     const float listWidth = side - 20 * scale;
     for (const auto& deck : collection.decks) {
         const auto pos = ImGui::GetCursorScreenPos();

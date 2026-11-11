@@ -597,6 +597,11 @@ void GameApp::header(ImVec2 at, ImVec2 size) {
     if (closeButton("close", at + ImVec2(size.x - 34 * scale, -3 * scale))) closeView();
     line(at + ImVec2(0, 45 * scale), at + ImVec2(size.x, 45 * scale));
 }
+void GameApp::prepareFrame() {
+    // ImGui dismisses non-modal popups in NewFrame. Remember that B/Escape
+    // belongs to the popup so the same press cannot also close Tessera.
+    popupBeforeFrame = ImGui::IsPopupOpen(nullptr, ImGuiPopupFlags_AnyPopupId | ImGuiPopupFlags_AnyPopupLevel);
+}
 void GameApp::draw() {
     if (resetPopups) {
         if (ImGui::IsPopupOpen(nullptr, ImGuiPopupFlags_AnyPopupId | ImGuiPopupFlags_AnyPopupLevel))
@@ -648,7 +653,7 @@ void GameApp::draw() {
     const bool back = escapeRequested || ImGui::IsKeyPressed(ImGuiKey_Escape, false) ||
                       ImGui::IsKeyPressed(ImGuiKey_GamepadFaceRight, false);
     escapeRequested = false;
-    if (back && !ImGui::GetIO().WantTextInput &&
+    if (back && !popupBeforeFrame && !ImGui::GetIO().WantTextInput &&
         !ImGui::IsPopupOpen(nullptr, ImGuiPopupFlags_AnyPopupId | ImGuiPopupFlags_AnyPopupLevel))
         closeView();
     ImVec2 body = at + ImVec2(0, 70 * scale), size(width, frameSize.y - 116 * scale);

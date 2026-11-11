@@ -4,7 +4,7 @@ void GameApp::rules(ImVec2 at, ImVec2 size) {
     const float nav = AlbumLayout::navigation * scale, gap = AlbumLayout::gap * scale;
     line(at + ImVec2(nav + gap * .5f, 0), at + ImVec2(nav + gap * .5f, size.y));
     ImGui::SetCursorScreenPos(at);
-    ImGui::BeginChild("rule-chapters", ImVec2(nav, size.y));
+    ImGui::BeginChild("rule-chapters", ImVec2(nav, size.y), ImGuiChildFlags_NavFlattened);
     const float navWidth = nav - 20 * scale;
     for (const auto& page : arrayMember(reference, "pages")) {
         const auto id = label(page, "id");
@@ -20,7 +20,7 @@ void GameApp::rules(ImVec2 at, ImVec2 size) {
     ImGui::EndChild();
     const auto origin = at + ImVec2(nav + gap, 0);
     ImGui::SetCursorScreenPos(origin);
-    ImGui::BeginChild("rule-content", ImVec2(size.x - nav - gap, size.y));
+    ImGui::BeginChild("rule-content", ImVec2(size.x - nav - gap, size.y), ImGuiChildFlags_NavFlattened);
     const float width = ImGui::GetContentRegionAvail().x - 12 * scale;
     struct EndChild {
         ~EndChild() { ImGui::EndChild(); }
@@ -37,7 +37,7 @@ void GameApp::rules(ImVec2 at, ImVec2 size) {
     const auto top = ImGui::GetCursorScreenPos();
     if (topic == "trade") {
         ImGui::SetCursorScreenPos(top);
-        ImGui::BeginChild("trade-reference", ImVec2(width, at.y + size.y - top.y));
+        ImGui::BeginChild("trade-reference", ImVec2(width, at.y + size.y - top.y), ImGuiChildFlags_NavFlattened);
         for (const auto& trade : arrayMember(reference, "trades")) {
             const auto pos = ImGui::GetCursorScreenPos();
             textBlock(label(trade, "title"), width, 24, palette().accent);

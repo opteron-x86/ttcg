@@ -179,6 +179,9 @@ void GameApp::drawDetail(ImVec2 at, ImVec2 size) {
     const bool known = c.known[selectedFoil] || c.owned[selectedFoil];
     const float w = std::min(size.x - 12 * scale, (size.y - 235 * scale) * .75f), h = w / .75f;
     const auto p = at + ImVec2((size.x - w) / 2, 8 * scale);
+    if (known && skinned() && skinPiece("detail"))
+        skinPanel(ImVec2(at.x - 8 * scale, p.y + h + 10 * scale), ImVec2(size.x + 16 * scale, 252 * scale), .7f,
+                  IM_COL32_WHITE, "detail");
     ImGui::SetCursorScreenPos(p);
     if (ImGui::InvisibleButton("selected-art", ImVec2(w, h), ImGuiButtonFlags_EnableNav) && known)
         inspectCard(selected + (selectedFoil ? collection.cards.size() : 0), false);

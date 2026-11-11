@@ -123,6 +123,7 @@ int runHost(const Options& o) {
             DXIsolation::Frame isolated(isolation);
             ImGui_ImplDX11_NewFrame();
             ImGui_ImplWin32_NewFrame();
+            app.prepareFrame();
             ImGui::NewFrame();
             GameTestAccess::captureFrame(app, o);
             app.draw();

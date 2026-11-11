@@ -94,10 +94,10 @@ Texture App::skinArt(const char* name) {
     const auto* piece = skinPiece(name);
     return piece ? assets.optional(piece->path) : Texture{};
 }
-void App::skinPanel(ImVec2 at, ImVec2 size, float density, ImU32 tint) {
+void App::skinPanel(ImVec2 at, ImVec2 size, float density, ImU32 tint, const char* name) {
     auto* d = ImGui::GetWindowDrawList();
-    const auto* piece = skinPiece("panel");
-    const auto art = skinArt("panel");
+    const auto* piece = skinPiece(name);
+    const auto art = skinArt(name);
     if (!art.id || piece->margin <= 0) {
         d->AddRectFilled(at, at + size, alpha(palette().background, .96f));
         d->AddRect(at, at + size, palette().line);
@@ -205,6 +205,7 @@ void App::textCaps(ImVec2 at, const std::string& value, float size, ImU32 colour
     }
 }
 void App::trackInputDevice() {
+    if (hostInputDevice) return;
     // Prompts follow whichever device the player touched last.
     const auto& io = ImGui::GetIO();
     for (int key = ImGuiKey_Gamepad_BEGIN; key < ImGuiKey_Gamepad_END; ++key)

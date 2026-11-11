@@ -117,7 +117,7 @@ void GameApp::settings(ImVec2 at, ImVec2 size) {
     }
     ImGui::SetCursorScreenPos(origin + ImVec2(0, 63) * scale);
     ImGui::BeginChild(settingsPage == 0 && appearancePage == 1 ? "match-appearance-body" : "settings-body",
-                      ImVec2(area, size.y - 63 * scale));
+                      ImVec2(area, size.y - 63 * scale), ImGuiChildFlags_NavFlattened);
     const float width = ImGui::GetContentRegionAvail().x - 16 * scale;
     const auto valueOf = [&](const char* json) {
         if (member(s, json).is_boolean()) return int(flag(s, json));

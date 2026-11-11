@@ -50,6 +50,7 @@ protected:
     std::array<Texture, ttcg::interfaceThemeCount> surfaces{};
     std::array<Skin, ttcg::interfaceThemeCount> skins{};
     bool padPrompts = false;
+    bool hostInputDevice = false;
     std::array<Texture, 7> boardSurfaces{};
     ImFont *preferredFont = nullptr, *cardNameFont = nullptr, *cardValueFont = nullptr;
     std::string customBack = "backs/mosaic.webp";
@@ -99,7 +100,7 @@ protected:
     // Corners of `margin` texture pixels drawn `k` screen pixels per texture pixel; edges stretch or tile.
     void nineSlice(Texture art, ImVec2 at, ImVec2 size, float margin, float k, bool tile = false,
                    ImU32 tint = IM_COL32_WHITE);
-    void skinPanel(ImVec2 at, ImVec2 size, float density = 1, ImU32 tint = IM_COL32_WHITE);
+    void skinPanel(ImVec2 at, ImVec2 size, float density = 1, ImU32 tint = IM_COL32_WHITE, const char* piece = "panel");
     // Draws nothing and returns false when the skin has no such texture.
     bool skinBand(const char* name, ImVec2 at, ImVec2 size, ImU32 tint = IM_COL32_WHITE);
     void skinRule(ImVec2 a, ImVec2 b, float strength = 1);
@@ -142,6 +143,10 @@ public:
     virtual ~App();
     virtual void draw() = 0;
     void resume() { closing = false; }
+    void inputDevice(bool controller) {
+        hostInputDevice = true;
+        padPrompts = controller;
+    }
     bool closeRequested() const { return closing; }
     unsigned missingAssets() const { return assets.missing; }
 };

@@ -71,7 +71,7 @@ void GameApp::shop(ImVec2 at, ImVec2 size) {
         shopQuantity = 1;
     }
     ImGui::SetCursorScreenPos(top);
-    ImGui::BeginChild("shop-cards", ImVec2(width, at.y + size.y - top.y));
+    ImGui::BeginChild("shop-cards", ImVec2(width, at.y + size.y - top.y), ImGuiChildFlags_NavFlattened);
     const float spacing = 17 * scale;
     const float gridWidth = ImGui::GetContentRegionAvail().x - 18 * scale;
     const int columns = std::max(2, int(gridWidth / (180 * scale)));
@@ -98,7 +98,9 @@ void GameApp::shop(ImVec2 at, ImVec2 size) {
                     (ImGui::IsItemFocused() &&
                      (ImGui::IsKeyPressed(ImGuiKey_I) || ImGui::IsKeyPressed(ImGuiKey_GamepadFaceUp))))
                     inspectCard(id);
-                displayCard(id, pos, ImVec2(w, h), shopSelected == id, -1, material++);
+                displayCard(id, pos, ImVec2(w, h),
+                            shopSelected == id || (ImGui::IsItemFocused() && ImGui::GetIO().NavVisible), -1,
+                            material++);
                 text(pos + ImVec2(0, h + 9 * scale), std::to_string(number(entry, "price")) + " gold", 18,
                      palette().ink);
                 text(pos + ImVec2(w - 57 * scale, h + 9 * scale), "×" + std::to_string(number(entry, "count")), 17,

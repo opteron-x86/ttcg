@@ -73,7 +73,7 @@ void GameApp::nativeInspector() {
         const float infoHeight = std::min(440 * scale, metadataHeight + 64 * scale);
         const auto infoAt = ImVec2(origin.x + 402 * scale, artAt.y + (h - infoHeight) * .5f);
         ImGui::SetCursorScreenPos(infoAt);
-        ImGui::BeginChild("inspection-details", ImVec2(infoWidth, infoHeight));
+        ImGui::BeginChild("inspection-details", ImVec2(infoWidth, infoHeight), ImGuiChildFlags_NavFlattened);
         const auto top = ImGui::GetCursorScreenPos();
         metadata(collection.cards[selected], top, infoWidth - 12 * scale);
         const auto controls = top + ImVec2(0, metadataHeight + 24 * scale);

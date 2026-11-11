@@ -183,6 +183,7 @@ int runHost(const Options& o) {
             }
             ImGui_ImplOpenGL3_NewFrame();
             ImGui_ImplSDL2_NewFrame();
+            app.prepareFrame();
             ImGui::NewFrame();
             GameTestAccess::captureFrame(app, o);
             if (backdrop.id) {
