@@ -44,6 +44,8 @@ struct Face {
 };
 struct AlbumLayout {
     static constexpr float navigation = 196, gap = 30, preview = 260, deck = 310;
+    // No interface text is drawn smaller than this, so it stays readable from a sofa or on a handheld.
+    static constexpr float smallestText = 15, smallestCaps = 13.5f;
 };
 class App {
 protected:

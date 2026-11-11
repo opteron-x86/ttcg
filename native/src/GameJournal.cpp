@@ -1,4 +1,5 @@
 #include "GameApp.h"
+#include "Announcements.h"
 namespace preview {
 void GameApp::journal(ImVec2 at, ImVec2 size) {
     const auto& c = member(state, "collection");
@@ -111,21 +112,44 @@ void GameApp::journal(ImVec2 at, ImVec2 size) {
         // offset in the root window is lost at the next ImGui layout item.
         ImGui::SetCursorScreenPos(detail);
         ImGui::BeginChild("player-details", ImVec2(detailWidth, at.y + size.y - y), ImGuiChildFlags_NavFlattened);
-        textBlock(label(p, "name"), detailWidth, 25, palette().accent);
-        ImGui::Dummy(ImVec2(0, 12 * scale));
-        textBlock(label(p, "hold"), detailWidth, 19, palette().ink);
-        textBlock(label(p, "skill"), detailWidth, 19, palette().muted);
-        ImGui::Dummy(ImVec2(0, 12 * scale));
-        textBlock(flag(p, "friendlyOnly") ? "Practice games · No stakes"
-                  : flag(p, "unlocked")   ? "Available to play"
-                                          : "Not ready to play",
-                  detailWidth, 18);
-        if (!flag(p, "friendlyOnly")) {
-            ImGui::Dummy(ImVec2(0, 12 * scale));
-            textBlock(std::to_string(number(p, "wins")) + " W · " + std::to_string(number(p, "losses")) + " L · " +
-                          std::to_string(number(p, "draws")) + " D",
-                      detailWidth, 18);
+        const auto top = ImGui::GetCursorScreenPos();
+        text(top, label(p, "name"), 25, palette().accent, detailWidth);
+        float ry =
+            top.y + font()->CalcTextSizeA(25 * scale, 1e5f, detailWidth, label(p, "name").c_str()).y + 12 * scale;
+        skinned() ? skinRule(ImVec2(top.x, ry), ImVec2(top.x + detailWidth, ry), .7f)
+                  : line(ImVec2(top.x, ry), ImVec2(top.x + detailWidth, ry));
+        ry += 8 * scale;
+        // The same labelled rows the card details use.
+        const int wins = number(p, "wins"), losses = number(p, "losses"), draws = number(p, "draws"),
+                  games = wins + losses + draws;
+        const bool friendly = flag(p, "friendlyOnly");
+        std::vector<std::pair<const char*, std::string>> facts{
+            {"Found at", label(p, "location")},
+            {"Hold", flag(p, "traveller") ? "Traveller" : label(p, "hold")},
+            {"Skill", label(p, "skill")},
+            {"Games", friendly              ? "Practice only"
+                      : flag(p, "unlocked") ? "Available"
+                                            : "Not ready"}};
+        if (!friendly) {
+            facts.push_back({"Played", std::to_string(games)});
+            facts.push_back({"Won", std::to_string(wins)});
+            facts.push_back({"Lost", std::to_string(losses)});
+            facts.push_back({"Drawn", std::to_string(draws)});
+            if (games) facts.push_back({"Win rate", std::to_string(wins * 100 / games) + "%"});
         }
+        for (const auto& [name, value] : facts) {
+            if (value.empty()) continue;
+            textCaps(ImVec2(top.x, ry + 9 * scale), name, 13.5f, palette().muted, 1.2f);
+            const float room = detailWidth - capsWidth(name, 13.5f, 1.2f) - 14 * scale,
+                        natural = font()->CalcTextSizeA(17 * scale, 1e5f, 0, value.c_str()).x;
+            textRight(ImVec2(top.x + detailWidth - 2 * scale, ry + 5 * scale), value,
+                      std::clamp(17.f * room / std::max(1.f, natural), 15.f, 17.f), palette().ink);
+            ry += 31 * scale;
+            ImGui::GetWindowDrawList()->AddLine(ImVec2(top.x, ry - 1), ImVec2(top.x + detailWidth, ry - 1),
+                                                fade(palette().line, .55f));
+        }
+        ImGui::SetCursorScreenPos(ImVec2(top.x, ry));
+        ImGui::Dummy(ImVec2(1, 1));
         ImGui::EndChild();
     }
 }

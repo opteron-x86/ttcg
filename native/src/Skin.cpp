@@ -307,6 +307,7 @@ void App::skinBackdrop() {
     d->AddRectFilledMultiColor(ImVec2(0, display.y * .78f), display, clear, clear, edge, edge);
 }
 float App::capsWidth(const std::string& value, float size, float tracking) const {
+    size = std::max(size, AlbumLayout::smallestCaps);
     float width = 0;
     const char* p = value.c_str();
     const char* end = p + value.size();
@@ -320,6 +321,7 @@ float App::capsWidth(const std::string& value, float size, float tracking) const
     return width - (value.empty() ? 0 : tracking * scale);
 }
 void App::textCaps(ImVec2 at, const std::string& value, float size, ImU32 colour, float tracking, bool centre) {
+    size = std::max(size, AlbumLayout::smallestCaps);
     if (centre) at.x -= capsWidth(value, size, tracking) * .5f;
     auto* d = ImGui::GetWindowDrawList();
     const char* p = value.c_str();

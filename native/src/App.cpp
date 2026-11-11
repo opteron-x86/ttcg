@@ -171,11 +171,12 @@ void App::controlBorder(ImVec2 at, ImVec2 size, ImU32 colour) {
     d->AddRect(at, end, colour, 2.f);
 }
 void App::text(ImVec2 at, const std::string& value, float size, ImU32 colour, float wrap, bool centre) {
-    const float pixels = size * scale;
+    const float pixels = std::max(size, AlbumLayout::smallestText) * scale;
     if (centre) at.x -= font()->CalcTextSizeA(pixels, 1e5f, wrap, value.c_str()).x * .5f;
     ImGui::GetWindowDrawList()->AddText(font(), pixels, at, colour, value.c_str(), nullptr, wrap);
 }
 void App::textRight(ImVec2 at, const std::string& value, float size, ImU32 colour) {
+    size = std::max(size, AlbumLayout::smallestText);
     text(at - ImVec2(font()->CalcTextSizeA(size * scale, 1e5f, 0, value.c_str()).x, 0), value, size, colour);
 }
 float App::choiceWidth(const std::vector<std::string>& choices) const {

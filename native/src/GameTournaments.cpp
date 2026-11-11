@@ -88,7 +88,17 @@ void GameApp::tournaments(ImVec2 at, ImVec2 size) {
             const int node = start + pair;
             const auto pos = origin + ImVec2(col * (colW + colGap), top + (pair + .5f) * section - pairH / 2);
             auto* d = ImGui::GetWindowDrawList();
+            d->AddRectFilled(pos, pos + ImVec2(colW, pairH), IM_COL32(0, 0, 0, 40));
             d->AddRect(pos, pos + ImVec2(colW, pairH), palette().line);
+            if (col < 2) {
+                // The winner's path to the next round.
+                const float next = availableH / (count / 2);
+                const ImVec2 from = pos + ImVec2(colW, pairH / 2),
+                             to = origin + ImVec2((col + 1) * (colW + colGap), top + (pair / 2 + .5f) * next);
+                const ImVec2 path[]{from, ImVec2(from.x + colGap * .5f, from.y), ImVec2(from.x + colGap * .5f, to.y),
+                                    to};
+                d->AddPolyline(path, 4, fade(palette().muted, .6f), 0, std::max(1.f, scale));
+            }
             line(pos + ImVec2(0, pairH / 2), pos + ImVec2(colW, pairH / 2));
             for (int side = 0; side < 2; ++side) {
                 const int slot = (node - 8) * 2 + side;
@@ -108,8 +118,18 @@ void GameApp::tournaments(ImVec2 at, ImVec2 size) {
     }
     const auto prizeAt = origin + ImVec2(width - prizes, top);
     line(prizeAt - ImVec2(gap / 2, 15 * scale), prizeAt + ImVec2(-gap / 2, availableH));
-    text(prizeAt, label(e, "prize"), 22, palette().accent, prizes);
-    text(prizeAt + ImVec2(0, 58) * scale, std::to_string(number(e, "purse")) + " gold", 18, palette().muted);
+    textCaps(prizeAt, "Prize", 13.5f, palette().muted, 1.6f);
+    text(prizeAt + ImVec2(0, 26) * scale, std::to_string(number(e, "purse")) + " gold", 24,
+         skinned() ? skin().value : palette().accent);
+    text(prizeAt + ImVec2(0, 62) * scale, label(e, "prize"), 18, palette().ink, prizes);
+    if (arrayMember(e, "prizeCards").empty())
+        if (const auto pack = assets.pack(1); pack.id) {
+            // The pack itself, so the prize is something to look at.
+            const float h = std::min(190 * scale, availableH - 190 * scale), w = h * pack.width / pack.height;
+            if (h > 60 * scale)
+                ImGui::GetWindowDrawList()->AddImage(pack.id, prizeAt + ImVec2((prizes - w) * .5f, 112 * scale),
+                                                     prizeAt + ImVec2((prizes + w) * .5f, 112 * scale + h));
+        }
     int pindex = 0;
     const auto& prizesList = arrayMember(e, "prizeCards");
     for (const auto& id : prizesList) {

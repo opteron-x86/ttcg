@@ -216,6 +216,18 @@ Shared helpers live in `native/src/Skin.cpp`: `softShadow`, `glow`, `cornerMarks
 - **Layouts**: card grids scroll one whole row per wheel notch and fade where rows continue; the lobby centres the deck between its controls and footer and shows the player's purse; the interrupted-game offer keeps its buttons beside its text; tournament results have a centred heading in the outcome's colour.
 - None of this has been seen in game yet. Affinity medallions were checked with a hand-edited fixture, since no bundled fixture has affinity squares.
 
+### Layout checkpoint (2026-11-11)
+
+- **Window chrome** (`GameApp::draw`): the tabs sit in the title row, so every album page gained about 70 pixels. Bumpers, or Q and E, step through the tabs and the row shows those keys. `FooterPrompts` carries one page-specific action (the deck editor's Add to deck).
+- **Deck editor** (`App::decks`, `App::addToDeck`): three columns. The deck is a side panel (`AlbumLayout::deck`): a deck dropdown with New, then Rename, Copy and Delete, five slot rows (small card, name, slot and tier, affinity and group, the four ranks in a cross), a reserved strip for moving or removing the chosen slot, and the deck's average ranks, affinities and groups. The picker fills the centre; cards already in the deck carry a folded corner. A double click, Enter or pad X adds the card to the chosen slot or the first empty one. The detail panel shows what each rank gains or loses against the card being replaced. Item ids `slot`, `rename`, `new-deck`, `copy`, `delete`, `slot-left`, `slot-right`, `slot-remove` and `view-*` are unchanged; the `saved-decks` list is gone.
+- **Cards page**: card-size buttons on both pages (`cardDensity`, `deckDensity`), popup filters shown as removable chips, unopened packs in a strip with their own Open buttons (`App::packStrip`) instead of grid tiles, and the discovered count beside the result count.
+- **Lobby** (`GameApp::lobby`): the deck on the left; on the right each rule and the trade rule with the sentence that explains it (`ruleChips(..., explained)`), the wager and a full-width Play. The opponent's record comes from the roster.
+- **Match table**: hand cards are the size of board cards, played places stay outlined, and whose turn it is reads under the board in that player's colour.
+- **Result** (`GameApp::resultModal`): the outcome heading in its own colour, the score, and the cards won and lost drawn as cards.
+- **Smaller**: no interface text under `AlbumLayout::smallestText` (15) or caps under 13.5; the rules paragraph is held to a readable width; the bracket has connector lines and shows the prize pack; the journal's player panel uses labelled rows.
+- The test that every tab shares one navigation width now excludes the deck editor, which has its own panel.
+- Not yet seen in game. The frameless match table was discussed and not done.
+
 Hand over the absolute path of `dist/<name>/Tessera-<ver>-dev.<hash>-Main.zip`. Compare with the previous Main zip's file hashes to confirm only intended files changed. Skyrim UI mods' assets and the player's mod folder are at `/mnt/mods/Amaranth/mods` (profile `KINMUNE CS`); the player runs Oathvein UI, Dear Diary Dark Mode, Natural Typefaces and Quickslot, so Oathvein is the look to be judged against in game.
 
 ## Image generation

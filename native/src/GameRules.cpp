@@ -1,4 +1,5 @@
 #include "GameApp.h"
+#include "Announcements.h"
 namespace preview {
 void GameApp::rules(ImVec2 at, ImVec2 size) {
     const float nav = AlbumLayout::navigation * scale, gap = AlbumLayout::gap * scale;
@@ -9,7 +10,7 @@ void GameApp::rules(ImVec2 at, ImVec2 size) {
     for (const auto& page : arrayMember(reference, "pages")) {
         const auto id = label(page, "id");
         const auto pos = ImGui::GetCursorScreenPos();
-        if (chapter(id, label(page, "title"), pos, ImVec2(navWidth, 43 * scale), topic == id)) {
+        if (chapter(id, label(page, "title"), pos, ImVec2(navWidth, 41 * scale), topic == id)) {
             topic = id;
             demoStep = 0;
             demoSelected = false;
@@ -32,7 +33,8 @@ void GameApp::rules(ImVec2 at, ImVec2 size) {
     ImGui::SetCursorScreenPos(origin);
     textBlock(label(*page, "title"), width, 32, palette().accent);
     ImGui::Dummy(ImVec2(0, 15 * scale));
-    textBlock(label(*page, "copy"), width, 18, palette().muted);
+    // A paragraph is easiest to read at about seventy characters a line.
+    textBlock(label(*page, "copy"), std::min(width, 780 * scale), 19, fade(palette().ink, .82f));
     ImGui::Dummy(ImVec2(0, 18 * scale));
     const auto top = ImGui::GetCursorScreenPos();
     if (topic == "trade") {
