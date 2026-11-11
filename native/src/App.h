@@ -61,6 +61,7 @@ protected:
     std::array<Texture, ttcg::interfaceThemeCount> surfaces{};
     std::array<Skin, ttcg::interfaceThemeCount> skins{};
     bool padPrompts = false;
+    int keyPromptStyle = 0; // 0 automatic, 1 drawn in the skin's style, 2 installed icons
     bool hostInputDevice = false;
     std::array<Texture, 7> boardSurfaces{};
     ImFont *preferredFont = nullptr, *cardNameFont = nullptr, *cardValueFont = nullptr;

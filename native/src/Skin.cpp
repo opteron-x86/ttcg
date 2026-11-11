@@ -235,6 +235,8 @@ void App::gridFade(GridEdges edges) {
     auto* d = ImGui::GetWindowDrawList();
     const ImVec2 at = ImGui::GetWindowPos(),
                  size = ImGui::GetWindowSize() - ImVec2(ImGui::GetStyle().ScrollbarSize + 4 * scale, 0);
+    // A flat fade would show as a patch on painted paper, so paper skins let the rows meet the edge.
+    if (lightGround()) return;
     const ImU32 solid = alpha(skinned() ? skin().dialog : palette().background, .96f), clear = solid & 0xffffff;
     const float reach = 64 * scale;
     if (edges.above)
@@ -355,7 +357,9 @@ float App::keyPrompt(const char* key, const char* pad, const char* label, ImVec2
     const auto folder =
         options.keyIcons.empty() ? options.tesseraRoot / "Interface/ImGuiIcons/Icons" : options.keyIcons;
     const auto file = (folder / (std::string(name) + ".png")).u8string();
-    const auto art = assets.optional(std::string(file.begin(), file.end()));
+    // Icon packs are made for one interface mod; on a paper skin, or by choice, the key is drawn instead.
+    const bool icons = keyPromptStyle == 2 || (keyPromptStyle == 0 && !lightGround());
+    const auto art = icons ? assets.optional(std::string(file.begin(), file.end())) : Texture{};
     const float height = 30 * scale;
     // Without an icon pack, draw the key's own name on a plain cap.
     std::string caption = name;
@@ -372,9 +376,7 @@ float App::keyPrompt(const char* key, const char* pad, const char* label, ImVec2
         hover = ImGui::IsItemHovered();
     }
     if (art.id)
-        // Icon packs are drawn light for dark interfaces; on paper they take the ink's colour.
-        d->AddImage(art.id, at, at + ImVec2(keyWidth, height), ImVec2(0, 0), ImVec2(1, 1),
-                    lightGround() ? palette().ink : IM_COL32_WHITE);
+        d->AddImage(art.id, at, at + ImVec2(keyWidth, height));
     else {
         const ImVec2 a = at + ImVec2(0, 2 * scale), b = at + ImVec2(keyWidth, height - 2 * scale);
         d->AddRectFilled(a, b, lightGround() ? alpha(palette().ink, .82f) : IM_COL32(0, 0, 0, 120), 3 * scale);

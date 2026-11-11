@@ -248,6 +248,13 @@ The player found the drawn bezel and value plates lacking in quality, compared f
 - **Retirement**: Tessera, Charcoal, Oxblood, Parchment and Umber keep their indices in `include/InterfaceTheme.h` with `retired = true`. `interfaceThemeIndex` and `InterfaceSettings::Field::valid` send a retired or unknown index to `defaultInterfaceTheme`, so a saved `Theme=0..4` opens Skyrim, and the settings menu lists only current skins with the default first. The player asked for this; it does change the look for anyone who had a classic theme saved.
 - The classic drawing code (`FrameStyle::Classic`, the `skinned() ? … : …` branches, the first five rows of `themes[]` and of the `Surface.h` gradients) is now unreachable and still in the tree.
 
+### Paper-skin fixes and trade flow (2026-11-11, after the first in-game look)
+
+- **Key prompts** (`keyPrompts`, Settings > Appearance > Theme): Automatic uses the installed ImGui Icons on dark skins and draws the key in the skin's style on paper skins; Skin style always draws; Installed icons always uses the pack. Icon packs belong to one interface mod (the player runs Oathvein's), so tinting them for paper was wrong and is gone.
+- **Frames**: `pad` now works on dialogs too (`App::surface` widens the clip so the frame draws around the dialog), and Dear Diary Dark's frame line was measured properly (`inset` 28, with `pad`), which is what put its title row against the border. Skins without a title band drop the title row slightly (`GameApp::titleDrop`).
+- **Grid fade** is skipped on paper skins: a flat fade showed as a pale patch on painted parchment.
+- **Trade**: the transfer flight and the receiving trays are gone. A card the player picked leads straight to the result panel; cards taken by a rule or by the opponent stay up under a Continue button (`trade-continue`) first. `TradeView::Transferring` no longer exists, so `Done` is 4.
+
 Hand over the absolute path of `dist/<name>/Tessera-<ver>-dev.<hash>-Main.zip`. Compare with the previous Main zip's file hashes to confirm only intended files changed. Skyrim UI mods' assets and the player's mod folder are at `/mnt/mods/Amaranth/mods` (profile `KINMUNE CS`); the player runs Oathvein UI, Dear Diary Dark Mode, Natural Typefaces and Quickslot, so Oathvein is the look to be judged against in game.
 
 ## Image generation

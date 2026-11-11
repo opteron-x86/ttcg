@@ -33,7 +33,8 @@
       "file": "panel.png",
       "margin": 64,
       "inset": 38,
-      "scale": 3
+      "scale": 3,
+      "pad": 14
     },
     "detail": {
       "file": "detail.png",

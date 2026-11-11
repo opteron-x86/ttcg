@@ -123,7 +123,13 @@ App::~App() {
 }
 void App::surface(ImVec2 at, ImVec2 size, bool main) {
     if (skinned()) {
+        // A painted frame and its shadow reach past the rectangle they surround.
+        const auto* piece = skinPiece(main ? "window" : "panel");
+        const float reach = piece ? (piece->inset + piece->pad) * piece->scale * skinUnit() : 0;
+        auto* d = ImGui::GetWindowDrawList();
+        if (!main && reach > 0) d->PushClipRect(at - ImVec2(reach, reach), at + size + ImVec2(reach, reach), false);
         skinPanel(at, size, main ? 1.f : .62f, IM_COL32_WHITE, main ? "window" : "panel");
+        if (!main && reach > 0) d->PopClipRect();
         return;
     }
     auto& texture = surfaces[theme];

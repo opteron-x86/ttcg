@@ -131,6 +131,7 @@ void GameApp::receive(std::string_view raw) {
 void GameApp::applySettings() {
     const auto& c = member(state, "settings");
     theme = ttcg::interfaceThemeIndex(number(c, "theme"));
+    keyPromptStyle = std::clamp(number(c, "keyPrompts"), 0, 2);
     face.classic = number(c, "rankLayout") == 1;
     face.frame = std::clamp(number(c, "cardFrame"), 0, 2);
     face.names = flag(c, "showCardNames", true);
@@ -629,9 +630,9 @@ GameApp::FooterPrompts GameApp::footerPrompts() const {
 void GameApp::header(ImVec2 at, ImVec2 size) {
     if (skinned()) {
         // A skin titles the window with its own band, or a hairline; closing lives in the prompt bar.
-        const float k = skinUnit(), bandHeight = std::min(108 * k, 50 * scale);
+        const float k = skinUnit(), bandHeight = std::min(108 * k, 50 * scale), drop = titleDrop();
         if (!skinBand("title", ImVec2(frameAt.x, frameAt.y + 2 * k), ImVec2(frameSize.x, bandHeight))) {
-            const float y = frameAt.y + bandHeight + 4 * scale;
+            const float y = frameAt.y + bandHeight + 4 * scale + drop;
             skinRule(ImVec2(at.x, y), ImVec2(at.x + size.x, y), .5f);
             if (skin().ornament) {
                 // Skyrim's own dividers carry a small diamond at their middle.
@@ -657,7 +658,8 @@ void GameApp::header(ImVec2 at, ImVec2 size) {
                                                  ImVec2(0, 0), ImVec2(1, 1),
                                                  IM_COL32(255, 255, 255, int(255 * skinPiece("sigil")->opacity)));
         }
-        textCaps(ImVec2(at.x, frameAt.y + 2 * k + (bandHeight - 26 * scale) * .5f), "Tessera", 26, palette().ink, 3);
+        textCaps(ImVec2(at.x, frameAt.y + 2 * k + (bandHeight - 26 * scale) * .5f + drop), "Tessera", 26, palette().ink,
+                 3);
         if (flag(state, "musicAvailable") && (flag(state, "matchContext") || label(state, "screen") == "lobby"))
             if (button("music", flag(state, "musicEnabled") ? "♪" : "♪ ×", at + ImVec2(size.x - 45 * scale, -3 * scale),
                        ImVec2(45, 36) * scale))
@@ -754,7 +756,7 @@ void GameApp::draw() {
         const int order[]{0, 1, 2, 4, 3, 5};
         const float k = skinUnit(), band = std::min(108 * k, 50 * scale);
         const float tabHeight = 40 * scale,
-                    tabY = skinned() ? frameAt.y + 2 * k + (band - tabHeight) * .5f : at.y - 6 * scale;
+                    tabY = skinned() ? frameAt.y + 2 * k + (band - tabHeight) * .5f + titleDrop() : at.y - 6 * scale;
         float x =
             at.x +
             (skinned() ? capsWidth("Tessera", 26, 3) : font()->CalcTextSizeA(22 * scale, 1e5f, 0, "T E S S E R A").x) +

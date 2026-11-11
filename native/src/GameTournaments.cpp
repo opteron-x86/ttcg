@@ -390,10 +390,14 @@ void GameApp::resultModal() {
         advance(number(c, "trade") || number(c, "wager") ? TradeView::Gathering : TradeView::Done);
     if (trade.phase == TradeView::Gathering && now - trade.started >= 1.0)
         advance(choice ? TradeView::Selecting : TradeView::Reviewing);
-    if (trade.phase == TradeView::Selecting && !choice) advance(TradeView::Reviewing);
-    if (trade.phase == TradeView::Reviewing && now - trade.started >= 1.0 && !flag(c, "staked") && !paying)
-        advance(TradeView::Transferring);
-    if (trade.phase == TradeView::Transferring && now - trade.started >= .58 + std::max(0, transfers - 1) * .12 + .65)
+    if (trade.phase == TradeView::Selecting && !choice) {
+        trade.chose = true;
+        advance(TradeView::Reviewing);
+    }
+    // The result panel shows what changed hands, so the review only waits where there is something
+    // the player has not already seen: cards taken by a rule or by the opponent.
+    const bool settled = !flag(c, "staked") && !paying;
+    if (trade.phase == TradeView::Reviewing && settled && (trade.chose || transfers == 0 || trade.acknowledged))
         advance(TradeView::Done);
     const bool done = trade.phase == TradeView::Done;
     const bool can = flag(c, "canPlay");
@@ -526,35 +530,20 @@ void GameApp::resultModal() {
                                 : outcome < 0  ? "Draw"
                                 : outcome == 0 ? "You Win!"
                                                : label(state, "opponent") + "’s choice";
-            if (trade.phase == TradeView::Transferring)
-                title = outcome < 0 ? "Draw" : outcome == 0 ? "You Win!" : "You Lose";
             text(origin + ImVec2(width / 2, 0), title, 28, palette().ink, width, true);
             const float gap = 16 * scale, w = 160 * scale, h = w / .75f;
             std::array<ImVec2, 10> positions{};
-            std::array<ImVec2, 2> stacks{};
-            const float elapsed = float(now - trade.started);
+            const float elapsed = float(now - trade.started), left = origin.x + (width - 5 * w - 4 * gap) * .5f;
             const bool selectable = trade.phase == TradeView::Selecting && !pendingCommand;
             for (int player = 0; player < 2; ++player) {
                 const float y = origin.y + (64 + (1 - player) * 268) * scale;
-                text(ImVec2(origin.x, y), player ? label(state, "opponent") : "You", 20, palette().muted);
-                stacks[player] = ImVec2(origin.x + width - 126 * scale, y + 58 * scale);
-                // Empty receiving tray: subdued, without a redundant label.
-                for (int edge = 0; edge < 4; ++edge) {
-                    const auto a = stacks[player] + ImVec2(edge == 1 ? 120 : 0, edge == 2 ? 158 : 0) * scale;
-                    const auto b = stacks[player] + ImVec2(edge == 3 ? 0 : 120, edge == 0 ? 0 : 158) * scale;
-                    const auto delta = b - a;
-                    const float length = std::sqrt(delta.x * delta.x + delta.y * delta.y);
-                    const auto direction = delta * (1 / length);
-                    for (float n = 0; n < length; n += 8 * scale)
-                        d->AddLine(a + direction * n, a + direction * std::min(n + 4 * scale, length), palette().line,
-                                   1);
-                }
+                text(ImVec2(left, y), player ? label(state, "opponent") : "You", 20, palette().muted);
                 for (int slot = 0; slot < 5; ++slot) {
                     const int index = player * 5 + slot, id = hands.is_array() ? itemNumber(hands[player], slot) : -1;
                     if (id < 0) continue;
                     const bool moving = destinations[index] != player;
                     const bool selected = choice ? player == 1 && (claimMask & (1u << slot)) : moving;
-                    const auto pos = ImVec2(origin.x + slot * (w + gap), y + 34 * scale);
+                    const auto pos = ImVec2(left + slot * (w + gap), y + 34 * scale);
                     positions[index] = pos;
                     ImGui::PushID(index);
                     ImGui::SetCursorScreenPos(pos - ImVec2(0, selected ? 14 * scale : 0));
@@ -576,11 +565,9 @@ void GameApp::resultModal() {
                         inspectCard(id);
                     const bool inFlight = trade.phase == TradeView::Gathering && (trade.sourceMask & (1u << index)) &&
                                           elapsed < .58 + index * .045;
-                    if (!inFlight && !(trade.phase == TradeView::Transferring && moving))
+                    if (!inFlight)
                         displayCard(id, pos - ImVec2(0, selected ? 14 * scale : 0), ImVec2(w, h), selected, player,
                                     150 + index);
-                    else if (trade.phase == TradeView::Transferring && moving)
-                        d->AddRect(pos, pos + ImVec2(w, h), palette().line);
                     ImGui::PopID();
                 }
             }
@@ -609,11 +596,13 @@ void GameApp::resultModal() {
                     else
                         takeTrade();
                 }
-            // Render flights above the panel, at full colour. All simultaneous
-            // transfers share a clock; ownership is still settled by the backend.
+            // Cards taken by a rule or by the opponent stay up until the player has seen them.
+            if (trade.phase == TradeView::Reviewing && settled && !trade.chose && transfers > 0)
+                if (button("trade-continue", "Continue", footer + ImVec2(width - 150 * scale, 0),
+                           ImVec2(150, 40) * scale, true))
+                    trade.acknowledged = true;
+            // Render the gathering flights above the panel, at full colour.
             d->PushClipRect(frameAt, frameAt + frameSize, false);
-            std::array<int, 2> stackCount{};
-            int order = 0;
             for (int index = 0; index < 10; ++index) {
                 const int player = index / 5, id = hands.is_array() ? itemNumber(hands[player], index % 5) : -1;
                 if (id < 0) continue;
@@ -624,15 +613,6 @@ void GameApp::resultModal() {
                         displayCard(id, trade.sources[index] + (positions[index] - trade.sources[index]) * ease,
                                     trade.sizes[index] + (ImVec2(w, h) - trade.sizes[index]) * ease, false, player,
                                     150 + index);
-                } else if (trade.phase == TradeView::Transferring && destinations[index] != player) {
-                    const int receiver = destinations[index], n = stackCount[receiver]++;
-                    const auto target = stacks[receiver] + ImVec2(n * 4, n * 5) * scale;
-                    const auto source = positions[index] - ImVec2(0, 14 * scale);
-                    const float t = std::clamp((elapsed - order++ * .12f) / .58f, 0.f, 1.f),
-                                ease = 1 - std::pow(1 - t, 3);
-                    displayCard(id, source + (target - source) * ease,
-                                ImVec2(w, h) + (ImVec2(100, 100 / .75f) * scale - ImVec2(w, h)) * ease, false,
-                                t < .5f ? player : receiver, 150 + index);
                 }
             }
             d->PopClipRect();

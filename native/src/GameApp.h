@@ -31,8 +31,10 @@ class GameApp final : public App {
     double sentAt = 0;
     std::uint64_t seenReveal = 0, dismissedReveal = 0;
     struct TradeView {
-        enum Phase { None, Gathering, Selecting, Reviewing, Transferring, Done } phase = None;
+        enum Phase { None, Gathering, Selecting, Reviewing, Done } phase = None;
         double started = 0;
+        // The player picked the cards themselves, or has seen what was taken; either ends the review.
+        bool chose = false, acknowledged = false;
         int inspected = 5;
         std::array<ImVec2, 10> sources{}, sizes{};
         unsigned sourceMask = 0;
@@ -62,6 +64,8 @@ class GameApp final : public App {
     void confirm(std::string title, std::string copy, std::string verb, std::string args = {},
                  std::string action = "Confirm");
     void confirmation();
+    // Without a painted title band the title row sits a little lower, level with the side margins.
+    float titleDrop() const { return skinned() && !skinPiece("title") ? 7 * scale : 0; }
     void header(ImVec2 at, ImVec2 size);
     bool chapter(const std::string& id, const std::string& title, ImVec2 at, ImVec2 size, bool active,
                  const std::string& detail = {}, float trailing = 0, int marker = 0);

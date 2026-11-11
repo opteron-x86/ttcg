@@ -208,6 +208,7 @@ void GameApp::settings(ImVec2 at, ImVec2 size) {
         int themeChoice = int(std::find(themeIndices.begin(), themeIndices.end(), theme) - themeIndices.begin());
         if (combo("theme", "Interface", themeChoice, themeNames, width))
             send("settings", "theme " + std::to_string(themeIndices[themeChoice]));
+        select("Key prompts", "key-prompts", "keyPrompts", {"Automatic", "Skin style", "Installed icons"});
         select("Game board", "board-surface", "boardSurface",
                {"Theme default", "Plain", "Slate", "Felt", "Parchment", "Leather", "Walnut", "Dark slab"});
         slider("Board texture", "board-texture", "boardTexture", 100, "%d%%");

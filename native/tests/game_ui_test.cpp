@@ -1039,11 +1039,18 @@ int main(int argc, char** argv) {
                 require(command("claim-many ") && commands.back().ends_with(" 9"),
                         "Diff must preserve slots 0 and 3, cap selection, and send their mask");
             }
+            // Cards taken by a rule or by the opponent wait for Continue; anything else reaches the result alone.
+            const auto finishTrade = [&] {
+                for (int i = 0; i < 30; ++i) frame(.1f);
+                if (std::any_of(hits.begin(), hits.end(), [](const auto& h) { return h.label == "trade-continue"; }))
+                    click("trade-continue");
+                for (int i = 0; i < 10; ++i) frame(.1f);
+            };
             load("trade");
             click("trade-card", 0, 1);
             require(preview::GameTestAccess::inspecting(app), "Trade card inspection unavailable");
             click("close-art");
-            for (int i = 0; i < 50; ++i) frame(.1f);
+            finishTrade();
             click("rematch");
             require(command("prepare "), "Rematch command unavailable after inspection");
             load("trade");
@@ -1051,7 +1058,8 @@ int main(int argc, char** argv) {
                 auto s = app.snapshot();
                 s["collection"]["canPlay"] = false;
                 app.receive(s.dump());
-                for (int i = 0; i < 50; ++i) frame(.1f);
+                finishTrade();
+                require(preview::GameTestAccess::tradePhase(app) == 4, "Trade did not reach the result");
                 require(std::none_of(hits.begin(), hits.end(), [](const auto& h) { return h.label == "rematch"; }),
                         "Depleted opponent still offers Play again");
             }
@@ -1079,20 +1087,45 @@ int main(int argc, char** argv) {
                 c["transferOwners"][7] = 0;
                 app.receive(state.dump());
                 frame();
-                click("trade-card", 7, 1);
+                frame();
+                require(preview::GameTestAccess::tradePhase(app) == 4,
+                        "A card the player chose must lead straight to the result");
+                const auto* result = ImGui::FindWindowByName("Game result");
+                require(result->Size.x < io.DisplaySize.x * .5f, "Post-match controls must use a compact prompt");
+                app.receive(state.dump());
+                frame();
+                require(preview::GameTestAccess::tradePhase(app) == 4,
+                        "Repeated snapshot replayed the trade animation");
+            }
+            // The opponent's choice stays up until the player continues, and inspection never advances it.
+            load("trade");
+            {
+                auto state = app.snapshot();
+                auto& c = state["collection"];
+                c["reward"] = false;
+                c["staked"] = false;
+                c["paying"] = false;
+                c["trade"] = 1;
+                c["outcome"] = 1;
+                for (int origin = 0; origin < 10; ++origin) c["transferOwners"][origin] = origin / 5;
+                c["transferOwners"][2] = 1;
+                app.receive(state.dump());
+                frame(1.1f);
+                frame();
+                click("trade-card", 2, 1);
+                require(preview::GameTestAccess::inspecting(app), "Taken card cannot be inspected");
                 const int phase = preview::GameTestAccess::tradePhase(app);
                 for (int i = 0; i < 30; ++i) frame(.1f);
                 require(preview::GameTestAccess::tradePhase(app) == phase,
                         "Trade presentation advanced underneath inspection");
                 click("close-art");
                 for (int i = 0; i < 30; ++i) frame(.1f);
-                require(preview::GameTestAccess::tradePhase(app) == 5, "Settled transfer did not reach Play again");
-                const auto* result = ImGui::FindWindowByName("Game result");
-                require(result->Size.x < io.DisplaySize.x * .5f, "Post-match controls must use a compact prompt");
-                app.receive(state.dump());
+                require(preview::GameTestAccess::tradePhase(app) == phase,
+                        "The opponent's choice closed before the player saw it");
+                click("trade-continue");
                 frame();
-                require(preview::GameTestAccess::tradePhase(app) == 5,
-                        "Repeated snapshot replayed the trade animation");
+                frame();
+                require(preview::GameTestAccess::tradePhase(app) == 4, "Continue did not reach the result");
             }
             load("trade");
             {
@@ -1131,8 +1164,8 @@ int main(int argc, char** argv) {
                         c["transferOwners"][origin] = moves ? 1 - owner : owner;
                     }
                     app.receive(state.dump());
-                    for (int i = 0; i < 60; ++i) frame(.1f);
-                    require(preview::GameTestAccess::tradePhase(app) == 5, "Automatic trade did not finish");
+                    finishTrade();
+                    require(preview::GameTestAccess::tradePhase(app) == 4, "Automatic trade did not finish");
                     require(!command("claim ") && !command("claim-many ") && !command("payout "),
                             "Trade presentation repeated a settled transaction");
                     click("rematch");

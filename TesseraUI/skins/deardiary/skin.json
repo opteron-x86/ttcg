@@ -21,15 +21,22 @@
     "opponent": "#c05a4a"
   },
   "art": {
+    "window": {
+      "file": "detail.png",
+      "margin": 110,
+      "inset": 28,
+      "pad": 18
+    },
     "panel": {
       "file": "detail.png",
       "margin": 110,
-      "inset": 8
+      "inset": 28,
+      "pad": 14
     },
     "detail": {
       "file": "detail.png",
       "margin": 110,
-      "inset": 8
+      "inset": 28
     },
     "selector": {
       "file": "selector.png",

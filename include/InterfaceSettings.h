@@ -10,7 +10,7 @@ struct InterfaceSettings {
     bool gamesEnabled = true, showCardNames = true, showCardGroups = false, vanillaVoicesOnly = true,
          rankStroke = false;
     unsigned residents = 1, rankLayout = 0, nameplateStyle = 0, nameCase = 0, cardFrame = 0;
-    unsigned interfaceFont = 0, cardNameFont = 0, cardValueFont = 0;
+    unsigned interfaceFont = 0, cardNameFont = 0, cardValueFont = 0, keyPrompts = 0;
     unsigned theme = defaultInterfaceTheme, boardSurface = 0, boardTexture = 10, windowSize = 90;
     unsigned rankShadowOpacity = 100, rankShadowBlur = 2, rankShadowOffset = 1, rankStrokeWeight = 10;
     bool controlMarker = false;
@@ -49,6 +49,8 @@ struct InterfaceSettings {
         Field{"card-name-font", "cardNameFont", "Appearance", "CardNameFont", &InterfaceSettings::cardNameFont, 4, 0},
         Field{"card-value-font", "cardValueFont", "Appearance", "CardValueFont", &InterfaceSettings::cardValueFont, 4,
               0},
+        // 0 follows the skin (installed icons on dark skins), 1 draws keys in the skin's style, 2 uses installed icons.
+        Field{"key-prompts", "keyPrompts", "Appearance", "KeyPrompts", &InterfaceSettings::keyPrompts, 2, 0},
         Field{"theme", "theme", "Appearance", "Theme", &InterfaceSettings::theme, interfaceThemeCount - 1,
               defaultInterfaceTheme},
         Field{"board-surface", "boardSurface", "Appearance", "BoardSurface", &InterfaceSettings::boardSurface, 7, 0},
