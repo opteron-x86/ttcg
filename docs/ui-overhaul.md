@@ -1,6 +1,8 @@
 # Tessera UI overhaul: plan, status and handoff
 
-Branch: `feat/oathvein-skin` (off `master` at `fac3141`). Nothing is pushed. Owner of the repo: opteron-x86.
+> **Shipped in 0.33.0.** Open items from this document moved to [roadmap.md](roadmap.md) (phase 5) on 2026-11-16. What follows is the historical record.
+
+Branch: `feat/oathvein-skin` (off `master` at `fac3141`), merged and released as 0.33.0. Owner of the repo: opteron-x86.
 
 The goal is a complete overhaul of the native (ImGui/DirectX 11) interface so it matches Skyrim and the player's UI mods by default, with a redesigned card, board and screen layouts. The original assessment that motivated this is summarised under [Origin](#origin). The player (the repo owner) approved the direction and the decisions below; they have **permission from every UI-mod author named here** (obtained by DM) to use the artwork.
 
