@@ -65,7 +65,7 @@ inline void encodeTournaments(std::vector<std::uint32_t>& out, const TournamentS
 }
 template <class Get, class ValidCard, class ValidRules>
 bool decodeTournaments(Get get, TournamentState& s, ValidCard card, ValidRules rules, unsigned version = 27) {
-    if (version < 26 || version > 33) return false;
+    if (version < 26 || version == 34 || version > 35) return false;
     for (auto* dates : {&s.nextCircuit, &s.circuitRotation})
         for (auto& v : *dates) {
             v = get();

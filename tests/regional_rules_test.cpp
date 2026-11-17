@@ -1,6 +1,8 @@
 #include "RuleCulture.h"
 #include "Tournaments.h"
 #include "reputation_support.h"
+#include "legacy_world.h"
+#include <fstream>
 #include <cassert>
 #include <iostream>
 using namespace ttcg;
@@ -37,18 +39,78 @@ int main(int argc, char**) {
         output(s, eastmarchHold, regionalTradeProtectionHours);
         return 0;
     }
+    // A new game: every hold gets terms of its own, rolled for this save from the
+    // plain game, and a calendar. Nothing about a hold is fixed in advance.
     CollectionSave s;
     s.starter = true;
+    s.economyRandom = 0x2468ACEu;
+    assert(holdTerms(s, haafingarHold).rules == plainTerms.rules && holdTerms(s, haafingarHold).trade == TradeOne);
     assert(!tickRegionalRules(s, 10));
-    assert(s.culture.regions.size() == holds.size());
-    std::set<unsigned> dates;
+    assert(s.culture.regions.size() == holds.size() && s.holds.size() == holds.size());
+    std::set<unsigned> dates, sets;
     for (auto h : holds) {
         const auto& r = regionalCulture(s, h.id);
-        assert(holdTerms(s, h.id).rules == h.defaults.rules);
-        assert(holdTerms(s, h.id).trade == h.defaults.trade);
+        const auto terms = holdTerms(s, h.id);
+        assert(validRules(terms.rules) && std::popcount(terms.rules) <= 1 + 2 * int(regionalHistorySteps));
+        assert(terms.trade >= TradeOne && terms.trade <= TradeAll);
         assert(r.nextRuleChange >= 10 + 14 * 24 && r.nextRuleChange <= 10 + 21 * 24);
         assert(r.nextTradeChange >= 10 + 30 * 24 && r.nextTradeChange <= 10 + 45 * 24);
         dates.insert(r.nextRuleChange);
+        sets.insert(terms.rules);
+    }
+    assert(sets.size() > 5);
+    {
+        // The same save always has the same map; another save has another.
+        CollectionSave again, other;
+        again.economyRandom = s.economyRandom;
+        other.economyRandom = s.economyRandom + 2;
+        tickRegionalRules(again, 10);
+        tickRegionalRules(other, 10);
+        assert(again.holds.size() == holds.size() && other.holds.size() == holds.size());
+        unsigned same = 0, different = 0;
+        for (auto h : holds) {
+            same += holdTerms(again, h.id).rules == holdTerms(s, h.id).rules &&
+                    holdTerms(again, h.id).trade == holdTerms(s, h.id).trade;
+            different += holdTerms(other, h.id).rules != holdTerms(s, h.id).rules;
+        }
+        assert(same == holds.size() && different > 3);
+        // Across many saves no hold favours a rule, and trade All is the rare one.
+        std::array<unsigned, 5> trades{};
+        unsigned everyRule = 0, open = 0, total = 0;
+        for (unsigned seed = 1; seed <= 400; ++seed) {
+            CollectionSave world;
+            world.economyRandom = seed * 2654435761u | 1u;
+            tickRegionalRules(world, 0);
+            for (auto h : holds) {
+                const auto terms = holdTerms(world, h.id);
+                everyRule |= terms.rules;
+                open += bool(terms.rules & Open);
+                ++trades[terms.trade];
+                ++total;
+            }
+        }
+        assert(everyRule == RuleMask && open > total / 2 && open < total * 3 / 4);
+        assert(trades[TradeOne] > trades[TradeDiff] && trades[TradeDiff] > trades[TradeDirect] &&
+               trades[TradeDirect] > trades[TradeAll] * 2 && trades[TradeAll] > 0);
+    }
+    {
+        // A save from before this change keeps the terms its holds began with,
+        // and they are stored from then on.
+        std::ifstream old("tests/fixtures/collection-v31-progress.txt");
+        assert(old);
+        std::vector<std::uint32_t> wire;
+        for (std::uint32_t n; old >> n;) wire.push_back(n);
+        CollectionSave loaded;
+        assert(decodeCollection(wire, loaded, 31) && loaded.holds.size() == holds.size());
+        for (const auto& legacy : legacyHoldTerms)
+            assert(loaded.holds.contains(legacy.hold) && validRules(loaded.holds.at(legacy.hold).rules));
+        const auto before = loaded.holds;
+        CollectionSave current;
+        assert(decodeCollection(encodeCollection(loaded), current));
+        tickRegionalRules(current, 0);
+        for (auto [hold, terms] : before)
+            assert(current.holds.at(hold).rules == terms.rules && current.holds.at(hold).trade == terms.trade);
+        assert(!supportedCollectionFormat(34) && supportedCollectionFormat(33) && supportedCollectionFormat(35));
     }
     assert(dates.size() > 5);
     s = reload(s);
@@ -58,7 +120,7 @@ int main(int argc, char**) {
     // All seventeen rules can be introduced, and existing rules can disappear.
     unsigned observed = 0, removed = 0;
     for (unsigned seed = 1; seed < 5000; ++seed) {
-        CollectionSave t;
+        auto t = legacyWorld();
         unsigned random = seed;
         const auto next = naturalRegionalRules(t, hjaalmarchHold, 0, random);
         assert(validRules(next));
@@ -73,7 +135,7 @@ int main(int argc, char**) {
     assert(removed ==
            (Open | Same | SameWall | Plus | Reverse | FallenAce | Affinity | Legion | Order | Swap | SuddenDeath));
     // Protection covers dependency removals, conflicts, spread and abolition.
-    s = {};
+    s = legacyWorld();
     s.starter = true;
     const auto expert = localExpert(1);
     earnReputation(s, 1);
@@ -99,7 +161,7 @@ int main(int argc, char**) {
     assert(!regionalAdditions(s, 2, ThreeOpen, 101));
     assert(regionalAdditions(s, 2, ThreeOpen, 100 + regionalRuleProtectionHours) == ThreeOpen);
     // Unrelated edits retain each rule's own expiry and reset only its calendar.
-    s = {};
+    s = legacyWorld();
     assert(applyRegionalTerms(s, 1, {Open | Plus, TradeOne}, 100));
     const auto tradeDate = regionalCulture(s, 1).nextTradeChange;
     assert(applyRegionalTerms(s, 1, {Open | Plus | Swap, TradeOne}, 150));
@@ -110,7 +172,7 @@ int main(int argc, char**) {
     assert(regionalChangesJson(s, 1, 100 + regionalRuleProtectionHours).find("\"rule\":2,") == std::string::npos);
     assert(regionalChangesJson(s, 1, 150 + regionalRuleProtectionHours) == "[]");
     // A locked lobby defers this hold, while all other regions keep evolving.
-    s = {};
+    s = legacyWorld();
     tickRegionalRules(s, 0);
     auto original = holdTerms(s, 1);
     const auto due = regionalCulture(s, 1).nextRuleChange;
@@ -124,7 +186,7 @@ int main(int argc, char**) {
     assert(!resumed.deferred);
     assert(resumed.changedAt == 60 * 24 && resumed.nextRuleChange >= 74 * 24 && resumed.nextTradeChange >= 90 * 24);
     // A committed or interrupted trial keeps its terms until resolved.
-    s = {};
+    s = legacyWorld();
     s.starter = true;
     s.culture.carriedHold = 2;
     s.culture.carriedRules = Same;
@@ -143,7 +205,7 @@ int main(int argc, char**) {
     assert(holdTerms(s, 1).rules & Same);
     assert(regionalCulture(s, 1).nextRuleChange >= 74 * 24);
     // A large time jump and ordinary hourly updates produce the same calendar.
-    CollectionSave jump, incremental;
+    CollectionSave jump = legacyWorld(), incremental;
     tickRegionalRules(jump, 0);
     incremental = jump;
     for (unsigned hour = 1; hour <= 365 * 24; ++hour) tickRegionalRules(incremental, hour);
@@ -153,18 +215,24 @@ int main(int argc, char**) {
     assert(!tickRegionalRules(jump, 365 * 24) && encodeCollection(jump) == final);
     // Observe all trade modes; no-stakes mode is never chosen for a hold.
     std::set<unsigned> trades;
+    std::array<unsigned, 5> tradeDays{};
     for (unsigned hour = 366 * 24; hour < 3000 * 24; hour += 24) {
         tickRegionalRules(jump, hour);
         for (auto h : holds) {
             auto terms = holdTerms(jump, h.id);
             assert(validRules(terms.rules) && terms.trade >= TradeOne && terms.trade <= TradeAll);
             trades.insert(terms.trade);
+            ++tradeDays[terms.trade];
         }
     }
     assert(trades.size() == 4);
+    // All is the rare trade rule; One is the commonest.
+    const auto days = double(tradeDays[1] + tradeDays[2] + tradeDays[3] + tradeDays[4]);
+    assert(tradeDays[TradeAll] / days < .18 && tradeDays[TradeOne] / days > .25 &&
+           tradeDays[TradeOne] > tradeDays[TradeAll] * 2);
     reload(jump);
     // Tournament and personal-opponent terms are not rewritten by the calendar.
-    CollectionSave isolated;
+    CollectionSave isolated = legacyWorld();
     tickRegionalRules(isolated, 0);
     decltype(isolated.tournaments.events)::value_type event;
     event.id = 1;

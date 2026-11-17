@@ -9,6 +9,7 @@ const TRADE_RULES=[
 ];
 const RULE_PAGES=[
  {id:'play',title:'How to play',demo:'play',copy:'Each player has five cards. Take turns placing one card on the 3×3 board. A card captures an adjacent opponent when its touching rank is higher. With a card chosen, the board marks the cards it would capture on the square you point at. The tenth, unplayed card still counts, so the total is always ten. More than five wins. Unplayed opposing cards are hidden unless Open or Three Open is active.'},
+ {id:'vanguard',title:'Vanguard',demo:'vanguard',copy:'Whoever moves first plays into an empty board and is answered last. In return their first card is the Vanguard: it has +1 on every side while they hold it, until the fifth card is played. Captured, it is an ordinary card; retaken by the player who moved first, it has the bonus again. With Reverse it has −1 instead, because lower ranks win there. Same and Plus compare printed ranks and are not affected. A Sudden Death redeal has a Vanguard of its own. Who moves first is shown before you agree to the stakes.'},
  {id:'open',title:'Open',demo:'open',copy:'Both hands stay visible after the deal.'},
  {id:'threeopen',title:'Three Open',demo:'threeopen',copy:'Three cards in each hand are shown. The other two stay hidden until played. Cannot combine with Open.'},
  {id:'same',title:'Same',demo:'same',copy:'If two or more touching ranks equal the adjacent cards, those enemy cards are captured. Combo then flips any lower adjacent ranks. Same uses printed ranks.'},

@@ -142,6 +142,7 @@ std::string json(RE::Actor* actor, bool, bool conceal) {
                                                            : "They are unavailable for another game.")
                                                     : playReason);
     out += ",\"fixedWager\":" + std::to_string(fixedWager());
+    out += ",\"firstMove\":" + std::to_string(actor ? firstMove : -1);
     const auto cultureHold = actorHold(actor), hour = gameHour();
     const bool cultureAvailable = cultureEnabled(actor);
     out += ",\"culture\":" + ttcg::cultureJson(saved, i, cultureHold, hour, cultureAvailable, cultureNotice);

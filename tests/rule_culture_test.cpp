@@ -3,6 +3,7 @@
 #include "Lesson.h"
 #include <cassert>
 #include <iostream>
+#include "legacy_world.h"
 using namespace ttcg;
 int adult(unsigned hold, unsigned minimum = 0) {
     for (int i = 1; i < int(opponents.size()); ++i)
@@ -24,7 +25,7 @@ unsigned offer(CollectionSave& s, int i, unsigned hour = 0) {
 }
 int cultureFixtures() {
     const int i = adult(eastmarchHold);
-    CollectionSave s;
+    auto s = legacyWorld();
     s.starter = true;
     s.culture.carriedHold = solstheimRegion;
     s.culture.carriedRules = Decimation;
@@ -95,7 +96,8 @@ int main(int argc, char**) {
     }
     const auto east = adult(eastmarchHold), falk = adult(falkreathHold), expert = adult(falkreathHold, 4),
                otherExpert = adult(haafingarHold, 4);
-    CollectionSave s;
+    // The scenarios below start from holds with known terms, as an old save has them.
+    auto s = legacyWorld();
     s.starter = true;
     assert(holdTerms(s, whiterunHold).rules == Open && holdTerms(s, hjaalmarchHold).rules == 0);
     finishRuleCulture(s, falk, 1, Open | Same, 0);
@@ -116,7 +118,7 @@ int main(int argc, char**) {
     assert(!spreadOffer(s, east, hour));
     // Successful conflict replacement is mandatory and never triggers an extra abolition.
     for (auto incoming : {Legion, Decimation, Open, ThreeOpen}) {
-        CollectionSave t;
+        auto t = legacyWorld();
         t.starter = true;
         t.culture.carriedHold = falkreathHold;
         t.culture.carriedRules = incoming;
@@ -249,7 +251,7 @@ int main(int argc, char**) {
     assert(visit.culture.carriedHold == eastmarchHold && spreadOffer(visit, falk, hour) == Legion);
     roundtrip(visit);
     // Cooldowns are regional, apply from acceptance, and survive abandonment/reload.
-    s = {};
+    s = legacyWorld();
     s.starter = true;
     assert(!canAbolish(s, expert, 0));
     famous(s, falkreathHold);

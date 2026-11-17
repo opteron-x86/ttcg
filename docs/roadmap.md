@@ -9,7 +9,7 @@ Started 2026-11-16 from a full review of `master` at `6fc37d1` (0.33.0, 90/90 na
 | 1 | Bugs | `phase1/bug-fixes` | Done; in-game check pending |
 | 2 | Merchant packs through the game's own function (1.7.104 crash) | `phase2/merchant-packs` | Done; in-game check pending |
 | 3 | AI | `phase3/ai` | Done; in-game check pending |
-| 4 | Balance: first move, regional rules, trade rules | `phase4/balance` | In progress |
+| 4 | Balance: first move, regional rules, trade rules | `phase4/balance` | Done; in-game check pending. Ships after phases 5–7, with the save-format work |
 | 5 | Interface and UX | `phase5/interface` | Done; in-game check pending |
 | 6 | Tessera green-and-gold skin | `phase6/tessera-skin` | Done; in-game check pending |
 | 7 | Code cleanup | `phase7/cleanup` | Done except C7 (second release) and the snapshot emitter; in-game check pending |
@@ -21,8 +21,8 @@ Started 2026-11-16 from a full review of `master` at `6fc37d1` (0.33.0, 90/90 na
 - **Releases (player, 2026-11-17).** Work that leaves the save format alone ships first: phases 1–3 and 5–7, without C7. It is branched from `phase3/ai`, so it can merge without phase 4. Phase 4 (collection format 35, saved-match format 2) and C7 (sectioned saves) follow as a second release.
   - The second release does not need a new game. Saves from the first release load in it: holds keep the rules they have, and an interrupted match plays on without a Vanguard. What it can't do is go back: a save written by it turns Tessera off on an older version (the data is kept, since phase 1). The rolled starting rules of option B only appear in a new game; an existing game keeps its holds' rules and drifts from there.
   - Changelog entries are one line per change.
-- **Save formats.** `master` writes collection format 33. The parked `codex/transmute-testing` branch writes 34 with a different layout, so the next bump on `master` must be **35**, and 34 stays unsupported unless transmutation lands. The saved-match record is format 1 (65 words); G1 needs format 2.
-- Scratch harnesses from the review are in `build/ai-lab-scratch/` (untracked; see its README). A5 turns the useful ones into a tool.
+- **Save formats.** Collection format is **35** since phase 4 (33 before; same layout, every hold's terms stored). The parked `codex/transmute-testing` branch writes 34 with a different layout, which stays unsupported unless transmutation lands. The saved-match record is format 2 (66 words) since phase 4; format 1 (65 words) still loads.
+- `tools/ai-lab` (built as `build/native/tests/ai-lab`) measures opponents, first-move scores, regional rules and off-screen tournaments. The review's scratch harnesses in `build/ai-lab-scratch/` (untracked) are superseded by it.
 
 ## Decisions
 
@@ -46,19 +46,6 @@ Open:
 | ID | Question | Needed by | Recommendation |
 |---|---|---|---|
 | D7 | Sectioned save format (C7) | Second release | Do it, after B1 has made unreadable records survive |
-
-### First-move data (D1)
-
-Expert self-play, 3000 deals per row, tier 4–7 decks. Score is the first mover's (win 1, draw ½); 0.5 is fair, standard error about ±0.009. Built from `build/ai-lab-scratch/vanguard`.
-
-| Rules | Today | First card +1, always | +1 while the first mover owns it |
-|---|---|---|---|
-| Open | 0.355 | 0.457 | 0.459 |
-| Hidden | 0.431 | 0.474 | 0.490 |
-| Open, Same + Plus | 0.327 | 0.346 | 0.373 |
-| Hidden, Same + Plus | 0.468 | 0.458 | 0.472 |
-
-The bonus fixes most of the gap for ordinary captures. It barely affects Same and Plus because those rules use printed values. Same/Plus needs a second idea, tested in G1.
 
 ## Phase 1: bugs
 
@@ -193,20 +180,62 @@ In Skyrim:
 
 ## Phase 4: balance
 
-- [ ] **G1 First move (D1).** If accepted:
-  - Vanguard: +1 on all sides of the first card while the first mover owns it. It counts in the AI search, the tournament simulations and Sudden Death redeals.
-  - Saved-match format 2 stores its square; a format-1 record loads with no bonus.
-  - A marker on the card, a rules-page entry with a demo, and the lobby shows who moves first before stakes are accepted.
-  - Test one more idea for the Same/Plus gap (for example, the first card can't be taken by the next play) and report numbers before adopting anything.
-- [ ] **G2 Authored rules vs spread (D2).** Today every hold drifts every 7–21 days by adding or removing a random rule from all 17, with no pull back (`RegionalRules.h:90-140`). After the first year only 0.4% of hold-time still has the authored rules and 68% is hidden-hand play. Simulate with `build/ai-lab-scratch/drift.cpp` and bring numbers for:
-  - A: authored rules kept, with drift weighted back toward them;
-  - B: no authored rules, everything comes from player spread and drift;
-  - C: authored rules as a core that only abolition can remove, drift changes the extras;
-  - D: no time drift, player spread only.
+Done on `phase4/balance` (2026-11-17), stacked on phase 3, and waiting for the in-game check. One finding needs the player's eye: see "The Vanguard after phase 3" below.
 
-  Measure the share of time at the authored set, rules per hold, hidden-hand share and how much the player's choices matter. Also review the spread chance after a loss (20% vs 35% after a win, `RuleCulture.h:152`). Existing saves move toward the new behaviour over time; no migration.
-- [ ] **G3 Trade-rule weights (D3).** Today drift picks the trade rule uniformly, so All holds 25% of the time. Apply the agreed weights. Diff is unchanged.
-- [ ] **G4 Exchange gold floor.** The generated floor of 50 (`NativeExchange.h:229`) is more than the shop price of tier I–II commons (25 and 45). Tie it to the requested card's price.
+- [x] **G1 First move: the Vanguard (D1).** The first card of a board has +1 on every side while the player who placed it holds it, until the fifth card is played (`Match::vanguardModifier`, `Match::vanguardSpan`).
+  - Captured, it is an ordinary card; retaken by the first mover, it has the bonus again. Under Reverse it has −1, because lower ranks win there. Same and Plus compare printed ranks and ignore it. A Sudden Death redeal names a new Vanguard.
+  - It is part of every rank the search compares, so opponents, tournament games and off-screen games all play with it.
+  - Saved-match format 2 adds one word for its square and owner. A format 1 table loads with none and is finished without it.
+  - The card shows the usual +1 marker. The Rules tab has a Vanguard page with an example (`vanguardExample`). Rule lessons leave the Vanguard out (`Lesson::table`), so each still shows one rule.
+  - The lobby says who moves first before the stakes are agreed. It follows the same count of games that fixes the opponent's hand, so reopening the lobby can't change it; a tournament game's seed decides it as before.
+- [x] **G2 Regional rules: option B (D2).** No hold has authored rules.
+  - A new game rolls each hold's terms: the plain game (Open, trade One) after two changes of rules, and a weighted trade rule (`regionalHistory`). Every save has its own map from the first day.
+  - Collection format 35 stores every hold's terms. A save from format 33 or earlier gets the terms its holds began with then, so nothing changes under a game in progress; from there drift and spread carry on as before. Format 34 stays unsupported.
+  - Not changed: the spread chances (35% after a win, 20% otherwise) and the pace of drift.
+- [x] **G3 Trade-rule weights (D3).** Drift picks by weight. A hold never drifts to the rule it has, so weights of 42, 29, 22 and 7 give the agreed shares of time. Diff is unchanged.
+- [x] **G4 Exchange gold floor.** `exchangeGold`: three times the shop's buying price, at least 50 where the card is worth more than that, and four fifths of its shop price for cheaper cards. A tier I common pays 20 gold instead of 50 against a shop price of 25.
+
+### Regional rules with nobody playing
+
+`ai-lab drift`, 300 saves, three years, daily. Drift alone; the player's spreading and abolishing come on top.
+
+| | Day 1 | Day 30 | Day 90 | Day 365 |
+|---|---|---|---|---|
+| Different rule sets among the 10 holds | 8.8 | 9.6 | 9.9 | 9.9 |
+| Rules in force per hold | 2.0 | 2.4 | 2.8 | 2.9 |
+| Holds with hands hidden | 30% | 38% | 57% | 69% |
+| Holds with Open | 61% | 52% | 29% | 16% |
+
+- Trade rules over years two and three: One 35.6%, Diff 30.1%, Direct 25.0%, All 9.3%.
+- A rule stays about 96 days once it is in force. Each of the 17 rules is in force 15–19% of the time, except Same (32%, because Same Wall brings it) and Same Wall (10%).
+- With no history rolled, all ten holds would start identical and it would take a month to reach 7.6 different sets. Two changes was chosen over three because it starts with fewer hidden-hand holds (30% against 38%).
+- **Hidden hands take over in the long run** (69% of holds after a year), because Open and Three Open are two rules among seventeen. That was already true of 0.33.0 after its first year. If more open play is wanted, weighting drift toward Open and Three Open is a small change.
+
+### The Vanguard after phase 3
+
+The Vanguard was first agreed as a bonus for the whole board, on the review's numbers: measured with the 0.33.0 Expert, the first mover scored 0.36 in Open play. Phase 3 changed the opponents. With them the first mover's handicap is smaller, depends on how far the opponent looks ahead, and a whole-board bonus made the first mover the favourite. The player chose the shorter bonus on 2026-11-17: it ends when the fifth card is played.
+
+First mover's score in self-play (`ai-lab first`, 1,200–2,000 deals, ±0.013; 0.5 is fair):
+
+| | Regular, Open | Regular, hidden | Expert, Open | Expert, hidden | Master, Open | Master, hidden |
+|---|---|---|---|---|---|---|
+| No Vanguard | 0.47 | 0.44 | 0.44 | 0.46 | 0.52 | 0.41 |
+| **Until the fifth card (shipped)** | 0.45 | 0.44 | 0.52 | 0.52 | 0.54 | 0.49 |
+| For the whole board | 0.51 | 0.47 | 0.56 | 0.53 | 0.61 | 0.53 |
+| Whole board, and immune to the next play | | | 0.59 | 0.64 | | |
+
+- Without the Vanguard the first mover averages 0.46 across the rule sets and skills measured. The shipped rule averages 0.49 and stays within 0.06 of fair; the whole-board bonus averaged 0.52 and reached 0.61 against Master in Open play.
+- Regular opponents look two plays ahead and gain nothing from the shorter bonus. Against them the first mover keeps a small handicap.
+- The Same/Plus gap in the review (0.33) belongs to one search depth: without the Vanguard only Expert shows it (0.36 in Open, Same + Plus), where Regular scores 0.49 and Master 0.51. No second rule was adopted for it.
+- These are opponents playing each other. How it feels with a person in one seat is for the in-game check.
+
+In Skyrim:
+- The lobby names who moves first, and that player does. Leave the lobby and return: the same player still moves first.
+- The first card shows +1. Let it be captured and retake it before the fifth card: the +1 returns. From the fifth card on it shows none.
+- Interrupt a match after the first card, save, reload and resume: the +1 is still there. Resume a match interrupted on 0.33.0: it plays on without one.
+- Start a new game: the Journal shows different rules across the holds. Load a 0.33.0 save: every hold has the rules it had.
+- Rules tab: the Vanguard page and its example.
+- Post a local exchange for a tier I common: the gold offered is below its shop price.
 
 ## Phase 5: interface and UX
 

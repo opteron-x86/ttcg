@@ -410,10 +410,28 @@ struct MerchantStock {
     unsigned restockAt = 0, generation = 0;
     int goldCredit = 0;
 };
-inline constexpr unsigned collectionFormat = 33;
+// 34 belongs to an unreleased branch with a different layout and is never read.
+// 35 has 33's layout; what changed is that every hold's terms are stored.
+inline constexpr unsigned collectionFormat = 35;
 inline constexpr bool supportedCollectionFormat(unsigned version) {
-    return version == 20 || version == 21 || (version >= 26 && version <= collectionFormat);
+    return version == 20 || version == 21 || (version >= 26 && version <= 33) || version == collectionFormat;
 }
+// Up to format 33 each hold began with terms of its own and a save stored only the
+// holds that had changed. A save from then keeps the rest as they were.
+struct LegacyHoldTerms {
+    std::uint32_t hold;
+    HoldTerms terms;
+};
+inline constexpr std::array<LegacyHoldTerms, 10> legacyHoldTerms{{{1, {Open, TradeOne}},
+                                                                  {2, {Open | Same, TradeOne}},
+                                                                  {3, {Open | Same | Plus, TradeAll}},
+                                                                  {4, {Basic, TradeOne}},
+                                                                  {5, {Open | Plus, TradeDiff}},
+                                                                  {6, {ThreeOpen | Plus, TradeDirect}},
+                                                                  {7, {Open | Affinity, TradeDirect}},
+                                                                  {8, {Open | Legion, TradeDiff}},
+                                                                  {9, {ThreeOpen | Same, TradeDiff}},
+                                                                  {10, {ThreeOpen | Decimation, TradeOne}}}};
 struct CollectionSave {
     ResidentState residents;
     std::map<std::uint32_t, std::uint32_t> loadedWorldRemap;
@@ -1203,6 +1221,8 @@ inline bool decodeCollection(const std::vector<std::uint32_t>& in, CollectionSav
         }))
         return false;
     if (!ok || at != in.size()) return false;
+    if (version < 35)
+        for (const auto& legacy : legacyHoldTerms) s.holds.try_emplace(legacy.hold, legacy.terms);
     saved = std::move(s);
     return true;
 }

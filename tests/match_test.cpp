@@ -1,3 +1,4 @@
+#include "SavedMatch.h"
 #include "Lesson.h"
 #include <cassert>
 #include <chrono>
@@ -153,6 +154,93 @@ int main() {
         auto d = Lesson::workshop(rule);
         assert(d.advance(1, 4) && d.advance());
         assert(d.match.board[4].owner == (rule == Decimation ? 1 : 0));
+    }
+    {
+        // Vanguard: the first card of a board is one stronger on every side while
+        // the player who placed it holds it, until the fifth card is played.
+        int first = -1, level = -1, stronger = -1, retaker = -1, spare = -1;
+        for (int f = 0; f < int(cards.size()) && first < 0; ++f) {
+            const auto& c = cards[f];
+            if (c.sides[1] > 8 || c.sides[3] > 7 || c.sides[0] > 8) continue;
+            int a = -1, b = -1, r = -1;
+            for (int i = 0; i < int(cards.size()); ++i) {
+                if (i == f) continue;
+                if (a < 0 && cards[i].sides[3] == c.sides[1] + 1) a = i;
+                if (b < 0 && i != a && cards[i].sides[1] >= c.sides[3] + 2 && cards[i].sides[0] == 1) b = i;
+                if (r < 0 && i != a && i != b && cards[i].sides[2] > c.sides[0] && cards[i].sides[2] <= 9) r = i;
+            }
+            if (a >= 0 && b >= 0 && r >= 0) first = f, level = a, stronger = b, retaker = r;
+        }
+        for (int i = 0; i < int(cards.size()) && spare < 0; ++i)
+            if (i != first && i != level && i != stronger && i != retaker && cards[i].sides[2] >= 2) spare = i;
+        assert(first >= 0 && spare >= 0);
+        const auto deal = [&](unsigned rules, bool rule = true) {
+            Match m({first, retaker, spare, spare, spare}, {level, stronger, spare, spare, spare}, 5, rules, 0);
+            m.vanguardRule = rule;
+            return m;
+        };
+        auto m = deal(Open);
+        assert(m.turn == 0 && m.vanguard == -1 && m.modifier(first, 4) == 0);
+        assert(m.play({0, 4}).legal && m.vanguard == 4 && m.vanguardOwner == 0 && m.modifier(first, 4) == 1);
+        assert(m.rank(first, 4, 1) == cards[first].sides[1] + 1);
+        // A card one higher than the printed rank no longer takes it.
+        auto held = m;
+        assert(held.play({0, 5}).legal && held.board[4].owner == 0);
+        auto without = deal(Open, false);
+        assert(without.play({0, 4}).legal && without.vanguard == -1 && without.play({0, 5}).legal &&
+               without.board[4].owner == 1);
+        // Captured, it is an ordinary card; retaken by the first mover, it is the Vanguard again.
+        assert(m.play({1, 3}).legal && m.board[4].owner == 1 && m.modifier(first, 4) == 0);
+        assert(m.vanguard == 4 && m.vanguardOwner == 0);
+        assert(m.play({1, 1}).legal && m.board[4].owner == 0 && m.modifier(first, 4) == 1);
+        // Only the first card: no later card is given the bonus.
+        for (int square = 0; square < 9; ++square)
+            if (square != 4) assert(m.vanguardModifier(square) == 0);
+        // The table saves with it, and a table from before it has none.
+        SavedMatch saved, loaded;
+        saved.present = true;
+        saved.opponent = 123;
+        saved.table = m;
+        auto wire = encodeMatch(saved);
+        assert(wire.size() == savedMatchWords && decodeMatch(wire, loaded));
+        assert(loaded.table.vanguard == 4 && loaded.table.vanguardOwner == 0 && loaded.table.modifier(first, 4) == 1);
+        auto broken = wire;
+        broken.back() = 3 | (1u << 4); // Names an empty square.
+        assert(!decodeMatch(broken, loaded));
+        broken.back() = 0;
+        assert(!decodeMatch(broken, loaded));
+        wire.pop_back();
+        assert(decodeMatch(wire, loaded) && loaded.table.vanguard == -1 && loaded.table.modifier(first, 4) == 0);
+        // The opening ends with the fifth card: from then on it is an ordinary card,
+        // whoever holds it, and stays one.
+        assert(m.placed == 3 && m.play({2, 8}).legal && m.placed == 4 && m.board[4].owner == 0 &&
+               m.modifier(first, 4) == 1);
+        assert(m.play({2, 6}).legal && m.placed == 5 && m.board[4].owner == 0 && m.modifier(first, 4) == 0);
+        while (!m.boardComplete()) {
+            assert(m.play(m.legalMoves().front()).legal);
+            assert(m.vanguardModifier(4) == 0);
+        }
+        // Under Reverse lower is stronger, so there the Vanguard is one lower.
+        auto reverse = deal(Open | Reverse);
+        assert(reverse.play({0, 4}).legal && reverse.modifier(first, 4) == -1);
+        // Same and Plus compare printed ranks; the Vanguard changes neither.
+        // Sudden Death deals a new board, whose first card is its own Vanguard.
+        for (unsigned seed = 1; seed < 400; ++seed) {
+            Match sudden(seed, Open | SuddenDeath);
+            while (!sudden.boardComplete()) sudden.play(sudden.legalMoves().front());
+            if (!sudden.suddenDeathPending()) continue;
+            assert(sudden.vanguard >= 0 && sudden.redeal() && sudden.vanguard == -1 && sudden.vanguardOwner == -1);
+            const int opener = sudden.turn;
+            assert(sudden.play(sudden.legalMoves().front()).legal && sudden.vanguardOwner == opener);
+            break;
+        }
+        // The search sees the bonus: it is part of every rank it compares.
+        auto searched = deal(Open);
+        searched.play({0, 4});
+        const auto answer = chooseMove(searched, 5000, 2);
+        auto reply = searched;
+        reply.play(answer);
+        assert(!(answer.hand == 0 && answer.square == 5) || reply.board[4].owner == 0);
     }
     // Every affinity bit is used by at least one finished card, and every printed side is valid.
     unsigned attributes = 0;

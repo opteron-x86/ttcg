@@ -68,6 +68,9 @@ inline unsigned gameHour() {
     return c ? static_cast<unsigned>(std::clamp(c->GetDaysPassed() * 24.0f, 0.0f, 99999900.0f)) : 0;
 }
 inline ttcg::Hand rivalDeck{};
+// Who moves first in the game being set up: 0 the player, 1 the opponent, -1 none.
+// It is settled in the lobby, before the stakes, and holds until that game is played.
+inline int firstMove = -1;
 inline bool canStake = false;
 inline std::string notice, receipt, cultureNotice;
 inline bool cultureGame = false;
@@ -352,6 +355,7 @@ bool removeResetItems();
 void acknowledgeTournamentCourier(std::uint64_t request);
 void recoverTournamentLetters();
 void ensureAlbum();
+void seedEconomy();
 void updateRegionalRules();
 // `background` is the periodic update during play, which must not stall a frame.
 void updateTournaments(bool background = false);

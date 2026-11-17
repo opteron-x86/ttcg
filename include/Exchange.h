@@ -9,6 +9,14 @@ inline bool exchangeCard(CardID id) {
     const auto& c = cards[i];
     return !c.pending && c.available && !c.unique;
 }
+// The gold a collector pays for a card they ask for. It is three times what a shop
+// would give, and at least 50 where the card is worth more than that. A cheap card
+// pays four fifths of its shop price instead: paying 50 for a card that sells for 25
+// would turn every merchant into a source of free gold.
+inline unsigned exchangeGold(CardID requested) {
+    const int price = shopPrice(requested);
+    return unsigned(std::clamp(shopSalePrice(requested) * 3, std::min(50, price * 4 / 5), 2500));
+}
 inline std::vector<CardID> exchangeRequestPool(const Stock& stock, unsigned hold) {
     std::vector<CardID> requests;
     for (const auto& c : cards)

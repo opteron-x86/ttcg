@@ -187,8 +187,16 @@ void recoverTournamentLetters() {
                 SKSE::log::info("Tournament {} invitation recovered from player inventory", event);
         }
 }
+void seedEconomy() {
+    if (!saved.economyRandom)
+        saved.economyRandom =
+            static_cast<std::uint32_t>(std::chrono::steady_clock::now().time_since_epoch().count()) | 1u;
+}
 void updateRegionalRules() {
-    if (available()) ttcg::tickRegionalRules(saved, gameHour(), cultureHeldHold);
+    if (!available()) return;
+    // A new game's map of rules is rolled from this seed the first time it is needed.
+    seedEconomy();
+    ttcg::tickRegionalRules(saved, gameHour(), cultureHeldHold);
 }
 void updateTournaments(bool background) {
     if (!available()) return;

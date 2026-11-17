@@ -12,9 +12,7 @@ void grantDevelopmentCards() {
 void recover() {
     if (!available()) return;
     removeLegacyAlbumStock();
-    if (!saved.economyRandom)
-        saved.economyRandom =
-            static_cast<std::uint32_t>(std::chrono::steady_clock::now().time_since_epoch().count()) | 1u;
+    seedEconomy();
     claimAlbum();
     // Unlike payPlayerGold, this also collects gold the player still owes (a negative credit).
     if (saved.goldCredit) {
@@ -96,8 +94,7 @@ void load(SKSE::SerializationInterface* serial) {
     revert(serial);
     auto records = ttcg::readSaveRecords(*serial);
     for (const auto& record : records.records)
-        if (record.type == ttcg::matchRecord &&
-            (record.version != ttcg::savedMatchFormat || record.bytes.size() != 65 * 4))
+        if (record.type == ttcg::matchRecord && !ttcg::savedMatchRecord(record.version, record.bytes.size()))
             SKSE::log::warn("Unsupported saved match; returning its stakes");
     auto loaded = ttcg::decodeSaveRecords(std::move(records), [&](ttcg::CollectionSave& collection) {
         return ttcg::remapWorldState(collection, [&](std::uint32_t old) {

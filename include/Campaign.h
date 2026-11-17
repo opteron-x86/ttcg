@@ -11,20 +11,23 @@ inline constexpr std::uint32_t whiterunHold = 1, falkreathHold = 2, paleHold = 5
 struct HoldProfile {
     std::uint32_t id;
     const char* name;
-    HoldTerms defaults;
 };
+// No hold has rules of its own. Each starts from a history of drift rolled for the
+// save (RegionalRules.h), and changes from there by drift and by what the player carries.
 inline constexpr std::array<HoldProfile, 10> holds{{
-    {1, "Whiterun", {Open, 1}},
-    {2, "Falkreath", {Open | Same, 1}},
-    {3, "Haafingar", {Open | Same | Plus, TradeAll}},
-    {4, "Hjaalmarch", {Basic, TradeOne}},
-    {5, "The Pale", {Open | Plus, TradeDiff}},
-    {6, "The Rift", {ThreeOpen | Plus, TradeDirect}},
-    {7, "Winterhold", {Open | Affinity, TradeDirect}},
-    {8, "Eastmarch", {Open | Legion, TradeDiff}},
-    {9, "The Reach", {ThreeOpen | Same, TradeDiff}},
-    {10, "Solstheim", {ThreeOpen | Decimation, TradeOne}},
+    {1, "Whiterun"},
+    {2, "Falkreath"},
+    {3, "Haafingar"},
+    {4, "Hjaalmarch"},
+    {5, "The Pale"},
+    {6, "The Rift"},
+    {7, "Winterhold"},
+    {8, "Eastmarch"},
+    {9, "The Reach"},
+    {10, "Solstheim"},
 }};
+// The plain game: open hands, and the winner takes one card.
+inline constexpr HoldTerms plainTerms{Open, TradeOne};
 inline const HoldProfile* regionProfile(unsigned id) {
     for (const auto& h : holds)
         if (h.id == id) return &h;
@@ -42,9 +45,7 @@ inline void acceptOpponentChallenge(CollectionSave& s, int i) {
 }
 inline HoldTerms holdTerms(const CollectionSave& s, std::uint32_t id = whiterunHold) {
     if (auto it = s.holds.find(id); it != s.holds.end()) return it->second;
-    for (auto p : holds)
-        if (p.id == id) return p.defaults;
-    return {Open, TradeOne};
+    return plainTerms;
 }
 inline HoldTerms opponentTerms(const CollectionSave& s, int i) {
     if (i < 0 || i >= int(opponents.size())) return {};
@@ -99,7 +100,6 @@ inline bool grantStarter(CollectionSave& s) {
     }
     saveActiveDeck(s);
     s.starter = true;
-    s.holds.try_emplace(whiterunHold, holds[0].defaults);
     return true;
 }
 inline constexpr int albumPrice = 100;

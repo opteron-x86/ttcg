@@ -21,6 +21,11 @@
 - Card packs are added to merchant chests with the game's own function. This is a likely fix for the crash during death and reload on 1.7.104; not yet confirmed.
 - Checking a container for Tessera items no longer sets up its inventory.
 - Settings > Gameplay says when merchants can't stock packs on a game version.
+- Vanguard: the first card played has +1 on every side while the player who placed it holds it, until the fifth card is played (−1 under Reverse). The Rules tab has a page for it.
+- The lobby shows who moves first before you agree to the stakes.
+- Holds no longer have fixed starting rules. Each new game rolls its own rules for every hold; existing saves keep theirs.
+- The All trade rule is rarer in regional drift; One is the commonest.
+- A collector's gold reward for a card is never more than the card's shop price.
 - Opponents imagine several possible hands when yours is hidden, drawn only from cards you could own. Master is stronger with hidden hands.
 - Each of the six skill labels is its own strength. Experienced and Expert opponents are easier than before; Learners are slightly harder than Beginners.
 - Master plays the end of an Open game exactly from the third card.

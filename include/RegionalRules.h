@@ -16,11 +16,71 @@ inline unsigned nextRegionalChange(unsigned hour, unsigned& random, bool trade =
     const unsigned maximum = (trade ? 45 : 21) * 24;
     return std::min(hour + minimum + regionalRandom(random) % (maximum - minimum + 1), regionalClockLimit);
 }
+// How often drift settles on each trade rule, One to All. A hold never drifts to
+// the rule it already has, so these weights give shares of time near 35, 30, 25
+// and 10 in a hundred; All is the rare one.
+inline constexpr std::array<unsigned, 4> tradeDriftWeights{42, 29, 22, 7};
+inline unsigned driftedTrade(const std::vector<unsigned>& choices, unsigned& random) {
+    unsigned total = 0;
+    for (auto trade : choices) total += tradeDriftWeights[trade - TradeOne];
+    if (!total) return 0;
+    auto pick = regionalRandom(random) % total;
+    for (auto trade : choices) {
+        const auto weight = tradeDriftWeights[trade - TradeOne];
+        if (pick < weight) return trade;
+        pick -= weight;
+    }
+    return choices.back();
+}
+// One step of drift: a rule arrives or leaves. `additions` and `removals` are the
+// rules allowed to. No forbidden presets or rule-count cap: drift favors two to four rules.
+inline unsigned driftedRules(unsigned current, unsigned additions, unsigned removals, unsigned& random) {
+    const auto count = std::popcount(current);
+    const unsigned addChance = count < 2 ? 85 : count < 4 ? 60 : count == 4 ? 30 : 10;
+    const bool add = additions && (!removals || regionalRandom(random) % 100 < addChance);
+    const auto choices = add ? additions : removals;
+    if (!choices) return current;
+    auto pick = regionalRandom(random) % std::popcount(choices);
+    for (auto bit : ruleFlags)
+        if (choices & bit) {
+            if (!pick--) return add ? withSpreadRule(current, bit) : withoutCultureRule(current, bit);
+        }
+    return current;
+}
+// Rules that can be added to a set, or dropped from it, leaving a legal one.
+inline unsigned legalAdditions(unsigned rules) {
+    unsigned result = 0;
+    for (auto bit : ruleFlags)
+        if (!(rules & bit) && validRules(withSpreadRule(rules, bit))) result |= bit;
+    return result;
+}
+inline unsigned legalRemovals(unsigned rules) {
+    unsigned result = 0;
+    for (auto bit : ruleFlags)
+        if ((rules & bit) && validRules(withoutCultureRule(rules, bit))) result |= bit;
+    return result;
+}
+// The terms a hold has when a new game begins: the plain game after this many
+// changes of rules, as if drift had already been at work for a few months. It
+// gives every save a different map of rules from the first day.
+inline constexpr unsigned regionalHistorySteps = 2;
+inline HoldTerms regionalHistory(unsigned& random, unsigned steps = regionalHistorySteps) {
+    auto terms = plainTerms;
+    for (unsigned n = 0; n < steps; ++n)
+        terms.rules = driftedRules(terms.rules, legalAdditions(terms.rules), legalRemovals(terms.rules), random);
+    terms.trade = driftedTrade({TradeOne, TradeDiff, TradeDirect, TradeAll}, random);
+    return terms;
+}
 inline void initializeRegionalCalendar(CollectionSave& s, unsigned hold, unsigned hour) {
     auto& r = s.culture.regions[hold];
     if (r.nextRuleChange) return;
     r.ruleRandom = invitationHash(hold ^ hour ^ s.economyRandom ^ 0x52554C45u) | 1u;
     r.tradeRandom = invitationHash(hold ^ hour ^ s.economyRandom ^ 0x54524144u) | 1u;
+    // A hold with no terms yet belongs to a game that is just beginning.
+    if (!s.holds.contains(hold)) {
+        auto random = invitationHash(hold ^ s.economyRandom ^ 0x48495354u) | 1u;
+        s.holds[hold] = regionalHistory(random);
+    }
     r.nextRuleChange = nextRegionalChange(hour, r.ruleRandom);
     r.nextTradeChange = nextRegionalChange(hour, r.tradeRandom, true);
 }
@@ -88,20 +148,8 @@ inline bool applyRegionalTerms(CollectionSave& s, unsigned hold, HoldTerms terms
     return true;
 }
 inline unsigned naturalRegionalRules(const CollectionSave& s, unsigned hold, unsigned hour, unsigned& random) {
-    const auto current = holdTerms(s, hold).rules;
-    const auto additions = regionalAdditions(s, hold, RuleMask, hour), removals = regionalRemovals(s, hold, hour);
-    const auto count = std::popcount(current);
-    // No forbidden presets or rule-count cap: drift favors two to four rules.
-    const unsigned addChance = count < 2 ? 85 : count < 4 ? 60 : count == 4 ? 30 : 10;
-    const bool add = additions && (!removals || regionalRandom(random) % 100 < addChance);
-    const auto choices = add ? additions : removals;
-    if (!choices) return current;
-    auto pick = regionalRandom(random) % std::popcount(choices);
-    for (auto bit : ruleFlags)
-        if (choices & bit) {
-            if (!pick--) return add ? withSpreadRule(current, bit) : withoutCultureRule(current, bit);
-        }
-    return current;
+    return driftedRules(holdTerms(s, hold).rules, regionalAdditions(s, hold, RuleMask, hour),
+                        regionalRemovals(s, hold, hour), random);
 }
 inline bool tickRegionalRules(CollectionSave& s, unsigned hour, unsigned heldHold = 0) {
     if (hour > 100000000) return false;
@@ -132,7 +180,7 @@ inline bool tickRegionalRules(CollectionSave& s, unsigned hour, unsigned heldHol
                 std::vector<unsigned> choices;
                 for (unsigned t = TradeOne; t <= TradeAll; ++t)
                     if (t != terms.trade && regionalTradeAllowed(s, hold.id, t, at)) choices.push_back(t);
-                if (!choices.empty()) terms.trade = choices[regionalRandom(r.tradeRandom) % choices.size()];
+                if (!choices.empty()) terms.trade = driftedTrade(choices, r.tradeRandom);
             } else
                 terms.rules = naturalRegionalRules(s, hold.id, at, r.ruleRandom);
             if (applyRegionalTerms(s, hold.id, terms, at))

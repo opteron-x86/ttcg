@@ -199,6 +199,7 @@ bool prepare(RE::Actor* actor, bool resetTerms) {
     owned = inventory(RE::PlayerCharacter::GetSingleton());
     auto rival = inventory(actor);
     practice = isChild(actor);
+    firstMove = -1;
     if (!actor) {
         canStake = false;
         rivalDeck = {};
@@ -241,6 +242,9 @@ bool prepare(RE::Actor* actor, bool resetTerms) {
                                      (event->wins[node - 8][0] + event->wins[node - 8][1]) * ttcg::seedSpread ^
                                      event->replays)
               : handSeed;
+    // A tournament game's seed already decides it; elsewhere it follows the same
+    // count of games that fixes the opponent's hand, so reopening the lobby can't change it.
+    firstMove = event ? ttcg::Match::firstMover(seed) : int(ttcg::invitationHash(handSeed ^ 0x46495253u) & 1u);
     rivalDeck =
         practice ? ttcg::childHand(rival, base, seed, sessionRules) : ttcg::opponentHand(rival, i, seed, sessionRules);
     if (!ttcg::validHand(rivalDeck, rival)) {

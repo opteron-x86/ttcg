@@ -44,7 +44,8 @@ int main() {
         m.rules |= Affinity | Legion;
         m.activeGroup = 0;
         m.tiles[0] = 1;
-        assert(m.modifier(nord, 0) == 2 * sign + 2); // Existing sources remain additive.
+        // Existing sources remain additive, the first card's Vanguard among them.
+        assert(m.vanguardModifier(0) == 1 && m.modifier(nord, 0) == 2 * sign + 2 + 1);
     }
     // Incoming card contributes before captures. In Reverse the sign reverses the advantage.
     for (unsigned flags : {unsigned(Ascension), unsigned(Descension | Reverse)}) {
