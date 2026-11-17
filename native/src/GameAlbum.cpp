@@ -145,7 +145,7 @@ void GameApp::nativeFilters(ImVec2 at, float width, bool editing) {
             for (const auto& c : collection.cards) known += c.known[0] || c.known[1];
             total += " · " + std::to_string(known) + " of " + std::to_string(collection.cards.size()) + " discovered";
         }
-        textRight(at + ImVec2(width - 14 * scale, 54 * scale), total, 16, palette().muted);
+        textRight(at + ImVec2(width - 14 * scale, 54 * scale), total, 15, palette().muted);
     };
     if (!filterDirty && filter == appliedFilter) {
         countLabel();
@@ -208,7 +208,7 @@ void GameApp::nativeAlbum(ImVec2 at, ImVec2 size) {
 }
 void GameApp::nativeDecks(ImVec2 at, ImVec2 size) {
     if (!member(state, "interruptedMatch").is_null()) {
-        text(at, "Finish your current game to edit decks.", 22, palette().muted);
+        text(at, "Finish your current game to edit decks.", 21, palette().muted);
         return;
     }
     decks(at, size);
@@ -262,10 +262,10 @@ void GameApp::drawDetail(ImVec2 at, ImVec2 size) {
                                     : change < 0 ? "−"
                                                  : "") +
                                    std::to_string(std::abs(change));
-                x -= font()->CalcTextSizeA(16 * scale, 1e5f, 0, value.c_str()).x;
-                text(ImVec2(x, y + 2 * scale), value, 16,
-                     change > 0   ? IM_COL32(150, 214, 128, 255)
-                     : change < 0 ? IM_COL32(236, 132, 112, 255)
+                x -= font()->CalcTextSizeA(15 * scale, 1e5f, 0, value.c_str()).x;
+                text(ImVec2(x, y + 2 * scale), value, 15,
+                     change > 0   ? gainInk()
+                     : change < 0 ? lossInk()
                                   : palette().muted);
                 x -= 9 * scale;
             }

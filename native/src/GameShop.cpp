@@ -4,10 +4,22 @@ void GameApp::shop(ImVec2 at, ImVec2 size) {
     const auto& s = member(state, "shop");
     text(at, label(s, "name"), 32, palette().accent);
     if (flag(s, "specialist")) text(at + ImVec2(0, 44) * scale, "Specialist card dealer", 18, palette().muted);
-    text(at + ImVec2(size.x - 360 * scale, 3 * scale), std::to_string(number(s, "gold")) + " gold", 22, palette().ink);
+    text(at + ImVec2(size.x - 360 * scale, 3 * scale), std::to_string(number(s, "gold")) + " gold", 21, palette().ink);
     text(at + ImVec2(size.x - 360 * scale, 35 * scale),
-         "Merchant: " + std::to_string(number(s, "merchantGold")) + " gold", 17, palette().muted);
+         "Merchant: " + std::to_string(number(s, "merchantGold")) + " gold", 18, palette().muted);
     const char* tabs[]{"Buy", "Sell", "Buy back"};
+    // Bumpers, or Q and E, step through the three lists, as they do through the album's tabs.
+    if (!popupBeforeFrame && !ImGui::GetIO().WantTextInput && !inspecting &&
+        !ImGui::IsPopupOpen(nullptr, ImGuiPopupFlags_AnyPopupId | ImGuiPopupFlags_AnyPopupLevel)) {
+        const int step =
+            (ImGui::IsKeyPressed(ImGuiKey_GamepadR1, false) || ImGui::IsKeyPressed(ImGuiKey_E, false) ? 1 : 0) -
+            (ImGui::IsKeyPressed(ImGuiKey_GamepadL1, false) || ImGui::IsKeyPressed(ImGuiKey_Q, false) ? 1 : 0);
+        if (step) {
+            shopTab = (shopTab + step + 3) % 3;
+            shopSelected = -1;
+            shopQuantity = 1;
+        }
+    }
     for (int i = 0; i < 3; ++i)
         if (chapter(tabs[i], tabs[i], at + ImVec2(i * 120 * scale, 78 * scale), ImVec2(108, 42) * scale,
                     shopTab == i)) {
@@ -33,7 +45,7 @@ void GameApp::shop(ImVec2 at, ImVec2 size) {
         ImGui::SetCursorScreenPos(top);
         select("##inventory", shopSurplus, {"All cards", "Surplus cards"}, 180 * scale);
         if (shopSurplus)
-            text(top + ImVec2(200, 8) * scale, "Keeps two standard copies of each card.", 16, palette().muted,
+            text(top + ImVec2(200, 8) * scale, "Keeps two standard copies of each card.", 15, palette().muted,
                  width - 200 * scale);
         top.y += 53 * scale;
     }
@@ -105,7 +117,7 @@ void GameApp::shop(ImVec2 at, ImVec2 size) {
                             MaterialSlot::gridSlot(material++));
                 text(pos + ImVec2(0, h + 9 * scale), std::to_string(number(entry, "price")) + " gold", 18,
                      palette().ink);
-                text(pos + ImVec2(w - 57 * scale, h + 9 * scale), "×" + std::to_string(number(entry, "count")), 17,
+                text(pos + ImVec2(w - 57 * scale, h + 9 * scale), "×" + std::to_string(number(entry, "count")), 18,
                      palette().muted);
                 ImGui::PopID();
             }
@@ -158,7 +170,7 @@ void GameApp::shop(ImVec2 at, ImVec2 size) {
                    editable && shopQuantity < max))
             ++shopQuantity;
         ImGui::PopItemFlag();
-        text(controls + ImVec2(64, 7) * scale, std::to_string(shopQuantity), 20, palette().ink, 0, true);
+        text(controls + ImVec2(64, 7) * scale, std::to_string(shopQuantity), 21, palette().ink, 0, true);
         y += 48 * scale;
     }
     const bool sell = shopTab == 1;
@@ -197,8 +209,10 @@ void GameApp::shop(ImVec2 at, ImVec2 size) {
              flag(s, "pending") ? "Payment is pending. Reopen trading to retry."
              : sell             ? "The merchant doesn't have enough gold."
                                 : "You don't have enough gold.",
-             17, palette().muted, right);
+             18, palette().muted, right);
+    // Under the gold totals, clear of the grid, the footer rule and the prompts.
     if (!label(s, "notice").empty())
-        text(at + ImVec2(0, size.y - 10 * scale), label(s, "notice"), 16, palette().accent, size.x);
+        text(at + ImVec2(size.x - 360 * scale, 64 * scale), fitted(label(s, "notice"), 16, 360 * scale), 15,
+             palette().accent);
 }
 }

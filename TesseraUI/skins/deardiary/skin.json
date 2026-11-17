@@ -2,6 +2,7 @@
   "schema": 1,
   "id": "deardiary",
   "name": "Dear Diary",
+  "detect": ["Interface/deardiary_dm/config.txt"],
   "credit": "Dear Diary Dark Mode by uranreactor",
   "font": "serif",
   "palette": {

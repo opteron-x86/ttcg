@@ -49,6 +49,11 @@ struct AlbumLayout {
     static constexpr float navigation = 196, gap = 30, preview = 260, deck = 310;
     // No interface text is drawn smaller than this, so it stays readable from a sofa or on a handheld.
     static constexpr float smallestText = 15, smallestCaps = 13.5f;
+    // The type scale, in pixels of the 1400 by 920 design: captions and notes, body
+    // text, lead lines, headings and titles. Text drawn at a fixed size uses one of
+    // these; tests/type_scale_test.py checks the sources. Sizes that are worked out
+    // to fit a space, card faces and letter-spaced capitals are outside it.
+    static constexpr float caption = 15, body = 18, lead = 21, heading = 26, title = 32;
 };
 class App {
 protected:
@@ -121,6 +126,10 @@ protected:
                : rarity == "Legendary" ? (paper ? IM_COL32(128, 86, 8, 255) : IM_COL32(240, 196, 101, 255))
                                        : palette().ink;
     }
+    // Gains and losses, and the gold of a win, readable on either ground.
+    ImU32 gainInk() const { return lightGround() ? IM_COL32(40, 108, 36, 255) : IM_COL32(150, 214, 128, 255); }
+    ImU32 lossInk() const { return lightGround() ? IM_COL32(158, 50, 34, 255) : IM_COL32(236, 132, 112, 255); }
+    ImU32 goldInk() const { return rarityInk("Legendary"); }
     // Paper skins put dark ink on a light ground; fixed light-on-dark details check this.
     bool lightGround() const {
         const ImU32 c = palette().background;

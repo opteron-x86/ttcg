@@ -33,6 +33,10 @@ inline const Json& member(const Json& j, const char* key) {
     auto it = j.find(key);
     return it == j.end() ? empty : *it;
 }
+inline const Json& itemArray(const Json& a, int index) {
+    static const Json empty = Json::array();
+    return a.is_array() && index >= 0 && index < int(a.size()) && a[index].is_array() ? a[index] : empty;
+}
 inline const Json& arrayMember(const Json& j, const char* key) {
     static const Json empty = Json::array();
     auto it = j.find(key);

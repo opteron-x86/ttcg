@@ -2,6 +2,7 @@
   "schema": 1,
   "id": "untarnished",
   "name": "Untarnished",
+  "detect": ["UntarnishedUI_Blur.esp"],
   "credit": "Untarnished UI by Vorganger",
   "font": "jost",
   "palette": {

@@ -32,7 +32,7 @@ void GameApp::journal(ImVec2 at, ImVec2 size) {
     const Json* chosen = nullptr;
     for (const auto& h : regions)
         if (number(h, "id") == journalHold) chosen = &h;
-    text(mid, chosen ? label(*chosen, "name") : journalHold == 11 ? "Travellers" : "All holds", 30, palette().accent);
+    text(mid, chosen ? label(*chosen, "name") : journalHold == 11 ? "Travellers" : "All holds", 32, palette().accent);
     float y = mid.y + 53 * scale;
     if (chosen && !flag(*chosen, "travellers") && !flag(*chosen, "unaffiliated")) {
         text(ImVec2(mid.x, y),
@@ -97,10 +97,10 @@ void GameApp::journal(ImVec2 at, ImVec2 size) {
                                            std::to_string(number(p, "losses")) + " L · " +
                                            std::to_string(number(p, "draws")) + " D"
                                      : "Not played";
-            text(pos + ImVec2(rowWidth - 180 * scale, 14 * scale), record, 16, palette().muted, 168 * scale);
+            text(pos + ImVec2(rowWidth - 180 * scale, 14 * scale), record, 15, palette().muted, 168 * scale);
         }
     if (rows.empty())
-        text(ImGui::GetCursorScreenPos() + ImVec2(listWidth / 2, 48 * scale), "No known players", 23, palette().muted,
+        text(ImGui::GetCursorScreenPos() + ImVec2(listWidth / 2, 48 * scale), "No known players", 21, palette().muted,
              0, true);
     ImGui::PopStyleVar();
     ImGui::EndChild();
@@ -113,9 +113,9 @@ void GameApp::journal(ImVec2 at, ImVec2 size) {
         ImGui::SetCursorScreenPos(detail);
         ImGui::BeginChild("player-details", ImVec2(detailWidth, at.y + size.y - y), ImGuiChildFlags_NavFlattened);
         const auto top = ImGui::GetCursorScreenPos();
-        text(top, label(p, "name"), 25, palette().accent, detailWidth);
+        text(top, label(p, "name"), 26, palette().accent, detailWidth);
         float ry =
-            top.y + font()->CalcTextSizeA(25 * scale, 1e5f, detailWidth, label(p, "name").c_str()).y + 12 * scale;
+            top.y + font()->CalcTextSizeA(26 * scale, 1e5f, detailWidth, label(p, "name").c_str()).y + 12 * scale;
         skinRule(ImVec2(top.x, ry), ImVec2(top.x + detailWidth, ry), .7f);
         ry += 8 * scale;
         // The same labelled rows the card details use.
@@ -129,6 +129,17 @@ void GameApp::journal(ImVec2 at, ImVec2 size) {
             {"Games", friendly              ? "Practice only"
                       : flag(p, "unlocked") ? "Available"
                                             : "Not ready"}};
+        if (!friendly && p.contains("rules")) {
+            // What a game with them is played for. M'aiq's rules change with every game.
+            const auto rules = rulesLabel(unsigned(number(p, "rules")));
+            facts.push_back({flag(p, "ownRules") ? "Own rules" : "Rules", flag(p, "traveller") && flag(p, "ownRules")
+                                                                              ? "Different every game"
+                                                                          : rules.empty() ? "Hidden hands"
+                                                                                          : rules});
+            facts.push_back({"Trade", tradeName(number(p, "trade"))});
+            if (number(p, "wager") > 0)
+                facts.push_back({"Wager", "Up to " + std::to_string(number(p, "wager")) + " gold"});
+        }
         if (!friendly) {
             facts.push_back({"Played", std::to_string(games)});
             facts.push_back({"Won", std::to_string(wins)});
@@ -140,9 +151,10 @@ void GameApp::journal(ImVec2 at, ImVec2 size) {
             if (value.empty()) continue;
             textCaps(ImVec2(top.x, ry + 9 * scale), name, 13.5f, palette().muted, 1.2f);
             const float room = detailWidth - capsWidth(name, 13.5f, 1.2f) - 14 * scale,
-                        natural = font()->CalcTextSizeA(17 * scale, 1e5f, 0, value.c_str()).x;
-            textRight(ImVec2(top.x + detailWidth - 2 * scale, ry + 5 * scale), value,
-                      std::clamp(17.f * room / std::max(1.f, natural), 15.f, 17.f), palette().ink);
+                        natural = font()->CalcTextSizeA(18 * scale, 1e5f, 0, value.c_str()).x;
+            const float pixels = std::clamp(17.f * room / std::max(1.f, natural), 15.f, 17.f);
+            textRight(ImVec2(top.x + detailWidth - 2 * scale, ry + 5 * scale), fitted(value, pixels, room), pixels,
+                      palette().ink);
             ry += 31 * scale;
             ImGui::GetWindowDrawList()->AddLine(ImVec2(top.x, ry - 1), ImVec2(top.x + detailWidth, ry - 1),
                                                 fade(palette().line, .55f));

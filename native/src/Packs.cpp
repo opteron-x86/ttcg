@@ -24,7 +24,7 @@ float App::packStrip(ImVec2 at, float width) {
         draw->AddRect(pos, pos + ImVec2(tile, height), palette().line, 3 * scale);
         fitImage(assets.pack(kind), pos + ImVec2(8, 4) * scale, ImVec2(46, 54) * scale);
         text(pos + ImVec2(64, 9) * scale, packName(kind), 18, palette().ink);
-        text(pos + ImVec2(64, 34) * scale, std::to_string(collection.packs[kind]) + " unopened", 14, palette().muted);
+        text(pos + ImVec2(64, 34) * scale, std::to_string(collection.packs[kind]) + " unopened", 15, palette().muted);
         if (button(kind ? "open-pack-tournament" : "open-pack", collection.busy ? "Opening…" : "Open",
                    pos + ImVec2(tile - 104 * scale, 13 * scale), ImVec2(94, 36) * scale, true, enabled))
             request({{"action", "open-pack"}, {"kind", kind}});
@@ -56,7 +56,7 @@ void App::packModal() {
                               ((size.y - 202 * scale) / std::max(1, rows) - 38 * scale) * .75f}),
                 h = w / .75f;
     const float rowWidth = columns * w + (columns - 1) * gap;
-    text(at + ImVec2(size.x * .5f, 28 * scale), count == 8 ? "Starter cards" : packName(collection.revealKind), 30,
+    text(at + ImVec2(size.x * .5f, 28 * scale), count == 8 ? "Starter cards" : packName(collection.revealKind), 32,
          palette().accent, 0, true);
     line(at + ImVec2(30, 77) * scale, at + ImVec2(size.x - 30 * scale, 77 * scale));
     const float rowY = at.y + 105 * scale;

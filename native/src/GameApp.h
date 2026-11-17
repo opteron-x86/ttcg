@@ -15,6 +15,9 @@ class GameApp final : public App {
     double previewCapturedAt = -1;
     int shopTab = 0, shopSelected = -1, shopQuantity = 1, shopTier = 0, shopRarity = 0, shopSurplus = 1;
     unsigned eventID = 0, foilSelection = 0, claimMask = 0;
+    // The cards the play being aimed would capture, as a mask of squares. It is
+    // gathered while the board is drawn and shown on the next frame.
+    unsigned capturePreview = 0, aimedCaptures = 0;
     // Match feedback: the last square played and when each score last changed.
     int lastMove = -1;
     std::uint64_t lastMoveSession = ~0ull;
@@ -43,7 +46,7 @@ class GameApp final : public App {
     std::vector<int> groupChoices;
     std::vector<int> inspectionList;
     int inspectionModifier = 0;
-    char journalQuery[128]{}, shopQuery[128]{};
+    char journalQuery[128]{}, shopQuery[128]{}, foilQuery[64]{};
     std::string confirmationTitle, confirmationCopy, confirmationLabel = "Confirm", confirmationVerb, confirmationArgs;
     std::uint64_t confirmSession = 0, confirmRevision = 0;
     ImVec2 frameAt{}, frameSize{};
@@ -69,7 +72,7 @@ class GameApp final : public App {
     void header(ImVec2 at, ImVec2 size);
     bool chapter(const std::string& id, const std::string& title, ImVec2 at, ImVec2 size, bool active,
                  const std::string& detail = {}, float trailing = 0, int marker = 0);
-    void textBlock(const std::string&, float width, float pixels = 19, ImU32 colour = 0);
+    void textBlock(const std::string&, float width, float pixels = 18, ImU32 colour = 0);
     bool combo(const char* id, const char* label, int& value, const std::vector<std::string>& choices, float width);
     void displayCard(int display, ImVec2 at, ImVec2 size, bool chosen = false, int owner = -1, int slot = 0,
                      int modifier = 0, bool large = false, CardContext context = CardContext::General);

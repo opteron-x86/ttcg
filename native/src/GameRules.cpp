@@ -33,7 +33,7 @@ void GameApp::rules(ImVec2 at, ImVec2 size) {
     textBlock(label(*page, "title"), width, 32, palette().accent);
     ImGui::Dummy(ImVec2(0, 15 * scale));
     // A paragraph is easiest to read at about seventy characters a line.
-    textBlock(label(*page, "copy"), std::min(width, 780 * scale), 19, fade(palette().ink, .82f));
+    textBlock(label(*page, "copy"), std::min(width, 780 * scale), 18, fade(palette().ink, .82f));
     ImGui::Dummy(ImVec2(0, 18 * scale));
     const auto top = ImGui::GetCursorScreenPos();
     if (topic == "trade") {
@@ -41,9 +41,9 @@ void GameApp::rules(ImVec2 at, ImVec2 size) {
         ImGui::BeginChild("trade-reference", ImVec2(width, at.y + size.y - top.y), ImGuiChildFlags_NavFlattened);
         for (const auto& trade : arrayMember(reference, "trades")) {
             const auto pos = ImGui::GetCursorScreenPos();
-            textBlock(label(trade, "title"), width, 24, palette().accent);
+            textBlock(label(trade, "title"), width, 26, palette().accent);
             ImGui::Dummy(ImVec2(0, 8 * scale));
-            textBlock(label(trade, "copy"), width - 20 * scale, 19, palette().ink);
+            textBlock(label(trade, "copy"), width - 20 * scale, 18, palette().ink);
             ImGui::Dummy(ImVec2(0, 24 * scale));
             line(ImGui::GetCursorScreenPos(), ImGui::GetCursorScreenPos() + ImVec2(width, 0));
             ImGui::Dummy(ImVec2(0, 15 * scale));
@@ -70,7 +70,7 @@ void GameApp::rules(ImVec2 at, ImVec2 size) {
         --demoStep;
         demoSelected = false;
     }
-    text(controls + ImVec2(142, 9.5f) * scale, std::to_string(demoStep + 1) + " / " + std::to_string(frames.size()), 17,
+    text(controls + ImVec2(142, 9.5f) * scale, std::to_string(demoStep + 1) + " / " + std::to_string(frames.size()), 18,
          palette().muted, 0, true);
     if (button("demo-next", "Next →", controls + ImVec2(186, 0) * scale, ImVec2(104, 36) * scale, false,
                demoStep + 1 < int(frames.size()) && number(frame, "hand", -1) < 0)) {
@@ -93,9 +93,12 @@ void GameApp::rulesModal() {
     if (ImGui::BeginPopupModal("Rules", nullptr, ImGuiWindowFlags_NoDecoration | popupFlags())) {
         popupSurface();
         const auto at = ImGui::GetWindowPos() + ImVec2(25, 22) * scale;
-        text(at, "Rules", 25, palette().accent);
-        if (button("close-rules", "×", at + ImVec2(extent.x - 85 * scale, -6 * scale), ImVec2(35, 36) * scale) ||
-            backPressed()) {
+        text(at, "Rules", 26, palette().accent);
+        bool leave = false;
+        const float promptWidth = keyPrompt("Esc", "360_B", "Close", ImVec2(-1e5f, -1e5f));
+        keyPrompt("Esc", "360_B", "Close", at + ImVec2(extent.x - 50 * scale - promptWidth, 2 * scale), &leave,
+                  "close-rules");
+        if (leave || backPressed()) {
             showRuleReference = false;
             ImGui::CloseCurrentPopup();
         }
@@ -106,7 +109,7 @@ void GameApp::rulesModal() {
 }
 void GameApp::lessonPanel(ImVec2 at, ImVec2 size) {
     const auto& frame = member(state, "lesson");
-    text(at, "How to play", 28, palette().accent);
+    text(at, "How to play", 26, palette().accent);
     ruleChips(at + ImVec2(220, 0) * scale, size.x - 220 * scale, number(frame, "rules"));
     table(frame, at + ImVec2(0, 50) * scale, size - ImVec2(0, 160) * scale, true, true);
     std::string caption = label(frame, "caption");
@@ -122,7 +125,7 @@ void GameApp::lessonPanel(ImVec2 at, ImVec2 size) {
                         caption = label(f, "caption");
             }
     if (demoSelected && number(frame, "hand", -1) >= 0) caption = "Place the card on the highlighted square.";
-    text(at + ImVec2(size.x / 2, size.y - 92 * scale), caption, 20, palette().ink, size.x, true);
+    text(at + ImVec2(size.x / 2, size.y - 92 * scale), caption, 21, palette().ink, size.x, true);
     const auto buttons = at + ImVec2(size.x / 2 - 180 * scale, size.y - 39 * scale);
     if (button("replay-lesson", "Start again", buttons, ImVec2(140, 38) * scale)) send("lesson", "replay");
     const bool ended = number(frame, "step") >= number(frame, "total");

@@ -242,7 +242,7 @@ void GameApp::confirmation() {
     if (ImGui::BeginPopupModal("Confirm", nullptr,
                                ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | popupFlags())) {
         popupSurface();
-        textBlock(confirmationTitle, 490 * scale, 27, palette().accent);
+        textBlock(confirmationTitle, 490 * scale, 26, palette().accent);
         if (!confirmationCopy.empty()) {
             ImGui::Dummy(ImVec2(0, 14 * scale));
             textBlock(confirmationCopy, 490 * scale);
@@ -300,13 +300,13 @@ bool GameApp::chapter(const std::string& id, const std::string& title, ImVec2 at
     }
     text(at + ImVec2(inset, (detail.empty() ? 12 : 7) * scale), title, palette().sans ? 17 : 19,
          active ? palette().accent : palette().ink, size.x - inset - 12 * scale - trailing);
-    if (!detail.empty()) text(at + ImVec2(12, 37) * scale, detail, 13, palette().muted, size.x - 24 * scale);
+    if (!detail.empty()) text(at + ImVec2(12, 37) * scale, detail, 15, palette().muted, size.x - 24 * scale);
     return hit;
 }
 bool GameApp::combo(const char* id, const char* label, int& value, const std::vector<std::string>& choices,
                     float width) {
     const auto at = ImGui::GetCursorScreenPos();
-    text(at + ImVec2(0, 8 * scale), label, 19, palette().ink);
+    text(at + ImVec2(0, 8 * scale), label, 18, palette().ink);
     ImGui::SetCursorScreenPos(at + ImVec2(width * .55f, 0));
     const bool changed = select(id, value, choices, width * .45f);
     ImGui::SetCursorScreenPos(at + ImVec2(0, 58 * scale));
@@ -381,7 +381,7 @@ float GameApp::factRows(const CardView& c, ImVec2 at, float width, bool draw, bo
                 if (row.icons & (1u << a)) icons += 23 * scale;
             // Shrink a long value as far as the smallest text allowed, then shorten it:
             // drawn smaller than it was measured, it ran into the label.
-            const float natural = font()->CalcTextSizeA(17 * scale, 1e5f, 0, row.value.c_str()).x;
+            const float natural = font()->CalcTextSizeA(18 * scale, 1e5f, 0, row.value.c_str()).x;
             const float pixels =
                 std::clamp(17.f * (room - icons) / std::max(1.f, natural), AlbumLayout::smallestText, 17.f);
             const auto value = fitted(row.value, pixels, room - icons);
@@ -404,8 +404,8 @@ float GameApp::factRows(const CardView& c, ImVec2 at, float width, bool draw, bo
 }
 float GameApp::metadata(const CardView& c, ImVec2 at, float width, bool draw) {
     float y = at.y;
-    if (draw) text(ImVec2(at.x, y), c.name, 28, palette().ink, width);
-    y += font()->CalcTextSizeA(28 * scale, 1e6f, width, c.name.c_str()).y + 12 * scale;
+    if (draw) text(ImVec2(at.x, y), c.name, 26, palette().ink, width);
+    y += font()->CalcTextSizeA(26 * scale, 1e6f, width, c.name.c_str()).y + 12 * scale;
     if (draw) skinRule(ImVec2(at.x, y), ImVec2(at.x + width, y), .7f);
     y += 8 * scale;
     y += factRows(c, ImVec2(at.x, y), width, draw);
@@ -470,7 +470,7 @@ float GameApp::ruleChips(ImVec2 at, float width, unsigned flags, int trade, bool
     std::vector<float> widths, rows{0};
     for (const auto& chip : chips) {
         const auto shown = caption(chip);
-        const float w = font()->CalcTextSizeA(17 * scale, 1e5f, 0, shown.c_str()).x + 20 * scale;
+        const float w = font()->CalcTextSizeA(18 * scale, 1e5f, 0, shown.c_str()).x + 20 * scale;
         widths.push_back(w);
         if (rows.back() > 0 && rows.back() + w > width) rows.push_back(0);
         rows.back() += w;
@@ -496,7 +496,7 @@ float GameApp::ruleChips(ImVec2 at, float width, unsigned flags, int trade, bool
             // One rule to a row, with the sentence that says what it does.
             auto summary = help;
             if (const auto stop = summary.find(". "); stop != std::string::npos) summary.erase(stop + 1);
-            const float lines = font()->CalcTextSizeA(15.5f * scale, 1e5f, width - 4 * scale, summary.c_str()).y;
+            const float lines = font()->CalcTextSizeA(15 * scale, 1e5f, width - 4 * scale, summary.c_str()).y;
             const float rowHeight = 30 * scale + lines + 12 * scale;
             ImGui::PushID(index++);
             ImGui::SetCursorScreenPos(ImVec2(x, y));
@@ -507,12 +507,12 @@ float GameApp::ruleChips(ImVec2 at, float width, unsigned flags, int trade, bool
                                                           ImVec2(x + width, y + rowHeight - 6 * scale),
                                                           fade(palette().selection, .35f));
             const auto ink = chip.change && chip.active ? palette().accent : palette().ink;
-            text(ImVec2(x, y + 3 * scale), shown, 20, ink);
+            text(ImVec2(x, y + 3 * scale), shown, 21, ink);
             if (!chip.active) {
-                const float w = font()->CalcTextSizeA(20 * scale, 1e5f, 0, shown.c_str()).x;
+                const float w = font()->CalcTextSizeA(21 * scale, 1e5f, 0, shown.c_str()).x;
                 line(ImVec2(x, y + 16 * scale), ImVec2(x + w, y + 16 * scale), ink);
             }
-            text(ImVec2(x, y + 30 * scale), summary, 15.5f, palette().muted, width - 4 * scale);
+            text(ImVec2(x, y + 30 * scale), summary, 15, palette().muted, width - 4 * scale);
             y += rowHeight;
         } else {
             const auto w = widths[index];
@@ -528,7 +528,7 @@ float GameApp::ruleChips(ImVec2 at, float width, unsigned flags, int trade, bool
             ImGui::SetCursorScreenPos(ImVec2(x, y));
             hit = ImGui::InvisibleButton("rule", ImVec2(w, 30 * scale), ImGuiButtonFlags_EnableNav);
             const auto ink = chip.change && chip.active ? palette().accent : fade(palette().ink, .86f);
-            text(ImVec2(x + 8 * scale, y + 5 * scale), shown, 17, ink);
+            text(ImVec2(x + 8 * scale, y + 5 * scale), shown, 18, ink);
             if (!chip.active)
                 line(ImVec2(x + 26 * scale, y + 15 * scale), ImVec2(x + w - 10 * scale, y + 15 * scale), ink);
         }
@@ -537,7 +537,7 @@ float GameApp::ruleChips(ImVec2 at, float width, unsigned flags, int trade, bool
                     label(*chip.change, "until") + ".";
         if (ImGui::IsItemHovered() || (ImGui::IsItemFocused() && ImGui::GetIO().NavVisible)) {
             ImGui::BeginTooltip();
-            textBlock(help, 350 * scale, 17, palette().ink);
+            textBlock(help, 350 * scale, 18, palette().ink);
             ImGui::EndTooltip();
         }
         if (hit && interactive && !presentation.pending(state) && !pendingCommand && !flag(state, "thinking")) {
@@ -787,8 +787,8 @@ void GameApp::draw() {
             const bool finished = flag(interrupted, "finished");
             const auto offer = finished ? "Your game with " + label(interrupted, "opponent") + " has ended."
                                         : "Resume your game with " + label(interrupted, "opponent") + ".";
-            text(body + ImVec2(0, 3 * scale), offer, 17, palette().accent);
-            float x = font()->CalcTextSizeA(17 * scale, 1e5f, 0, offer.c_str()).x + 26 * scale;
+            text(body + ImVec2(0, 3 * scale), offer, 18, palette().accent);
+            float x = font()->CalcTextSizeA(18 * scale, 1e5f, 0, offer.c_str()).x + 26 * scale;
             if (flag(interrupted, "canResume")) {
                 if (button("resume", finished ? "Collect" : "Resume", body + ImVec2(x, -5 * scale),
                            ImVec2(105, 35) * scale, true))
@@ -847,7 +847,7 @@ void GameApp::draw() {
                 x += keyPrompt(prompts.extraKey, prompts.extraPad, prompts.extra, ImVec2(x, y)) + 26 * scale;
         }
         if (!notice.empty())
-            text(ImVec2(x + 10 * scale, y + 6 * scale), notice, 16, skin().notice, at.x + width - x - 10 * scale);
+            text(ImVec2(x + 10 * scale, y + 6 * scale), notice, 15, skin().notice, at.x + width - x - 10 * scale);
     }
     ImGui::End();
     deckModal();

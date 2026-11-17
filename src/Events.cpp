@@ -280,6 +280,28 @@ void message(SKSE::MessagingInterface::Message* msg) {
             const std::wstring ws(s.begin(), s.end()), wk(k.begin(), k.end());
             return static_cast<int>(GetPrivateProfileIntW(ws.c_str(), wk.c_str(), fallback, settingsPath.c_str()));
         });
+        // A first run has no saved skin: take the one for the interface mod that is installed.
+        if (GetPrivateProfileIntW(L"Appearance", L"Theme", -1, settingsPath.c_str()) < 0) {
+            const int detected = ttcg::detectInterfaceTheme(
+                [](std::string_view id) {
+                    std::vector<std::string> paths;
+                    std::ifstream file(std::filesystem::path(L"Data\\TesseraUI\\skins") / std::string(id) /
+                                       "skin.json");
+                    const auto skin = nlohmann::json::parse(file, nullptr, false);
+                    if (skin.is_object() && skin.contains("detect") && skin["detect"].is_array())
+                        for (const auto& path : skin["detect"])
+                            if (path.is_string()) paths.push_back(path.get<std::string>());
+                    return paths;
+                },
+                [](const std::string& path) {
+                    std::error_code error;
+                    return path.find("..") == std::string::npos &&
+                           std::filesystem::is_regular_file(std::filesystem::path(L"Data") / path, error);
+                });
+            if (detected >= 0 && campaign::interfaceSettings.set("theme", detected, persistInterfaceSetting))
+                log::info("First run: interface skin set to {} for the installed interface mod",
+                          ttcg::interfaceThemes[detected].name);
+        }
         campaign::initForms(GetPrivateProfileIntW(L"Diagnostics", L"VendorPackInjection", 1, settingsPath.c_str()) !=
                             0);
         for (const auto& field : hotkeys.fields)

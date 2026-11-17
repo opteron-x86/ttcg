@@ -51,14 +51,14 @@ void GameApp::matchAppearancePreview(ImVec2 at, ImVec2 size) {
     }
     if (sample < 0) return;
     const auto handAt = at + ImVec2(left, 76 * scale);
-    text(at + ImVec2(size.x * .5f, 0), "Hand", 19, palette().muted, 0, true);
+    text(at + ImVec2(size.x * .5f, 0), "Hand", 18, palette().muted, 0, true);
     for (int owner = 0; owner < 2; ++owner) {
         const auto p = handAt + ImVec2(owner * (w + gap), 0);
-        text(p + ImVec2(w * .5f, -33 * scale), owner ? "Opponent" : "You", 17, controlColour(owner, true), 0, true);
+        text(p + ImVec2(w * .5f, -33 * scale), owner ? "Opponent" : "You", 18, controlColour(owner, true), 0, true);
         card(sample, p, ImVec2(w, h), false, false, owner, MaterialSlot::appearance + owner, false, CardContext::Hand);
     }
     const auto boardAt = handAt + ImVec2(0, h + 82 * scale);
-    text(boardAt + ImVec2(w + gap * .5f, -39 * scale), "Board", 19, palette().muted, 0, true);
+    text(boardAt + ImVec2(w + gap * .5f, -39 * scale), "Board", 18, palette().muted, 0, true);
     const auto material = number(member(state, "settings"), "boardSurface");
     boardSurface(material, boardAt - ImVec2(7, 7) * scale, ImVec2(2 * w + gap, h) + ImVec2(14, 14) * scale);
     card(sample, boardAt, ImVec2(w, h), false, false, 0, MaterialSlot::appearance + 2, false, CardContext::Board);
@@ -106,7 +106,7 @@ void GameApp::settings(ImVec2 at, ImVec2 size) {
     const float preview = settingsPage == 0 ? AlbumLayout::preview * scale : 0;
     const float area = size.x - nav - gap - (preview ? preview + gap : 0);
     const auto origin = at + ImVec2(nav + gap, 0);
-    text(origin, names[settingsPage], 30, palette().ink);
+    text(origin, names[settingsPage], 32, palette().ink);
     if (settingsPage == 0) {
         if (sectionTab("appearance-general", "General", origin + ImVec2(area - 198 * scale, 0), ImVec2(90, 40) * scale,
                        appearancePage == 0))
@@ -129,13 +129,13 @@ void GameApp::settings(ImVec2 at, ImVec2 size) {
         ImGui::Dummy(ImVec2(0, 15 * scale));
         line(ImGui::GetCursorScreenPos(), ImGui::GetCursorScreenPos() + ImVec2(width, 0));
         ImGui::Dummy(ImVec2(0, 19 * scale));
-        textBlock(title, width, 22, palette().accent);
+        textBlock(title, width, 21, palette().accent);
         ImGui::Dummy(ImVec2(0, 16 * scale));
     };
     const auto toggle = [&](const char* name, const char* key, const char* json, const char* off = "Off") {
         bool v = valueOf(json) != 0;
         const auto p = ImGui::GetCursorScreenPos();
-        text(p + ImVec2(0, 9) * scale, name, 19, palette().ink, width - 115 * scale);
+        text(p + ImVec2(0, 9) * scale, name, 18, palette().ink, width - 115 * scale);
         if (button(key, v ? "On" : off, p + ImVec2(width - 68 * scale, 0), ImVec2(68, 36) * scale, v,
                    !pendingCommand && !capturing()))
             send("settings", std::string(key) + " " + (v ? "0" : "1"));
@@ -187,7 +187,7 @@ void GameApp::settings(ImVec2 at, ImVec2 size) {
     if (settingsPage == 0 && appearancePage == 0) {
         const auto p = ImGui::GetCursorScreenPos();
         const int current = number(s, "windowSize", 90);
-        text(p + ImVec2(0, 8) * scale, "Fullscreen", 19, palette().ink);
+        text(p + ImVec2(0, 8) * scale, "Fullscreen", 18, palette().ink);
         if (button("fullscreen", current == 100 ? "On" : "Off", p + ImVec2(width - 68 * scale, 0),
                    ImVec2(68, 36) * scale, current == 100))
             send("settings", "window-size " + std::to_string(current == 100 ? 90 : 100));
@@ -239,7 +239,7 @@ void GameApp::settings(ImVec2 at, ImVec2 size) {
             if (valueOf("rankStroke"))
                 slider("Stroke weight", "rank-stroke-weight", "rankStrokeWeight", 30, "%.1f px", true);
             else
-                textBlock("Skin default: 1 px stroke.", width, 17, palette().muted);
+                textBlock("Skin default: 1 px stroke.", width, 18, palette().muted);
             if (ImGui::Button("Reset card values")) send("settings", "rank-finish-reset 0");
         }
         heading("Card back");
@@ -256,10 +256,10 @@ void GameApp::settings(ImVec2 at, ImVec2 size) {
             ImGui::PopID();
         }
         if (ImGui::Button("Refresh card backs")) send("cardback", "refresh");
-        textBlock("Add custom images to the card backs folder, then refresh.", width, 17);
-        if (!label(s, "cardBackNotice").empty()) textBlock(label(s, "cardBackNotice"), width, 17, palette().accent);
+        textBlock("Add custom images to the card backs folder, then refresh.", width, 18);
+        if (!label(s, "cardBackNotice").empty()) textBlock(label(s, "cardBackNotice"), width, 18, palette().accent);
     } else if (settingsPage == 0) {
-        textBlock("Opponent artwork", width, 22, palette().accent);
+        textBlock("Opponent artwork", width, 21, palette().accent);
         ImGui::Dummy(ImVec2(0, 16 * scale));
         select("Finish", "match-art-treatment", "opponentTreatment", {"Original", "Muted", "Grayscale", "Sepia"});
         if (valueOf("opponentTreatment") != 0) {
@@ -286,7 +286,31 @@ void GameApp::settings(ImVec2 at, ImVec2 size) {
                 if (changed) state["settings"][json] = packed;
                 if (ImGui::IsItemDeactivatedAfterEdit())
                     send("settings", std::string(key) + " " + std::to_string(packed));
-                ImGui::SetCursorScreenPos(p + ImVec2(0, 58) * scale);
+                // Ready-made colours: one press each, which is all a pad needs.
+                constexpr unsigned swatches[]{0x87c4dd, 0x6fa8f5, 0x7fd6c2, 0x9fd18b, 0xb8c46a, 0xe6bc65,
+                                              0xf2a25c, 0xdf9585, 0xe57fb0, 0xc9a0e8, 0xf0f0e6, 0x8c9bb0};
+                const float box = 30 * scale, gap = 8 * scale;
+                auto* draw = ImGui::GetWindowDrawList();
+                for (int n = 0; n < int(std::size(swatches)); ++n) {
+                    const auto at = p + ImVec2(n * (box + gap), 46 * scale);
+                    ImGui::SetCursorScreenPos(at);
+                    ImGui::PushID(n);
+                    const bool pressed = ImGui::InvisibleButton((std::string(key) + "-swatch").c_str(),
+                                                                ImVec2(box, box), ImGuiButtonFlags_EnableNav);
+                    const bool focus = ImGui::IsItemHovered() || (ImGui::IsItemFocused() && ImGui::GetIO().NavVisible);
+                    ImGui::PopID();
+                    const unsigned c = swatches[n];
+                    draw->AddRectFilled(at, at + ImVec2(box, box), IM_COL32(c >> 16, (c >> 8) & 255, c & 255, 255),
+                                        3 * scale);
+                    if (c == rgb || focus)
+                        draw->AddRect(at - ImVec2(3, 3) * scale, at + ImVec2(box, box) + ImVec2(3, 3) * scale,
+                                      c == rgb ? palette().ink : palette().accent, 4 * scale, 0, 2 * scale);
+                    if (pressed && !pendingCommand) {
+                        state["settings"][json] = int(c);
+                        send("settings", std::string(key) + " " + std::to_string(c));
+                    }
+                }
+                ImGui::SetCursorScreenPos(p + ImVec2(0, 100) * scale);
                 ImGui::Dummy(ImVec2(width, 0));
             };
             colour("You", "match-player-colour", "playerColour");
@@ -294,18 +318,18 @@ void GameApp::settings(ImVec2 at, ImVec2 size) {
         }
         heading("Card borders");
         if (face.legacy() || matchAppearance.marker) {
-            if (!face.legacy()) textBlock("Extra border around the frame.", width, 17, palette().muted);
+            if (!face.legacy()) textBlock("Extra border around the frame.", width, 18, palette().muted);
             select("Style", "match-border-style", "controlBorderStyle",
                    {"Single line", "Double line", "Clipped corners", "Corner brackets", "Original Tessera"});
             const bool skinWidth = valueOf("controlBorderWidth") == 12;
             slider("Thickness", "match-border-width", "controlBorderWidth", 40, "%.1f px", true, skinWidth);
-            if (skinWidth) textBlock("Skin default: 1.8 px border.", width, 17, palette().muted);
+            if (skinWidth) textBlock("Skin default: 1.8 px border.", width, 18, palette().muted);
             slider("Opacity", "match-border-opacity", "controlBorderOpacity", 100, "%d%%");
         } else
-            textBlock("The frame uses your control colours. Enable the control marker for an extra border.", width, 17,
+            textBlock("The frame uses your control colours. Enable the control marker for an extra border.", width, 18,
                       palette().muted);
         toggle("Control marker", "match-control-marker", "controlMarker");
-        if (valueOf("controlMarker")) textBlock("Filled: yours. Outline: opponent’s.", width, 17);
+        if (valueOf("controlMarker")) textBlock("Filled: yours. Outline: opponent’s.", width, 18);
         ImGui::Dummy(ImVec2(0, 16 * scale));
         if (ImGui::Button("Reset match appearance")) send("settings", "match-appearance-reset 0");
     } else if (settingsPage == 1) {
@@ -332,13 +356,17 @@ void GameApp::settings(ImVec2 at, ImVec2 size) {
         if (!label(s, "notice").empty()) textBlock(label(s, "notice"), width, 18, palette().accent);
         heading("In Tessera");
         textBlock(
-            "Click a card, then a board square to play. You can also drag cards onto the board or into a deck. Right-click a card to inspect it. Tab and the arrow keys move focus; Enter selects. On a controller, use the directional pad and confirm button. Back closes the current panel.",
-            width, 19);
+            "Click a card, then a board square to play, or drag it there. In the deck editor, drag a card into a slot, double-click it or press Enter. Right-click a card or press I to inspect it. Q and E switch tabs. Tab and the arrow keys move focus, Enter selects and Esc goes back.",
+            width, 18);
+        ImGui::Dummy(ImVec2(0, 10 * scale));
+        textBlock(
+            "On a controller, the D-pad or left stick moves focus and A selects. The right stick moves the cursor; A then clicks what is under it. Y inspects a card, X adds it to the deck, LB and RB switch tabs and B goes back.",
+            width, 18);
     } else if (settingsPage == 2) {
         const auto& collectionState = member(state, "collection");
         const auto missing = join(arrayMember(collectionState, "missingSets"), ", ");
         if (!missing.empty()) {
-            textBlock("Unavailable cards", width, 22, palette().accent);
+            textBlock("Unavailable cards", width, 21, palette().accent);
             ImGui::Dummy(ImVec2(0, 16 * scale));
             textBlock("Missing expansions: " + missing +
                           ". Reinstall them to restore your cards, or remove their saved copies.",
@@ -352,11 +380,13 @@ void GameApp::settings(ImVec2 at, ImVec2 size) {
                     "Removes unavailable cards and their discovery marks from this character, and clears their deck slots. Installed cards and game progress are kept. Reinstalling the expansions will no longer restore these copies. Keep an earlier save if you may want them back.",
                     "collection-recovery", "remove-missing confirm", "Remove cards");
             ImGui::EndDisabled();
-            if (!blocked.empty()) textBlock(blocked, width, 17, palette().accent);
+            if (!blocked.empty()) textBlock(blocked, width, 18, palette().accent);
             heading("Gameplay");
         }
         toggle("Tessera games", "games", "gamesEnabled");
-        textBlock("Disables Tessera games. The album is still available.", width, 17);
+        textBlock("Disables Tessera games. The album is still available.", width, 18);
+        toggle("Show captures before playing", "capture-preview", "capturePreview");
+        textBlock("With a card chosen, the board marks the cards it would capture on each square.", width, 18);
         if (const auto packs = label(s, "merchantPacks"); !packs.empty()) {
             heading("Merchant packs");
             textBlock(packs, width, 18, palette().accent);
@@ -364,7 +394,7 @@ void GameApp::settings(ImVec2 at, ImVec2 size) {
         heading("Modded players");
         select("Residents", "residents", "residents", {"Disabled", "Some residents", "All eligible residents"});
         toggle("Only vanilla voices", "vanilla-voices", "vanillaVoicesOnly");
-        textBlock("Authored opponents can use their own voices.", width, 17);
+        textBlock("Authored opponents can use their own voices.", width, 18);
         heading("Add a player");
         textBlock(label(s, "residentCandidate", "Look at an eligible NPC before opening the album."), width, 18);
         if (button("add-resident", "Add player", ImGui::GetCursorScreenPos(), ImVec2(200, 40) * scale, false,
@@ -373,7 +403,7 @@ void GameApp::settings(ImVec2 at, ImVec2 size) {
         heading("World pause");
         toggle("Pause in album", "pause-album", "pauseWorldInAlbum");
         heading("Experimental");
-        textBlock("Unpaused games can be interrupted when the opponent moves or enters a scene.", width, 17);
+        textBlock("Unpaused games can be interrupted when the opponent moves or enters a scene.", width, 18);
         toggle("Pause in shops", "pause-shop", "pauseWorldInShops");
         toggle("Pause in match setup", "pause-setup", "pauseWorldInMatchSetup");
         toggle("Pause in match", "pause-match", "pauseWorldDuringMatches");
@@ -381,7 +411,7 @@ void GameApp::settings(ImVec2 at, ImVec2 size) {
         const auto devToggle = [&](const char* name, const char* command, const char* json) {
             const auto p = ImGui::GetCursorScreenPos();
             const bool value = flag(dev, json);
-            text(p + ImVec2(0, 8) * scale, name, 19, palette().ink);
+            text(p + ImVec2(0, 8) * scale, name, 18, palette().ink);
             if (button(command, value ? "On" : "Off", p + ImVec2(width - 68 * scale, 0), ImVec2(68, 36) * scale, value))
                 send("development", std::string("set ") + command + " " + (value ? "0" : "1"));
             ImGui::SetCursorScreenPos(p + ImVec2(0, 58) * scale);
@@ -402,7 +432,7 @@ void GameApp::settings(ImVec2 at, ImVec2 size) {
                 "collection-recovery", "clear confirm", "Clear collection");
         ImGui::EndDisabled();
         textBlock(blocked.empty() ? "Start collecting again with an empty album. Your game progress is kept." : blocked,
-                  width, 17);
+                  width, 18);
         ImGui::Dummy(ImVec2(0, 18 * scale));
         const auto resetBlocked = label(member(state, "collection"), "resetBlocked", blocked);
         ImGui::BeginDisabled(pendingCommand || capturing() || !member(state, "interruptedMatch").empty() ||
@@ -416,7 +446,7 @@ void GameApp::settings(ImVec2 at, ImVec2 size) {
         textBlock(resetBlocked.empty()
                       ? "Start Tessera over with your album and starter cards. All Tessera progress is erased."
                       : resetBlocked,
-                  width, 17);
+                  width, 18);
         heading("Tournaments");
         devToggle("Regular tournaments", "RegularTournaments", "RegularTournaments");
         devToggle("Invitational tournaments", "InvitationalTournaments", "InvitationalTournaments");
@@ -470,7 +500,7 @@ void GameApp::settings(ImVec2 at, ImVec2 size) {
         if (!label(dev, "notice").empty()) textBlock(label(dev, "notice"), width, 18, palette().accent);
     }
     if (settingsPage == 0 && !label(s, "interfaceNotice").empty())
-        textBlock(label(s, "interfaceNotice"), width, 17, palette().accent);
+        textBlock(label(s, "interfaceNotice"), width, 18, palette().accent);
     ImGui::Dummy(ImVec2(1, 30 * scale));
     ImGui::EndChild();
     applySettings();

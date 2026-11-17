@@ -86,7 +86,9 @@ void App::cardGrid(ImVec2 at, ImVec2 size, bool changed) {
                 }
                 if (collection.connected && c.owned[foil ? 1 : 0] > 0) {
                     const auto label = "×" + std::to_string(c.owned[foil ? 1 : 0]);
-                    const float unit = w / 180.f, pixels = 14 * unit;
+                    // Small cards keep a readable count: the badge stops shrinking at the text floor.
+                    const float unit = std::max(w / 180.f, AlbumLayout::smallestText * scale / 14.f * .8f),
+                                pixels = 14 * unit;
                     const auto measure = font()->CalcTextSizeA(pixels, 1e5f, 0, label.c_str());
                     const auto extent = measure + ImVec2(10, 6) * unit;
                     // On the framed face the count sits in the top corner, clear of the plates and footer.
@@ -105,7 +107,7 @@ void App::cardGrid(ImVec2 at, ImVec2 size, bool changed) {
             ImGui::Dummy(ImVec2(0, 0));
         }
     if (count == 0)
-        text(ImGui::GetCursorScreenPos() + ImVec2(10, 30) * scale, "No matching cards", 24, palette().muted);
+        text(ImGui::GetCursorScreenPos() + ImVec2(10, 30) * scale, "No matching cards", 26, palette().muted);
     gridFade(edges);
     ImGui::EndChild();
 }
@@ -290,9 +292,10 @@ void App::decks(ImVec2 at, ImVec2 size) {
             card(index, art, ImVec2(cw, ch), false, foil && face.foil, -1, 1 + slot);
             d->PushClipRect(ImVec2(textX, pos.y), ImVec2(textX + textW, pos.y + extent.y), true);
             const float block = 68 * scale, ty = pos.y + (extent.y - block) * .5f;
-            text(ImVec2(textX, ty), c.name, 18, palette().ink);
+            text(ImVec2(textX, ty), fitted(c.name, 18, textW), 18, palette().ink);
             text(ImVec2(textX, ty + 27 * scale),
-                 place + " · Tier " + tiers[std::clamp(c.tier, 0, 10)] + (foil ? " · Foil" : ""), 14, palette().muted);
+                 fitted(place + " · Tier " + tiers[std::clamp(c.tier, 0, 10)] + (foil ? " · Foil" : ""), 14, textW), 15,
+                 palette().muted);
             float ix = textX;
             for (int a = 0; a < 5; ++a)
                 if (c.affinityMask & (1u << a)) {
@@ -303,7 +306,7 @@ void App::decks(ImVec2 at, ImVec2 size) {
             std::string group;
             for (unsigned g = 0; g < ttcg::creatureGroups.size(); ++g)
                 if (c.groups & (1ull << g)) group += (group.empty() ? "" : ", ") + std::string(ttcg::creatureGroups[g]);
-            text(ImVec2(ix + (ix > textX ? 4 * scale : 0), ty + 49 * scale), group, 14, palette().muted);
+            text(ImVec2(ix + (ix > textX ? 4 * scale : 0), ty + 49 * scale), group, 15, palette().muted);
             d->PopClipRect();
             // The four ranks again, at a size that reads without leaning in.
             const ImVec2 centre(pos.x + side - cross * .5f - 2 * scale, pos.y + extent.y * .5f);
@@ -311,22 +314,22 @@ void App::decks(ImVec2 at, ImVec2 size) {
             const ImVec2 offsets[]{ImVec2(0, -reach), ImVec2(reach, 0), ImVec2(0, reach), ImVec2(-reach, 0)};
             for (int n = 0; n < 4; ++n) {
                 const std::string rank = c.sides[n] == 10 ? "A" : std::to_string(c.sides[n]);
-                const auto measure = font()->CalcTextSizeA(19 * scale, 1e5f, 0, rank.c_str());
-                text(centre + offsets[n] - measure * .5f, rank, 19, palette().ink);
+                const auto measure = font()->CalcTextSizeA(18 * scale, 1e5f, 0, rank.c_str());
+                text(centre + offsets[n] - measure * .5f, rank, 18, palette().ink);
             }
         } else {
             d->AddRect(art, art + ImVec2(cw, ch), slot == next ? palette().muted : palette().line, 2 * scale);
-            text(art + ImVec2(cw * .5f, ch * .5f - 15 * scale), "+", 24, palette().muted, 0, true);
+            text(art + ImVec2(cw * .5f, ch * .5f - 15 * scale), "+", 26, palette().muted, 0, true);
             text(ImVec2(textX, pos.y + extent.y * .5f - 24 * scale), collection.deck[slot] ? "Unavailable" : "Empty",
                  18, palette().muted);
-            text(ImVec2(textX, pos.y + extent.y * .5f + 3 * scale), place, 14, palette().muted);
+            text(ImVec2(textX, pos.y + extent.y * .5f + 3 * scale), place, 15, palette().muted);
         }
         ImGui::PopID();
     }
     // One reserved strip: choosing a slot never moves the rest of the panel.
     const float y = slotsTop + 5 * rowH + 2 * scale;
     if (deckSlot >= 0) {
-        text(ImVec2(at.x, y + 6 * scale), "Slot " + std::to_string(deckSlot + 1), 16, palette().muted);
+        text(ImVec2(at.x, y + 6 * scale), "Slot " + std::to_string(deckSlot + 1), 15, palette().muted);
         const auto move = [&](const char* id, const char* label, float x, int to) {
             if (button(id, label, ImVec2(at.x + side - x * scale, y), ImVec2(38, 32) * scale, false,
                        editable && to >= 0 && to < 5)) {
@@ -402,7 +405,7 @@ void App::decks(ImVec2 at, ImVec2 size) {
             groupSummary += (groupSummary.empty() ? "" : " · ") + std::string(ttcg::creatureGroups[g]) + " " +
                             std::to_string(groups[g]);
     d->PushClipRect(ImVec2(factsX, summary.y), ImVec2(factsX + factsW, at.y + size.y), true);
-    text(ImVec2(factsX, summary.y + (ax > factsX ? 70 : 40) * scale), groupSummary, 14, palette().muted, factsW);
+    text(ImVec2(factsX, summary.y + (ax > factsX ? 70 : 40) * scale), groupSummary, 15, palette().muted, factsW);
     d->PopClipRect();
     pickerFilters(mid, width);
     const auto grid = mid + ImVec2(0, 86 * scale);
@@ -424,14 +427,24 @@ void App::deckModal() {
                                ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar | popupFlags())) {
         popupSurface();
         const bool remove = deckDialog == "delete";
-        ImGui::TextUnformatted(remove                 ? "Delete this saved deck?"
-                               : deckDialog == "new"  ? "New deck"
-                               : deckDialog == "copy" ? "Copy deck"
-                                                      : "Rename deck");
-        ImGui::Dummy(ImVec2(1, 14 * scale));
+        std::string name = "this deck";
+        for (const auto& deck : collection.decks)
+            if (deck.id == collection.activeDeck) name = deck.name;
+        const float room = 422 * scale;
+        const auto say = [&](const std::string& value, float pixels, ImU32 colour) {
+            const auto at = ImGui::GetCursorScreenPos();
+            text(at, value, pixels, colour, room);
+            ImGui::Dummy(ImVec2(room, font()->CalcTextSizeA(pixels * scale, 1e5f, room, value.c_str()).y));
+        };
+        say(remove                 ? "Delete " + name + "?"
+            : deckDialog == "new"  ? "New deck"
+            : deckDialog == "copy" ? "Copy " + name
+                                   : "Rename " + name,
+            21, palette().accent);
+        ImGui::Dummy(ImVec2(1, 12 * scale));
         bool enter = false;
         if (remove)
-            ImGui::TextUnformatted("Your cards stay in the album.");
+            say("Your cards stay in the album.", 18, palette().ink);
         else {
             ImGui::SetNextItemWidth(-1);
             if (ImGui::IsWindowAppearing()) ImGui::SetKeyboardFocusHere();

@@ -7,6 +7,8 @@
 
 namespace ttcg {
 struct InterfaceSettings {
+    // Marks the cards a play would capture before it is made.
+    bool capturePreview = true;
     bool gamesEnabled = true, showCardNames = true, showCardGroups = false, vanillaVoicesOnly = true,
          rankStroke = false;
     unsigned residents = 1, rankLayout = 0, nameplateStyle = 0, nameCase = 0, cardFrame = 0;
@@ -37,6 +39,8 @@ struct InterfaceSettings {
         Field{"residents", "residents", "Gameplay", "Residents", &InterfaceSettings::residents, 2, 1},
         Field{"vanilla-voices", "vanillaVoicesOnly", "Gameplay", "VanillaVoicesOnly",
               &InterfaceSettings::vanillaVoicesOnly, 1, 1},
+        Field{"capture-preview", "capturePreview", "Gameplay", "CapturePreview", &InterfaceSettings::capturePreview, 1,
+              1},
         Field{"card-names", "showCardNames", "Appearance", "ShowCardNames", &InterfaceSettings::showCardNames, 1, 1},
         Field{"card-groups", "showCardGroups", "Appearance", "ShowCardGroups", &InterfaceSettings::showCardGroups, 1,
               0},

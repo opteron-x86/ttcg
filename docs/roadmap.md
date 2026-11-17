@@ -10,7 +10,7 @@ Started 2026-11-16 from a full review of `master` at `6fc37d1` (0.33.0, 90/90 na
 | 2 | Merchant packs through the game's own function (1.7.104 crash) | `phase2/merchant-packs` | Done; in-game check pending |
 | 3 | AI | `phase3/ai` | Done; in-game check pending |
 | 4 | Balance: first move, regional rules, trade rules | `phase4/balance` | In progress |
-| 5 | Interface and UX | `phase5/interface` | Planned |
+| 5 | Interface and UX | `phase5/interface` | Done; in-game check pending |
 | 6 | Tessera green-and-gold skin | `phase6/tessera-skin` | Planned; decision D5 needed |
 | 7 | Code cleanup | `phase7/cleanup` | Planned; C1 can go earlier |
 
@@ -18,7 +18,9 @@ Started 2026-11-16 from a full review of `master` at `6fc37d1` (0.33.0, 90/90 na
 
 - One branch and one PR per phase, cut from `master` after the previous phase merges. Tick items here as they land; this file is the handoff for the next session.
 - A phase is done when `ctest --preset native` passes, `tools/format.sh --check` is clean, UI changes have reviewed previews, and the player has checked a Main zip in Skyrim (see [Build](#build-test-and-package)). Then merge.
-- Suggested releases: **0.33.1** after phases 1–2, **0.34.0** after phases 3–4, **0.35.0** after phases 5–6. Cleanup rides along with the phase whose files it touches; the rest ships in 0.35.x. Changelog entries are one line per change.
+- **Releases (player, 2026-11-17).** Work that leaves the save format alone ships first: phases 1–3 and 5–7, without C7. It is branched from `phase3/ai`, so it can merge without phase 4. Phase 4 (collection format 35, saved-match format 2) and C7 (sectioned saves) follow as a second release.
+  - The second release does not need a new game. Saves from the first release load in it: holds keep the rules they have, and an interrupted match plays on without a Vanguard. What it can't do is go back: a save written by it turns Tessera off on an older version (the data is kept, since phase 1). The rolled starting rules of option B only appear in a new game; an existing game keeps its holds' rules and drifts from there.
+  - Changelog entries are one line per change.
 - **Save formats.** `master` writes collection format 33. The parked `codex/transmute-testing` branch writes 34 with a different layout, so the next bump on `master` must be **35**, and 34 stays unsupported unless transmutation lands. The saved-match record is format 1 (65 words); G1 needs format 2.
 - Scratch harnesses from the review are in `build/ai-lab-scratch/` (untracked; see its README). A5 turns the useful ones into a tool.
 
@@ -208,32 +210,43 @@ In Skyrim:
 
 ## Phase 5: interface and UX
 
+Done on `phase5/interface` (2026-11-17), branched from `phase3/ai`, and waiting for the in-game check. Two items are for the player (U15) or were left out (U21); two parts moved to the second release because they need saved data or phase 4.
+
 New
-- [ ] **U1 Capture preview.** With a card chosen, hovering or focusing a square marks every card that would flip, including Same, Plus and Combo. It replays `Match::play` on a copy of the board, which is all public. Mention it in the tutorial; add a setting to turn it off.
-- [ ] **U2 Lobby facts.** Who moves first (G1) and, for rule challenges, when the next abolition challenge opens. The 7-day cooldown also applies after a successful challenge, and today the button simply disappears.
+- [x] **U1 Capture preview.** With a card chosen, pointing at a square (or dragging the card over it) marks every card that play would capture. The plugin works it out by replaying the move on a copy of the table (`capturePreviews` in `Presentation.h`), so Same, Plus, Combo and every other rule count, and nothing hidden is read. `[Gameplay] CapturePreview` and Settings > Gameplay turn it off; How to play mentions it.
+- [x] **U2 Lobby facts.** The lobby says when rule challenges open again once the seven-day wait is running. Who moves first is shown too, but that line ships with phase 4, where it is decided.
 
 Fixes and gaps
-- [ ] **U3 Settings > Controls help.** Describe Y/I to inspect, LB/RB and Q/E for tabs, X/Enter to add to a deck, and the right-stick cursor (`GameSettings.cpp:334-336`).
-- [ ] **U4 Shop tabs.** Buy, Sell and Buy back step with LB/RB and Q/E (`GameShop.cpp:10-17`).
-- [ ] **U5 Prompts in result and trade dialogs.** Show them, and in "Choose a card" say why B does nothing (`GameTournaments.cpp:519-597`). The rule-request dialog needs a "Leave" prompt for B, which leaves without answering (see B21).
-- [ ] **U6 Rules modal.** Replace the × with a Close prompt (`GameRules.cpp:101`).
-- [ ] **U7 Shop notice.** Stop it covering the footer rule, the prompts and the last grid row (`GameShop.cpp:201-202`).
-- [ ] **U8 Delete-deck dialog.** Name the deck and use the skinned widgets (`Album.cpp:425-431`).
-- [ ] **U9 Foil-upgrade picker.** Replace the one long dropdown with the album grid, search and filters, so a pad can use it (`GameTournaments.cpp:288-304`).
-- [ ] **U10 Owned-count badge.** Respect the text floor; it is about 7 px at 1080p on Small density (`Album.cpp:86-97`).
-- [ ] **U11 Deck slot names.** Ellipsize instead of hard clipping (`Album.cpp:289-291`), with `App::fitted()` from B20.
-- [ ] **U12 Custom colours on a pad.** Swatches and sliders instead of `ColorEdit3`.
-- [ ] **U13 Light colours on paper skins.** Route the hard-coded ones through `lightGround()`/`rarityInk()`: gold headings (`GameTournaments.cpp:240,453`), "−N gold" (`:576`) and rank deltas (`GameAlbum.cpp:267-268`).
-- [ ] **U14 Docs.** Update `docs/reference-guide.md` (deck editor, inspector, skins, a controller section) and the README. Close issue #3 after the physical pad check.
+- [x] **U3 Settings > Controls help** covers inspect, tab switching, adding to a deck and the right-stick cursor, for keyboard and for a pad.
+- [x] **U4 Shop tabs** step with LB/RB and Q/E.
+- [x] **U5 Prompts in dialogs.** The result dialog shows B/Esc Leave. The trade dialog shows Select and Inspect, and says to choose the winnings to go on. The rule request shows "Leave without answering" for B (see B21).
+- [x] **U6 Rules modal** closes from a Close prompt instead of an ×.
+- [x] **U7 Shop notice** sits under the gold totals, clear of the grid, the footer rule and the prompts.
+- [x] **U8 Deck dialogs** name the deck and use the skin's type.
+- [x] **U9 Foil-upgrade picker** is a searchable grid of cards with the chosen card beside it.
+- [x] **U10 Owned-count badge** stops shrinking at the text floor.
+- [x] **U11 Deck slot names** end with an ellipsis instead of being clipped.
+- [x] **U12 Custom colours** have twelve swatches, one press each; the hex field stays for exact values.
+- [x] **U13 Colours on paper skins.** Win gold, losses and rank changes use `goldInk()`, `lossInk()` and `gainInk()`.
+- [x] **U14 Docs.** `docs/reference-guide.md` covers the deck editor, inspector, capture preview, Journal detail, skins and both input tables. Issue #3 stays open until the physical pad check.
 
-Carried over from [ui-overhaul.md](ui-overhaul.md). At the start of the phase, check each one against the code, because later checkpoints finished some.
-- [ ] **U15** Physical controller pass and the keyboard/mouse fallback checklist in `docs/TESTING.md`.
-- [ ] **U16** Card-face verification: the three deck densities, tournament prize cards, the drag preview, and value legibility at 720p.
-- [ ] **U17** Type scale: five steps with a 16 px floor at 1080p. Bundle Jost Medium/SemiBold. Decide on FreeType rasterisation (vendored dependency).
-- [ ] **U18** Match: score as pips or a clear count, a fanned or stacked hand, a "thinking" state, and a visual for hidden cards.
-- [ ] **U19** Journal scouting detail; shop detail with the album's item-card treatment; a tournament-won screen and prize presentation.
-- [ ] **U20** First-run detection of the installed UI mod to pick a skin (new installs only).
-- [ ] **U21** Optional: real small caps and a user font folder.
+Carried over from [ui-overhaul.md](ui-overhaul.md), each checked against the code first
+- [ ] **U15 Physical controller pass.** For the player: the checklist is in `docs/TESTING.md`. The automated tests drive the same input path without a real pad.
+- [x] **U16 Card-face verification.** Reviewed in previews at 720p and 1080p on a dark and a paper skin: the deck editor grid, count badges, prize cards and the drag preview. No changes were needed beyond U10.
+- [x] **U17 Type scale.** Fixed text sizes use five steps: 15, 18, 21, 26 and 32 (`AlbumLayout` in `App.h`). There were fifteen sizes between 13 and 35. `tests/type_scale_test.py` keeps the sources on the scale. Sizes worked out to fit a space, card faces and letter-spaced capitals are outside it. Jost Bold was already bundled, so nothing is faux-bolded. FreeType rasterisation was not adopted: it adds a vendored dependency for a gain that is hard to see at these sizes.
+- [x] **U18 Match screen.** Already done by the later overhaul checkpoints and confirmed: score counts in each player's colour, hands at board size, the rail lit on the side to move, "is thinking…", last-move marks and card backs for hidden cards. Nothing added.
+- [x] **U19 Detail panels.** The Journal's player detail adds the rules and trade rule a game with them uses, and their wager cap. The shop already had the album's item-card treatment. The tournament-won dialog has the prize cards and the new picker.
+  - Moved to the second release: "cards seen" and "cards won from them" in the Journal. Neither is recorded today, so both need saved data.
+- [x] **U20 First-run skin.** With no saved skin, Tessera takes the skin whose `skin.json` lists a `detect` file that exists under Data (`SkinDetection.h`). Marker files are set for Oathvein, Norden, Edge, Untarnished, Dear Diary and Dear Diary Dark Mode. Vel'dun, Nordic, Outlander and Wood and Paper ship no file that tells them apart from the mods they are built on, so they are not detected.
+- [ ] **U21 Optional: real small caps and a user font folder.** Not done.
+
+In Skyrim:
+- Choose a card and point at squares: the cards that would flip are marked, including by Same and Plus. Turn the setting off.
+- Tournament foil prize: pick cards from the grid with a pad.
+- Settings > Appearance > Match: custom colours by swatch.
+- A rule challenge, then the lobby: it says when the next one opens.
+- A fresh `TTCG.ini` (rename the old one): the skin matches the installed interface mod, if it is one of the six.
+- The pad checklist in `docs/TESTING.md`.
 
 ## Phase 6: Tessera skin
 
