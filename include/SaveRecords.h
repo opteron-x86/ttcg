@@ -65,7 +65,7 @@ template <class Migrate> LoadedSave decodeSaveRecords(SaveRecords read, Migrate 
     result.valid = read.complete;
     for (const auto& record : read.records) {
         if (record.type == matchRecord) {
-            if (record.version == savedMatchFormat && record.bytes.size() == 65 * 4) result.match = record.words();
+            if (savedMatchRecord(record.version, record.bytes.size())) result.match = record.words();
             continue;
         }
         const auto words = record.words();

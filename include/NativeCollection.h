@@ -76,6 +76,9 @@ inline unsigned gameHour() {
     return c ? static_cast<unsigned>(std::clamp(c->GetDaysPassed() * 24.0f, 0.0f, 99999900.0f)) : 0;
 }
 inline ttcg::Hand rivalDeck{};
+// Who moves first in the game being set up: 0 the player, 1 the opponent, -1 none.
+// It is settled in the lobby, before the stakes, and holds until that game is played.
+inline int firstMove = -1;
 inline bool canStake = false;
 inline std::string notice, receipt, cultureNotice;
 inline bool cultureGame = false;
@@ -890,6 +893,7 @@ inline bool prepare(RE::Actor* actor, bool resetTerms = false) {
     owned = inventory(RE::PlayerCharacter::GetSingleton());
     auto rival = inventory(actor);
     practice = isChild(actor);
+    firstMove = -1;
     if (!actor) {
         canStake = false;
         rivalDeck = {};
@@ -931,6 +935,9 @@ inline bool prepare(RE::Actor* actor, bool resetTerms = false) {
                                                    (event->wins[node - 8][0] + event->wins[node - 8][1]) * 2654435761u ^
                                                    event->replays)
                             : handSeed;
+    // A tournament game's seed already decides it; elsewhere it follows the same
+    // count of games that fixes the opponent's hand, so reopening the lobby can't change it.
+    firstMove = event ? ttcg::Match::firstMover(seed) : int(ttcg::invitationHash(handSeed ^ 0x46495253u) & 1u);
     rivalDeck =
         practice ? ttcg::childHand(rival, base, seed, sessionRules) : ttcg::opponentHand(rival, i, seed, sessionRules);
     if (!ttcg::validHand(rivalDeck, rival)) {
@@ -1115,6 +1122,7 @@ inline std::string json(RE::Actor* actor, bool = true, bool conceal = false) {
                                                            : "They are unavailable for another game.")
                                                     : playReason);
     out += ",\"fixedWager\":" + std::to_string(fixedWager());
+    out += ",\"firstMove\":" + std::to_string(actor ? firstMove : -1);
     const auto cultureHold = actorHold(actor), hour = gameHour();
     const bool cultureAvailable = cultureEnabled(actor);
     out += ",\"culture\":" + ttcg::cultureJson(saved, i, cultureHold, hour, cultureAvailable, cultureNotice);
@@ -1201,8 +1209,7 @@ inline void load(SKSE::SerializationInterface* serial) {
     revert(serial);
     auto records = ttcg::readSaveRecords(*serial);
     for (const auto& record : records.records)
-        if (record.type == ttcg::matchRecord &&
-            (record.version != ttcg::savedMatchFormat || record.bytes.size() != 65 * 4))
+        if (record.type == ttcg::matchRecord && !ttcg::savedMatchRecord(record.version, record.bytes.size()))
             SKSE::log::warn("Unsupported saved match; returning its stakes");
     auto loaded = ttcg::decodeSaveRecords(std::move(records), [&](ttcg::CollectionSave& collection) {
         return ttcg::remapWorldState(collection, [&](std::uint32_t old) {

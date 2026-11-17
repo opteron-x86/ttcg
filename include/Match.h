@@ -42,6 +42,15 @@ struct Match {
     int forcedHand = -1;
     std::array<int, 2> swapped{-1, -1};
     int activeGroup = -1;
+    // Vanguard. Whoever moves first plays into an empty board and is answered last,
+    // which costs them games. In return the first card of a board is one stronger on
+    // every side for as long as the player who placed it holds it. These are that
+    // card's square and that player, or -1 before the first card.
+    int vanguard = -1, vanguardOwner = -1;
+    // Off only where the game is being measured without it, and in rule lessons.
+    bool vanguardRule = true;
+    // The bonus lasts while the board holds no more than this many cards: all nine.
+    int vanguardSpan = 9;
     std::array<unsigned, 2> reveals{};
     // std::shuffle and the standard distributions give different results in each
     // standard library. What a seed deals must be the same in the game (MSVC) as in
@@ -151,13 +160,21 @@ struct Match {
         for (int i = 0; i < count; ++i) tiles[i] = 1u << (rng() % 5);
         shuffle(tiles, rng);
     }
+    // Under Reverse the lower rank wins, so there the Vanguard is one weaker instead.
+    int vanguardModifier(int square) const {
+        if (square < 0 || square != vanguard || board[square].owner != vanguardOwner || placed > vanguardSpan) return 0;
+        return rules & Reverse ? -1 : 1;
+    }
     int modifier(int card, int square) const {
         if (card < 0) return 0;
-        const int shared = groupModifier(card) + affinityModifier(card) + dominionModifier(card, square);
+        const int shared =
+            groupModifier(card) + affinityModifier(card) + dominionModifier(card, square) + vanguardModifier(square);
         if (!(rules & Affinity) || square < 0 || square >= 9 || !tiles[square]) return shared;
         return shared + (cards[card].affinityMask & tiles[square] ? 1 : -1);
     }
     int rank(int card, int square, int side) const { return cards[card].sides[side] + modifier(card, square); }
+    // Who a seed has move first.
+    static int firstMover(std::uint32_t seed) { return static_cast<int>(std::mt19937(seed)() % 2); }
     explicit Match(std::uint32_t seed = 1, unsigned flags = 0) : rules(flags) {
         if (!validRules(flags)) throw std::invalid_argument("Incompatible rules");
         seedTiles(seed);
@@ -171,7 +188,9 @@ struct Match {
         turn = static_cast<int>(rng() % 2);
         prepareDeal(seed);
     }
-    Match(const std::array<int, 5>& player, const std::array<int, 5>& rival, std::uint32_t seed, unsigned flags = 0)
+    // `first` names who moves first, when that was settled before the deal; otherwise the seed decides.
+    Match(const std::array<int, 5>& player, const std::array<int, 5>& rival, std::uint32_t seed, unsigned flags = 0,
+          int first = -1)
         : rules(flags) {
         if (!validRules(flags)) throw std::invalid_argument("Incompatible rules");
         seedTiles(seed);
@@ -180,8 +199,7 @@ struct Match {
             for (int id : hand)
                 if (id < 0 || id >= static_cast<int>(cards.size())) throw std::invalid_argument("Unknown card");
         hands = {player, rival};
-        std::mt19937 rng(seed);
-        turn = static_cast<int>(rng() % 2);
+        turn = first == 0 || first == 1 ? first : firstMover(seed);
         prepareDeal(seed);
     }
     static int neighbor(int pos, int side) {
@@ -257,6 +275,7 @@ struct Match {
         used = {};
         placed = 0;
         activeGroup = -1;
+        vanguard = vanguardOwner = -1;
         swapped = {-1, -1};
         const auto seed = dealSeed + redeals * 2654435761u;
         seedTiles(seed);
@@ -297,6 +316,10 @@ struct Match {
             }
         // The incoming card affects both sides' modifiers before any capture.
         board[m.square] = {id, owner, origins[owner][m.hand]};
+        if (vanguardRule && placed == 0) {
+            vanguard = m.square;
+            vanguardOwner = owner;
+        }
         if (recordStages)
             for (unsigned rule : {rules & (Ascension | Descension), rules & Dominion})
                 if (rule) {

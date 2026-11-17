@@ -50,7 +50,7 @@ int main() {
     table.competitive = true;
     table.table = Match(7, 0);
     const auto match = record(matchRecord, savedMatchFormat, encodeMatch(table));
-    assert(match.bytes.size() == 65 * 4);
+    assert(match.bytes.size() == savedMatchWords * 4 && savedMatchRecord(savedMatchFormat, match.bytes.size()));
 
     // A readable save loads, and nothing is held back for rewriting.
     Serial good{{record(0x4F544852, 1, {1, 2, 3}), record(collectionRecord, collectionFormat, words), match}};
@@ -101,6 +101,18 @@ int main() {
     loaded = decodeSaveRecords({{match}, false}, [](CollectionSave&) { return true; });
     assert(!loaded.valid && loaded.preserved == std::vector{match});
 
+    {
+        // A table saved before the Vanguard existed is one word shorter and still loads.
+        auto older = match;
+        older.version = 1;
+        older.bytes.resize(savedMatchWordsV1 * 4);
+        Serial serial{{record(collectionRecord, collectionFormat, words), older}};
+        const auto old = load(serial);
+        SavedMatch restored;
+        assert(old.valid && old.match.size() == savedMatchWordsV1 && decodeMatch(old.match, restored));
+        assert(restored.table.vanguard == -1 && !savedMatchRecord(1, savedMatchWords * 4) &&
+               !savedMatchRecord(2, savedMatchWordsV1 * 4) && !savedMatchRecord(3, savedMatchWords * 4));
+    }
     // An unsupported table beside a good collection is dropped; its stakes are recovered.
     Serial stale{{record(collectionRecord, collectionFormat, words), record(matchRecord, savedMatchFormat + 1, {1})}};
     loaded = load(stale);

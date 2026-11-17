@@ -3,7 +3,7 @@
 //   ai-lab match RULES DEALS A B [LOW HIGH]   A's score against B over mirrored deals
 //   ai-lab ladder RULES DEALS                 each skill against the one below it
 //   ai-lab depth RULES DEALS AGENT            plies finished at each move of a game
-//   ai-lab first RULES DEALS AGENT            the first mover's score in self-play
+//   ai-lab first RULES DEALS AGENT [on|off]   the first mover's score in self-play, with or without the Vanguard
 //   ai-lab tournament EVENTS                  time to play out whole tournaments off screen
 //   ai-lab drift [STEPS] [RUNS]               regional rules over three years with nobody playing,
 //                                             starting from STEPS changes of history
@@ -212,23 +212,33 @@ void depth(unsigned rules, int deals, const Agent& agent) {
             std::printf("rules %u %s move %d: %.2f plies of %d left\n", rules, agent.name.c_str(), placed + 1,
                         total[placed] / count[placed], 9 - placed);
 }
-void first(unsigned rules, int deals, const Agent& agent) {
+// The first mover's score in self-play. `variant` is "on" for the game as it is,
+// "off" without the Vanguard, and "shield" for an idea that was tried and not
+// adopted: the Vanguard also can't be captured by the very next play.
+void first(unsigned rules, int deals, const Agent& agent, const std::string& variant) {
     const auto pool = tierPool(4, 7);
     std::atomic<int> wins{0}, draws{0};
     parallel(deals, [&](int index) {
         std::mt19937 rng(unsigned(index) * 13 + 5);
         Match table(deal(rng, pool), deal(rng, pool), rng(), rules);
+        table.vanguardRule = variant != "off";
+        if (variant.rfind("span", 0) == 0) table.vanguardSpan = std::atoi(variant.c_str() + 4);
         const int opener = table.turn;
         while (!table.finished()) {
-            if (table.redeal()) continue;
+            if (table.redeal()) {
+                table.vanguardRule = variant != "off";
+                continue;
+            }
             table.play(play(agent, table, rng()));
+            if (variant == "shield" && table.placed == 2 && table.vanguard >= 0)
+                table.board[table.vanguard].owner = table.vanguardOwner;
         }
         const auto score = table.score();
         wins += score[opener] > score[1 - opener];
         draws += score[opener] == score[1 - opener];
     });
-    std::printf("rules %u %s self-play: first mover %.3f (%d wins, %d draws of %d)\n", rules, agent.name.c_str(),
-                (wins + .5 * draws) / deals, wins.load(), draws.load(), deals);
+    std::printf("rules %-5u %-8s Vanguard %-6s first mover %.3f (%d wins, %d draws of %d)\n", rules, agent.name.c_str(),
+                variant.c_str(), (wins + .5 * draws) / deals, wins.load(), draws.load(), deals);
 }
 // Whole tournaments played out off screen, as when an event ends with nobody watching:
 // all at once, and in the slices a background update is allowed.
@@ -351,7 +361,7 @@ int main(int argc, char** argv) {
     } else if (command == "depth" && argc >= 5)
         depth(rules, deals, parse(argv[4]));
     else if (command == "first" && argc >= 5)
-        first(rules, deals, parse(argv[4]));
+        first(rules, deals, parse(argv[4]), argc > 5 ? argv[5] : "on");
     else if (command == "drift")
         drift(argc > 2 ? unsigned(std::atoi(argv[2])) : regionalHistorySteps, argc > 3 ? std::atoi(argv[3]) : 300);
     else if (command == "tournament")

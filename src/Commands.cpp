@@ -821,7 +821,9 @@ void command(const char* raw) {
                         event->seed ^ event->matchNode ^ event->replays ^
                         ((event->wins[event->matchNode - 8][0] + event->wins[event->matchNode - 8][1]) * 2654435761u))
                   : static_cast<std::uint32_t>(std::chrono::steady_clock::now().time_since_epoch().count());
-        match = ttcg::Match(ttcg::indices(deck), ttcg::indices(campaign::rivalDeck), seed, rules);
+        // The lobby showed who moves first; a tournament seed decides the same way.
+        match = ttcg::Match(ttcg::indices(deck), ttcg::indices(campaign::rivalDeck), seed, rules,
+                            event ? -1 : campaign::firstMove);
         active = true;
         for (int p = 0; p < 2; ++p)
             for (int h = 0; h < 5; ++h) match.foilHands[p][h] = ttcg::isFoil(p == 0 ? deck[h] : campaign::rivalDeck[h]);

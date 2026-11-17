@@ -9,12 +9,20 @@ struct Lesson {
             if (cards[i].id == id) return static_cast<int>(i);
         throw std::invalid_argument("Missing lesson card");
     }
-    Match match{{card("legends-270737"), card("legends-214319"), card("legends-220827"), card("legends-253882"),
-                 card("legends-291257")},
-                {card("legends-209126"), card("legends-209346"), card("legends-299057"), card("legends-277252"),
-                 card("imperial-grunt")},
-                1,
-                Open};
+    // A lesson shows one rule at a time, so its tables leave the Vanguard out: a
+    // first card that is one stronger would blur every rank the lesson points at.
+    // The Vanguard has an example of its own.
+    static Match table(const std::array<int, 5>& player, const std::array<int, 5>& rival, std::uint32_t seed,
+                       unsigned rules) {
+        Match m(player, rival, seed, rules);
+        m.vanguardRule = false;
+        return m;
+    }
+    Match match = table({card("legends-270737"), card("legends-214319"), card("legends-220827"), card("legends-253882"),
+                         card("legends-291257")},
+                        {card("legends-209126"), card("legends-209346"), card("legends-299057"), card("legends-277252"),
+                         card("imperial-grunt")},
+                        1, Open);
     static constexpr std::array<Move, 9> moves{
         {{0, 0}, {0, 4}, {1, 3}, {1, 1}, {2, 2}, {2, 5}, {3, 8}, {3, 6}, {4, 7}}};
     bool sameLesson = false, plusLesson = false, affinityTour = false, riftTour = false;
@@ -41,7 +49,7 @@ struct Lesson {
             demo.match.seedVisibility(73);
             return demo;
         }
-        demo.match = Match({card("legends-257893"), card("legends-209123"), card("murkwater-goblin"),
+        demo.match = table({card("legends-257893"), card("legends-209123"), card("murkwater-goblin"),
                             card("oldgate-warden"), card("frostbite-spider")},
                            {card("frostbite-spider"),
                             card(rule == Reverse    ? "legends-299178"
@@ -62,7 +70,7 @@ struct Lesson {
         d.riftTour = true;
         d.sameLesson = d.plusLesson = false;
         d.workshopRule = ThreeOpen | Plus;
-        d.match = Match(d.match.hands[0], d.match.hands[1], 73, ThreeOpen | Plus);
+        d.match = table(d.match.hands[0], d.match.hands[1], 73, ThreeOpen | Plus);
         d.match.turn = 0;
         d.match.reveals[0] = 21; // The player's Plus card in slot 3 is hidden from the rival.
         return d;
@@ -106,14 +114,14 @@ struct Lesson {
     explicit Lesson(bool same = false, bool plus = false) : sameLesson(same || plus), plusLesson(plus) {
         match.turn = 0;
         if (!sameLesson) return;
-        match = Match({card("legends-209436"), card("legends-223709"), card("legends-253882"), card("legends-234017"),
+        match = table({card("legends-209436"), card("legends-223709"), card("legends-253882"), card("legends-234017"),
                        card("legends-214331")},
                       {card("legends-284352"), card("legends-209155"), card("legends-220453"), card("legends-245458"),
                        card("legends-276452")},
                       1, Same | Open);
         // The touching pairs are 4+4 and 6+2: equal sums without two Same matches.
         if (plusLesson)
-            match = Match({card("thieves-guild-recruit"), card("legends-214287"), card("murkwater-goblin"),
+            match = table({card("thieves-guild-recruit"), card("legends-214287"), card("murkwater-goblin"),
                            card("dwarven-ballista"), card("legends-282540")},
                           {card("legends-253909"), card("sunhold-medic"), card("legends-214138"),
                            card("legends-289746"), card("legends-223299")},
@@ -248,10 +256,10 @@ struct Lesson {
 inline Lesson ruleExample(unsigned rule) {
     Lesson d;
     d.workshopRule = rule;
-    d.match = Match(d.match.hands[0], d.match.hands[1], 37,
-                    Open | (rule == SameWall ? Same | SameWall
-                            : rule == Swap   ? Basic
-                                             : rule));
+    d.match = Lesson::table(d.match.hands[0], d.match.hands[1], 37,
+                            Open | (rule == SameWall ? Same | SameWall
+                                    : rule == Swap   ? Basic
+                                                     : rule));
     d.match.turn = 0;
     d.match.selectTurnCard();
     if (rule == Ascension || rule == Descension) {
@@ -265,8 +273,8 @@ inline Lesson ruleExample(unsigned rule) {
             }
         if (strength.size() < 7 || neutral.size() < 3)
             throw std::invalid_argument("Missing affinity-count example cards");
-        d.match = Match({strength[0], strength[1], strength[2], strength[3], neutral[0]},
-                        {strength[4], neutral[1], strength[5], strength[6], neutral[2]}, 37, Open | rule);
+        d.match = Lesson::table({strength[0], strength[1], strength[2], strength[3], neutral[0]},
+                                {strength[4], neutral[1], strength[5], strength[6], neutral[2]}, 37, Open | rule);
         d.match.turn = 0;
         d.exampleMoves = {{0, 0}, {0, 8}, {1, 2}, {1, 4}, {2, 6}};
         const std::string first = rule == Ascension ? "+1" : "−1", cap = rule == Ascension ? "+2" : "−2";
@@ -287,9 +295,9 @@ inline Lesson ruleExample(unsigned rule) {
             throw std::invalid_argument("Missing Dominion example cards");
         };
         const int orc = findGroup("Orc"), nord = findGroup("Nord"), khajiit = findGroup("Khajiit");
-        d.match =
-            Match({orc, khajiit, nord, d.match.hands[0][3], d.match.hands[0][4]},
-                  {nord, nord, d.match.hands[1][2], d.match.hands[1][3], d.match.hands[1][4]}, 37, Open | Dominion);
+        d.match = Lesson::table({orc, khajiit, nord, d.match.hands[0][3], d.match.hands[0][4]},
+                                {nord, nord, d.match.hands[1][2], d.match.hands[1][3], d.match.hands[1][4]}, 37,
+                                Open | Dominion);
         d.match.turn = 0;
         d.exampleMoves = {{0, 4}, {0, 3}, {1, 1}, {1, 5}, {2, 7}};
         d.captions = {
@@ -360,7 +368,7 @@ inline Lesson ruleExample(unsigned rule) {
     } else if (rule == SuddenDeath) {
         bool found = false;
         for (unsigned seed = 1; seed < 2000 && !found; ++seed) {
-            Match preview(d.match.hands[0], d.match.hands[1], seed, Open | SuddenDeath);
+            auto preview = Lesson::table(d.match.hands[0], d.match.hands[1], seed, Open | SuddenDeath);
             preview.turn = 0;
             std::mt19937 rng(seed);
             for (int n = 0; n < 8; ++n) {
@@ -386,6 +394,42 @@ inline Lesson ruleExample(unsigned rule) {
         throw std::invalid_argument("Unknown rule example");
     return d;
 }
+// The Vanguard is part of every game and has no rule flag. Its example is the one
+// lesson table that keeps it: the first card holds against a rank one higher, loses
+// the bonus when it is captured and has it again when it is retaken.
+inline Lesson vanguardExample() {
+    Lesson d;
+    int first = -1, level = -1, stronger = -1, retaker = -1, spare = -1;
+    const auto plain = [](int i) { return !cards[i].pending && !cards[i].unique && cards[i].tier <= 5; };
+    for (int f = 0; f < int(cards.size()) && first < 0; ++f) {
+        const auto& c = cards[f];
+        if (!plain(f) || c.sides[1] > 8 || c.sides[3] > 7 || c.sides[0] > 8) continue;
+        int a = -1, b = -1, r = -1;
+        for (int i = 0; i < int(cards.size()); ++i) {
+            if (i == f || !plain(i)) continue;
+            if (a < 0 && cards[i].sides[3] == c.sides[1] + 1) a = i;
+            if (b < 0 && i != a && cards[i].sides[1] >= c.sides[3] + 2 && cards[i].sides[0] == 1) b = i;
+            if (r < 0 && i != a && i != b && cards[i].sides[2] > c.sides[0] && cards[i].sides[2] <= 9) r = i;
+        }
+        if (a >= 0 && b >= 0 && r >= 0) first = f, level = a, stronger = b, retaker = r;
+    }
+    for (int i = 0; i < int(cards.size()) && spare < 0; ++i)
+        if (plain(i) && i != first && i != level && i != stronger && i != retaker && cards[i].sides[2] >= 2) spare = i;
+    if (first < 0 || spare < 0) throw std::invalid_argument("Missing Vanguard example cards");
+    d.match = Match({first, spare, retaker, d.match.hands[0][3], d.match.hands[0][4]},
+                    {level, stronger, d.match.hands[1][2], d.match.hands[1][3], d.match.hands[1][4]}, 37, Open, 0);
+    const auto held = std::to_string(cards[first].sides[1]), attack = std::to_string(cards[first].sides[1] + 1);
+    d.exampleMoves = {{0, 4}, {0, 5}, {1, 0}, {1, 3}, {2, 1}};
+    d.captions = {
+        "You move first. Place your first card: it becomes the Vanguard.",
+        "The Vanguard has +1 on every side while you hold it. Your opponent will attack its " + held + " with a " +
+            attack + ".",
+        "A " + attack + " does not beat " + held + " + 1, so the card holds. Play another card.",
+        "Your opponent will attack from the other side with a stronger card.",
+        "Captured, it is an ordinary card: the bonus belongs only to the player who moved first. Take it back.",
+        "Back in your hands it is the Vanguard again. Same and Plus still compare printed ranks."};
+    return d;
+}
 inline std::string allRuleDemosJson() {
     std::string out = "{";
     auto add = [&](const char* key, Lesson d) {
@@ -393,6 +437,7 @@ inline std::string allRuleDemosJson() {
         out += std::format("\"{}\":{}", key, d.framesJson());
     };
     add("play", Lesson{});
+    add("vanguard", vanguardExample());
     add("open", Lesson::workshop(Open));
     add("threeopen", Lesson::workshop(ThreeOpen));
     add("same", Lesson(true));

@@ -20,7 +20,13 @@ struct SavedMatch {
         return result;
     }
 };
-inline constexpr unsigned savedMatchFormat = 1;
+// Format 2 adds one word for the Vanguard. A format 1 table has none: it was dealt
+// before the rule existed and is finished without it.
+inline constexpr unsigned savedMatchFormat = 2;
+inline constexpr std::size_t savedMatchWords = 66, savedMatchWordsV1 = 65;
+inline constexpr bool savedMatchRecord(unsigned version, std::size_t bytes) {
+    return (version == 1 && bytes == savedMatchWordsV1 * 4) || (version == 2 && bytes == savedMatchWords * 4);
+}
 inline std::uint32_t matchDecisionSeed(const Match& table) {
     return table.dealSeed ^ (table.redeals * 2654435761u) ^ (unsigned(table.placed) * 2246822519u) ^ table.randomState;
 }
@@ -55,10 +61,11 @@ inline std::vector<std::uint32_t> encodeMatch(const SavedMatch& s) {
         out.push_back(unsigned(cell.origin + 1));
         out.push_back(unsigned(cell.owner + 1));
     }
+    out.push_back(unsigned(m.vanguard + 1) | (unsigned(m.vanguardOwner + 1) << 4));
     return out;
 }
 inline bool decodeMatch(std::span<const std::uint32_t> data, SavedMatch& destination) {
-    if (data.size() != 65) return false;
+    if (data.size() != savedMatchWords && data.size() != savedMatchWordsV1) return false;
     SavedMatch s;
     auto& m = s.table;
     unsigned at = 0;
@@ -130,6 +137,15 @@ inline bool decodeMatch(std::span<const std::uint32_t> data, SavedMatch& destina
         cell = {cardIndex(originals[(origin - 1) / 5][(origin - 1) % 5]), int(owner) - 1, int(origin) - 1};
     }
     if (placed != unsigned(m.placed) || usedCount != placed || onBoard != used) return false;
+    if (data.size() == savedMatchWords) {
+        // The first card of this board and who placed it, once a card has been placed.
+        const auto word = get(), square = word & 15u, owner = word >> 4;
+        if (square > 9 || owner > 2 || bool(square) != bool(owner) || bool(square) != (m.placed > 0) ||
+            (square && m.board[square - 1].card < 0))
+            return false;
+        m.vanguard = int(square) - 1;
+        m.vanguardOwner = int(owner) - 1;
+    }
     if (m.forcedHand >= 0 && (!m.playableHand(m.forcedHand) || !(m.rules & (Order | Chaos)) || m.boardComplete()))
         return false;
     if ((m.rules & (Order | Chaos)) && !m.boardComplete() && m.forcedHand < 0) return false;
