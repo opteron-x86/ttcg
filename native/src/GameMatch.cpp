@@ -168,13 +168,6 @@ void GameApp::lobby(ImVec2 at, ImVec2 size) {
     const float edge = terms.x - gutter * .5f;
     skinRule(ImVec2(edge, top), ImVec2(edge, footerY - 14 * scale), .45f);
     textCaps(terms + ImVec2(0, 8 * scale), "Rules of this game", 14, palette().muted, 1.6f);
-    // Who moves first is settled before the stakes are agreed: the first card is the Vanguard.
-    if (const int first = number(c, "firstMove", -1); first >= 0) {
-        const float room = panel - capsWidth("Rules of this game", 14, 1.6f) - 18 * scale;
-        textRight(terms + ImVec2(panel, 7 * scale),
-                  fitted(first == 0 ? "You play first" : label(state, "opponent") + " plays first", 15, room), 15,
-                  palette().accent);
-    }
     const int fixed = number(c, "fixedWager", -1),
               affordable = std::max(0, std::min({number(c, "gold"), number(c, "rivalGold"), number(c, "maxWager")}));
     if (fixed < 0 && (wager > affordable || !flag(c, "canStake"))) wager = 0;

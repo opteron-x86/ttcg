@@ -1,7 +1,9 @@
 # Changelog
 
-## Unreleased
+## 0.34.0
 
+- Removed the lobby's starting-player announcement and the duplicate Leave control in the result dialog.
+- Shortened the Vanguard explanation in the Rules tab.
 - Fixed losing Tessera progress when a save's Tessera data can't be read. The data is kept unchanged and a message is shown.
 - Fixed the opponent freezing mid-game until the match closed as stalled.
 - Fixed a finished game left interrupted blocking packs, shops, decks and other opponents. Stakes settle at once, and winnings that need a choice can be collected from the album.
@@ -22,7 +24,6 @@
 - Checking a container for Tessera items no longer sets up its inventory.
 - Settings > Gameplay says when merchants can't stock packs on a game version.
 - Vanguard: the first card played has +1 on every side while the player who placed it holds it, until the fifth card is played (−1 under Reverse). The Rules tab has a page for it.
-- The lobby shows who moves first before you agree to the stakes.
 - Holds no longer have fixed starting rules. Each new game rolls its own rules for every hold; existing saves keep theirs.
 - The All trade rule is rarer in regional drift; One is the commonest.
 - A collector's gold reward for a card is never more than the card's shop price.
@@ -40,7 +41,7 @@
 - Tessera's green-and-gold skin is back as a choice in Settings > Appearance. A saved `Theme=0` opens it again.
 - Result and rule-request dialogs show their outline on skins that draw one.
 - The shop's Buy, Sell and Buy back step with LB/RB and Q/E.
-- Result, trade and rule-request dialogs show their own key prompts.
+- Trade and rule-request dialogs show their own key prompts.
 - Text uses five sizes throughout.
 - Buttons in Settings, the album's filters and the group choice follow the skin.
 - Fixed gold and gain/loss colours being unreadable on paper skins, clipped deck slot names, a tiny owned-count badge on small cards and the shop notice covering the prompts.

@@ -552,11 +552,8 @@ void GameApp::resultModal() {
                 send("prepare");
                 ImGui::CloseCurrentPopup();
             }
-            bool leaveKey = false;
-            keyPrompt("Esc", "360_B", "Leave", ImVec2(panel.x + 32 * scale, buttons.y + 6 * scale), &leaveKey,
-                      "leave-key");
             if (button("leave", "Leave", buttons + ImVec2(can ? 190 * scale : 0, 0), ImVec2(150, 42) * scale, !can) ||
-                leaveKey || backPressed()) {
+                backPressed()) {
                 send("close");
                 ImGui::CloseCurrentPopup();
             }

@@ -243,7 +243,7 @@ Done on `phase5/interface` (2026-11-17), branched from `phase3/ai`, and waiting 
 
 New
 - [x] **U1 Capture preview.** With a card chosen, pointing at a square (or dragging the card over it) marks every card that play would capture. The plugin works it out by replaying the move on a copy of the table (`capturePreviews` in `Presentation.h`), so Same, Plus, Combo and every other rule count, and nothing hidden is read. `[Gameplay] CapturePreview` and Settings > Gameplay turn it off; How to play mentions it.
-- [x] **U2 Lobby facts.** The lobby says when rule challenges open again once the seven-day wait is running. Who moves first is shown too, but that line ships with phase 4, where it is decided.
+- [x] **U2 Lobby facts.** The lobby says when rule challenges open again once the seven-day wait is running.
 
 Fixes and gaps
 - [x] **U3 Settings > Controls help** covers inspect, tab switching, adding to a deck and the right-stick cursor, for keyboard and for a pad.
