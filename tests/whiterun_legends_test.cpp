@@ -30,7 +30,7 @@ int main() {
         const int owner = owners[n];
         const CardID signature = signatures[n];
         const auto& p = opponents[owner];
-        assert(p.level == 5 && p.skill == 3 && std::string_view(p.skillName) == "Master" && p.wager == wagers[n]);
+        assert(p.level == 5 && std::string_view(p.skillName) == "Master" && p.wager == wagers[n]);
         const auto& c = cards[cardIndex(signature)];
         assert(c.available && c.unique && c.tier == (n == 2 ? 9 : 8));
         assert(count(personalPool(owner), signature) == 1);

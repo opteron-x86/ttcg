@@ -3,8 +3,7 @@
 #include "ExpansionRewards.h"
 #include <deque>
 namespace ttcg {
-inline constexpr std::array<const char*, 6> opponentSkillNames{"Beginner",    "Learner", "Regular",
-                                                               "Experienced", "Expert",  "Master"};
+inline constexpr auto& opponentSkillNames = skillLevelNames;
 struct OpponentGate {
     WorldForm form;
     unsigned kind = 0, value = 0;
@@ -131,7 +130,6 @@ inline int registerResident(std::uint32_t base, ResidentRecord& record,
     p.location = text.location.c_str();
     p.region = text.region.c_str();
     p.level = record.level;
-    p.skill = record.level < 2 ? 0 : record.level < 4 ? 1 : record.level == 4 ? 2 : 3;
     p.skillName = opponentSkillNames[record.level];
     p.hold = record.hold;
     p.traveller = record.traveller;

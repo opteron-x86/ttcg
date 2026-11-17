@@ -232,6 +232,36 @@ int main() {
         assert(validHand(hand, reverseStock));
         for (auto id : hand) assert(cards[cardIndex(id)].tier <= 2);
     }
+    {
+        // An event that ends unattended is played out a game at a time by background
+        // updates. It ends exactly as it would have all at once, and only then is awarded.
+        for (unsigned n = 0; n < 12; ++n) {
+            CollectionSave whole;
+            grantStarter(whole);
+            const auto id = newTournament(whole, 1 + n % 10, 100 + n);
+            assert(id);
+            auto sliced = whole;
+            resolveTournament(whole, *tournament(whole, id), true);
+            assert(tournament(whole, id)->awarded && tournament(whole, id)->bracket[14]);
+            unsigned calls = 0;
+            for (auto* event = tournament(sliced, id); !event->awarded; ++calls) {
+                int games = backgroundTournamentGames;
+                assert(!event->bracket[14] && calls < 64);
+                resolveTournament(sliced, *event, true, &games);
+                assert(games >= 0 || !event->awarded);
+            }
+            assert(calls > 1 && encodeCollection(sliced) == encodeCollection(whole));
+        }
+        CollectionSave ticking;
+        grantStarter(ticking);
+        const auto id = newTournament(ticking, 1, 100);
+        const auto ends = tournament(ticking, id)->ends;
+        tickTournaments(ticking, ends, 0, {}, backgroundTournamentGames);
+        assert(!tournament(ticking, id)->awarded && !tournamentOpen(*tournament(ticking, id), ends));
+        // Opening Tessera finishes whatever is left at once.
+        tickTournaments(ticking, ends);
+        assert(tournament(ticking, id)->awarded);
+    }
     auto jan = shiftGameDate({201, 11, 31, 23}, 2);
     assert(jan.year == 202 && jan.month == 0 && jan.day == 1 && jan.hour == 1);
     auto feb = shiftGameDate({202, 2, 1, 0}, -1);

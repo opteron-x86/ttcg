@@ -37,7 +37,7 @@ int main() {
     ini["Rules"] = "8";
     ini["TradeRule"] = "5";
     ini["Wager"] = "15";
-    ini["OpponentSkill"] = "4";
+    ini["OpponentSkill"] = "6";
     d = DevelopmentSettings::load(read);
     assert(d.rules == -1 && d.tradeRule == -1 && d.wager == -1 && d.opponentSkill == -1);
     for (const auto text : {"3junk", "9999999999999999999999", "-4", "0x03"}) {

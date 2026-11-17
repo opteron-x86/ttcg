@@ -31,7 +31,7 @@ void backgroundUpdate() {
         const auto registered = std::chrono::steady_clock::now();
         campaign::syncProgression(profile ? &syncTiming : nullptr);
         const auto refreshed = std::chrono::steady_clock::now();
-        campaign::updateTournaments();
+        campaign::updateTournaments(true);
         const auto finished = std::chrono::steady_clock::now();
         auto ms = [](auto duration) { return std::chrono::duration<double, std::milli>(duration).count(); };
         if (ms(finished - started) >= 16.0)

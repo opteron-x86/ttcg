@@ -532,7 +532,8 @@ inline void ensureAlbum();
 inline void updateRegionalRules() {
     if (available()) ttcg::tickRegionalRules(saved, gameHour(), cultureHeldHold);
 }
-inline void updateTournaments() {
+// `background` is the periodic update during play, which must not stall a frame.
+inline void updateTournaments(bool background = false) {
     if (!available()) return;
     updateRegionalRules();
     if (saved.contract.pending()) return;
@@ -547,7 +548,7 @@ inline void updateTournaments() {
     if (!hadAlbum && hasAlbum()) ensureAlbum();
     if (progression && hasAlbum()) progression->value = 2.0f;
     ttcg::tickTournaments(saved, hour, actorHold(RE::PlayerCharacter::GetSingleton(), 0),
-                          development.tournamentSwitches());
+                          development.tournamentSwitches(), background ? ttcg::backgroundTournamentGames : 1000000);
     // Use the vanilla courier holding container; never add the letter to the player.
     auto data = RE::TESDataHandler::GetSingleton();
     for (unsigned hold = 1; hold <= 10; ++hold)

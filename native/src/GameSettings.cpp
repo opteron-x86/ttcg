@@ -450,7 +450,8 @@ void GameApp::settings(ImVec2 at, ImVec2 size) {
         if (combo("dev-trade", "Trade rule", trade, {"Default", "None", "One", "Diff", "Direct", "All"}, width))
             send("development", "set TradeRule " + std::to_string(trade - 1));
         int skill = number(dev, "OpponentSkill", -1) + 1;
-        if (combo("dev-skill", "Opponent skill", skill, {"Default", "Learner", "Regular", "Expert", "Master"}, width))
+        if (combo("dev-skill", "Opponent skill", skill,
+                  {"Default", "Beginner", "Learner", "Regular", "Experienced", "Expert", "Master"}, width))
             send("development", "set OpponentSkill " + std::to_string(skill - 1));
         std::vector<int> wagers{-1};
         std::vector<std::string> wagerLabels{"Default"};

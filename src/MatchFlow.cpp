@@ -51,11 +51,11 @@ void runAI() {
     const auto snapshot = match;
     auto actor = opponent.get();
     const auto* profile = campaign::profile(actor.get());
+    // The skill the player was shown for this opponent is how hard they think.
     const int skill = campaign::development.opponentSkill >= 0 ? campaign::development.opponentSkill
-                      : profile                                ? profile->skill
-                      : campaign::isChild(actor.get())
-                          ? ttcg::childProfile(campaign::persistentID(actor->GetActorBase())).skill
-                          : 3;
+                      : profile                                ? int(profile->level)
+                      : campaign::isChild(actor.get()) ? ttcg::childLevel(campaign::persistentID(actor->GetActorBase()))
+                                                       : ttcg::masterLevel;
     const auto token = epoch.load();
     const auto round = session;
     const auto stateRevision = revision;
