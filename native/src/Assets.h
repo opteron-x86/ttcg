@@ -16,7 +16,7 @@ class Assets {
 
 public:
     static constexpr std::uint64_t budget = 160ull * 1024 * 1024;
-    unsigned decoded = 0, missing = 0;
+    unsigned missing = 0;
     Assets(Renderer& renderer, const std::filesystem::path& root);
     ~Assets();
     void beginFrame();
@@ -24,10 +24,7 @@ public:
     Texture get(const std::string& path);
     // Interface art that may be absent; no placeholder is substituted.
     Texture optional(const std::string& path);
-    Texture card(int index, bool large = false);
-    Texture back(int index = 0);
     Texture pack(unsigned kind);
-    double megabytes() const { return resident / 1048576.0; }
     std::size_t count() const { return textures.size(); }
 };
 }

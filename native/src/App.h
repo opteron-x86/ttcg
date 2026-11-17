@@ -10,8 +10,7 @@
 
 namespace preview {
 struct Palette {
-    const char* name;
-    ImU32 background, centre, ink, muted, accent, line, selection;
+    ImU32 background, ink, muted, accent, line, selection;
     bool sans;
 };
 // One texture of a skin and how it is drawn; see TesseraUI/skins/README.md.
@@ -93,7 +92,7 @@ protected:
     float scale = 1;
     Face face;
     MatchAppearance matchAppearance;
-    bool inspecting = false, autoRotate = false, showMetrics = false, closing = false;
+    bool inspecting = false;
     float yaw = 0, pitch = 0, turnTarget = 0;
     // Set while the inspector draws, so the foil answers the card's tilt and not the clock.
     bool foilLightSet = false;
@@ -119,6 +118,15 @@ protected:
     bool select(const char* id, int& value, const std::vector<std::string>& choices, float width);
     bool sectionTab(const char* id, const std::string& title, ImVec2 at, ImVec2 size, bool active);
     bool button(const char* id, const char* label, ImVec2 at, ImVec2 size, bool active = false, bool enabled = true);
+    // A button in the flow of a page, sized to its label, which is also its ID.
+    bool action(const char* label);
+    // Whether the player asked to look closer at the last item: a right click on it, or
+    // I or Y while it has the focus.
+    static bool inspectRequested() { return inspectRequested(ImGui::IsItemFocused()); }
+    static bool inspectRequested(bool focused) {
+        return (ImGui::IsItemHovered() && ImGui::IsMouseClicked(1)) ||
+               (focused && (ImGui::IsKeyPressed(ImGuiKey_I) || ImGui::IsKeyPressed(ImGuiKey_GamepadFaceUp)));
+    }
     void itemTooltip(const std::string& label);
     void line(ImVec2 a, ImVec2 b, ImU32 colour = 0);
     void surface(ImVec2 at, ImVec2 size, bool main = false);
@@ -126,11 +134,9 @@ protected:
     // Textured skins. Source art is authored at three times Skyrim's 720p stage.
     // A rarity's colour for text on the interface ground: bright on dark skins, inked on paper.
     ImU32 rarityInk(std::string_view rarity) const {
-        const bool paper = lightGround();
-        return rarity == "Rare"        ? (paper ? IM_COL32(22, 98, 128, 255) : IM_COL32(86, 223, 255, 255))
-               : rarity == "Epic"      ? (paper ? IM_COL32(104, 44, 150, 255) : IM_COL32(214, 132, 250, 255))
-               : rarity == "Legendary" ? (paper ? IM_COL32(128, 86, 8, 255) : IM_COL32(240, 196, 101, 255))
-                                       : palette().ink;
+        if (rarity != "Rare" && rarity != "Epic" && rarity != "Legendary") return palette().ink;
+        if (!lightGround()) return rgb(rarityPigment(rarity));
+        return rarity == "Rare" ? rgb(0x166280) : rarity == "Epic" ? rgb(0x682c96) : rgb(0x805608);
     }
     // Gains and losses, and the gold of a win, readable on either ground.
     ImU32 gainInk() const { return lightGround() ? IM_COL32(40, 108, 36, 255) : IM_COL32(150, 214, 128, 255); }
@@ -183,8 +189,8 @@ protected:
     void boardSurface(int material, ImVec2 at, ImVec2 size);
     ImU32 controlColour(int owner, bool forText = false) const;
     void controlFrame(ImVec2 at, ImVec2 size, int owner);
-    void card(int index, ImVec2 at, ImVec2 size, bool selected, bool foil, int owner = -1, int materialSlot = 0,
-              bool large = false, CardContext context = CardContext::General);
+    void card(int index, ImVec2 at, ImVec2 size, bool selected, bool foil, int owner = -1,
+              int materialSlot = MaterialSlot::single, bool large = false, CardContext context = CardContext::General);
     // Centre of a value on a card of this size, shared with the rule demonstrations.
     ImVec2 valueAnchor(int side, ImVec2 size) const;
     void framedCard(const CardView& card, Texture texture, ImVec2 at, ImVec2 size, bool chosen, int owner);
@@ -214,7 +220,6 @@ public:
         hostInputDevice = true;
         padPrompts = controller;
     }
-    bool closeRequested() const { return closing; }
     unsigned missingAssets() const { return assets.missing; }
 };
 }

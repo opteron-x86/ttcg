@@ -51,9 +51,7 @@ void App::cardGrid(ImVec2 at, ImVec2 size, bool changed) {
                     selectedFoil = foil;
                     addToDeck(c.id | (foil ? ttcg::foilFlag : 0));
                 }
-                if (known &&
-                    ((ImGui::IsItemHovered() && ((twice && !editing) || ImGui::IsMouseClicked(1))) ||
-                     (held && (ImGui::IsKeyPressed(ImGuiKey_I) || ImGui::IsKeyPressed(ImGuiKey_GamepadFaceUp)))))
+                if (known && ((ImGui::IsItemHovered() && twice && !editing) || inspectRequested(held)))
                     inspectCard(display, false);
                 if (known && collection.connected && collection.writable && !collection.busy &&
                     c.owned[foil ? 1 : 0] > 0 && ImGui::BeginDragDropSource()) {
@@ -224,7 +222,6 @@ void App::decks(ImVec2 at, ImVec2 size) {
         }
     }
     // The five slots, in the order they are held.
-    const char* tiers[]{"", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"};
     const float slotsTop = at.y + 92 * scale, strip = 40 * scale, profile = 158 * scale;
     const float rowH = std::clamp((at.y + size.y - slotsTop - strip - profile) / 5, 70 * scale, 128 * scale);
     int next = deckSlot;
@@ -238,9 +235,7 @@ void App::decks(ImVec2 at, ImVec2 size) {
         ImGui::SetCursorScreenPos(pos);
         if (ImGui::InvisibleButton("slot", extent, ImGuiButtonFlags_EnableNav)) deckSlot = deckSlot == slot ? -1 : slot;
         const bool hover = ImGui::IsItemHovered(), focus = ImGui::IsItemFocused() && ImGui::GetIO().NavVisible;
-        if (index >= 0 && ((hover && (ImGui::IsMouseDoubleClicked(0) || ImGui::IsMouseClicked(1))) ||
-                           (ImGui::IsItemFocused() &&
-                            (ImGui::IsKeyPressed(ImGuiKey_I) || ImGui::IsKeyPressed(ImGuiKey_GamepadFaceUp)))))
+        if (index >= 0 && ((hover && ImGui::IsMouseDoubleClicked(0)) || inspectRequested()))
             inspectCard(index + (foil ? collection.cards.size() : 0), false);
         if (index >= 0 && editable && ImGui::BeginDragDropSource()) {
             ImGui::SetDragDropPayload("TESSERA_SLOT", &slot, sizeof(slot));
@@ -294,7 +289,7 @@ void App::decks(ImVec2 at, ImVec2 size) {
             const float block = 68 * scale, ty = pos.y + (extent.y - block) * .5f;
             text(ImVec2(textX, ty), fitted(c.name, 18, textW), 18, palette().ink);
             text(ImVec2(textX, ty + 27 * scale),
-                 fitted(place + " · Tier " + tiers[std::clamp(c.tier, 0, 10)] + (foil ? " · Foil" : ""), 14, textW), 15,
+                 fitted(place + " · Tier " + tierNumeral(c.tier) + (foil ? " · Foil" : ""), 14, textW), 15,
                  palette().muted);
             float ix = textX;
             for (int a = 0; a < 5; ++a)

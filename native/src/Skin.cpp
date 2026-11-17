@@ -7,10 +7,6 @@
 
 namespace preview {
 namespace {
-constexpr ImU32 rgb(unsigned n, unsigned alpha = 255) { return IM_COL32(n >> 16, (n >> 8) & 255, n & 255, alpha); }
-ImU32 alpha(ImU32 colour, float amount) {
-    return (colour & 0xffffff) | (unsigned(std::clamp(amount, 0.f, 1.f) * 255) << 24);
-}
 unsigned upper(unsigned c) {
     if ((c >= 'a' && c <= 'z') || (c >= 0xe0 && c <= 0xf6) || (c >= 0xf8 && c <= 0xfe)) return c - 32;
     return c;
@@ -49,7 +45,6 @@ void App::loadSkins() {
         s.palette = builtInPalette(index);
         const auto& p = j.contains("palette") ? j["palette"] : Json();
         s.palette.background = colour(p, "background", s.palette.background);
-        s.palette.centre = colour(p, "centre", s.palette.centre);
         s.palette.ink = colour(p, "text", s.palette.ink);
         s.palette.muted = colour(p, "muted", s.palette.muted);
         s.palette.accent = colour(p, "accent", s.palette.accent);

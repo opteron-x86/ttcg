@@ -240,7 +240,7 @@ void GameApp::settings(ImVec2 at, ImVec2 size) {
                 slider("Stroke weight", "rank-stroke-weight", "rankStrokeWeight", 30, "%.1f px", true);
             else
                 textBlock("Skin default: 1 px stroke.", width, 18, palette().muted);
-            if (ImGui::Button("Reset card values")) send("settings", "rank-finish-reset 0");
+            if (action("Reset card values")) send("settings", "rank-finish-reset 0");
         }
         heading("Card back");
         int i = 0;
@@ -255,7 +255,7 @@ void GameApp::settings(ImVec2 at, ImVec2 size) {
             ImGui::GetWindowDrawList()->AddImage(image.id, pos, pos + ImVec2(54, 72) * scale);
             ImGui::PopID();
         }
-        if (ImGui::Button("Refresh card backs")) send("cardback", "refresh");
+        if (action("Refresh card backs")) send("cardback", "refresh");
         textBlock("Add custom images to the card backs folder, then refresh.", width, 18);
         if (!label(s, "cardBackNotice").empty()) textBlock(label(s, "cardBackNotice"), width, 18, palette().accent);
     } else if (settingsPage == 0) {
@@ -331,7 +331,7 @@ void GameApp::settings(ImVec2 at, ImVec2 size) {
         toggle("Control marker", "match-control-marker", "controlMarker");
         if (valueOf("controlMarker")) textBlock("Filled: yours. Outline: opponent’s.", width, 18);
         ImGui::Dummy(ImVec2(0, 16 * scale));
-        if (ImGui::Button("Reset match appearance")) send("settings", "match-appearance-reset 0");
+        if (action("Reset match appearance")) send("settings", "match-appearance-reset 0");
     } else if (settingsPage == 1) {
         for (const auto& field : ttcg::HotkeyBindings::fields) {
             const auto p = ImGui::GetCursorScreenPos();
@@ -374,7 +374,7 @@ void GameApp::settings(ImVec2 at, ImVec2 size) {
             const auto blocked = label(collectionState, "recoveryBlocked");
             ImGui::BeginDisabled(pendingCommand || capturing() || !member(state, "interruptedMatch").empty() ||
                                  !blocked.empty());
-            if (ImGui::Button("Remove unavailable cards"))
+            if (action("Remove unavailable cards"))
                 confirm(
                     "Remove unavailable cards?",
                     "Removes unavailable cards and their discovery marks from this character, and clears their deck slots. Installed cards and game progress are kept. Reinstalling the expansions will no longer restore these copies. Keep an earlier save if you may want them back.",
@@ -418,14 +418,14 @@ void GameApp::settings(ImVec2 at, ImVec2 size) {
             ImGui::Dummy(ImVec2(width, 0));
         };
         heading("Collection");
-        if (ImGui::Button("Add all cards")) send("development", "cards");
+        if (action("Add all cards")) send("development", "cards");
         ImGui::SameLine();
-        if (ImGui::Button("Add all foils")) send("development", "foils");
+        if (action("Add all foils")) send("development", "foils");
         const auto blocked = label(member(state, "collection"), "recoveryBlocked");
         ImGui::Dummy(ImVec2(0, 12 * scale));
         ImGui::BeginDisabled(pendingCommand || capturing() || !member(state, "interruptedMatch").empty() ||
                              !blocked.empty());
-        if (ImGui::Button("Clear collection"))
+        if (action("Clear collection"))
             confirm(
                 "Clear your collection?",
                 "Deletes every card and foil, including unavailable cards, clears discovery marks and empties all decks for this character. Your album, gold and game progress are kept. Automatic card grants and Reveal all cards will be turned off for all characters. Restore an earlier save to recover deleted cards.",
@@ -437,7 +437,7 @@ void GameApp::settings(ImVec2 at, ImVec2 size) {
         const auto resetBlocked = label(member(state, "collection"), "resetBlocked", blocked);
         ImGui::BeginDisabled(pendingCommand || capturing() || !member(state, "interruptedMatch").empty() ||
                              !resetBlocked.empty());
-        if (ImGui::Button("Reset Tessera"))
+        if (action("Reset Tessera"))
             confirm(
                 "Reset Tessera for this character?",
                 "Erases your collection, decks, records, reputation, tournaments and regional rule changes. Resets NPC and merchant collections, cancels card exchanges, and removes carried packs and old invitations. Keeps your album and gives eight starter cards and a starter deck. Gold and interface preferences stay. Development overrides return to defaults for all characters. Restore an earlier save to undo.",
@@ -516,7 +516,7 @@ void GameApp::settings(ImVec2 at, ImVec2 size) {
             auto image = assets.get(customBack);
             ImGui::GetWindowDrawList()->AddImage(image.id, p, p + ImVec2(w, h));
         } else
-            displayCard(selected, p, ImVec2(w, h), false, -1, 0, 0, true);
+            displayCard(selected, p, ImVec2(w, h), false, -1, MaterialSlot::single, 0, true);
         auto buttons = p + ImVec2(0, h + 22 * scale);
         const auto step = [&](int dir) {
             for (int i = 0; i < int(collection.cards.size()); ++i) {

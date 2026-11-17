@@ -29,8 +29,8 @@ void GameApp::shop(ImVec2 at, ImVec2 size) {
         }
     auto top = at + ImVec2(0, 144) * scale;
     const float right = AlbumLayout::preview * scale, gap = AlbumLayout::gap * scale, width = size.x - right - gap;
-    const std::vector<std::string> tiers{"All tiers", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"},
-        rarities{"All rarities", "Common", "Rare", "Epic", "Legendary"};
+    const std::vector<std::string> tiers = tierChoices("All tiers"),
+                                   rarities{"All rarities", "Common", "Rare", "Epic", "Legendary"};
     const float tierWidth = choiceWidth(tiers), rarityWidth = choiceWidth(rarities),
                 filterX = width - tierWidth - rarityWidth - 12 * scale;
     ImGui::SetCursorScreenPos(top);
@@ -108,10 +108,7 @@ void GameApp::shop(ImVec2 at, ImVec2 size) {
                     shopSelected = id;
                     shopQuantity = 1;
                 }
-                if ((ImGui::IsItemHovered() && ImGui::IsMouseClicked(1)) ||
-                    (ImGui::IsItemFocused() &&
-                     (ImGui::IsKeyPressed(ImGuiKey_I) || ImGui::IsKeyPressed(ImGuiKey_GamepadFaceUp))))
-                    inspectCard(id);
+                if (inspectRequested()) inspectCard(id);
                 displayCard(id, pos, ImVec2(w, h),
                             shopSelected == id || (ImGui::IsItemFocused() && ImGui::GetIO().NavVisible), -1,
                             MaterialSlot::gridSlot(material++));
@@ -146,7 +143,7 @@ void GameApp::shop(ImVec2 at, ImVec2 size) {
     ImGui::SetCursorScreenPos(art);
     if (ImGui::InvisibleButton("shop-preview", ImVec2(dw, dh), ImGuiButtonFlags_EnableNav)) inspectCard(shopSelected);
     softShadow(art, ImVec2(dw, dh), 1, 10);
-    displayCard(shopSelected, art, ImVec2(dw, dh), false, -1, 0, 0, true);
+    displayCard(shopSelected, art, ImVec2(dw, dh), false, -1, MaterialSlot::single, 0, true);
     float y = art.y + dh + 14 * scale;
     if (!skinBand("band", ImVec2(detail.x, y), ImVec2(right, 40 * scale)))
         skinBand("selector", ImVec2(detail.x, y), ImVec2(right, 40 * scale));

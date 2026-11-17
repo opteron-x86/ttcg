@@ -1,4 +1,5 @@
 #pragma once
+#include "Colour.h"
 #include <imgui.h>
 #include <cstdint>
 #include <filesystem>
@@ -9,8 +10,18 @@ namespace preview {
 // One render target for each card drawn with a foil or match finish in a frame. Two
 // cards must not share a slot within a frame: the second would redraw, or rebuild at
 // another size, a target the frame's draw list already refers to.
+// Where a card's finished face is kept between frames. Each card on screen needs a slot of
+// its own, so every place that draws cards has a range.
 struct MaterialSlot {
-    static constexpr int drag = 86, packs = 87, appearance = 170;
+    static constexpr int single = 0; // The one large card of a page: the inspector and the previews.
+    static constexpr int hands = 1, board = 11;
+    // From here on a face is kept at half the size; these cards are never drawn large.
+    static constexpr int reduced = 22;
+    static constexpr int drag = 86, packs = 87;
+    static constexpr int demoHands = 110, demoBoard = 120;
+    static constexpr int eventPrizes = 135, resultPrizes = 145, foilChoice = 148, tradeHands = 150;
+    static constexpr int placing = 160, ghost = 161, swapping = 162;
+    static constexpr int appearance = 170;
     // A scrolling grid's cards. The range holds more than any layout shows at once.
     static constexpr int grid = 174, gridCount = 160, count = grid + gridCount, none = -1;
     // The grid's nth visible card. Past the range a card is drawn without a finish.
