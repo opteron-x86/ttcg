@@ -86,6 +86,15 @@ add_library(${PROJECT_NAME} SHARED
   src/Panel.cpp
   src/MatchFlow.cpp
   src/Commands.cpp
+  src/TournamentCommands.cpp
+  src/CollectionSync.cpp
+  src/CollectionMatch.cpp
+  src/CollectionAlbum.cpp
+  src/CollectionSnapshot.cpp
+  src/CollectionSave.cpp
+  src/NpcIntegration.cpp
+  src/Exchange.cpp
+  src/ShopCommands.cpp
   src/Papyrus.cpp
   src/Events.cpp
   native/skse/Host.cpp

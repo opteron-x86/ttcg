@@ -48,7 +48,6 @@ bool setGamesEnabled(bool enabled) {
         RE::SendHUDMessage::ShowHUDMessage(enabled ? "Tessera enabled." : "Tessera disabled.");
     return true;
 }
-#include "NativeTournamentCommands.h"
 bool validCommandSize(std::string_view text) { return text.size() <= (text.starts_with("cardback ") ? 2048u : 128u); }
 void command(const char* raw) {
     if (!raw || !visible) return;

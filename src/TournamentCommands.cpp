@@ -1,4 +1,7 @@
-// Included in src/Commands.cpp after the normal table helpers.
+// Tournament commands from the interface: the board, entering a game and prizes.
+#include "PluginState.h"
+
+namespace tessera_plugin {
 void tournamentBoard() {
     releaseOpponent();
     if (active) campaign::savedMatch = {};
@@ -164,3 +167,4 @@ bool tournamentCommand(std::istringstream& input) {
     publish();
     return true;
 }
+} // namespace tessera_plugin

@@ -15,7 +15,7 @@ def section(text, start, end):
 source = (Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / 'include/NativeCollection.h').read_text()
 resolver = section(source, 'template <class T> T* resolveID(', 'inline unsigned tournamentVenue()')
 bank = section(source, 'struct Bank {', 'inline bool available()')
-shop = section((ROOT / 'include/NativeShop.h').read_text(), 'struct ShopBank {', 'inline bool openShop(')
+shop = section((ROOT / 'include/NativeShop.h').read_text(), 'struct ShopBank {', 'bool openShop(')
 # Use CommonLib's actual typed lookup. It checks the exact form tag, whereas
 # TESForm::As permits Actor -> TESObjectREFR and other valid base conversions.
 commonlib = (ROOT / 'build/deps/commonlib/include/RE/T/TESDataHandler.h').read_text()

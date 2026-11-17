@@ -137,6 +137,11 @@ bool setGamesEnabled(bool enabled);
 bool validCommandSize(std::string_view text);
 void command(const char* raw);
 
+// TournamentCommands.cpp
+void tournamentBoard();
+bool prepareTournament(unsigned id);
+bool tournamentCommand(std::istringstream& input);
+
 // Papyrus.cpp
 void logNpcSyncTiming(const ttcg::NpcSyncTiming& timing, std::string_view source);
 void backgroundUpdate();
