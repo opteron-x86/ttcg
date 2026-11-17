@@ -77,6 +77,8 @@ ToggleGamesKey=0
 Residents=1
 ; Generated/manual residents must use a vanilla or DLC voice. Authored profiles are exempt.
 VanillaVoicesOnly=1
+; With a card chosen, mark the cards it would capture on the square under the cursor.
+CapturePreview=1
 ; Also available in Settings. Hides ALL Tessera dialogue and blocks challenges.
 ; The album remains accessible. Disabling during a match preserves it to resume.
 Enabled=1

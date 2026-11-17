@@ -1063,7 +1063,12 @@ inline std::string json(RE::Actor* actor, bool = true, bool conceal = false) {
                ",\"hold\":" + ttcg::quote(p.traveller ? "Travellers" : ttcg::holdName(p.hold)) +
                ",\"traveller\":" + (p.traveller ? "true" : "false") + "}";
         out.pop_back();
-        out += ",\"base\":" + std::to_string(p.base) + ",\"friendlyOnly\":" + std::string("false") + "}";
+        // What a game with them is played for, as far as it is settled before the lobby.
+        const auto playerTerms = ttcg::opponentTerms(saved, int(i));
+        out += ",\"base\":" + std::to_string(p.base) + ",\"friendlyOnly\":" + std::string("false") +
+               ",\"rules\":" + std::to_string(playerTerms.rules) + ",\"trade\":" + std::to_string(playerTerms.trade) +
+               ",\"wager\":" + std::to_string(p.wager) +
+               ",\"ownRules\":" + (p.personalRules || ttcg::isMaiq(p) ? "true" : "false") + "}";
     }
     // Children are revealed by accepted challenges, without recording their games.
     for (const auto& [base, record] : saved.players)

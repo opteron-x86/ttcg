@@ -53,7 +53,7 @@ void GameApp::tournaments(ImVec2 at, ImVec2 size) {
     const float width = size.x - nav - gap;
     const auto* current = tournament(eventID);
     if (!current) {
-        text(origin, history ? "No tournament history" : "Speak with an innkeeper to find and enter tournaments.", 23,
+        text(origin, history ? "No tournament history" : "Speak with an innkeeper to find and enter tournaments.", 21,
              palette().muted, width);
         return;
     }
@@ -62,7 +62,7 @@ void GameApp::tournaments(ImVec2 at, ImVec2 size) {
         seenEvents.insert(eventID);
         send("tournament", "seen " + std::to_string(eventID), false);
     }
-    text(origin, label(e, "name") + " · " + label(e, "circuitName"), 30, palette().accent, width - 170 * scale);
+    text(origin, label(e, "name") + " · " + label(e, "circuitName"), 32, palette().accent, width - 170 * scale);
     const auto champion = number(e, "champion");
     text(origin + ImVec2(width - 170 * scale, 14 * scale),
          champion                ? (champion == 20          ? "Champion"
@@ -71,17 +71,17 @@ void GameApp::tournaments(ImVec2 at, ImVec2 size) {
          : flag(e, "eliminated") ? "Withdrawn"
          : flag(e, "joined")     ? "In progress"
                                  : "Open for entry",
-         17, palette().accent, 170 * scale);
+         18, palette().accent, 170 * scale);
     text(origin + ImVec2(0, 44) * scale, label(e, "venue") + " · " + label(e, "host"), 18, palette().muted);
     line(origin + ImVec2(0, 82) * scale, origin + ImVec2(width, 82 * scale));
     ruleChips(origin + ImVec2(0, 91) * scale, width, number(e, "rules"), -1, false, true);
-    text(origin + ImVec2(0, 135) * scale, (champion ? "Ended " : "Closes ") + label(e, "endsLabel"), 16,
+    text(origin + ImVec2(0, 135) * scale, (champion ? "Ended " : "Closes ") + label(e, "endsLabel"), 15,
          palette().muted);
     const float prizes = 205 * scale, boardW = width - prizes - gap, top = 185 * scale,
                 availableH = size.y - top - 90 * scale, colGap = 15 * scale, colW = (boardW - 2 * colGap) / 3;
     for (int col = 0; col < 3; ++col) {
         const char* title = col == 0 ? "Quarterfinals" : col == 1 ? "Semifinals" : "Final";
-        text(origin + ImVec2(col * (colW + colGap), top - 20 * scale), title, 17, palette().muted);
+        text(origin + ImVec2(col * (colW + colGap), top - 20 * scale), title, 18, palette().muted);
         const int start = col == 0 ? 8 : col == 1 ? 12 : 14, count = col == 0 ? 4 : col == 1 ? 2 : 1;
         const float section = availableH / count, pairH = std::min(86 * scale, section - 12 * scale);
         for (int pair = 0; pair < count; ++pair) {
@@ -109,7 +109,7 @@ void GameApp::tournaments(ImVec2 at, ImVec2 size) {
                 const auto row = pos + ImVec2(0, side * pairH / 2);
                 if (number(player, "id") == 20)
                     d->AddRectFilled(row, row + ImVec2(colW, pairH / 2), (palette().selection & 0xffffff) | 0x55000000);
-                text(row + ImVec2(10, 10) * scale, flag(player, "reserved") ? "Open" : label(player, "name"), 16,
+                text(row + ImVec2(10, 10) * scale, flag(player, "reserved") ? "Open" : label(player, "name"), 15,
                      wins == 2 ? palette().accent : palette().ink, colW - 40 * scale);
                 if (number(player, "id"))
                     text(row + ImVec2(colW - 24 * scale, 10 * scale), std::to_string(wins), 18, palette().muted);
@@ -119,7 +119,7 @@ void GameApp::tournaments(ImVec2 at, ImVec2 size) {
     const auto prizeAt = origin + ImVec2(width - prizes, top);
     line(prizeAt - ImVec2(gap / 2, 15 * scale), prizeAt + ImVec2(-gap / 2, availableH));
     textCaps(prizeAt, "Prize", 13.5f, palette().muted, 1.6f);
-    text(prizeAt + ImVec2(0, 26) * scale, std::to_string(number(e, "purse")) + " gold", 24, skin().value);
+    text(prizeAt + ImVec2(0, 26) * scale, std::to_string(number(e, "purse")) + " gold", 26, skin().value);
     text(prizeAt + ImVec2(0, 62) * scale, label(e, "prize"), 18, palette().ink, prizes);
     if (arrayMember(e, "prizeCards").empty())
         if (const auto pack = assets.pack(1); pack.id) {
@@ -143,7 +143,7 @@ void GameApp::tournaments(ImVec2 at, ImVec2 size) {
         ++pindex;
     }
     if (number(e, "fee") && !flag(e, "joined"))
-        text(prizeAt + ImVec2(0, availableH - 20 * scale), "Entry: " + std::to_string(number(e, "fee")) + " gold", 16,
+        text(prizeAt + ImVec2(0, availableH - 20 * scale), "Entry: " + std::to_string(number(e, "fee")) + " gold", 15,
              palette().muted);
     const auto footer = origin + ImVec2(0, size.y - 63 * scale);
     line(footer, footer + ImVec2(width, 0));
@@ -170,7 +170,7 @@ void GameApp::tournaments(ImVec2 at, ImVec2 size) {
         reason = "Not enough gold for entry.";
     else if (registration && playable < 5)
         reason = "You need five playable cards to enter.";
-    text(footer + ImVec2(0, play && !hasInterrupted ? -28 : 23) * scale, reason, 16, palette().muted,
+    text(footer + ImVec2(0, play && !hasInterrupted ? -28 : 23) * scale, reason, 15, palette().muted,
          width - 250 * scale);
     if (play && !hasInterrupted) {
         if (button("tournament-deck", "Edit deck", footer + ImVec2(0, 20) * scale, ImVec2(110, 36) * scale)) {
@@ -237,7 +237,7 @@ void GameApp::tournamentOutcome() {
                                                    : outcome;
         // A centred heading in the outcome's own colour, between two rules.
         const bool lost = flag(e, "eliminated") || std::string_view(title) == "Game lost";
-        const ImU32 tone = champion ? IM_COL32(240, 196, 101, 255) : lost ? skin().notice : skin().value;
+        const ImU32 tone = champion ? goldInk() : lost ? skin().notice : skin().value;
         const float middle = ImGui::GetWindowPos().x + width * .5f;
         const auto centred = [&](const std::string& value, float pixels, ImU32 colour, float gap) {
             const auto at = ImGui::GetCursorScreenPos();
@@ -253,7 +253,7 @@ void GameApp::tournamentOutcome() {
             gradientLine(ImGui::GetWindowDrawList(), ImVec2(middle + half, y), reach, fade(tone, .7f));
             ImGui::Dummy(ImVec2(1, 56 * scale));
         }
-        centred(label(e, "name") + " · " + label(e, "circuitName"), 20, palette().muted, 4);
+        centred(label(e, "name") + " · " + label(e, "circuitName"), 21, palette().muted, 4);
         const int node = number(e, "lastNode", 8);
         if (node >= 8 && node <= 14) {
             const auto& wins = member(e, "wins")[node - 8];
@@ -261,7 +261,7 @@ void GameApp::tournamentOutcome() {
                                 : node < 14 ? "Semifinals"
                                             : "Final") +
                         " · " + std::to_string(itemNumber(wins, 0, 0)) + "–" + std::to_string(itemNumber(wins, 1, 0)),
-                    20, palette().muted, 4);
+                    21, palette().muted, 4);
         }
         ImGui::Dummy(ImVec2(0, 16 * scale));
         if (champion) {
@@ -286,7 +286,7 @@ void GameApp::tournamentOutcome() {
         }
         if (upgrades) {
             textBlock(std::to_string(upgrades) + " foil upgrade" + (upgrades == 1 ? "" : "s") + " remaining",
-                      width - 60 * scale, 23, palette().accent);
+                      width - 60 * scale, 21, palette().accent);
             std::vector<int> options;
             for (int i = 0; i < int(collection.cards.size()); ++i)
                 if (collection.cards[i].owned[0] > 0 && collection.cards[i].owned[1] < 1000000) options.push_back(i);
@@ -302,15 +302,57 @@ void GameApp::tournamentOutcome() {
             }
             if (names.empty())
                 textBlock("No cards to upgrade", 500 * scale, 18, palette().muted);
-            else if (select("##foil-card", selected, names, 500 * scale))
-                foilSelection = options[selected];
-            if (!options.empty()) {
+            else {
+                // A grid to pick from, as in the album: a long dropdown can't be worked with a pad.
                 const auto p = ImGui::GetCursorScreenPos();
-                displayCard(foilSelection, p, ImVec2(156, 208) * scale, false, -1, 148);
-                if (button("upgrade", "Make foil", p + ImVec2(190, 80) * scale, ImVec2(200, 43) * scale, true,
+                const float side = 230 * scale, gridWidth = width - 60 * scale - side - 20 * scale,
+                            gridHeight = 380 * scale;
+                ImGui::SetNextItemWidth(gridWidth);
+                ImGui::InputTextWithHint("##foil-search", "Find a card", foilQuery, sizeof(foilQuery));
+                std::vector<int> shown;
+                for (int id : options)
+                    if (!foilQuery[0] || lower(collection.cards[id].name).find(lower(foilQuery)) != std::string::npos)
+                        shown.push_back(id);
+                ImGui::SetCursorScreenPos(p + ImVec2(0, 46 * scale));
+                ImGui::BeginChild("foil-cards", ImVec2(gridWidth, gridHeight - 46 * scale),
+                                  ImGuiChildFlags_NavFlattened);
+                const float gap = 8 * scale, tile = 86 * scale, tileHeight = tile / .75f;
+                const int columns = std::max(1, int((gridWidth - 14 * scale + gap) / (tile + gap)));
+                ImGuiListClipper clip;
+                clip.Begin((int(shown.size()) + columns - 1) / columns, tileHeight + gap);
+                while (clip.Step())
+                    for (int row = clip.DisplayStart; row < clip.DisplayEnd; ++row) {
+                        const auto at = ImGui::GetCursorScreenPos();
+                        for (int col = 0; col < columns && row * columns + col < int(shown.size()); ++col) {
+                            const int id = shown[row * columns + col];
+                            const auto pos = at + ImVec2(col * (tile + gap), 0);
+                            ImGui::PushID(id);
+                            ImGui::SetCursorScreenPos(pos);
+                            if (ImGui::InvisibleButton("foil-option", ImVec2(tile, tileHeight),
+                                                       ImGuiButtonFlags_EnableNav))
+                                foilSelection = id;
+                            displayCard(id, pos, ImVec2(tile, tileHeight),
+                                        int(foilSelection) == id ||
+                                            (ImGui::IsItemFocused() && ImGui::GetIO().NavVisible),
+                                        -1, MaterialSlot::none);
+                            ImGui::PopID();
+                        }
+                        ImGui::SetCursorScreenPos(at + ImVec2(0, tileHeight + gap));
+                        ImGui::Dummy(ImVec2(1, 0));
+                    }
+                if (shown.empty())
+                    text(ImGui::GetCursorScreenPos() + ImVec2(0, 20 * scale), "No card of that name", 18,
+                         palette().muted);
+                ImGui::EndChild();
+                // The chosen card, and the button that spends an upgrade on it.
+                const auto chosen = p + ImVec2(gridWidth + 20 * scale, 0);
+                displayCard(foilSelection, chosen, ImVec2(156, 208) * scale, false, -1, 148);
+                text(chosen + ImVec2(0, 216 * scale), fitted(collection.cards[foilSelection].name, 17, side), 18,
+                     palette().ink);
+                if (button("upgrade", "Make foil", chosen + ImVec2(0, 250) * scale, ImVec2(200, 43) * scale, true,
                            !pendingCommand))
                     send("tournament", "foil " + std::to_string(eventID) + " " + std::to_string(foilSelection));
-                ImGui::SetCursorScreenPos(p + ImVec2(0, 224) * scale);
+                ImGui::SetCursorScreenPos(p + ImVec2(0, gridHeight + 8 * scale));
                 ImGui::Dummy(ImVec2(1, 1));
             }
         }
@@ -403,7 +445,7 @@ void GameApp::resultModal() {
                                     : std::string{};
     const auto* event = tournament(number(member(c, "tournaments"), "notification"));
     const float reasonHeight =
-        reason.empty() ? 0 : font()->CalcTextSizeA(19 * scale, 1e5f, 490 * scale, reason.c_str()).y + 24 * scale;
+        reason.empty() ? 0 : font()->CalcTextSizeA(18 * scale, 1e5f, 490 * scale, reason.c_str()).y + 24 * scale;
     // The closing dialog says how the game ended and what changed hands.
     int won = 0, lost = 0;
     for (int origin = 0; origin < 10; ++origin) {
@@ -450,9 +492,7 @@ void GameApp::resultModal() {
             float y = origin.y + 4 * scale;
             const float middle = panel.x + extent.x / 2;
             const char* heading = outcome < 0 ? "Draw" : outcome == 0 ? "Victory" : "Defeat";
-            const ImU32 tone = outcome == 0  ? IM_COL32(240, 196, 101, 255)
-                               : outcome < 0 ? palette().ink
-                                             : skin().notice;
+            const ImU32 tone = outcome == 0 ? goldInk() : outcome < 0 ? palette().ink : skin().notice;
             {
                 const float half = capsWidth(heading, 32, 5) * .5f + 26 * scale,
                             reach = std::max(0.f, extent.x * .5f - 44 * scale - half);
@@ -462,7 +502,7 @@ void GameApp::resultModal() {
             }
             const auto& score = member(state, "score");
             text(ImVec2(middle, y + 52 * scale),
-                 std::to_string(itemNumber(score, 0)) + " – " + std::to_string(itemNumber(score, 1)), 24, palette().ink,
+                 std::to_string(itemNumber(score, 0)) + " – " + std::to_string(itemNumber(score, 1)), 26, palette().ink,
                  0, true);
             float rowY = y + 96 * scale;
             if (!settlement.empty()) {
@@ -492,11 +532,11 @@ void GameApp::resultModal() {
             prizes(lostCards, "Lost", 1);
             y += summaryHeight;
             if (!reason.empty()) {
-                text(ImVec2(panel.x + extent.x / 2, y), reason, 19, palette().muted, width, true);
+                text(ImVec2(panel.x + extent.x / 2, y), reason, 18, palette().muted, width, true);
                 y += reasonHeight;
             }
             if (event) {
-                text(ImVec2(panel.x + extent.x / 2, y), label(*event, "name"), 19, palette().accent, width, true);
+                text(ImVec2(panel.x + extent.x / 2, y), label(*event, "name"), 18, palette().accent, width, true);
                 if (button("tournament-notice", "View tournament",
                            ImVec2(panel.x + extent.x / 2 - 95 * scale, y + 28 * scale), ImVec2(190, 36) * scale)) {
                     eventID = number(*event, "id");
@@ -511,8 +551,11 @@ void GameApp::resultModal() {
                 send("prepare");
                 ImGui::CloseCurrentPopup();
             }
+            bool leaveKey = false;
+            keyPrompt("Esc", "360_B", "Leave", ImVec2(panel.x + 32 * scale, buttons.y + 6 * scale), &leaveKey,
+                      "leave-key");
             if (button("leave", "Leave", buttons + ImVec2(can ? 190 * scale : 0, 0), ImVec2(150, 42) * scale, !can) ||
-                backPressed()) {
+                leaveKey || backPressed()) {
                 send("close");
                 ImGui::CloseCurrentPopup();
             }
@@ -524,14 +567,14 @@ void GameApp::resultModal() {
                                 : outcome < 0  ? "Draw"
                                 : outcome == 0 ? "You Win!"
                                                : label(state, "opponent") + "’s choice";
-            text(origin + ImVec2(width / 2, 0), title, 28, palette().ink, width, true);
+            text(origin + ImVec2(width / 2, 0), title, 26, palette().ink, width, true);
             const float gap = 16 * scale, w = 160 * scale, h = w / .75f;
             std::array<ImVec2, 10> positions{};
             const float elapsed = float(now - trade.started), left = origin.x + (width - 5 * w - 4 * gap) * .5f;
             const bool selectable = trade.phase == TradeView::Selecting && !pendingCommand;
             for (int player = 0; player < 2; ++player) {
                 const float y = origin.y + (64 + (1 - player) * 268) * scale;
-                text(ImVec2(left, y), player ? label(state, "opponent") : "You", 20, palette().muted);
+                text(ImVec2(left, y), player ? label(state, "opponent") : "You", 21, palette().muted);
                 for (int slot = 0; slot < 5; ++slot) {
                     const int index = player * 5 + slot, id = hands.is_array() ? itemNumber(hands[player], slot) : -1;
                     if (id < 0) continue;
@@ -573,10 +616,18 @@ void GameApp::resultModal() {
                 text(footer + ImVec2(0, 5 * scale),
                      (outcome < 0 ? std::to_string(wager) + " gold returned"
                                   : std::string(outcome == 0 ? "+" : "−") + std::to_string(wager) + " gold"),
-                     24, outcome == 1 ? IM_COL32(223, 149, 133, 255) : palette().accent);
+                     26, outcome == 1 ? lossInk() : palette().accent);
             if (!label(c, "notice").empty())
-                text(footer + ImVec2(250 * scale, 8 * scale), label(c, "notice"), 16, palette().muted,
+                text(footer + ImVec2(250 * scale, 8 * scale), label(c, "notice"), 15, palette().muted,
                      width - 610 * scale);
+            else {
+                // The dialog covers the window's own prompts, so it shows the ones that apply here.
+                float x = footer.x + 250 * scale;
+                x += keyPrompt("Mouse1", "360_A", "Select", ImVec2(x, footer.y + 5 * scale)) + 26 * scale;
+                x += keyPrompt("Mouse2", "360_Y", "Inspect", ImVec2(x, footer.y + 5 * scale)) + 26 * scale;
+                if (choice)
+                    text(ImVec2(x, footer.y + 11 * scale), "Choose your winnings to go on.", 15, palette().muted);
+            }
             if (button("trade-inspect", "Inspect", footer + ImVec2(width - 302 * scale, 0), ImVec2(126, 40) * scale)) {
                 const int index = trade.inspected;
                 inspectCard(itemNumber(hands[index / 5], index % 5));

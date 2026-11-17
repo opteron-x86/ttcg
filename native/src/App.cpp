@@ -271,8 +271,8 @@ bool App::button(const char* id, const char* label, ImVec2 at, ImVec2 size, bool
             draw->AddRectFilled(at, at + size, alpha(palette().selection, active ? .7f : .4f));
     } else
         skinRule(ImVec2(at.x, at.y + size.y - 1), ImVec2(at.x + size.x, at.y + size.y - 1), enabled ? .6f : .25f);
-    const ImVec2 measure = font()->CalcTextSizeA(19 * scale, 1e5f, 0, label);
-    text(at + ImVec2((size.x - measure.x) * .5f, (size.y - measure.y) * .5f), label, 19,
+    const ImVec2 measure = font()->CalcTextSizeA(18 * scale, 1e5f, 0, label);
+    text(at + ImVec2((size.x - measure.x) * .5f, (size.y - measure.y) * .5f), label, 18,
          !enabled                     ? alpha(palette().muted, .45f)
          : active || hover || focused ? palette().ink
                                       : alpha(palette().ink, .86f));

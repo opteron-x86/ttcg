@@ -2,6 +2,7 @@
   "schema": 1,
   "id": "norden",
   "name": "Norden",
+  "detect": ["SKSE/Plugins/moreHUD/Norden UI.json"],
   "credit": "Norden UI by Nithog",
   "font": "jost",
   "palette": {

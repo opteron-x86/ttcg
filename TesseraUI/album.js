@@ -301,7 +301,7 @@ const TRADE_RULES=[
  {title:'All',copy:'The winner takes all five cards from the opponent’s original hand.'}
 ];
 const RULE_PAGES=[
- {id:'play',title:'How to play',demo:'play',copy:'Each player has five cards. Take turns placing one card on the 3×3 board. A card captures an adjacent opponent when its touching rank is higher. The tenth, unplayed card still counts, so the total is always ten. More than five wins. Unplayed opposing cards are hidden unless Open or Three Open is active.'},
+ {id:'play',title:'How to play',demo:'play',copy:'Each player has five cards. Take turns placing one card on the 3×3 board. A card captures an adjacent opponent when its touching rank is higher. With a card chosen, the board marks the cards it would capture on the square you point at. The tenth, unplayed card still counts, so the total is always ten. More than five wins. Unplayed opposing cards are hidden unless Open or Three Open is active.'},
  {id:'open',title:'Open',demo:'open',copy:'Both hands stay visible after the deal.'},
  {id:'threeopen',title:'Three Open',demo:'threeopen',copy:'Three cards in each hand are shown. The other two stay hidden until played. Cannot combine with Open.'},
  {id:'same',title:'Same',demo:'same',copy:'If two or more touching ranks equal the adjacent cards, those enemy cards are captured. Combo then flips any lower adjacent ranks. Same uses printed ranks.'},

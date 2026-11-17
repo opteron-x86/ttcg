@@ -25,6 +25,16 @@ For collection recovery, use a separate development save and retain a copy befor
 - Build up match records, reputation, changed regional rules, extra decks, tournaments, buyback stock and manually added players. Cancel **Reset Tessera** once, then confirm. The album remains with eight starter cards and one starter deck; the previous progress is gone. Carried packs and old courier invitations are removed, while Skyrim gold, unrelated items, stored packs and interface preferences remain. Card exchange quests receive cancellation. Reopen, save and reload: defaults and starter cards persist without duplicates, and new collecting, trading and tournaments work normally.
 - Try a full reset while a merchant payment, tournament pack delivery or courier request is pending; the reset must wait. Verify old UI commands, queued card grants, exchange completions and courier acknowledgements cannot restore pre-reset progress.
 
+With a physical controller (the automated tests drive the same input path, but not a real pad):
+
+- D-pad and left stick move focus on every page; A selects; B goes back once per press and never closes Tessera while a list is open, a slider is being adjusted or a card is being dragged.
+- The right stick moves the cursor; A then clicks and drags what is under it, Y inspects it and X adds it to the deck.
+- In the inspector the right stick turns the card.
+- LB and RB step through the album's tabs and the shop's Buy, Sell and Buy back.
+- Choose a custom control colour with the swatches, and a foil upgrade from the grid, without touching the mouse.
+- The prompts show pad glyphs while the pad is in use and switch back on a key press or mouse movement.
+- Repeat the match, deck and shop checks above with keyboard and mouse only.
+
 The established gameplay test runtime is Skyrim SE 1.6.1170 under Linux/Proton. The DLL enables SE, AE and VR; the automated loader checks cover their declarations. In-game validation on other runtimes and VR remains to be recorded here.
 
 ## Native UI overhaul checkpoint

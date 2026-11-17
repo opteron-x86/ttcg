@@ -24,6 +24,8 @@
 #ifdef GetObject
 #undef GetObject
 #endif
+#include "SkinDetection.h"
+#include <fstream>
 #include "NativeCollection.h"
 #include "NativeCollectionAPI.h"
 #include "NativeExchange.h"

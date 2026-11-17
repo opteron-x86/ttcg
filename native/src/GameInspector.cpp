@@ -109,7 +109,7 @@ void GameApp::nativeInspector() {
         ImGui::CloseCurrentPopup();
     }
     textRight(origin + ImVec2(extent.x - 30 * scale, extent.y - 38 * scale),
-              padPrompts ? "Right stick turns the card" : "Drag the card to turn it", 14, fade(palette().muted, .8f));
+              padPrompts ? "Right stick turns the card" : "Drag the card to turn it", 15, fade(palette().muted, .8f));
     const int selectedDisplay = selected + (selectedFoil ? collection.cards.size() : 0);
     const auto found = std::find(inspectionList.begin(), inspectionList.end(), selectedDisplay);
     if (found != inspectionList.end() && inspectionList.size() > 1) {
@@ -119,7 +119,7 @@ void GameApp::nativeInspector() {
         const bool next = button("next-art", "→", nav + ImVec2(187, 0) * scale, ImVec2(43, 32) * scale, false,
                                  index + 1 < int(inspectionList.size()));
         text(nav + ImVec2(115 * scale, 5 * scale),
-             std::to_string(index + 1) + " / " + std::to_string(inspectionList.size()), 16, palette().muted, 0, true);
+             std::to_string(index + 1) + " / " + std::to_string(inspectionList.size()), 15, palette().muted, 0, true);
         const int direction =
             previous || ImGui::IsKeyPressed(ImGuiKey_LeftArrow, false) || ImGui::IsKeyPressed(ImGuiKey_GamepadL1, false)
                 ? -1

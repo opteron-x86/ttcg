@@ -20,7 +20,7 @@ settings=dict(windowSize=95,gamesEnabled=True,residents=1,vanillaVoicesOnly=True
 base.update(settings=settings,interruptedMatch=None,screen='album',matchContext=False)
 base['collection'].update(packs=[3,2],regions=regions,holdID=1,hold='Whiterun',skill='Regular',canPlay=True,maxWager=200,fixedTrade=2,fixedWager=-1,ruleLesson=0)
 base['collection']['known']=[bool(x) for x in base['collection']['known']]
-base['collection']['roster']=[dict(name=n,location=l,skill=k,wins=12,losses=6,draws=2,holdID=h,hold='Whiterun' if h==1 else 'Travellers',traveller=h==11,unlocked=True,friendlyOnly=f) for n,l,k,h,f in [('Hulda','The Bannered Mare','Regular',1,False),('Amren','Whiterun','Expert',1,False),('Lars Battle-Born','Whiterun','Beginner',1,True),("M’aiq the Liar",'Skyrim','Master',11,False)]]
+base['collection']['roster']=[dict(name=n,location=l,skill=k,wins=12,losses=6,draws=2,holdID=h,hold='Whiterun' if h==1 else 'Travellers',traveller=h==11,unlocked=True,friendlyOnly=f,rules=19,trade=2,wager=250,ownRules=h==11) for n,l,k,h,f in [('Hulda','The Bannered Mare','Regular',1,False),('Amren','Whiterun','Expert',1,False),('Lars Battle-Born','Whiterun','Beginner',1,True),("M’aiq the Liar",'Skyrim','Master',11,False)]]
 def normalize(s):
  result=copy.deepcopy(base);result.update(copy.deepcopy(s));result['collection']=copy.deepcopy(base['collection'])|s.get('collection',{})
  c=result['collection'];c['known']=[bool(v) for v in c['known']]

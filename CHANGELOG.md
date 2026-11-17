@@ -26,6 +26,16 @@
 - Master plays the end of an Open game exactly from the third card.
 - Tournaments that end unattended no longer stall the game while their remaining games are played.
 - `[Development] OpponentSkill` takes 0–5 for the six skill names.
+- Capture preview: with a card chosen, the board marks the cards it would capture on the square you point at. Can be turned off in Settings > Gameplay.
+- The foil-upgrade prize is chosen from a searchable grid instead of a dropdown.
+- Custom control colours can be picked from swatches.
+- The Journal shows each player's rules, trade rule and wager cap.
+- The lobby says when rule challenges open again.
+- A first run picks the skin for Oathvein, Norden, Edge, Untarnished, Dear Diary or Dear Diary Dark Mode when that mod is installed.
+- The shop's Buy, Sell and Buy back step with LB/RB and Q/E.
+- Result, trade and rule-request dialogs show their own key prompts.
+- Text uses five sizes throughout.
+- Fixed gold and gain/loss colours being unreadable on paper skins, clipped deck slot names, a tiny owned-count badge on small cards and the shop notice covering the prompts.
 - Legion and Decimation rule text says one group is chosen per board.
 - The Three Open demo shows the same cards as its lesson.
 - Exchange API: `CancelOffer` on a completed offer answers `stale`; `CompleteOffer` with its confirmation open answers `busy`.

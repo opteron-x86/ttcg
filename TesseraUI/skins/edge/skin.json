@@ -2,6 +2,7 @@
   "schema": 1,
   "id": "edge",
   "name": "Edge",
+  "detect": ["SKSE/Plugins/moreHUD/Edge UI.json"],
   "credit": "Edge UI by EugeneUI",
   "font": "jost",
   "palette": {

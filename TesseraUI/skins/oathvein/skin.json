@@ -2,6 +2,7 @@
   "schema": 1,
   "id": "oathvein",
   "name": "Oathvein",
+  "detect": ["SKSE/Plugins/moreHUD/Oathvein.json"],
   "credit": "Oathvein UI by Nithog",
   "font": "jost",
   "palette": {

@@ -47,6 +47,28 @@ struct CaptureAnnouncements {
         return captureLabel(rule);
     }
 };
+// For each card the player may play and each empty square, the cards that play
+// would capture, as a mask of squares. It replays the move on a copy of the table,
+// so every rule counts, and uses nothing the player can't see: their own hand and
+// the board. Empty when it isn't the player's move.
+inline std::array<std::array<unsigned, 9>, 5> capturePreviews(const Match& match, bool active) {
+    std::array<std::array<unsigned, 9>, 5> previews{};
+    if (!active || match.turn != 0 || match.boardComplete()) return previews;
+    for (int h = 0; h < 5; ++h) {
+        if (!match.playableHand(h)) continue;
+        for (int s = 0; s < 9; ++s) {
+            if (match.board[s].card >= 0) continue;
+            auto next = match;
+            // Where a creature group must be chosen, the preview takes the first.
+            const auto groups = match.groupChoices({h, s});
+            if (!next.play({h, s, groups.size() > 1 ? groups.front() : -1}, false).legal) continue;
+            for (int q = 0; q < 9; ++q)
+                if (q != s && match.board[q].card >= 0 && next.board[q].owner != match.board[q].owner)
+                    previews[h][s] |= 1u << q;
+        }
+    }
+    return previews;
+}
 inline std::string snapshotJson(const ttcg::Match& match, std::uint64_t session, std::uint64_t revision,
                                 const std::string& opponentName, bool active, bool thinking, const Result& lastResult,
                                 bool settling, bool musicEnabled = true, bool musicAvailable = false) {
@@ -183,6 +205,17 @@ inline std::string snapshotJson(const ttcg::Match& match, std::uint64_t session,
                       "{{\"card\":{},\"owner\":{},\"flip\":{},\"origin\":{}}}",
                       b.card + (b.origin >= 0 && match.foilHands[b.origin / 5][b.origin % 5] ? int(cards.size()) : 0),
                       b.owner, lastResult.flipped[i] ? "true" : "false", b.origin);
+    }
+    data += "],\"capturePreviews\":[";
+    const auto previews = capturePreviews(match, active && !settling);
+    for (int h = 0; h < 5; ++h) {
+        if (h) data += ',';
+        data += '[';
+        for (int s = 0; s < 9; ++s) {
+            if (s) data += ',';
+            data += std::to_string(previews[h][s]);
+        }
+        data += ']';
     }
     data += std::format("],\"rules\":{},\"settling\":{},\"stages\":[", match.rules, settling ? "true" : "false");
     CaptureAnnouncements announcements;

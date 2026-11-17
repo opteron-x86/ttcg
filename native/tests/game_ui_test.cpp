@@ -428,6 +428,42 @@ int main(int argc, char** argv) {
                 require(preview::GameTestAccess::tab(app) != tab, "E no longer steps through the tabs");
             }
             {
+                // With a card chosen, pointing at a square marks the cards it would capture there.
+                load("match");
+                const auto previews = app.snapshot().at("capturePreviews");
+                int hand = -1, square = -1;
+                for (int h = 0; h < 5 && hand < 0; ++h)
+                    for (int q = 0; q < 9 && hand < 0; ++q)
+                        if (previews[h][q].get<unsigned>()) hand = h, square = q;
+                require(hand >= 0, "Match fixture has no capturing play to preview");
+                const unsigned expected = previews[hand][square].get<unsigned>();
+                click("hand", 0);
+                require(preview::GameTestAccess::selectedHand(app) == hand, "Match fixture chose another card");
+                const auto aim = bounds("square", square).GetCenter();
+                io.AddMousePosEvent(aim.x, aim.y);
+                frame();
+                frame();
+                frame();
+                require(preview::GameTestAccess::capturePreview(app) == expected,
+                        "Aiming a card did not mark the cards it would capture");
+                io.AddMousePosEvent(aim.x, aim.y - 4000);
+                frame();
+                frame();
+                frame();
+                require(!preview::GameTestAccess::capturePreview(app), "Capture markers stayed after aiming elsewhere");
+                auto s = app.snapshot();
+                s["settings"]["capturePreview"] = false;
+                app.receive(s.dump());
+                click("hand", 0);
+                io.AddMousePosEvent(aim.x, aim.y);
+                frame();
+                frame();
+                frame();
+                require(!preview::GameTestAccess::capturePreview(app), "Capture markers ignore their setting");
+                io.AddMousePosEvent(-FLT_MAX, -FLT_MAX);
+                frame();
+            }
+            {
                 // The Rules page opened over a live table has its own card selection.
                 load("match");
                 click("hand", 0);

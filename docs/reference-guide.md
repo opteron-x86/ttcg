@@ -12,17 +12,21 @@ Games with children are casual. Adult players have their own skill, cards and te
 
 ## Cards and decks
 
-The album shows cards you own or have discovered. Search by name and filter by tier, group, affinity or rarity. Click a card to inspect it; click the inspection to enlarge the artwork.
+The album shows cards you own or have discovered. Search by name and filter by tier, group, affinity or rarity. The buttons beside the filters change the card size.
+
+Right-click a card or press I to inspect it. The inspector turns the card: drag it with the mouse, or use the right stick. The arrows step through the cards in the list you opened it from.
 
 A deck contains five cards. You can use up to two copies of an ordinary card and one of a Unique card. Normal and foil copies share this limit. Foil is an appearance finish with the same strength as the normal card.
 
-Double-click a card or drag it into a deck slot. Drag deck cards to reorder them. You can keep up to 20 named decks; changes save automatically. Several decks can use the same owned copies.
+The Decks tab shows your deck beside the card picker. Double-click a card, press Enter or drag it into a slot. Choose a slot first to replace that card: the detail panel then shows what each rank gains or loses. Drag deck cards to reorder them. You can keep up to 20 named decks; changes save automatically. Several decks can use the same owned copies.
 
 Losing or selling a required copy clears the affected deck slots. Complete the deck before starting another match.
 
 ## Playing a match
 
 Select a card in your hand, then an empty square, or drag the card onto it. Its four values face up, right, down and left. A stronger touching edge captures the adjacent opponent card. Captured cards count toward your score.
+
+With a card chosen, pointing at a square marks the cards it would capture there, special rules included. **Settings > Gameplay > Show captures before playing** turns this off.
 
 Right-click a card or use **Inspect** to read it. The **Rules** page explains every special rule with a demonstration. Rule names above the board also open their explanation.
 
@@ -32,13 +36,43 @@ The match's trade rule determines which cards change hands afterward. Review the
 
 Win cards in matches, buy packs, trade with merchants or enter tournaments. Opponents keep cards they win and can use them in later matches. Your Journal records known players, regional rules and your results.
 
-Local victories build reputation. Stronger opponents and tournament success open further opportunities. Regional rules can spread through play; Famous players can challenge an Expert or Master to abolish a rule.
+Local victories build reputation. Stronger opponents and tournament success open further opportunities. Regional rules can spread through play; Famous players can challenge an Expert or Master to abolish a rule. A challenge, won or lost, closes the next one in that hold for seven days; the match setup says when it opens again.
+
+The Journal lists the players you know by hold. Select one to see where they are found, their skill, the rules and trade rule a game with them uses, the most they will wager and your record against them.
 
 [Card trading](card-trading.md) covers buying, selling and buyback. [Tournaments](tournaments.md) covers entry, deadlines and prizes. [Albums and packs](pack-distribution.md) explains merchant availability.
 
 ## Settings and controls
 
-Settings includes appearance, shortcuts and gameplay options. Choose a theme, fonts, card layout, board texture and card back. Changes apply immediately.
+Settings includes appearance, shortcuts and gameplay options. Choose a skin, fonts, card layout, board texture and card back. Changes apply immediately.
+
+Skins follow Skyrim's interface mods: Skyrim, Oathvein, Vel'dun, Norden, Edge, Untarnished, Nordic, Outlander, Dear Diary, Dear Diary Dark and Wood and Paper. On a first run Tessera picks the skin for Oathvein, Norden, Edge, Untarnished, Dear Diary or Dear Diary Dark Mode if it finds that mod; otherwise it starts with Skyrim. Change it at any time in **Settings > Appearance**.
+
+### Keyboard and mouse
+
+| Action | Input |
+|---|---|
+| Select, play a card | Left click, or Enter on the focused item |
+| Inspect a card | Right click, or I |
+| Add the focused card to the deck | Enter, or double-click |
+| Switch tabs | Q and E |
+| Move focus | Tab and the arrow keys |
+| Back, close | Esc |
+
+### Controller
+
+| Action | Input |
+|---|---|
+| Move focus | D-pad or left stick |
+| Select, play a card | A |
+| Move the cursor | Right stick; A then clicks what is under it |
+| Inspect a card | Y |
+| Turn the inspected card | Right stick |
+| Add a card to the deck | X |
+| Switch tabs | LB and RB |
+| Back, close | B |
+
+Esc or B first lets go of whatever is in progress: a card being dragged, a slider being adjusted or an open list. Press it again to go back.
 
 The album, shop, match setup and match have separate pause settings. Leaving a game unpaused lets Skyrim continue while the interface is open. An interruption can close the interface; return to the opponent or tournament host to resume a saved match.
 

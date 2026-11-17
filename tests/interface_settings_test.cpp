@@ -1,4 +1,7 @@
 #include "InterfaceSettings.h"
+#include "SkinDetection.h"
+#include <set>
+#include <vector>
 #include "WorldIdentity.h"
 #include <cassert>
 #include <fstream>
@@ -159,6 +162,51 @@ int main() {
             assert((at != std::string::npos) == !theme.retired);
             if (!theme.retired) assert(themes[at + entry.size()] == ',' || themes[at + entry.size()] == '.');
         }
+    }
+    {
+        // First run: the skin of the interface mod that is installed, read from each
+        // skin's own list of marker files.
+        std::map<std::string, std::vector<std::string>> lists;
+        for (int index = 0; index < ttcg::interfaceThemeCount; ++index) {
+            const auto& theme = ttcg::interfaceThemes[index];
+            if (theme.retired) continue;
+            std::ifstream file("TesseraUI/skins/" + std::string(theme.id) + "/skin.json");
+            assert(file);
+            const std::string text((std::istreambuf_iterator<char>(file)), {});
+            const auto at = text.find("\"detect\": [");
+            if (at == std::string::npos) continue;
+            const auto end = text.find(']', at);
+            for (auto from = text.find('"', at + 11); from < end; from = text.find('"', from + 1)) {
+                const auto to = text.find('"', from + 1);
+                lists[std::string(theme.id)].push_back(text.substr(from + 1, to - from - 1));
+                from = to;
+            }
+        }
+        assert(lists.size() >= 5 && !lists.contains("skyrim"));
+        const auto markers = [&](std::string_view id) {
+            const auto found = lists.find(std::string(id));
+            return found == lists.end() ? std::vector<std::string>{} : found->second;
+        };
+        const auto index = [](std::string_view id) {
+            for (int n = 0; n < ttcg::interfaceThemeCount; ++n)
+                if (ttcg::interfaceThemes[n].id == id) return n;
+            return -1;
+        };
+        std::set<std::string> installed;
+        const auto exists = [&](const std::string& path) { return installed.contains(path); };
+        // Nothing recognised: the default skin stays.
+        assert(ttcg::detectInterfaceTheme(markers, exists) == -1);
+        for (const auto& [id, paths] : lists) {
+            installed = {paths.front()};
+            assert(ttcg::detectInterfaceTheme(markers, exists) == index(id));
+        }
+        // Oathvein, Norden and Edge are built on Dear Diary Dark Mode and ship its files.
+        installed = {lists["deardiary"].front(), lists["norden"].front()};
+        assert(ttcg::detectInterfaceTheme(markers, exists) == index("norden"));
+        installed = {lists["deardiary"].front(), lists["diarypaper"].front()};
+        assert(ttcg::detectInterfaceTheme(markers, exists) == index("deardiary"));
+        for (const auto& [id, paths] : lists)
+            for (const auto& path : paths) assert(path.find("..") == std::string::npos && path.front() != '/');
     }
     std::cout
         << "Interface settings: persisted appearance bounds, failures, reset, vanilla/authored voice policy and hotkeys passed\n";

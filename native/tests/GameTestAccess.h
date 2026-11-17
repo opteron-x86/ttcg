@@ -55,6 +55,7 @@ struct GameTestAccess {
     static int tradePhase(const GameApp& app) { return app.trade.phase; }
     static int demoStep(const GameApp& app) { return app.demoStep; }
     static int tab(const GameApp& app) { return app.tab; }
+    static unsigned capturePreview(const GameApp& app) { return app.capturePreview; }
     static int selectedHand(const GameApp& app) { return app.selectedHand; }
     static std::string fitted(const GameApp& app, const std::string& value, float size, float width) {
         return app.fitted(value, size, width);

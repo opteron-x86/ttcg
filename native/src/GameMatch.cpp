@@ -38,8 +38,8 @@ bool GameApp::ruleRequestModal() {
     const auto speaker = wrap(label(state, "opponent"), 26), message = wrap(copy, 23),
                notice = wrap(collection.notice, 16);
     const float noticeHeight = notice.empty() ? 0 : (18 + notice.size() * 21) * scale;
-    const ImVec2 extent(width,
-                        (36 + speaker.size() * 32 + 18 + message.size() * 29 + 28 + 42 + 36) * scale + noticeHeight);
+    const ImVec2 extent(width, (36 + speaker.size() * 32 + 18 + message.size() * 29 + 28 + 42 + 36 + 38) * scale +
+                                   noticeHeight);
     if (!ImGui::IsPopupOpen("Rule request")) ImGui::OpenPopup("Rule request");
     ImGui::SetNextWindowPos(frameAt + frameSize * .5f, ImGuiCond_Always, ImVec2(.5f, .5f));
     ImGui::SetNextWindowSize(extent);
@@ -56,13 +56,13 @@ bool GameApp::ruleRequestModal() {
         }
         y += 18 * scale;
         for (const auto& line : message) {
-            text(ImVec2(at.x + width / 2, y), line, 23, palette().ink, 0, true);
+            text(ImVec2(at.x + width / 2, y), line, 21, palette().ink, 0, true);
             y += 29 * scale;
         }
         if (!notice.empty()) {
             y += 18 * scale;
             for (const auto& line : notice) {
-                text(ImVec2(at.x + width / 2, y), line, 16, palette().muted, 0, true);
+                text(ImVec2(at.x + width / 2, y), line, 15, palette().muted, 0, true);
                 y += 21 * scale;
             }
         }
@@ -83,7 +83,12 @@ bool GameApp::ruleRequestModal() {
         // Close the offer conversation on Escape.
         const bool back = escapeRequested || backPressed();
         escapeRequested = false;
-        if (back && ready) {
+        // Back leaves without an answer: declining is an answer, and ends the offer.
+        bool leave = false;
+        const float promptWidth = keyPrompt("Esc", "360_B", "Leave without answering", ImVec2(-1e5f, -1e5f));
+        keyPrompt("Esc", "360_B", "Leave without answering",
+                  ImVec2(at.x + (width - promptWidth) / 2, buttons.y + 56 * scale), &leave, "leave-rule");
+        if ((back || leave) && ready) {
             send("close");
             ruleAnswerPending = true;
         }
@@ -98,7 +103,7 @@ void GameApp::lobby(ImVec2 at, ImVec2 size) {
     const int offer = number(culture, "offerRule");
     const bool tournamentGame = number(c, "tournamentID") != 0, casual = flag(c, "practice");
     // Who you are facing, and how you have fared against them.
-    text(at, label(state, "opponent"), 35, palette().ink);
+    text(at, label(state, "opponent"), 32, palette().ink);
     auto subtitle = label(c, "hold") + " · " + (tournamentGame ? "Tournament" : label(c, "skill"));
     for (const auto& rival : arrayMember(c, "roster"))
         if (label(rival, "name") == label(state, "opponent") &&
@@ -156,9 +161,9 @@ void GameApp::lobby(ImVec2 at, ImVec2 size) {
             displayCard(id, drawn, ImVec2(w, h), focused, -1, 1 + i);
         } else {
             ImGui::GetWindowDrawList()->AddRect(p, p + ImVec2(w, h), focused ? palette().accent : palette().line);
-            text(p + ImVec2(w / 2, h / 2), "+", 30, palette().muted, 0, true);
+            text(p + ImVec2(w / 2, h / 2), "+", 32, palette().muted, 0, true);
         }
-        text(p + ImVec2(w * .5f, h + 12 * scale), std::to_string(i + 1), 14, palette().muted, 0, true);
+        text(p + ImVec2(w * .5f, h + 12 * scale), std::to_string(i + 1), 15, palette().muted, 0, true);
         ImGui::PopID();
     }
     // Right: what is being played for, stated in full before the game begins.
@@ -200,7 +205,7 @@ void GameApp::lobby(ImVec2 at, ImVec2 size) {
             textRight(ImVec2(terms.x + panel, ay + 8 * scale), fixed > 0 ? std::to_string(fixed) + " gold" : "None", 18,
                       palette().ink);
         textRight(ImVec2(terms.x + panel, ay + 44 * scale), "You carry " + std::to_string(number(c, "gold")) + " gold",
-                  14, palette().muted);
+                  15, palette().muted);
         ay += 72 * scale;
     }
     const bool complete = std::all_of(collection.deck.begin(), collection.deck.end(), [](auto id) { return id != 0; });
@@ -248,6 +253,12 @@ void GameApp::lobby(ImVec2 at, ImVec2 size) {
                     }
             ImGui::EndPopup();
         }
+    } else if (flag(culture, "expert") && flag(culture, "famous") && number(culture, "retryHours") > 0) {
+        // A challenge, won or lost, closes the next one for seven days. Say when it opens.
+        const int days = (number(culture, "retryHours") + 23) / 24;
+        text(footer + ImVec2(210, 32) * scale,
+             "Rule challenges open again in " + std::to_string(days) + (days == 1 ? " day" : " days"), 15,
+             palette().muted);
     }
     if (number(c, "ruleLesson") || number(member(member(state, "settings"), "development"), "RuleLesson"))
         if (button("lesson", "Practice rule", footer + ImVec2(390, 23) * scale, ImVec2(150, 38) * scale))
@@ -280,7 +291,7 @@ void GameApp::groupModal() {
                                ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | popupFlags())) {
         popupSurface();
         textBlock(number(state, "rules") & 128 ? "Choose the Legion group" : "Choose the Decimation group", 400 * scale,
-                  25, palette().accent);
+                  26, palette().accent);
         ImGui::Dummy(ImVec2(0, 15 * scale));
         for (int g : groupChoices) {
             auto p = ImGui::GetCursorScreenPos();
@@ -452,7 +463,7 @@ std::pair<ImVec2, ImVec2> GameApp::table(const Json& data, ImVec2 at, ImVec2 siz
         // A long name shrinks as far as the smallest text allowed, then is shortened.
         const float nameRoom = handArea - 86 * scale;
         const float nameSize =
-            std::clamp(22.f * nameRoom / std::max(1.f, font()->CalcTextSizeA(22 * scale, 1e5f, 0, name.c_str()).x),
+            std::clamp(22.f * nameRoom / std::max(1.f, font()->CalcTextSizeA(21 * scale, 1e5f, 0, name.c_str()).x),
                        AlbumLayout::smallestText, 22.f);
         const auto shownName = fitted(name, nameSize, nameRoom);
         const float nameWidth = font()->CalcTextSizeA(nameSize * scale, 1e5f, 0, shownName.c_str()).x;
@@ -569,10 +580,16 @@ std::pair<ImVec2, ImVec2> GameApp::table(const Json& data, ImVec2 at, ImVec2 siz
                             false, CardContext::Hand);
             }
             if (forced >= 0 && player == 0 && forced == h)
-                text(pos + ImVec2(hw / 2, hh - 20 * scale), number(data, "rules") & 512 ? "Order" : "Chaos", 13,
+                text(pos + ImVec2(hw / 2, hh - 20 * scale), number(data, "rules") & 512 ? "Order" : "Chaos", 15,
                      palette().accent, 0, true);
             ImGui::PopID();
         }
+    }
+    if (!demo) {
+        // What was aimed at on the last frame is marked on this one.
+        const auto& shown = member(member(state, "settings"), "capturePreview");
+        capturePreview = shown.is_boolean() && !shown.get<bool>() ? 0 : aimedCaptures;
+        aimedCaptures = 0;
     }
     for (int square = 0; square < 9; ++square) {
         const auto pos =
@@ -635,6 +652,13 @@ std::pair<ImVec2, ImVec2> GameApp::table(const Json& data, ImVec2 at, ImVec2 siz
             }
             if (!demo && square == lastMove && !animating && live)
                 cornerMarks(pos, cardSize, fade(palette().ink, .78f + .22f * breath), 13, 4);
+            if (!demo && !animating && (capturePreview & (1u << square))) {
+                // This card would change hands if the chosen card were played where it is aimed.
+                const ImU32 taker = controlColour(0, true);
+                d->AddRectFilled(pos, pos + cardSize, fade(taker, .16f + .08f * breath));
+                d->AddRect(pos, pos + cardSize, fade(taker, .75f + .25f * breath), 0, 0, std::max(2.f, 3 * scale));
+                cornerMarks(pos, cardSize, taker, 16, 5);
+            }
             if ((hit || ImGui::IsItemHovered() && ImGui::IsMouseClicked(1) ||
                  ImGui::IsItemFocused() &&
                      (ImGui::IsKeyPressed(ImGuiKey_I) || ImGui::IsKeyPressed(ImGuiKey_GamepadFaceUp))) &&
@@ -675,6 +699,7 @@ std::pair<ImVec2, ImVec2> GameApp::table(const Json& data, ImVec2 at, ImVec2 siz
             const bool aimed =
                 (target && (ImGui::IsItemHovered() || demo)) || (ImGui::IsItemFocused() && ImGui::GetIO().NavVisible);
             if (aimed && target && !demo) {
+                aimedCaptures = itemNumber(itemArray(member(data, "capturePreviews"), selectedHand), square, 0);
                 // A ghost of the chosen card shows where it would land.
                 const int ghost = itemNumber(member(data, "hands")[0], selectedHand);
                 if (ghost >= 0) {
@@ -701,6 +726,11 @@ std::pair<ImVec2, ImVec2> GameApp::table(const Json& data, ImVec2 at, ImVec2 siz
                     place(selectedHand, square);
             }
             if (!demo && ImGui::BeginDragDropTarget()) {
+                // A card dragged over the square is aimed at it too.
+                if (const auto* held = ImGui::GetDragDropPayload();
+                    held && held->IsDataType("TESSERA_HAND") && held->DataSize == sizeof(int) && !busy)
+                    aimedCaptures = itemNumber(
+                        itemArray(member(data, "capturePreviews"), *static_cast<const int*>(held->Data)), square, 0);
                 if (auto* payload = ImGui::AcceptDragDropPayload("TESSERA_HAND"))
                     if (payload->DataSize == sizeof(int) && !busy)
                         place(*static_cast<const int*>(payload->Data), square);
