@@ -18,6 +18,9 @@
 - Fixed an opponent gaining a card when an exchange offer is cancelled after a restock.
 - Fixed players and merchant chests from injected records not being recognised after a reload.
 - Fixed a thread-safety problem when an NPC dies.
+- Card packs are added to merchant chests with the game's own function. This is a likely fix for the crash during death and reload on 1.7.104; not yet confirmed.
+- Checking a container for Tessera items no longer sets up its inventory.
+- Settings > Gameplay says when merchants can't stock packs on a game version.
 - Legion and Decimation rule text says one group is chosen per board.
 - The Three Open demo shows the same cards as its lesson.
 - Exchange API: `CancelOffer` on a completed offer answers `stale`; `CompleteOffer` with its confirmation open answers `busy`.

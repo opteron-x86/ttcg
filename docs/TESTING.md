@@ -43,6 +43,14 @@ Record runtime, resolution, input device and any UI/icon mods with results. Desk
 
 The first `noInit` cleanup candidate still crashed during the reporter's death/reload test on 1.7.104. The new crash log's DLL fingerprint matches the CI candidate, and the stack still passes through leveled-inventory initialization and scrap-heap cleanup. The cause remains unconfirmed.
 
+Since then the pack roll is added to chest bases by the game's own routine, not CommonLib's `TESContainer::AddObjectToContainer`. SkyPatcher changed to the same routine after crashes from leveled lists added to containers (see `docs/roadmap.md`, phase 2). `TTCG.log` reports one of:
+
+- `Vendor pack injection: enabled`, followed by `packs added to N of M container bases`;
+- `Vendor pack injection: disabled (diagnostic)` when `VendorPackInjection=0`;
+- `Vendor pack injection: unavailable on this game version` when the routine isn't found or doesn't begin as expected. Merchants then stock no packs, and Settings > Gameplay says so.
+
+Ask for this line with any crash report. The steps below still isolate the injection.
+
 Install the diagnostic DLL as a separate mod after the Tessera Main installation. Keep Card Art enabled as its own mod. Set the following in the effective `Data/SKSE/Plugins/TTCG.ini`:
 
 ```ini

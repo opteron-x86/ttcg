@@ -33,6 +33,7 @@ void publish() {
         ttcg::quote(cardBackNotice), ttcg::quote(interfaceNotice),
         ttcg::developmentJson(campaign::development, developmentNotice));
     data += ",\"toggleGames\":" + std::to_string(hotkeys.toggleGames);
+    data += ",\"merchantPacks\":" + ttcg::quote(vendors::packNotice(vendors::packStock));
     data += ",\"heldModifiers\":" + std::to_string(heldHotkeyModifiers());
     for (const auto& f : ttcg::InterfaceSettings::fields) {
         const int value = campaign::interfaceSettings.get(f);

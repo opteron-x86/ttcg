@@ -7,7 +7,7 @@ Started 2026-11-16 from a full review of `master` at `6fc37d1` (0.33.0, 90/90 na
 | Phase | Scope | Branch | State |
 |---|---|---|---|
 | 1 | Bugs | `phase1/bug-fixes` | Done; in-game check pending |
-| 2 | Merchant packs through SkyPatcher (1.7.104 crash) | `phase2/skypatcher-packs` | Planned |
+| 2 | Merchant packs through the game's own function (1.7.104 crash) | `phase2/merchant-packs` | Done; in-game check pending |
 | 3 | AI | `phase3/ai` | Planned |
 | 4 | Balance: first move, regional rules, trade rules | `phase4/balance` | Planned; decisions D1–D3 needed |
 | 5 | Interface and UX | `phase5/interface` | Planned |
@@ -27,7 +27,7 @@ Started 2026-11-16 from a full review of `master` at `6fc37d1` (0.33.0, 90/90 na
 Made by the player on 2026-11-16:
 
 - Fix every bug in phase 1.
-- Merchant packs move from runtime injection to a SkyPatcher container patch. SkyPatcher's source is on GitHub, which fits the source-available SKSE rule.
+- Merchant packs: first decided as a SkyPatcher container patch, then changed on the same day to Tessera calling the game's own routine, once SkyPatcher's source showed a fixed list would drop mod-added merchants (see phase 2).
 - Fix the Master AI, including hidden-hand guesses drawn from every card (tier 8–10 and pending ones included).
 - Diff stays as it is: it is classic Triple Triad.
 - The All trade rule becomes rarer.
@@ -46,7 +46,6 @@ Open:
 | D4 | Skill labels vs search settings (38 of 46 "Expert" opponents run Master's search) | Phase 3 | The search follows the level the player sees; keep explicit exceptions for named masters |
 | D5 | Default skin | Phase 6 | Skyrim stays the default; Tessera returns at index 0, so players whose INI still says `Theme=0` get it back |
 | D7 | Sectioned save format (C7) | Phase 7 | Do it, after B1 has made unreadable records survive |
-| D8 | Merchants added by other mods under a static SkyPatcher list | Phase 2 | Use a SkyPatcher filter if one exists (P1); otherwise vanilla and DLC only |
 
 ### First-move data (D1)
 
@@ -103,18 +102,35 @@ In Skyrim:
 - Lose or draw a staked game and interrupt it during the result: the stakes settle at once and packs and shops work.
 - Reload a save with an interrupted finished game.
 
-## Phase 2: merchant packs through SkyPatcher
+## Phase 2: merchant packs through the game's own function
 
-Background: the 1.7.104 crash happens during death/reload while leveled merchant inventory is being set up, and runtime pack injection is the leading suspect. `VendorDistribution.h:111-124` calls CommonLib's `TESContainer::AddObjectToContainer`, which builds the container entry and its ownership data (COED) from CommonLib's own struct layouts. In Skyrim.esm only one of 19,244 container entries carries COED. See `docs/TESTING.md` for the diagnostics so far.
+Done on `phase2/merchant-packs` (2026-11-16), stacked on phase 1, and waiting for the in-game check.
 
-- [ ] **P1 Read SkyPatcher's source.** Two questions: which container filters exist (one that matches merchant chests generically would cover modded merchants, D8), and how it adds entries. If it goes through the same CommonLib call, say so: that would weaken the crash hypothesis, and the in-game check matters more.
-- [ ] **P2 Generator.** `tools/build-vendor-packs.py` lists eligible merchant chests from Skyrim.esm, Update.esm, Dawnguard.esm, HearthFires.esm and Dragonborn.esm, using the same eligibility as `vendors::eligible`. It writes `SKSE/Plugins/SkyPatcher/container/Tessera TCG/merchant-packs.ini` in the form `filterByContainers=Skyrim.esm|<chest>:addToContainers=Tessera TCG.esp|<pack list>~1`, plus a `--check` mode for CI.
-- [ ] **P3 Remove runtime injection.** Delete the base-container change and the `[Diagnostics] VendorPackInjection` switch. Keep what still has a job: faction tagging, the vendor-list keyword and the legacy album removal. Confirm each one.
-- [ ] **P4 Stop forcing inventory setup.** `physicalCount` and `GetInventoryCounts` callers run without noInit: the courier and chest in `recoverTournamentLetters` (`NativeCollection.h:81-95,486-490`), the tournament-gold loop (`:546-553`) and `ShopBank` (`NativeShop.h:26-27`). Use noInit wherever the reference may not be set up yet. This was the second crash hypothesis.
-- [ ] **P5 Packaging and requirements.** Add the ini to `tools/release_files.py` and the package tests. The README and Nexus requirements list SkyPatcher for merchant packs. Without SkyPatcher, Tessera logs that merchant packs are off and the Journal says so.
-- [ ] **P6 Tests.** The generator's output, the package contents, and no remaining call to `AddObjectToContainer`.
+Background: the 1.7.104 crash happens during death/reload while leveled merchant inventory is being set up. Tessera added its pack roll (a leveled list) to each merchant chest base with CommonLib's `TESContainer::AddObjectToContainer`, which creates the entry and replaces the base's entry array with one it allocates itself. See `docs/TESTING.md` for the diagnostics so far.
 
-In Skyrim: on 1.6.1170, load a pre-Tessera save and do three death/reloads, a merchant visit, then confirm packs are in stock and an album can be bought. Ask the 1.7.104 reporter to repeat their five-cycle test.
+The plan was a SkyPatcher container patch. Reading SkyPatcher's source changed it:
+
+- **SkyPatcher had the same crash and the same cause.** Until its commit `0612fff` (2026-10-06) it called the same CommonLib routine, and kept leveled lists out of containers behind a switch because they crashed. That commit moved it to the game's own routine (Address Library 14377 in SE, 14517 in AE), and its settings file says the crashes are fixed since 7.1.3. This is the strongest evidence so far for the cause, though the 1.7.104 crash itself is still unconfirmed until the reporter retests.
+- **SkyPatcher can't find merchants.** Its container filters are an explicit list, EditorID substrings and plugin names. A list from the five official masters covers 35 chest bases. In the player's own load order Tessera's runtime rule finds 181, so 146 mod-added merchants would have lost their packs.
+
+Decision (player, 2026-11-16): Tessera keeps finding merchants at runtime and makes the same call SkyPatcher now makes. SkyPatcher is not a requirement. This settles D8.
+
+- [x] **P1 Read SkyPatcher's source.** Findings above, from `github.com/Zzyxz/SkyPatcher` at `48d1779`.
+- [x] **P2 Add the roll through the game's routine.** `include/EngineContainer.h` finds the routine and `include/PackStock.h` holds its IDs and first bytes. The ID is searched for in the Address Library table, because CommonLib's lookup stops the game when an ID is missing. If the routine isn't found or doesn't begin as expected, packs stay off on that game version and Settings > Gameplay says so; nothing is guessed.
+- [x] **P3 No CommonLib container edit.** `vendors::initialize` is handed the function that adds the roll; the test's stand-in container has no `AddObjectToContainer` at all, so the old call can't come back unnoticed. Faction tagging, the vendor-list keyword and legacy album removal are unchanged. `[Diagnostics] VendorPackInjection` stays, for the reporter's A/B test.
+- [x] **P4 Counting no longer sets an inventory up.** `physicalCount` and `physicalChange` read with noInit, so polling the courier's container for letters, paying a tournament purse and the reset cleanup don't roll anyone's leveled lists. The card shop is the exception: the player is trading with that merchant, whose gold has to be real, as in barter.
+- [x] **P5 Notice.** Settings > Gameplay shows why merchants have no packs when the switch is off or the game version is unknown. No new requirement, so the README and Nexus page are unchanged.
+- [x] **P6 Tests.** `vendor_distribution_test` in three modes (on, switched off, unknown game), the first-bytes check, and `inventory_count_test.py`.
+
+Not verifiable outside the game: that the routine is found and behaves on each runtime. On 1.6.1170 SkyPatcher's log in the player's game already reports the same routine as active. SE 1.5.97, VR and 1.7.104 rest on SkyPatcher's table and the first-bytes check.
+
+In Skyrim, on 1.6.1170:
+- `TTCG.log` says `Vendor pack injection: enabled` and `packs added to N of N container bases` (181 of 181 in the current load order).
+- Visit a general-goods merchant from the base game and one from a mod: packs are in stock, and an album can be bought.
+- Load a pre-Tessera save and do three death/reloads, then a manual reload.
+- Sell a card in a merchant's Tessera shop before opening their barter menu: the merchant has gold.
+
+Then ask the 1.7.104 reporter to repeat their five-cycle test with this build and send `TTCG.log`, which now says whether the routine was found there.
 
 ## Phase 3: AI
 
