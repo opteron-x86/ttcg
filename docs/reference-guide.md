@@ -46,7 +46,7 @@ The Journal lists the players you know by hold. Select one to see where they are
 
 Settings includes appearance, shortcuts and gameplay options. Choose a skin, fonts, card layout, board texture and card back. Changes apply immediately.
 
-Skins follow Skyrim's interface mods: Skyrim, Oathvein, Vel'dun, Norden, Edge, Untarnished, Nordic, Outlander, Dear Diary, Dear Diary Dark and Wood and Paper. On a first run Tessera picks the skin for Oathvein, Norden, Edge, Untarnished, Dear Diary or Dear Diary Dark Mode if it finds that mod; otherwise it starts with Skyrim. Change it at any time in **Settings > Appearance**.
+Skins follow Skyrim's interface mods: Skyrim, Oathvein, Vel'dun, Norden, Edge, Untarnished, Nordic, Outlander, Dear Diary, Dear Diary Dark and Wood and Paper. Tessera is the mod's own green and gold. On a first run Tessera picks the skin for Oathvein, Norden, Edge, Untarnished, Dear Diary or Dear Diary Dark Mode if it finds that mod; otherwise it starts with Skyrim. Change it at any time in **Settings > Appearance**.
 
 ### Keyboard and mouse
 

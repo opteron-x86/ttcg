@@ -1,0 +1,32 @@
+{
+  "schema": 1,
+  "id": "tessera",
+  "name": "Tessera",
+  "credit": "Tessera's own green and gold",
+  "font": "jost",
+  "palette": {
+    "background": "#131e19",
+    "centre": "#28372e",
+    "text": "#e7dec6",
+    "muted": "#afa991",
+    "accent": "#d0b474",
+    "line": "#58604482",
+    "selection": "#4c5237",
+    "value": "#d0b474",
+    "notice": "#d0705e"
+  },
+  "board": "felt",
+  "control": {
+    "player": "#d0b474",
+    "opponent": "#b9483c"
+  },
+  "ground": {
+    "fill": "#131e19f7",
+    "dialog": "#17231efa",
+    "gradient": {"centre": [0.4, 0.15], "middle": 0.58, "colours": ["#2a3731", "#17231e", "#111b17"]},
+    "edge": "#d0b4747a",
+    "corner": "tile",
+    "rule": "diamond"
+  },
+  "art": {}
+}

@@ -100,8 +100,8 @@ PauseWorldInMatchSetup=1
 PauseWorldDuringMatches=1
 
 [Appearance]
-; Interface skin: 5 Oathvein, 6 Vel'dun, 7 Norden, 8 Untarnished, 9 Edge, 10 Dear Diary Dark, 11 Nordic,
-; 12 Outlander, 13 Skyrim, 14 Dear Diary, 15 Wood and Paper. 0-4 are retired and open Skyrim.
+; Interface skin: 0 Tessera, 5 Oathvein, 6 Vel'dun, 7 Norden, 8 Untarnished, 9 Edge, 10 Dear Diary Dark,
+; 11 Nordic, 12 Outlander, 13 Skyrim, 14 Dear Diary, 15 Wood and Paper. 1-4 are retired and open Skyrim.
 Theme=13
 ; Window size as a percentage of the screen: 60 to 100 in steps of 5. 100 fills the screen.
 WindowSize=90

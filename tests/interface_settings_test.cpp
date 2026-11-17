@@ -75,7 +75,9 @@ int main() {
         });
         assert(roundTrip.theme == (retired ? unsigned(ttcg::defaultInterfaceTheme) : theme));
     }
-    for (int theme = 0; theme < 5; ++theme) assert(ttcg::interfaceThemes[theme].retired);
+    // Tessera's own skin came back at its old index; the four after it stay retired.
+    assert(!ttcg::interfaceThemes[0].retired && ttcg::interfaceThemes[0].id == "tessera");
+    for (int theme = 1; theme < 5; ++theme) assert(ttcg::interfaceThemes[theme].retired);
     assert(!ttcg::interfaceThemes[ttcg::defaultInterfaceTheme].retired);
     // Existing theme IDs remain stable across upgrades.
     assert(ttcg::interfaceThemes[2].id == "oxblood" && ttcg::interfaceThemes[4].id == "umber");

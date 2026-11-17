@@ -659,12 +659,17 @@ int main(int argc, char** argv) {
             }
             // Theme selection must reach the persisted settings command, not only
             // change the desktop preview. Each new choice is reached through the menu.
-            for (int theme = 5; theme < ttcg::interfaceThemeCount; ++theme) {
+            for (int theme = 0; theme < ttcg::interfaceThemeCount; ++theme) {
                 // The default is already chosen, so the menu has nothing to submit for it.
-                if (theme == ttcg::defaultInterfaceTheme) continue;
+                if (theme == ttcg::defaultInterfaceTheme || ttcg::interfaceThemes[theme].retired) continue;
                 load("album", "appearance");
                 click("##theme");
-                click(std::string(ttcg::interfaceThemes[theme].name));
+                // The window is itself named Tessera, so the choice is looked for inside the menu.
+                const auto choice = std::find_if(hits.begin(), hits.end(), [&](const Hit& h) {
+                    return h.window.starts_with("##Combo") && h.label == ttcg::interfaceThemes[theme].name;
+                });
+                require(choice != hits.end(), "Theme menu does not offer a current skin");
+                clickAt(choice->bounds.GetCenter());
                 require(command("settings ") && commands.back().ends_with("theme " + std::to_string(theme)),
                         "Theme selection did not submit its saved index");
                 auto s = app.snapshot();
@@ -699,6 +704,16 @@ int main(int argc, char** argv) {
                     const auto& skin = preview::GameTestAccess::skin(app, index);
                     require(skin.loaded && skin.player && skin.opponent && skin.board,
                             "Bundled skin did not load its colours and board");
+                    // Tessera's own skin is drawn, not painted: a shaded ground inside a gold outline.
+                    if (id == "tessera") {
+                        require(skin.shaded && skin.corner == 3 && skin.edge && skin.ornament && skin.art.empty() &&
+                                    skin.board == 3,
+                                "Tessera skin did not load its shaded ground, outline and felt board");
+                        require(skin.shadeTexture.id && skin.shadeTexture.width == 1024,
+                                "Tessera skin did not draw its shaded ground");
+                        textures.push_back(skin.shadeTexture.id);
+                    } else
+                        require(!skin.shaded && !skin.shadeTexture.id, "A skin without a gradient shades its ground");
                     // Nithog's three carry a full set of textures; Untarnished is flat by design.
                     if (id == "oathvein" || id == "veldun" || id == "norden")
                         require(skin.art.contains("panel") && skin.art.at("panel").margin > 0 &&
@@ -718,16 +733,23 @@ int main(int argc, char** argv) {
                 std::sort(textures.begin(), textures.end());
                 require(std::adjacent_find(textures.begin(), textures.end()) == textures.end(),
                         "Theme and board textures overlap");
-                const auto uploads = renderer.id;
-                frame();
-                frame();
-                require(renderer.id == uploads, "Unchanged theme uploads textures every frame");
                 auto s = app.snapshot();
+                // The shaded ground is uploaded once, not once a frame.
+                for (int theme : {ttcg::interfaceThemeCount - 1, 0}) {
+                    s["settings"]["theme"] = theme;
+                    app.receive(s.dump());
+                    frame();
+                    const auto uploads = renderer.id;
+                    frame();
+                    frame();
+                    require(renderer.id == uploads, "Unchanged theme uploads textures every frame");
+                }
                 s["settings"]["interfaceFont"] = 3;
                 app.receive(s.dump());
                 frame();
                 const auto chosen = preview::GameTestAccess::interfaceFont(app);
-                for (int theme = 5; theme < ttcg::interfaceThemeCount; ++theme) {
+                for (int theme = 0; theme < ttcg::interfaceThemeCount; ++theme) {
+                    if (ttcg::interfaceThemes[theme].retired) continue;
                     s["settings"]["theme"] = theme;
                     app.receive(s.dump());
                     frame();
@@ -739,7 +761,7 @@ int main(int argc, char** argv) {
                 frame();
                 require(preview::GameTestAccess::theme(app) == ttcg::defaultInterfaceTheme,
                         "Invalid theme does not fall back to the default skin");
-                // A theme saved before the old five were retired opens the default skin, and is not offered.
+                // A theme saved before the old ones were retired opens the default skin, and is not offered.
                 for (int theme = 0; theme < ttcg::interfaceThemeCount; ++theme) {
                     if (!ttcg::interfaceThemes[theme].retired) continue;
                     s["settings"]["theme"] = theme;
@@ -761,6 +783,7 @@ int main(int argc, char** argv) {
                     require(!theme.retired || !offered(theme.name), "Theme menu offers a retired theme");
                 require(offered(ttcg::interfaceThemes[ttcg::defaultInterfaceTheme].name),
                         "Theme menu does not offer the default skin");
+                require(offered(ttcg::interfaceThemes[0].name), "Theme menu does not offer Tessera's own skin");
             }
             // Saved appearance values flow through the real hand/board renderer.
             load("match");
