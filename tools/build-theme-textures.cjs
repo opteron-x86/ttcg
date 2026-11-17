@@ -1,7 +1,7 @@
-// Bake the approved procedural SVG grains once; the game only loads static PNGs.
+// Bake the procedural SVG grains the rule lab's themes use (tools/shared/themes.css).
 // Run: node tools/build-theme-textures.cjs
 const fs=require('node:fs'),path=require('node:path'),{chromium}=require('playwright');
-const out=path.resolve(__dirname,'../TesseraUI/assets/themes');
+const out=path.resolve(__dirname,'shared/assets/themes');
 function svgUrl(content){return "data:image/svg+xml,"+encodeURIComponent(content);}
 function noise(frequency,octaves=3,lighting=false){return svgUrl(`<svg xmlns="http://www.w3.org/2000/svg" width="384" height="384"><filter id="grain" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="${frequency}" numOctaves="${octaves}" stitchTiles="stitch" seed="17"/><feColorMatrix type="saturate" values="0"/>${lighting?'<feDiffuseLighting surfaceScale="3" diffuseConstant="1" lighting-color="white"><feDistantLight azimuth="235" elevation="48"/></feDiffuseLighting>':''}<feComponentTransfer><feFuncA type="linear" slope="0" intercept="1"/></feComponentTransfer></filter><rect width="100%" height="100%" fill="#808080" filter="url(#grain)"/></svg>`);}
 function wood(){

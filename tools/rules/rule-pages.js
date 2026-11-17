@@ -1,0 +1,30 @@
+// Rule and trade-rule text for the Rules tab. tools/build-native-ui-assets.cjs writes it to
+// TesseraUI/rules.json.
+const TRADE_RULES=[
+ {title:'None',copy:'Both players keep their original hands. No cards change hands.'},
+ {title:'One',copy:'The winner chooses one card from the opponent’s original hand.'},
+ {title:'Diff',copy:'The winner chooses as many cards from the opponent’s original hand as the difference in score, up to five. A 6–4 win earns two cards; 7–3 earns four; 8–2 or higher earns all five.'},
+ {title:'Direct',copy:'Each player takes the cards they control at the end of the game, including the unplayed card. Cards can change hands even on a draw.'},
+ {title:'All',copy:'The winner takes all five cards from the opponent’s original hand.'}
+];
+const RULE_PAGES=[
+ {id:'play',title:'How to play',demo:'play',copy:'Each player has five cards. Take turns placing one card on the 3×3 board. A card captures an adjacent opponent when its touching rank is higher. With a card chosen, the board marks the cards it would capture on the square you point at. The tenth, unplayed card still counts, so the total is always ten. More than five wins. Unplayed opposing cards are hidden unless Open or Three Open is active.'},
+ {id:'open',title:'Open',demo:'open',copy:'Both hands stay visible after the deal.'},
+ {id:'threeopen',title:'Three Open',demo:'threeopen',copy:'Three cards in each hand are shown. The other two stay hidden until played. Cannot combine with Open.'},
+ {id:'same',title:'Same',demo:'same',copy:'If two or more touching ranks equal the adjacent cards, those enemy cards are captured. Combo then flips any lower adjacent ranks. Same uses printed ranks.'},
+ {id:'plus',title:'Plus',demo:'plus',copy:'If two or more touching pairs add to the same total, those enemy cards are captured. Combo then flips any lower adjacent ranks. Plus uses printed ranks.'},
+ {id:'reverse',title:'Reverse',demo:'reverse',copy:'Lower ranks capture higher ones. Equal ranks do not capture. Same and Plus still trigger from their matching pairs; Combo follows Reverse.'},
+ {id:'affinity',title:'Affinity',demo:'affinity',copy:'At the start of the match, one to five board squares receive affinity markers. Placing a card that matches a marker’s affinity raises all four sides by 1. A mismatch, including Neutral, lowers them by 1. Unmarked squares are unchanged.'},
+ {id:'legion',title:'Legion',demo:'legion',copy:'The first play that brings three or more cards of one creature group onto the board chooses that group. Every card of the group gains +1 on every side, on the board and in both hands. Only one group is chosen per board. Cannot combine with Decimation.'},
+ {id:'decimation',title:'Decimation',demo:'decimation',copy:'The first play that brings three or more cards of one creature group onto the board chooses that group. Every card of the group loses 1 on every side, on the board and in both hands. Only one group is chosen per board. Cannot combine with Legion.'},
+ {id:'ascension',title:'Ascension',demo:'ascension',copy:'The second card of an affinity on the board gives that affinity +1 on every side; the third raises it to +2. Both players’ cards count, including the new card before captures. The bonus affects hands and the board. Neutral cards are unaffected. A card with several affinities uses its largest bonus once. Cannot combine with Descension.'},
+ {id:'descension',title:'Descension',demo:'descension',copy:'The second card of an affinity on the board gives that affinity −1 on every side; the third raises the penalty to −2. Both players’ cards count, including the new card before captures. The penalty affects hands and the board. Neutral cards are unaffected. A card with several affinities uses its largest penalty once. Cannot combine with Ascension.'},
+ {id:'dominion',title:'Dominion',demo:'dominion',copy:'A card loses 1 on every side when at least two adjacent cards share a group it does not belong to. Two Nords beside an Orc qualify; one Nord and one Khajiit do not. Ownership does not matter. Diagonals do not count and the penalty never stacks. The new card counts before captures. Strength changes alone do not flip existing cards.'},
+ {id:'order',title:'Order',demo:'order',copy:'Play your cards in deck order. You still choose where to place each card. After a Sudden Death redeal, your original cards come first in their saved order, followed by acquired cards in their original order. Cannot combine with Chaos.'},
+ {id:'chaos',title:'Chaos',demo:'chaos',copy:'At the start of each turn, one remaining card is chosen at random. You choose its square. This applies to both players. Cannot combine with Order.'},
+ {id:'fallenace',title:'Fallen Ace',demo:'fallenace',copy:'A printed 1 captures a printed A, and A cannot capture 1. With Reverse, A captures 1 instead. These two printed ranks override affinity and creature bonuses when they meet; all other comparisons use their adjusted values.'},
+ {id:'suddenDeath',title:'Sudden Death',demo:'suddenDeath',copy:'A draw starts another board with the same rules. Each player receives the five cards they control, including the unplayed card. Known cards stay known. Board affinities, creature bonuses and the starting player reset. After five redeals, another draw ends the game. Trades and wagers settle only once, at the end.'},
+ {id:'samewall',title:'Same Wall',demo:'samewall',copy:'The edge of the board counts as A for Same. Match a printed A to the wall and another printed rank to an adjacent enemy to capture it and start Combo. Requires Same. Walls do not count toward Plus.'},
+ {id:'swap',title:'Swap',demo:'swap',copy:'One random card from each hand changes sides before the first turn. The swap happens once, even with Sudden Death. Your deck stays unchanged. Trades use the original hands; Direct awards the cards each player controls at the end.'},
+ {id:'trade',title:'Trade',demo:'',copy:'The trade rule decides which cards change hands. On a draw, both players keep their original hands unless Direct is active. Games with children and tournament games never trade cards.'}
+];

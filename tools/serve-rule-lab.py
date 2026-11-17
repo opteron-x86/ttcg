@@ -44,9 +44,8 @@ def build():
     (OUT / 'card-data.js').write_text('window.ruleLabData = ' + json.dumps({'cards': cards, 'presets': presets}, ensure_ascii=False).replace('<', '\\u003c') + ';\n')
 
     # Load the card renderer and heraldic icons for the rule lab.
-    source = (ROOT / 'TesseraUI/app.js').read_text()
-    start, end = source.index('const affinityNames='), source.index('function description(id)')
-    renderer = source[start:end]
+    source = (ROOT / 'tools/shared/card-renderer.js').read_text()
+    renderer = source[source.index('const affinityNames='):]
     assert 'function cardElement(' in renderer and 'function affinityIcon(' in renderer
     adapter = ''''use strict';
 const state = {cards: window.ruleLabData.cards};

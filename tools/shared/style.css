@@ -166,7 +166,7 @@ button:hover:not(:disabled) { background:#344335;border-color:#d2b47b; }
 .select-options button:hover,.select-options button:focus { background:#59492e; }
 #match-summary { height:36px;display:flex;align-items:center;gap:14px;margin-bottom:16px;color:#d4c7ad;font-size:16px;border-bottom:1px solid #a48b5640;padding-bottom:14px; }
 .card { background:#18241f;border-color:#87c4dd; }
-.card-back { background:#18271f var(--card-back-image,url("art/backs/mosaic.webp")) center / 100% 100% no-repeat;border-color:#a5946e!important;box-shadow:none; }
+.card-back { background:#18271f var(--card-back-image,url("../../TesseraUI/art/backs/mosaic.webp")) center / 100% 100% no-repeat;border-color:#a5946e!important;box-shadow:none; }
 #reward .trade-panel { background:radial-gradient(ellipse at top,#29372c,#15231a);border-color:#b69d68; }
 #trade-gold { font-variant-numeric:tabular-nums; }
 @media(prefers-reduced-motion:reduce) {button { transition:none; }}
