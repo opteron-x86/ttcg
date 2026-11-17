@@ -1,6 +1,6 @@
 # Tessera UI overhaul: plan, status and handoff
 
-> **Shipped in 0.33.0.** Open items from this document moved to [roadmap.md](roadmap.md) (phase 5) on 2026-11-16. What follows is the historical record.
+> **Complete.** Shipped in 0.33.0. The items it left open were finished in [roadmap.md](roadmap.md): the interface work in phase 5, the Tessera skin in phase 6 and the removal of the web UI in phase 7. What follows is the historical record; file paths and counts in it are as they were then.
 
 Branch: `feat/oathvein-skin` (off `master` at `fac3141`), merged and released as 0.33.0. Owner of the repo: opteron-x86.
 
@@ -31,7 +31,7 @@ The player confirmed scene blur in Skyrim on 10 November 2026. The controller/Ed
 | 5 In-game integration | Blur, packaging, neutral default skin, theme migration | **Partly done** (blur, skin packaging); rest open |
 | Extra skins | Untarnished, Edge, Dear Diary | **Committed** (`04c0924`), desktop previews reviewed |
 
-Last verified: **89/89 native tests pass**, including right-stick cursor glyphs, cursor A/Y activation, held-button mode changes, disconnect cleanup, dropdown dismissal, cross-panel navigation and framed/borderless Settings visibility. Native build, formatting, and preview-script failure checks pass. **Rebuild and re-probe before handing a zip to the player** (see [Build](#build-test-and-package)); the checkpoint output directory is `dist/controller-edge-followups/`, whose `build-info.json` records the exact tested source and DLL. `dist/skins-phase1/` is stale.
+Last verified: **all native tests pass**, including right-stick cursor glyphs, cursor A/Y activation, held-button mode changes, disconnect cleanup, dropdown dismissal, cross-panel navigation and framed/borderless Settings visibility. Native build, formatting, and preview-script failure checks pass. **Rebuild and re-probe before handing a zip to the player** (see [Build](#build-test-and-package)); the checkpoint output directory is `dist/controller-edge-followups/`, whose `build-info.json` records the exact tested source and DLL. `dist/skins-phase1/` is stale.
 
 ### First actions for the next agent
 
@@ -181,7 +181,7 @@ Typography
 ```
 bash tools/format.sh                       # CI runs --check with clang-format 23.1.4
 cmake --preset native && cmake --build --preset native
-ctest --preset native --parallel 8         # 89 tests, ~90 s; native_game_ui is the long one
+ctest --preset native --parallel 8         # native_game_ui is the long one
 tools/preview-ui.sh NAME --snapshot build/test-fixtures/<fixture>.json [--page ...]   # review a screen
 ```
 

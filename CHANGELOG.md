@@ -37,6 +37,7 @@
 - The shop's Buy, Sell and Buy back step with LB/RB and Q/E.
 - Result, trade and rule-request dialogs show their own key prompts.
 - Text uses five sizes throughout.
+- Buttons in Settings, the album's filters and the group choice follow the skin.
 - Fixed gold and gain/loss colours being unreadable on paper skins, clipped deck slot names, a tiny owned-count badge on small cards and the shop notice covering the prompts.
 - Legion and Decimation rule text says one group is chosen per board.
 - The Three Open demo shows the same cards as its lesson.

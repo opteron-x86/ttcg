@@ -11,8 +11,8 @@ Started 2026-11-16 from a full review of `master` at `6fc37d1` (0.33.0, 90/90 na
 | 3 | AI | `phase3/ai` | Done; in-game check pending |
 | 4 | Balance: first move, regional rules, trade rules | `phase4/balance` | In progress |
 | 5 | Interface and UX | `phase5/interface` | Done; in-game check pending |
-| 6 | Tessera green-and-gold skin | `phase6/tessera-skin` | Planned; decision D5 needed |
-| 7 | Code cleanup | `phase7/cleanup` | Planned; C1 can go earlier |
+| 6 | Tessera green-and-gold skin | `phase6/tessera-skin` | Done; in-game check pending |
+| 7 | Code cleanup | `phase7/cleanup` | Done except C7 (second release) and the snapshot emitter; in-game check pending |
 
 ## How the work runs
 
@@ -45,7 +45,7 @@ Open:
 
 | ID | Question | Needed by | Recommendation |
 |---|---|---|---|
-| D7 | Sectioned save format (C7) | Phase 7 | Do it, after B1 has made unreadable records survive |
+| D7 | Sectioned save format (C7) | Second release | Do it, after B1 has made unreadable records survive |
 
 ### First-move data (D1)
 
@@ -79,8 +79,8 @@ Match and AI
 - [x] **B10 The opponent freezes.** `applyAIMove()` lets go of `thinking` and searches again when the table changed during the search.
 - [x] **B11 Opening Rules mid-turn changes the live match.** The demo uses `demoSelected` only; `selectedHand` belongs to the live table.
 - [x] **B12 Same Wall / Plus sounds.** Smaller than reported: the interface sent a third, redundant `rule same` command, which the plugin already ignored, so two sounds played as intended. The redundant command is gone. No test.
-- [x] **B13 Legion/Decimation text (D6).** The rules page says the first play to bring three of a group onto the board chooses it, that the change applies on the board and in both hands, and that only one group is chosen per board. The text lives in `TesseraUI/album.js` until C1 moves it.
-- [x] **B14 Layouts depend on the standard library.** `Match::seedTiles` and `Match::seedVisibility` use an explicit shuffle and plain modulo, with values pinned in `tests/match_test.cpp`. Saved matches store tiles and reveals, so nothing in a save changes. `rule-demos.js` and `rules.json` are regenerated; only the opponent cards shown face up in the Three Open demo and the rift tour moved, and no caption changed. The other `std::shuffle` calls (opponent hands, packs, brackets) are consistent inside the game and were left alone. To regenerate: build `tests/rule_demo_host.cpp`, run it to `TesseraUI/rule-demos.js`, then `node tools/build-native-ui-assets.cjs`.
+- [x] **B13 Legion/Decimation text (D6).** The rules page says the first play to bring three of a group onto the board chooses it, that the change applies on the board and in both hands, and that only one group is chosen per board. The text lives in `tools/rules/rule-pages.js` since C1.
+- [x] **B14 Layouts depend on the standard library.** `Match::seedTiles` and `Match::seedVisibility` use an explicit shuffle and plain modulo, with values pinned in `tests/match_test.cpp`. Saved matches store tiles and reveals, so nothing in a save changes. `rule-demos.js` and `rules.json` are regenerated; only the opponent cards shown face up in the Three Open demo and the rift tour moved, and no caption changed. The other `std::shuffle` calls (opponent hands, packs, brackets) are consistent inside the game and were left alone. To regenerate: build `tests/rule_demo_host.cpp`, run it to `tools/rules/rule-demos.js` (`TesseraUI/rule-demos.js` before C1), then `node tools/build-native-ui-assets.cjs`.
 
 Input and interface
 - [x] **B15 Esc or B closes Tessera while ending a drag or a slider.** `App::backPressed()` ignores the press when, before the frame, a control was held, a drag was live or a dropdown was open above a dialog; ImGui ends those in `NewFrame`, so the state is noted in `prepareFrame()`. The press also cancels the drag, which ImGui would otherwise still deliver on release. Used at ten sites. The deck-rename field keeps its own check, because Esc there must cancel the rename while the field is active.
@@ -280,48 +280,42 @@ In Skyrim:
 
 ## Phase 7: code cleanup
 
-- [ ] **C1 Delete the retired web UI.** First move the pieces the tools still use into `tools/shared/`: affinity icons, `cardElement`, `foil.css` and `foil-material.js`. `tools/build-card-library.py`, `tools/serve-rule-lab.py`, `tools/build-expansion-editor.py` and `tools/rule-lab/index.html` currently cut them out of `TesseraUI/app.js` between marker strings. Then delete:
-  - `TesseraUI/*.js|css|html`; `rules.json`, assets, skins, fonts, icons and art stay;
-  - `tests/*.cjs` (52 Playwright tests not run by CI) and `package.json`/`package-lock.json`;
-  - the web theme previews in `tools/*.cjs`;
-  - `TesseraUI/assets/themes/*.png` and the old test that reads them.
+Done on `phase7/cleanup` (2026-11-17), stacked on phase 6, except C7 and one part of C2. Nothing here changes what the player sees, apart from two small things: Legendary text is the same gold as the card's gem, and a few buttons in Settings and dialogs now follow the skin.
 
-  Move `TesseraUI/Tessera_Card_Art_*.md` beside `docs/card-art-prompts`. Each tool's `--check` must still pass. Independent of the other phases, so it can land early.
-- [ ] **C2 Split `NativeCollection.h`.** Move it into `src/*.cpp` modules, build the snapshot JSON with nlohmann instead of the 170-line string emitter (`:914-1086`), and break the circular includes. Its forward declarations at `:19-29` refer to `NativeOpponents.h`, which is included at `:1205`, and `exchangeIntegration::reset/publish` is declared non-inline in `NativeCollectionAPI.h`. Turn `NativeTournamentCommands.h` into a .cpp.
-- [ ] **C3 Duplication:**
-  - gold payout ×4 with different clamping (`NativeCollection.h:557-560,732-735`, `NativeExchange.h:272-274`, `Shop.h:137-139`);
-  - the development-grant block in `recover()`;
-  - `validHand`/`validDeck`;
-  - the `resolveOpponent`/`alternateReference` fallback ×3;
-  - `rgb`/`alpha` ×3 plus `fade`;
-  - Roman numerals ×6;
-  - rarity colours ×4 (Legendary is `e6bc65` in some and `f0c465` in others; pick one);
-  - the inspect trigger ×7;
-  - 14 raw `ImGui::Button`/`Checkbox`/`TextUnformatted` calls that bypass `App::button`;
-  - the Same/Plus participation check written twice in `Match::play`;
-  - the hash multiplier `2654435761u` in four headers.
-- [ ] **C4 Dead code:**
-  - `App::closing` and the close path at `Host.cpp:434`;
-  - `GameApp::filtersOpen`, `App::showMetrics`, `App::autoRotate`;
-  - `Assets::card/back/megabytes/decoded`;
-  - `Palette::name` and `Palette::centre`.
+- [x] **C1 The retired web UI is deleted.** What tools still use moved first:
+  - `tools/shared/`: the card renderer and affinity artwork (`card-renderer.js`), the foil material, and the styles and theme grains the rule lab uses;
+  - `tools/rules/`: the Rules tab's sources (`rule-pages.js`, `lesson-prompts.js`, `rule-demos.js`). `TesseraUI/rules.json` regenerates byte-identical; `BUILDING.md` describes how.
 
-  Replace the five empty `themes[]` rows with an explicit index map that keeps the saved indices.
-- [ ] **C5 Named constants:**
-  - derive `RuleMask` from `ruleFlags` with a `static_assert`;
-  - printed Ace values;
-  - Reverse `11 - rank`;
-  - the 72-hour restock;
-  - `168` at `Campaign.h:67`, which equals `cultureCooldown`;
-  - the material slot numbers still written as literals (B22 named the grid's);
-  - the convoluted font-index expressions in `applySettings` (`GameApp.cpp:163-164`).
-- [ ] **C6 Split `Match::play`.** Separate rule resolution from stage recording (`Match.h:263-407`).
-- [ ] **C7 Sectioned save format (D7).** Format 35, never 34.
+  Deleted: `TesseraUI/*.js|css|html`, the web theme previews, `tools/theme-preview`, the stale `docs/build-manifest.json` and 45 browser tests of the web UI. `TesseraUI/Tessera_Card_Art_*.md` are in `docs/card-art-prompts`.
+
+  Changed from the plan: seven browser tests exercise developer tools that stay (card library, rule lab, expansion editor, catalog audit, workshop server). They and `package.json` are kept; `tools/test-web-tools.sh` runs them. Playwright isn't installed in this checkout, so they were not run; the rule lab's file references were checked by script and its engine test passes.
+- [x] **C2 `NativeCollection.h` is split**, except the snapshot emitter.
+  - The header keeps the state, the small accessors that read the world, and declarations. Its large functions moved, bodies unchanged, to `src/CollectionSync.cpp`, `CollectionMatch.cpp`, `CollectionAlbum.cpp`, `CollectionSnapshot.cpp` and `CollectionSave.cpp`. `NativeOpponents.h`, `NativeExchange.h` and `NativeShop.h` became declaration headers over `src/NpcIntegration.cpp`, `Exchange.cpp` and `ShopCommands.cpp`. `NativeTournamentCommands.h` is `src/TournamentCommands.cpp`.
+  - The forward declarations that pointed at a header included later are gone, and `exchangeIntegration::reset/publish` are declared and defined alike.
+  - The move was scripted: only `inline` and default arguments were removed from each definition. State stays `inline` in the headers, so the order in which it is initialised is as before.
+  - **Not done: building the snapshot JSON with nlohmann.** `campaign::json` feeds every screen and can only be exercised in the running game. It also stitches in four JSON strings from core headers, which a rewrite would have to parse back. That is the wrong risk for a release of fixes and interface work. Do it with C7, where the save and snapshot code gets an in-game pass anyway, or behind a test that compares the old and new output.
+- [x] **C3 Duplication.**
+  - `payGoldCredit` and `campaign::payPlayerGold` replace three clamped payouts. The one in `recover()` stays apart: it also collects a negative credit.
+  - `grantDevelopmentCards`, `resolveActiveOpponent`, and `validHand` as `validDeck` with every slot filled.
+  - `native/src/Colour.h`: `rgb`/`alpha`/`fade`, tier numerals and rarity pigments. Legendary is `e6bc65` everywhere.
+  - `App::inspectRequested` for the seven inspect triggers; `App::action` for ten raw `ImGui::Button` calls. Two `ImGui::Checkbox` calls remain on the Developer page.
+  - The Same/Plus check is `Match::Contact::same/plus`; the hash multiplier is `seedSpread`.
+- [x] **C4 Dead code** removed: `App::closing` and its close path, `autoRotate`, `showMetrics`, `GameApp::filtersOpen`, `Assets::card/back/megabytes/decoded`, `Palette::name` and `Palette::centre` (and the `centre` colour in every `skin.json`). The palette table is keyed by theme id, with a `static_assert` that every theme a player can choose has a row.
+- [x] **C5 Named constants.** `RuleMask` is derived from `ruleFlags`; `lowestRank`, `aceRank`, `reversedRank`; `restockHours`; `travellerReturnHours` (the 168 in `Campaign.h` was M'aiq's week, not the rule-culture cooldown); `MaterialSlot` names every slot range; font choices go through one `chosenFont`.
+- [x] **C6 `Match::play` is split.** `touch`, `resolveCaptures` and `resolveCombo` are the rules; `groupStage`, `modifiersBefore`, `recordModifierStages` and `recordCaptureStages` are what the interface plays back. Compared with the previous engine over 2.67 million random plays across random rule sets (61,000 Same/Plus stages, 37,000 Combo stages, 24,000 group choices): identical results, flags, stages and boards, at the same speed.
+- [ ] **C7 Sectioned save format (D7).** Moved to the second release with phase 4. Format 35, never 34.
   - Each part becomes its own section, so one bad section no longer loses the rest.
   - Parsing is separated from validation, and the code moves to a .cpp in a small core library the tests link against.
   - Golden save files for formats 20, 21 and 26–33 must load unchanged.
-- [ ] **C8 Docs.** Mark `ui-overhaul.md` complete, rewrite the checkpoint section of `docs/TESTING.md`, and drop hard-coded test counts.
-- [ ] **C9 Optional, with the player's OK.** Prune `dist/` (26 old test builds, 1.7 GB) and stale `build/` trees (9.2 GB).
+- [x] **C8 Docs.** `ui-overhaul.md` is marked complete, the interface checklist in `docs/TESTING.md` is current, and test counts are gone from the docs.
+- [ ] **C9 Optional, with the player's OK.** Prune `dist/` (old test builds) and stale `build/` trees. Not done: it deletes files outside git.
+
+In Skyrim (a regression pass; nothing new to see):
+- Open the album, start and finish a staked game, settle it, and reload the save. This crosses every moved source file.
+- Enter a tournament game from the board and collect a prize.
+- Buy and sell a card with a merchant; open a pack.
+- With a mod that adds opponents or uses the exchange API installed, check its NPCs still offer games and its offers still complete.
+- Settings > Developer and the album's filter popup: the buttons look like the rest of the skin and still work.
 
 ## Build, test and package
 
