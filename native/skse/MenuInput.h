@@ -8,7 +8,7 @@ namespace preview::skyrim {
 // Skyrim moves MenuCursor with either a mouse or the right stick. Its position
 // cannot identify the device, so retain the source of the original input events.
 class MenuInput {
-    bool controller_ = false, pointer_ = false;
+    bool controller_ = false, pointer_ = false, turning_ = false;
     ImVec2 cursor_{-FLT_MAX, -FLT_MAX};
     std::array<bool, ImGuiKey_Gamepad_END - ImGuiKey_Gamepad_BEGIN> held_{};
     struct Click {
@@ -104,6 +104,12 @@ public:
         else if (key != ImGuiKey_None)
             ImGui::GetIO().AddKeyAnalogEvent(key, down, value);
     }
+    // While a card is being inspected the right stick turns it, as the prompt there
+    // says, instead of aiming the cursor.
+    void turning(bool on) {
+        if (turning_ && !on) rightStick(0, 0);
+        turning_ = on;
+    }
     void stick(bool left, float x, float y) {
         x = std::isfinite(x) ? x : 0;
         y = std::isfinite(y) ? y : 0;
@@ -111,22 +117,32 @@ public:
             controller_ = true;
             if (left)
                 navigation();
-            else {
+            else if (!turning_) {
                 pointer_ = true;
                 pointer();
             }
         }
-        // The right stick already drives Skyrim's visible cursor. Feeding it
-        // into ImGui as well would also scroll windows and rotate inspected art.
-        if (!left) return;
-        const auto axis = [](ImGuiKey key, float value) {
-            const float v = std::clamp((value - .2f) / .8f, 0.f, 1.f);
-            ImGui::GetIO().AddKeyAnalogEvent(key, v > 0, v);
-        };
+        if (!left) {
+            // Elsewhere the right stick only drives Skyrim's visible cursor.
+            if (turning_) rightStick(x, y);
+            return;
+        }
         axis(ImGuiKey_GamepadLStickLeft, -x);
         axis(ImGuiKey_GamepadLStickRight, x);
         axis(ImGuiKey_GamepadLStickUp, y);
         axis(ImGuiKey_GamepadLStickDown, -y);
+    }
+
+private:
+    static void axis(ImGuiKey key, float value) {
+        const float v = std::clamp((value - .2f) / .8f, 0.f, 1.f);
+        ImGui::GetIO().AddKeyAnalogEvent(key, v > 0, v);
+    }
+    static void rightStick(float x, float y) {
+        axis(ImGuiKey_GamepadRStickLeft, -x);
+        axis(ImGuiKey_GamepadRStickRight, x);
+        axis(ImGuiKey_GamepadRStickUp, y);
+        axis(ImGuiKey_GamepadRStickDown, -y);
     }
 };
 }

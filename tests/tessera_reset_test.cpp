@@ -87,6 +87,33 @@ int main() {
                writes == 0 && encodeCollection(s) == saved);
     }
     assert(!tesseraResetBlocked(history, true).empty());
+    {
+        // Gold owed to someone who left the game, or to a chest whose plugin is gone,
+        // can never be paid. It is dropped instead of blocking the reset for ever.
+        auto s = history;
+        const auto player = opponents[3].base, leaver = 0x7F001234u;
+        s.tournaments.npcGold[player] = 400;
+        s.tournaments.npcGold[leaver] = 1800;
+        s.merchants[456].goldCredit = 30;
+        s.merchants[457] = s.merchants[456];
+        s.merchants[457].goldCredit = 75;
+        assert(tesseraResetBlocked(s) == "Finish pending merchant payments first.");
+        const auto everything = [](std::uint32_t) { return true; };
+        auto dropped = dropUndeliverablePayments(s, everything);
+        assert(dropped.residents == 1 && !dropped.merchants && dropped.gold == 1800);
+        assert(s.tournaments.npcGold == (std::map<unsigned, unsigned>{{player, 400}}));
+        assert(s.merchants[456].goldCredit == 30 && s.merchants[457].goldCredit == 75);
+        dropped = dropUndeliverablePayments(s, [&](std::uint32_t id) { return id != 457 && id != player; });
+        assert(dropped.residents == 1 && dropped.merchants == 1 && dropped.gold == 475);
+        assert(s.tournaments.npcGold.empty() && s.merchants[456].goldCredit == 30 && !s.merchants[457].goldCredit);
+        assert(!dropUndeliverablePayments(s, everything));
+        // What can still be delivered goes on blocking until it is.
+        assert(tesseraResetBlocked(s) == "Finish pending merchant payments first.");
+        s.merchants[456].goldCredit = 0;
+        assert(tesseraResetBlocked(s).empty());
+        CollectionSave reloaded;
+        assert(decodeCollection(encodeCollection(s), reloaded));
+    }
     std::map<std::string, std::string> ini{{"Enabled", "1"}, {"UnrelatedSetting", "preserve"}};
     auto s = history;
     assert(dev.resetTessera(s, [&](std::string_view key, int value) {

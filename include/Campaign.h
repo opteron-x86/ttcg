@@ -398,12 +398,21 @@ inline void replenishOpponent(CollectionSave& s, int i, std::uint32_t actor, uns
                 basics.push_back(c.form);
     // Replace up to five ordinary themed copies every three days; rare finishes
     // are minted once and high-rarity prizes are never automatically recreated.
-    auto playable = [&] { return playableCount(playableOpponentStock(stock, i)); };
+    // A copy set aside for an active exchange offer still belongs here: cancelling
+    // the offer returns it, so a restock must not replace it in the meantime.
+    Stock offered;
+    int offeredCopies = 0;
+    for (const auto& [owner, e] : s.exchanges)
+        if (e.active() && e.ledger == actor && e.reward) {
+            ++offered[baseCardID(e.reward)];
+            ++offeredCopies;
+        }
+    auto playable = [&] { return playableCount(playableOpponentStock(stock, i)) + offeredCopies; };
     unsigned added = 0;
     for (unsigned round = 0; round < 2 && playable() < target && added < 5; ++round)
         for (unsigned n = 0; n < basics.size() && playable() < target && added < 5; ++n) {
             auto id = basics[(hour + n) % basics.size()];
-            if (count(stock, id) + count(stock, id | foilFlag) < 2) {
+            if (count(stock, id) + count(stock, id | foilFlag) + count(offered, id) < 2) {
                 ++stock[mintCard(s, id)];
                 ++added;
             }

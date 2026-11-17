@@ -53,7 +53,8 @@ inline ExchangeResult acceptExchange(CollectionSave& s, unsigned owner, unsigned
 }
 inline ExchangeResult cancelExchange(CollectionSave& s, unsigned owner, unsigned serial) {
     const auto* e = exchange(s, owner, serial);
-    if (!e) return ExchangeResult::Stale;
+    // A completed offer has changed hands; only a repeated cancellation is harmless.
+    if (!e || e->status == ExchangeStatus::Completed) return ExchangeResult::Stale;
     if (!e->active()) return ExchangeResult::Done;
     if (e->reward) {
         auto& stock = s.opponents[e->ledger];

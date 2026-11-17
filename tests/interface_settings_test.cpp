@@ -1,6 +1,8 @@
 #include "InterfaceSettings.h"
 #include "WorldIdentity.h"
 #include <cassert>
+#include <fstream>
+#include <map>
 #include <string>
 #include <iostream>
 int main() {
@@ -124,6 +126,39 @@ int main() {
         keys = {key, 0, 0};
         keys.normalize();
         assert(!keys.collection);
+    }
+    {
+        // The example INI is copied into players' settings. It lists every interface
+        // setting at its default, and only the skins that still load.
+        std::ifstream example("SKSE/Plugins/TTCG.ini.example");
+        assert(example);
+        std::map<std::string, std::map<std::string, std::string>> sections;
+        std::string themes, section;
+        for (std::string line; std::getline(example, line);) {
+            if (!line.empty() && line.back() == '\r') line.pop_back();
+            if (line.starts_with("[") && line.ends_with("]"))
+                section = line.substr(1, line.size() - 2);
+            else if (line.starts_with(";")) {
+                if (line.starts_with("; Interface skin:") || (!themes.empty() && !themes.ends_with("\n")))
+                    themes += line.substr(1) + " ";
+            } else {
+                if (!themes.empty() && !themes.ends_with("\n")) themes += "\n";
+                if (const auto equals = line.find('='); equals != std::string::npos)
+                    sections[section][line.substr(0, equals)] = line.substr(equals + 1);
+            }
+        }
+        for (const auto& field : ttcg::InterfaceSettings::fields) {
+            const auto& keys = sections[field.section];
+            const auto found = keys.find(field.ini);
+            assert(found != keys.end() && found->second == std::to_string(field.defaultValue));
+        }
+        for (int index = 0; index < ttcg::interfaceThemeCount; ++index) {
+            const auto& theme = ttcg::interfaceThemes[index];
+            const auto entry = " " + std::to_string(index) + " " + std::string(theme.name);
+            const auto at = themes.find(entry);
+            assert((at != std::string::npos) == !theme.retired);
+            if (!theme.retired) assert(themes[at + entry.size()] == ',' || themes[at + entry.size()] == '.');
+        }
     }
     std::cout
         << "Interface settings: persisted appearance bounds, failures, reset, vanilla/authored voice policy and hotkeys passed\n";

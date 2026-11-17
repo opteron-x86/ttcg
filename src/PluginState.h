@@ -126,6 +126,7 @@ void finishAlbumOpen();
 
 // MatchFlow.cpp
 void recordResult(const ttcg::Result& result);
+void applyAIMove(ttcg::Move move, std::uint64_t token, std::uint64_t round, std::uint64_t stateRevision);
 void runAI();
 
 // Commands.cpp

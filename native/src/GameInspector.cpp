@@ -20,7 +20,7 @@ void GameApp::nativeInspector() {
     d->PushClipRectFullScreen();
     surface(origin, extent);
     d->PopClipRect();
-    if (ImGui::IsKeyPressed(ImGuiKey_Escape, false) || ImGui::IsKeyPressed(ImGuiKey_GamepadFaceRight, false)) {
+    if (backPressed()) {
         inspecting = false;
         ImGui::CloseCurrentPopup();
     }

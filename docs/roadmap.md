@@ -6,7 +6,7 @@ Started 2026-11-16 from a full review of `master` at `6fc37d1` (0.33.0, 90/90 na
 
 | Phase | Scope | Branch | State |
 |---|---|---|---|
-| 1 | Bugs | `phase1/bug-fixes` | Planned |
+| 1 | Bugs | `phase1/bug-fixes` | Done; in-game check pending |
 | 2 | Merchant packs through SkyPatcher (1.7.104 crash) | `phase2/skypatcher-packs` | Planned |
 | 3 | AI | `phase3/ai` | Planned |
 | 4 | Balance: first move, regional rules, trade rules | `phase4/balance` | Planned; decisions D1–D3 needed |
@@ -34,6 +34,7 @@ Made by the player on 2026-11-16:
 - Fix the cost of off-screen tournament games if possible.
 - Do every UI/UX item and the code cleanup, including deleting the retired web UI.
 - Bring back the green-and-gold Tessera theme as a skin on the new layout.
+- Legion and Decimation keep their rule (one group per board); the rule text now says so (was D6, accepted with the plan).
 
 Open:
 
@@ -44,7 +45,6 @@ Open:
 | D3 | Trade-rule weights for drift | Phase 4 | One 35, Diff 30, Direct 25, All 10 |
 | D4 | Skill labels vs search settings (38 of 46 "Expert" opponents run Master's search) | Phase 3 | The search follows the level the player sees; keep explicit exceptions for named masters |
 | D5 | Default skin | Phase 6 | Skyrim stays the default; Tessera returns at index 0, so players whose INI still says `Theme=0` get it back |
-| D6 | Legion/Decimation: once one group is active no other can activate | Phase 1 | Keep the rule, fix the rule text ("once per board") |
 | D7 | Sectioned save format (C7) | Phase 7 | Do it, after B1 has made unreadable records survive |
 | D8 | Merchants added by other mods under a static SkyPatcher list | Phase 2 | Use a SkyPatcher filter if one exists (P1); otherwise vanilla and DLC only |
 
@@ -63,38 +63,45 @@ The bonus fixes most of the gap for ordinary captures. It barely affects Same an
 
 ## Phase 1: bugs
 
-Each fix comes with a test where the harness allows it (`tests/`, `native/tests/game_ui_test.cpp`, `tests/native_input_test.py`).
+Done on `phase1/bug-fixes` (2026-11-16) and waiting for the in-game check. Every item has a test unless noted. Where the fix differs from the plan, the item says how.
 
 Save and economy
-- [ ] **B1 Unreadable save record deletes progress.** If decoding fails or the format is unknown, `saveValid` goes false (`include/NativeCollection.h:1142-1150`) and `save()` writes nothing (`:1088`), so the next save has no Tessera record. Keep the raw `COLL`/`MATC` records (type, version, bytes) and write them back unchanged while invalid. Show an in-game message once per load. Test: an undecodable record survives a save byte-for-byte.
-- [ ] **B2 A finished but unsettled staked match blocks the economy.** After an interrupt or reload between the last move and the "settled" command, packs, shops, decks, exchanges, tournaments and other opponents are blocked until the player returns to that NPC (`MatchFlow.cpp:10-22`, `Commands.cpp:78`, `NativeCollection.h:737-742,790-799`). Settle immediately when no choice is pending (a loss, a draw, None/Direct/All). When a choice is pending, offer it from the album's interrupted-game panel.
-- [ ] **B3 CancelOffer on a completed offer reports "cancelled".** `Exchange.h:57`, `NativeExchange.h:157`. Answer "stale", as `docs/exchange-api.md` says.
-- [ ] **B4 CompleteOffer can go silent.** If the (owner, serial) confirmation is still open, it returns with no event (`NativeExchange.h:300`). Emit a result, or expire the confirmation.
-- [ ] **B5 Undeliverable payments block Reset Tessera forever.** NPC tournament gold for a removed or deselected resident (`NativeCollection.h:546-553`) and merchant credit for a chest that no longer resolves (`Shop.h:137-141`, `NativeShop.h:24-28`). After a failed resolution, drop or redirect the debt and log it.
-- [ ] **B6 A circuit stalls after a failed courier invitation.** The 30 s retry has no limit and only one invitation may be outstanding (`Tournaments.h:659-667`, `NativeCollection.h:533`, `TTCG_EncountersQuest.psc:24-29`). Cap the retries, then cancel the invitation and release the circuit and its trophy.
-- [ ] **B7 Exchange reward refilled by a restock is returned on top at cancel.** The NPC's ledger gains a copy (`Exchange.h:66` vs `Campaign.h:403-409`).
-- [ ] **B8 Death events touch the shared form-identity map off the main thread.** `Events.cpp:97` → `WorldIdentity.h:41-53`. Compute the ID inside the queued task.
-- [ ] **B9 Records injected into another plugin's FormID space resolve wrongly after reload.** `persistentID` uses `GetFile(0)` (`NativeCollection.h:97-103`). Investigate first; fix only if the change is safe for existing saves.
+- [x] **B1 Unreadable save record deletes progress.** `include/SaveRecords.h` reads the `COLL` and `MATC` records as bytes. When the collection can't be used (unknown format, damaged payload, failed migration), `load()` keeps every record and `save()` writes them back unchanged; Tessera stays off for that save and shows a message box after loading. A record the file itself cuts short can't be kept.
+- [x] **B2 A finished but unsettled game blocks the economy.** `settleFinishedMatch()` settles a finished table as soon as it is interrupted, and again on load and whenever Tessera opens. It applies to tournament games too: a finished one could lock packs, decks and shops for good once its event was pruned. A table is kept only while the winner has cards to choose (One, Diff) or a final still holds foil upgrades. Winnings can then be collected from the album's interrupted-game bar anywhere, without returning to the opponent (`resumeMatch()`, `checkLiveWorld()`).
+- [x] **B3 CancelOffer on a completed offer** answers `stale`. Cancelling twice still answers `cancelled`.
+- [x] **B4 CompleteOffer while its confirmation is open** answers `busy`. No test: the path needs Skyrim's message box.
+- [x] **B5 Undeliverable payments block Reset Tessera.** `dropUndeliverablePayments()` runs in `recover()`. It drops a tournament purse owed to someone who is no longer a Tessera player or whose plugin is gone, and a merchant payment whose chest no longer exists, and logs the amount. A debt whose owner still exists is kept and still blocks the reset.
+- [x] **B6 A circuit stalls after a failed courier invitation.** After six unacknowledged handoffs in a session the invitation is withdrawn (`withdrawTournamentInvitation()`): the event runs without the player, which frees the circuit and the trophy. Not covered: a courier script that never asks for the letter at all, because nothing is then in flight to time out.
+- [x] **B7 Exchange reward refilled by a restock.** `replenishOpponent()` counts copies set aside for active offers.
+- [x] **B8 Death events off the main thread.** The handler passes the FormID; the identity is computed in the queued task. No test.
+- [x] **B9 Injected records.** Fixed, not only investigated. `persistentID()` names the plugin that owns the form's ID space, found by load-order index when the defining plugin is a different one. Ordinary records get exactly the identity they had (tested against CommonLib's old formula), so existing saves are unaffected. An NPC or chest from an injected record gets a new identity: its old ledger is orphaned and it starts with a fresh collection. The old identity never resolved back to the form, so interrupted games and stakes with such NPCs were already being dropped.
 
 Match and AI
-- [ ] **B10 The opponent freezes, then the match closes as "stalled".** A queued AI move is dropped when `revision` changed meanwhile (an expansion reward, for example), and `thinking` is never cleared (`src/MatchFlow.cpp:52`). The watchdog closes the match after 30 s (`World.cpp:139-148`). On a stale revision, clear `thinking` and run `runAI()` again.
-- [ ] **B11 Opening Rules mid-turn changes the live match.** The rule demo shares `selectedHand` (`GameRules.cpp:17,73,81,86`, `GameMatch.cpp:523-526,666-694`). Give the demo its own selection.
-- [ ] **B12 A Same Wall / Plus capture plays three sounds.** `GameMatch.cpp:831-840` breaks only on the exact label "same wall".
-- [ ] **B13 Legion/Decimation text (D6).** `Match.h:125` locks to the first group; say so in `TesseraUI/rules.json` and the rules page.
-- [ ] **B14 Tutorial and affinity layouts depend on the standard library.** `std::shuffle` and `uniform_int_distribution` differ between MSVC and libstdc++ (`Lesson.h:65-67`, `Match.h::seedTiles`), so the Linux-generated `rules.json` caption doesn't match the MSVC game. Use an explicit shuffle and range. Check first whether saved matches store tiles or reseed them.
+- [x] **B10 The opponent freezes.** `applyAIMove()` lets go of `thinking` and searches again when the table changed during the search.
+- [x] **B11 Opening Rules mid-turn changes the live match.** The demo uses `demoSelected` only; `selectedHand` belongs to the live table.
+- [x] **B12 Same Wall / Plus sounds.** Smaller than reported: the interface sent a third, redundant `rule same` command, which the plugin already ignored, so two sounds played as intended. The redundant command is gone. No test.
+- [x] **B13 Legion/Decimation text (D6).** The rules page says the first play to bring three of a group onto the board chooses it, that the change applies on the board and in both hands, and that only one group is chosen per board. The text lives in `TesseraUI/album.js` until C1 moves it.
+- [x] **B14 Layouts depend on the standard library.** `Match::seedTiles` and `Match::seedVisibility` use an explicit shuffle and plain modulo, with values pinned in `tests/match_test.cpp`. Saved matches store tiles and reveals, so nothing in a save changes. `rule-demos.js` and `rules.json` are regenerated; only the opponent cards shown face up in the Three Open demo and the rift tour moved, and no caption changed. The other `std::shuffle` calls (opponent hands, packs, brackets) are consistent inside the game and were left alone. To regenerate: build `tests/rule_demo_host.cpp`, run it to `TesseraUI/rule-demos.js`, then `node tools/build-native-ui-assets.cjs`.
 
 Input and interface
-- [ ] **B15 Esc or B closes Tessera while ending a drag or a slider.** `GameApp.cpp:716-721` ignores ImGui's active widget and drag payload. Add `backPressed()`, which skips back handling when `GetActiveID()` or `GetDragDropPayload()` is set, and use it at all 11 `Esc || FaceRight` sites.
-- [ ] **B16 The right stick doesn't turn the inspected card.** `MenuInput.h:119-121` never passes it to ImGui, yet `GameInspector.cpp:112` advertises it. While the inspector is open, send the right stick to rotation.
-- [ ] **B17 Q or E pressed while binding a hotkey also switches tabs.** `GameApp.cpp:734-741` doesn't check `capturing()`.
-- [ ] **B18 A drag survives closing the menu and can finish on reopen.** In the reset branch at `Host.cpp:353-359`, call `ClearActiveID()` and `ClearDragDrop()`.
-- [ ] **B19 Pad X adds the focused card, not the one under the cursor.** In cursor mode use the hovered item (`MenuInput.h:100-105`, `Album.cpp:43-47`).
-- [ ] **B20 Card fact rows overflow.** Text is measured at a shrunken size and drawn at the 15 px floor (`GameApp.cpp:383`, `App.cpp:150`). The same happens to the match player name (`GameMatch.cpp:453-456`). Measure at the size that is drawn; wrap or ellipsize.
-- [ ] **B21 B in the rule-request dialog exits Tessera.** `GameMatch.cpp:84-90`. Make B mean decline, as in other dialogs.
-- [ ] **B22 Material slots can be reused within a frame.** On a very tall or portrait layout, the grid's `material++` can reach the drag and pack slots. A size change then rebuilds a render target whose view the draw list still uses (`RendererDX11.cpp:175-179`). Bound the slots and name them.
-- [ ] **B23 `TTCG.ini.example` lists the retired themes.** It shows themes 0–4 with `Theme=0` and lacks themes 11–15, KeyPrompts, WindowSize and the Printed frame. `tools/update-development-settings.py` copies those comments into players' INIs.
+- [x] **B15 Esc or B closes Tessera while ending a drag or a slider.** `App::backPressed()` ignores the press when, before the frame, a control was held, a drag was live or a dropdown was open above a dialog; ImGui ends those in `NewFrame`, so the state is noted in `prepareFrame()`. The press also cancels the drag, which ImGui would otherwise still deliver on release. Used at ten sites. The deck-rename field keeps its own check, because Esc there must cancel the rename while the field is active.
+- [x] **B16 The right stick turns the inspected card.** `MenuInput::turning()`. Skyrim's own cursor still moves with the stick while the card turns.
+- [x] **B17 Q or E while binding a hotkey** no longer switches tabs.
+- [x] **B18 A drag survives closing the menu.** `App::resume()` clears the active control and the drag.
+- [x] **B19 Pad X adds the card under the cursor** in cursor mode.
+- [x] **B20 Card fact rows and player names overflow.** Text shrinks to the 15 px floor and is then shortened with an ellipsis (`App::fitted()`, also wanted by U11).
+- [x] **B21 Withdrawn: not a bug.** B in the rule-request dialog leaves the lobby without answering, on purpose: declining is a real answer that ends the visiting rule's offer, and `game_ui_test.cpp` checks that Back does not give it. What is missing is a prompt saying so; that is part of U5.
+- [x] **B22 Material slots can be reused within a frame.** Scrolling grids have their own range of 160 slots (`MaterialSlot::gridSlot()`), clear of the drag, pack and settings cards; past the range a card is drawn without a finish. The remaining literal slot numbers are named in C5.
+- [x] **B23 `TTCG.ini.example`** lists the current skins, `Theme=13`, WindowSize, KeyPrompts and the Printed frame. `interface_settings_test.cpp` checks it against the settings table.
 
-In Skyrim: a match with an expansion reward during the AI turn; Esc during a deck drag; pad B after a slider; the inspector's right stick; interrupting a won staked match and reloading; Q/E during hotkey binding.
+In Skyrim:
+- A match where an expansion reward arrives during the opponent's turn: the opponent still moves.
+- Esc during a deck drag, and pad B after adjusting a slider: Tessera stays open and the drag is cancelled.
+- In the inspector, the right stick turns the card.
+- Q and E while binding a hotkey.
+- Win a staked game under One or Diff, press the album key before choosing a card, walk away, open the album and collect the winnings there.
+- Lose or draw a staked game and interrupt it during the result: the stakes settle at once and packs and shops work.
+- Reload a save with an interrupted finished game.
 
 ## Phase 2: merchant packs through SkyPatcher
 
@@ -159,13 +166,13 @@ New
 Fixes and gaps
 - [ ] **U3 Settings > Controls help.** Describe Y/I to inspect, LB/RB and Q/E for tabs, X/Enter to add to a deck, and the right-stick cursor (`GameSettings.cpp:334-336`).
 - [ ] **U4 Shop tabs.** Buy, Sell and Buy back step with LB/RB and Q/E (`GameShop.cpp:10-17`).
-- [ ] **U5 Prompts in result and trade dialogs.** Show them, and in "Choose a card" say why B does nothing (`GameTournaments.cpp:519-597`).
+- [ ] **U5 Prompts in result and trade dialogs.** Show them, and in "Choose a card" say why B does nothing (`GameTournaments.cpp:519-597`). The rule-request dialog needs a "Leave" prompt for B, which leaves without answering (see B21).
 - [ ] **U6 Rules modal.** Replace the × with a Close prompt (`GameRules.cpp:101`).
 - [ ] **U7 Shop notice.** Stop it covering the footer rule, the prompts and the last grid row (`GameShop.cpp:201-202`).
 - [ ] **U8 Delete-deck dialog.** Name the deck and use the skinned widgets (`Album.cpp:425-431`).
 - [ ] **U9 Foil-upgrade picker.** Replace the one long dropdown with the album grid, search and filters, so a pad can use it (`GameTournaments.cpp:288-304`).
 - [ ] **U10 Owned-count badge.** Respect the text floor; it is about 7 px at 1080p on Small density (`Album.cpp:86-97`).
-- [ ] **U11 Deck slot names.** Ellipsize instead of hard clipping (`Album.cpp:289-291`).
+- [ ] **U11 Deck slot names.** Ellipsize instead of hard clipping (`Album.cpp:289-291`), with `App::fitted()` from B20.
 - [ ] **U12 Custom colours on a pad.** Swatches and sliders instead of `ColorEdit3`.
 - [ ] **U13 Light colours on paper skins.** Route the hard-coded ones through `lightGround()`/`rarityInk()`: gold headings (`GameTournaments.cpp:240,453`), "−N gold" (`:576`) and rank deltas (`GameAlbum.cpp:267-268`).
 - [ ] **U14 Docs.** Update `docs/reference-guide.md` (deck editor, inspector, skins, a controller section) and the README. Close issue #3 after the physical pad check.
@@ -234,7 +241,7 @@ Its default board was Felt (3). The ground was a dithered radial gradient (`Surf
   - Reverse `11 - rank`;
   - the 72-hour restock;
   - `168` at `Campaign.h:67`, which equals `cultureCooldown`;
-  - the material slot numbers;
+  - the material slot numbers still written as literals (B22 named the grid's);
   - the convoluted font-index expressions in `applySettings` (`GameApp.cpp:163-164`).
 - [ ] **C6 Split `Match::play`.** Separate rule resolution from stage recording (`Match.h:263-407`).
 - [ ] **C7 Sectioned save format (D7).** Format 35, never 34.

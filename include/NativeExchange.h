@@ -297,7 +297,11 @@ inline void complete(RE::StaticFunctionTag*, RE::TESQuest* q, int serial, RE::Ac
             notify(q, resultName(result, "completed"));
             return;
         }
-        if (!beginConfirmation(q->GetFormID(), serial)) return;
+        if (!beginConfirmation(q->GetFormID(), serial)) {
+            // The confirmation for this offer is already on screen.
+            notify(q, "busy");
+            return;
+        }
         publish();
         const auto v = snapshot(q);
         std::string body = "Give one standard " + v.requestName + " to " + a->GetName() + " for " + v.rewardName + "?";

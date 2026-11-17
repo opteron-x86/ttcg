@@ -1,6 +1,7 @@
 #include "GameApp.h"
 #include "Announcements.h"
 #include "CardName.h"
+#include <imgui_internal.h>
 #include <fstream>
 #include <cmath>
 #include <numbers>
@@ -248,8 +249,7 @@ void GameApp::confirmation() {
         }
         ImGui::Dummy(ImVec2(0, 24 * scale));
         auto p = ImGui::GetCursorScreenPos();
-        if (button("cancel", "Cancel", p, ImVec2(160, 40) * scale) || ImGui::IsKeyPressed(ImGuiKey_Escape, false) ||
-            ImGui::IsKeyPressed(ImGuiKey_GamepadFaceRight, false)) {
+        if (button("cancel", "Cancel", p, ImVec2(160, 40) * scale) || backPressed()) {
             confirmationTitle.clear();
             ImGui::CloseCurrentPopup();
         }
@@ -379,11 +379,15 @@ float GameApp::factRows(const CardView& c, ImVec2 at, float width, bool draw, bo
             float icons = 0;
             for (int a = 0; a < 5; ++a)
                 if (row.icons & (1u << a)) icons += 23 * scale;
+            // Shrink a long value as far as the smallest text allowed, then shorten it:
+            // drawn smaller than it was measured, it ran into the label.
             const float natural = font()->CalcTextSizeA(17 * scale, 1e5f, 0, row.value.c_str()).x;
-            const float pixels = std::clamp(17.f * (room - icons) / std::max(1.f, natural), 11.f, 17.f);
-            const float measured = font()->CalcTextSizeA(pixels * scale, 1e5f, 0, row.value.c_str()).x;
+            const float pixels =
+                std::clamp(17.f * (room - icons) / std::max(1.f, natural), AlbumLayout::smallestText, 17.f);
+            const auto value = fitted(row.value, pixels, room - icons);
+            const float measured = font()->CalcTextSizeA(pixels * scale, 1e5f, 0, value.c_str()).x;
             float x = at.x + width - measured;
-            text(ImVec2(x, y + (31 - pixels * 1.3f) * .5f * scale), row.value, pixels, row.colour);
+            text(ImVec2(x, y + (31 - pixels * 1.3f) * .5f * scale), value, pixels, row.colour);
             for (int a = 4; a >= 0; --a)
                 if (row.icons & (1u << a)) {
                     x -= 23 * scale;
@@ -662,7 +666,15 @@ void GameApp::prepareFrame() {
     // ImGui dismisses non-modal popups in NewFrame. Remember that B/Escape
     // belongs to the popup so the same press cannot also close Tessera.
     popupBeforeFrame = ImGui::IsPopupOpen(nullptr, ImGuiPopupFlags_AnyPopupId | ImGuiPopupFlags_AnyPopupLevel);
+    // The same goes for whatever else that press ends in NewFrame: a slider being
+    // adjusted, a card in mid-drag, a dropdown open inside a dialog. A text field
+    // is left out, because Esc there cancels the dialog that holds it.
+    const auto& g = *GImGui;
+    heldBeforeFrame = (g.ActiveId != 0 && !g.IO.WantTextInput) || g.DragDropActive;
+    comboBeforeFrame = !g.OpenPopupStack.empty() && g.OpenPopupStack.back().Window &&
+                       !(g.OpenPopupStack.back().Window->Flags & ImGuiWindowFlags_Modal);
 }
+
 void GameApp::draw() {
     if (resetPopups) {
         if (ImGui::IsPopupOpen(nullptr, ImGuiPopupFlags_AnyPopupId | ImGuiPopupFlags_AnyPopupLevel))
@@ -671,6 +683,11 @@ void GameApp::draw() {
     }
     assets.beginFrame();
     dragPreviewDrawn = false;
+    // Esc or B cancels what was held. ImGui lets go of the control itself, but a drag
+    // lives until the button is released and would still land where it is dropped.
+    if (heldBeforeFrame &&
+        (ImGui::IsKeyPressed(ImGuiKey_Escape, false) || ImGui::IsKeyPressed(ImGuiKey_GamepadFaceRight, false)))
+        ImGui::ClearDragDrop();
     if (!sourceReady) return;
     applySettings();
     const auto display = ImGui::GetIO().DisplaySize;
@@ -713,8 +730,7 @@ void GameApp::draw() {
     const auto at = frameAt + ImVec2(28, 21) * scale;
     const float width = frameSize.x - 56 * scale;
     header(at, ImVec2(width, 46 * scale));
-    const bool back = escapeRequested || ImGui::IsKeyPressed(ImGuiKey_Escape, false) ||
-                      ImGui::IsKeyPressed(ImGuiKey_GamepadFaceRight, false);
+    const bool back = escapeRequested || backPressed();
     escapeRequested = false;
     if (back && !popupBeforeFrame && !ImGui::GetIO().WantTextInput &&
         !ImGui::IsPopupOpen(nullptr, ImGuiPopupFlags_AnyPopupId | ImGuiPopupFlags_AnyPopupLevel))
@@ -731,7 +747,8 @@ void GameApp::draw() {
         const float k = skinUnit(), band = std::min(108 * k, 50 * scale);
         const float tabHeight = 40 * scale, tabY = frameAt.y + 2 * k + (band - tabHeight) * .5f + titleDrop();
         float x = at.x + capsWidth("Tessera", 26, 3) + 54 * scale;
-        const bool free = !popupBeforeFrame && !ImGui::GetIO().WantTextInput && !inspecting &&
+        // Not while a hotkey is being chosen: Q and E are keys it may be given.
+        const bool free = !popupBeforeFrame && !ImGui::GetIO().WantTextInput && !inspecting && !capturing() &&
                           !ImGui::IsPopupOpen(nullptr, ImGuiPopupFlags_AnyPopupId | ImGuiPopupFlags_AnyPopupLevel);
         // Bumpers, or Q and E, step through the tabs.
         int step = 0;
@@ -767,16 +784,18 @@ void GameApp::draw() {
         const auto& interrupted = member(state, "interruptedMatch");
         if (!interrupted.is_null() && !interrupted.empty()) {
             // The offer and its answers sit together, clear of the page's own totals on the right.
-            const auto offer = "Resume your game with " + label(interrupted, "opponent") + ".";
+            const bool finished = flag(interrupted, "finished");
+            const auto offer = finished ? "Your game with " + label(interrupted, "opponent") + " has ended."
+                                        : "Resume your game with " + label(interrupted, "opponent") + ".";
             text(body + ImVec2(0, 3 * scale), offer, 17, palette().accent);
             float x = font()->CalcTextSizeA(17 * scale, 1e5f, 0, offer.c_str()).x + 26 * scale;
             if (flag(interrupted, "canResume")) {
-                if (button("resume", "Resume", body + ImVec2(x, -5 * scale), ImVec2(105, 35) * scale, true))
+                if (button("resume", finished ? "Collect" : "Resume", body + ImVec2(x, -5 * scale),
+                           ImVec2(105, 35) * scale, true))
                     send("interrupted", "resume");
                 x += 117 * scale;
             }
-            if (!flag(interrupted, "finished") &&
-                button("abandon", "Forfeit", body + ImVec2(x, -5 * scale), ImVec2(105, 35) * scale))
+            if (!finished && button("abandon", "Forfeit", body + ImVec2(x, -5 * scale), ImVec2(105, 35) * scale))
                 confirm("Forfeit this game?", "The trade rule and wager still apply.", "interrupted", "forfeit",
                         "Forfeit");
             body.y += 47 * scale;

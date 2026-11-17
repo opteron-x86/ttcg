@@ -1,3 +1,4 @@
+#include "Exchange.h"
 #include "Campaign.h"
 #include <cassert>
 #include <iostream>
@@ -52,5 +53,30 @@ int main() {
                        n <= 2);
         assert(validHand(opponentHand(restored.opponents[actor], i, 123), restored.opponents[actor]));
     }
+    // A copy offered in an exchange is not restocked behind the offer's back:
+    // cancelling returns it, and the collection is the size it started at.
+    unsigned offers = 0;
+    for (int i = 0; i < static_cast<int>(opponents.size()); ++i) {
+        if (!opponents[i].restock) continue;
+        CollectionSave c;
+        const auto actor = opponents[i].reference, quest = worldFormID({"Collector.esp", 0x800});
+        replenishOpponent(c, i, actor, 100);
+        auto& own = c.opponents[actor];
+        const int size = cardCount(own);
+        CardID reward = 0, wanted = 0;
+        for (auto [id, n] : own)
+            if (n > 0 && exchangeCard(id) && !reward) reward = id;
+        for (const auto& card : cards)
+            if (exchangeCard(card.form) && card.form != reward && !wanted) wanted = card.form;
+        if (!reward) continue;
+        const int copies = count(own, reward);
+        assert(postExchange(c, quest, actor, actor, wanted, reward, 0) == ExchangeResult::Done);
+        for (unsigned hour = 172; hour < 172 + 72 * 6; hour += 72) replenishOpponent(c, i, actor, hour);
+        assert(cardCount(own) == size - 1 && count(own, reward) == copies - 1);
+        assert(cancelExchange(c, quest, 1) == ExchangeResult::Done);
+        assert(cardCount(own) == size && count(own, reward) == copies);
+        ++offers;
+    }
+    assert(offers > 100);
     std::cout << "World: children have no game history; 320 personal collections, timed restocking passed\n";
 }

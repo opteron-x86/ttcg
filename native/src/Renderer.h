@@ -6,8 +6,15 @@
 #include <string>
 #include <vector>
 namespace preview {
+// One render target for each card drawn with a foil or match finish in a frame. Two
+// cards must not share a slot within a frame: the second would redraw, or rebuild at
+// another size, a target the frame's draw list already refers to.
 struct MaterialSlot {
-    static constexpr int grid = 22, drag = 86, packs = 87, appearance = 170, count = 174;
+    static constexpr int drag = 86, packs = 87, appearance = 170;
+    // A scrolling grid's cards. The range holds more than any layout shows at once.
+    static constexpr int grid = 174, gridCount = 160, count = grid + gridCount, none = -1;
+    // The grid's nth visible card. Past the range a card is drawn without a finish.
+    static constexpr int gridSlot(int n) { return n >= 0 && n < gridCount ? grid + n : none; }
 };
 struct Texture {
     ImTextureID id = 0;

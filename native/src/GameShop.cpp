@@ -80,7 +80,7 @@ void GameApp::shop(ImVec2 at, ImVec2 size) {
     const auto edges = gridScroll(rowH);
     ImGuiListClipper clip;
     clip.Begin((int(rows.size()) + columns - 1) / columns, rowH);
-    int material = 22;
+    int material = 0;
     while (clip.Step())
         for (int row = clip.DisplayStart; row < clip.DisplayEnd; ++row) {
             const auto p = ImGui::GetCursorScreenPos() + ImVec2(5, 5) * scale;
@@ -102,7 +102,7 @@ void GameApp::shop(ImVec2 at, ImVec2 size) {
                     inspectCard(id);
                 displayCard(id, pos, ImVec2(w, h),
                             shopSelected == id || (ImGui::IsItemFocused() && ImGui::GetIO().NavVisible), -1,
-                            material++);
+                            MaterialSlot::gridSlot(material++));
                 text(pos + ImVec2(0, h + 9 * scale), std::to_string(number(entry, "price")) + " gold", 18,
                      palette().ink);
                 text(pos + ImVec2(w - 57 * scale, h + 9 * scale), "×" + std::to_string(number(entry, "count")), 17,

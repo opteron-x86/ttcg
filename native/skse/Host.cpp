@@ -405,6 +405,7 @@ void Host::draw() {
             g.input.cursor({c.cursorPosX * sx, c.cursorPosY * sy});
         } else
             g.input.cursor({-FLT_MAX, -FLT_MAX});
+        g.input.turning(g.app->turningCard());
         for (const auto& event : input) {
             if (!inputActive || event.token != token) continue;
             switch (event.kind) {

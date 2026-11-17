@@ -121,6 +121,8 @@ public:
     void reset();
     void escape() { escapeRequested = true; }
     void prepareFrame();
+    // The inspector is open, where the right stick turns the card.
+    bool turningCard() const { return inspecting; }
     void draw() override;
     void captureKey(unsigned scan, unsigned modifiers);
     bool capturing() const { return !label(member(state, "settings"), "capturing").empty(); }

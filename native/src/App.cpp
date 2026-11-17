@@ -7,6 +7,7 @@
 #include <cstdio>
 #include <iostream>
 #include <numbers>
+#include <imgui_internal.h>
 
 namespace preview {
 namespace {
@@ -150,6 +151,31 @@ void App::text(ImVec2 at, const std::string& value, float size, ImU32 colour, fl
     const float pixels = std::max(size, AlbumLayout::smallestText) * scale;
     if (centre) at.x -= font()->CalcTextSizeA(pixels, 1e5f, wrap, value.c_str()).x * .5f;
     ImGui::GetWindowDrawList()->AddText(font(), pixels, at, colour, value.c_str(), nullptr, wrap);
+}
+std::string App::fitted(const std::string& value, float size, float width) const {
+    const float pixels = std::max(size, AlbumLayout::smallestText) * scale;
+    const auto wide = [&](const std::string& s) { return font()->CalcTextSizeA(pixels, 1e5f, 0, s.c_str()).x; };
+    if (wide(value) <= width) return value;
+    auto cut = value;
+    while (!cut.empty()) {
+        // Drop one whole UTF-8 character, then any space left hanging.
+        while (!cut.empty() && (static_cast<unsigned char>(cut.back()) & 0xC0) == 0x80) cut.pop_back();
+        if (!cut.empty()) cut.pop_back();
+        while (!cut.empty() && cut.back() == ' ') cut.pop_back();
+        if (wide(cut + "…") <= width) break;
+    }
+    return cut + "…";
+}
+bool App::backPressed() const {
+    if (heldBeforeFrame || comboBeforeFrame) return false;
+    return ImGui::IsKeyPressed(ImGuiKey_Escape, false) || ImGui::IsKeyPressed(ImGuiKey_GamepadFaceRight, false);
+}
+void App::resume() {
+    closing = false;
+    // The menu closed with something held. A drag begun before it closed would
+    // otherwise still be live, and could finish on the first click after reopening.
+    ImGui::ClearActiveID();
+    ImGui::ClearDragDrop();
 }
 void App::textRight(ImVec2 at, const std::string& value, float size, ImU32 colour) {
     size = std::max(size, AlbumLayout::smallestText);

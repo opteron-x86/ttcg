@@ -12,6 +12,7 @@
 #include "Presentation.h"
 #include "DeckPresentation.h"
 #include "SavedMatch.h"
+#include "SaveRecords.h"
 #include "InterfaceSettings.h"
 #include "EncounterRecords.h"
 #include "NpcSyncTiming.h"
@@ -35,6 +36,8 @@ inline RE::TESObjectBOOK* albumForm{};
 inline RE::TESBoundObject* packForm{};
 inline RE::TESBoundObject* tournamentPackForm{};
 inline bool saveValid = true;
+// The save's own records, kept for writing back while `saveValid` is false.
+inline std::vector<ttcg::SaveRecord> preservedRecords;
 inline ttcg::DevelopmentSettings development;
 inline ttcg::InterfaceSettings interfaceSettings;
 inline RE::TESGlobal* gamesEnabledGlobal{};
@@ -55,6 +58,9 @@ inline unsigned tournamentRegistration = 0;
 // to the event actually queued, even when another event uses the same note.
 inline std::atomic<std::uint64_t> tournamentLetterReady{0}, tournamentLetterInFlight{0};
 inline std::atomic<std::uint64_t> tournamentLetterSentAt{0};
+// Unacknowledged courier requests per event since the save was loaded.
+inline std::map<unsigned, unsigned> tournamentCourierFailures;
+inline constexpr unsigned tournamentCourierAttempts = 6;
 inline std::uint64_t tournamentCourierClock() {
     return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch())
         .count();
@@ -94,12 +100,32 @@ inline int physicalChange(RE::TESObjectREFR* actor, RE::TESBoundObject* form, in
     return physicalCount(actor, form) - before;
 }
 inline bool authoredKey(std::uint32_t id) { return ttcg::identityMaster(id) != nullptr; }
+// The plugin whose FormID space a form lives in. For an ordinary record that is the
+// file that defines it, so its identity is the same as it has always been. A record
+// another plugin injected into that space is found by load-order index instead:
+// the defining plugin's name would save an identity that resolves to a different
+// form, or to none, and that changes with the load order.
+inline const RE::TESFile* identityFile(RE::TESForm* form) {
+    const auto first = form->GetFile(0);
+    const auto id = form->GetFormID();
+    const bool light = id >> 24 == 0xFE;
+    const std::uint16_t lightIndex = (id >> 12) & 0xFFF;
+    if (!first || (light ? first->compileIndex == 0xFE && first->smallFileCompileIndex == lightIndex
+                         : first->compileIndex == id >> 24))
+        return first;
+    auto* data = RE::TESDataHandler::GetSingleton();
+    return !data   ? nullptr
+           : light ? data->LookupLoadedLightModByIndex(lightIndex)
+                   : data->LookupLoadedModByIndex(static_cast<std::uint8_t>(id >> 24));
+}
 inline std::uint32_t persistentID(RE::TESForm* form) {
     const ttcg::NpcSyncWorkScope timing(ttcg::NpcSyncWork::Identity);
     if (!form) return 0;
-    const auto file = form->GetFile(0);
-    return file ? ttcg::authoredIdentity(file->GetFilename(), form->GetLocalFormID(), form->GetFormID())
-                : form->GetFormID();
+    const auto id = form->GetFormID();
+    // A form created at run time has no file; its ID is all there is.
+    if (!form->GetFile(0)) return id;
+    const auto file = identityFile(form);
+    return file ? ttcg::authoredIdentity(file->GetFilename(), id & (id >> 24 == 0xFE ? 0xFFFu : 0xFFFFFFu), id) : 0;
 }
 template <class T> T* resolveID(std::uint32_t id) {
     const ttcg::NpcSyncWorkScope timing(ttcg::NpcSyncWork::Forms);
@@ -531,7 +557,16 @@ inline void updateTournaments() {
         if (!e || e->invitation != 1 || e->awarded)
             tournamentLetterInFlight.compare_exchange_strong(request, 0);
         else if (tournamentCourierClock() - tournamentLetterSentAt.load() > 30000) {
-            SKSE::log::warn("Tournament {} courier request was not acknowledged; retrying", e->id);
+            // A letter that never reaches the courier would hold its circuit for good.
+            const auto id = e->id;
+            if (++tournamentCourierFailures[id] < tournamentCourierAttempts)
+                SKSE::log::warn("Tournament {} courier request was not acknowledged; retrying", id);
+            else if (ttcg::withdrawTournamentInvitation(saved, id, hour)) {
+                tournamentCourierFailures.erase(id);
+                SKSE::log::error(
+                    "Tournament {} invitation could not be handed to the courier after {} attempts; the event runs without the player",
+                    id, tournamentCourierAttempts);
+            }
             tournamentLetterInFlight.compare_exchange_strong(request, 0);
         }
     }
@@ -704,8 +739,16 @@ inline void resolveSavedMatch(bool forfeit) {
     tournamentID = previousTournament;
     cultureGame = false;
 }
+// Settle a finished table at once when nothing is left for the player to choose.
+// Otherwise packs, shops, decks and every other opponent stay locked until the
+// player goes back to that table.
+inline bool settleFinishedMatch() {
+    if (!ttcg::finishedMatchSettles(savedMatch, saved)) return false;
+    resolveSavedMatch(false);
+    return true;
+}
 inline bool recoverSavedMatch() {
-    if (!savedMatch.present) return false;
+    if (settleFinishedMatch() || !savedMatch.present) return false;
     const auto* event = ttcg::tournament(saved, savedMatch.tournament);
     if (savedMatch.tournament && !savedMatch.table.finished() &&
         (!event || !ttcg::tournamentOpen(*event, gameHour()) || event->eliminated || event->awarded ||
@@ -733,6 +776,11 @@ inline void recover() {
         Bank bank(0);
         saved.goldCredit -= bank.change(0, 0, saved.goldCredit);
     }
+    if (const auto dropped = ttcg::dropUndeliverablePayments(
+            saved, [](std::uint32_t id) { return resolveID<RE::TESForm>(id) != nullptr; }))
+        SKSE::log::warn(
+            "Dropped {} gold owed to {} former player(s) and {} missing merchant chest(s); they can no longer be paid",
+            dropped.gold, dropped.residents, dropped.merchants);
     syncProgression();
     if (recoverSavedMatch()) {
         // A committed choice may still have outstanding native inventory writes.
@@ -783,13 +831,15 @@ inline bool prepare(RE::Actor* actor, bool resetTerms = false) {
     revealed.clear();
     revealKind.clear();
     if (!available()) {
-        notice = "Card data unavailable.";
+        notice = saveValid ? "Card data unavailable." : "Tessera can't read this save's data. Update Tessera.";
         return false;
     }
     recover();
     if (savedMatch.present) {
         if (actor) {
-            notice = "Finish your game with " + savedMatchName() + " first.";
+            notice = savedMatch.table.finished()
+                         ? "Open your album and collect your winnings from " + savedMatchName() + " first."
+                         : "Finish your game with " + savedMatchName() + " first.";
             return false;
         }
         owned = inventory(RE::PlayerCharacter::GetSingleton());
@@ -1085,14 +1135,19 @@ inline std::string json(RE::Actor* actor, bool = true, bool conceal = false) {
     return out;
 }
 inline void save(SKSE::SerializationInterface* serial) {
-    if (!saveValid) return;
+    if (!saveValid) {
+        // Tessera could not read this save's records. Write them back as they were.
+        if (!ttcg::writeSaveRecords(*serial, preservedRecords))
+            SKSE::log::error("Could not write back the unreadable Tessera records");
+        return;
+    }
     auto data = ttcg::encodeCollection(saved);
-    if (!serial->WriteRecord(0x434F4C4C, ttcg::collectionFormat, data.data(),
+    if (!serial->WriteRecord(ttcg::collectionRecord, ttcg::collectionFormat, data.data(),
                              static_cast<std::uint32_t>(data.size() * 4)))
         SKSE::log::error("Could not save collection state");
     if (savedMatch.present) {
         const auto table = ttcg::encodeMatch(savedMatch);
-        if (!serial->WriteRecord(0x4D415443, ttcg::savedMatchFormat, table.data(),
+        if (!serial->WriteRecord(ttcg::matchRecord, ttcg::savedMatchFormat, table.data(),
                                  static_cast<std::uint32_t>(table.size() * 4)))
             SKSE::log::error("Could not save interrupted match");
     }
@@ -1106,9 +1161,11 @@ inline void revert(SKSE::SerializationInterface*) {
     tournamentRegistration = 0;
     tournamentLetterReady = 0;
     tournamentLetterInFlight = 0;
+    tournamentCourierFailures.clear();
     cultureGame = false;
     cultureNotice.clear();
     saveValid = true;
+    preservedRecords.clear();
     notice.clear();
     receipt.clear();
     revealed.clear();
@@ -1123,44 +1180,29 @@ inline void revert(SKSE::SerializationInterface*) {
 }
 inline void load(SKSE::SerializationInterface* serial) {
     revert(serial);
-    std::uint32_t type, version, length;
-    std::vector<std::uint32_t> matchData;
-    while (serial->GetNextRecordInfo(type, version, length)) {
-        if (type == 0x4D415443) {
-            if (version != ttcg::savedMatchFormat || length != 65 * 4) {
-                SKSE::log::warn("Unsupported saved match; returning its stakes");
-                continue;
+    auto records = ttcg::readSaveRecords(*serial);
+    for (const auto& record : records.records)
+        if (record.type == ttcg::matchRecord &&
+            (record.version != ttcg::savedMatchFormat || record.bytes.size() != 65 * 4))
+            SKSE::log::warn("Unsupported saved match; returning its stakes");
+    auto loaded = ttcg::decodeSaveRecords(std::move(records), [&](ttcg::CollectionSave& collection) {
+        return ttcg::remapWorldState(collection, [&](std::uint32_t old) {
+            if (authoredKey(old) || ttcg::opponentIndex(old) >= 0) return old;
+            RE::FormID id = 0;
+            if (serial->ResolveFormID(old, id)) {
+                auto form = RE::TESForm::LookupByID(id);
+                return form ? persistentID(form) : id;
             }
-            std::vector<std::uint32_t> data(length / 4);
-            if (serial->ReadRecordData(data.data(), length) == length)
-                matchData = std::move(data);
-            else
-                SKSE::log::warn("Invalid saved match; returning its stakes");
-            continue;
-        }
-        if (type != 0x434F4C4C) continue;
-        if (!ttcg::supportedCollectionFormat(version) || length % 4 || length > 16 * 1048576) {
-            saveValid = false;
-            continue;
-        }
-        std::vector<std::uint32_t> data(length / 4);
-        if (serial->ReadRecordData(data.data(), length) != length || !ttcg::decodeCollection(data, saved, version)) {
-            saveValid = false;
-            continue;
-        }
-        if (version < 30) {
-            auto migrate = [&](std::uint32_t old) {
-                if (authoredKey(old) || ttcg::opponentIndex(old) >= 0) return old;
-                RE::FormID id = 0;
-                if (serial->ResolveFormID(old, id)) {
-                    auto form = RE::TESForm::LookupByID(id);
-                    return form ? persistentID(form) : id;
-                }
-                return ttcg::worldFormID({"missing-legacy-" + std::to_string(old) + ".esp", 1});
-            };
-            if (!ttcg::remapWorldState(saved, migrate)) saveValid = false;
-        }
-    }
+            return ttcg::worldFormID({"missing-legacy-" + std::to_string(old) + ".esp", 1});
+        });
+    });
+    saveValid = loaded.valid;
+    saved = std::move(loaded.collection);
+    preservedRecords = std::move(loaded.preserved);
+    auto matchData = std::move(loaded.match);
+    if (!saveValid)
+        SKSE::log::error("Tessera's data in this save is unreadable; keeping {} record(s) unchanged and staying off",
+                         preservedRecords.size());
     if (!matchData.empty()) {
         for (unsigned i = 27; i < 37; ++i) matchData[i] = ttcg::remapSavedCard(saved, matchData[i]);
         if (!ttcg::decodeMatch(matchData, savedMatch)) {

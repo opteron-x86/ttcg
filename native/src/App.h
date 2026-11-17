@@ -96,6 +96,14 @@ protected:
     ImFont* font() const;
     void text(ImVec2 at, const std::string& value, float size, ImU32 colour, float wrap = 0, bool centre = false);
     void textRight(ImVec2 at, const std::string& value, float size, ImU32 colour);
+    // The text as `text` would draw it at `size`, ended with an ellipsis if it is wider than `width`.
+    std::string fitted(const std::string& value, float size, float width) const;
+    // What ImGui is in the middle of when a frame begins, and ends in NewFrame on Esc
+    // or pad B: a slider being adjusted or a card in mid-drag, and a dropdown open
+    // above a dialog. That press is not also Back.
+    bool heldBeforeFrame = false, comboBeforeFrame = false;
+    // Esc or pad B, when the press is free to mean Back.
+    bool backPressed() const;
     float choiceWidth(const std::vector<std::string>& choices) const;
     bool select(const char* id, int& value, const std::vector<std::string>& choices, float width);
     bool sectionTab(const char* id, const std::string& title, ImVec2 at, ImVec2 size, bool active);
@@ -186,7 +194,7 @@ public:
     App(Renderer& renderer, const Options& options);
     virtual ~App();
     virtual void draw() = 0;
-    void resume() { closing = false; }
+    void resume();
     void inputDevice(bool controller) {
         hostInputDevice = true;
         padPrompts = controller;

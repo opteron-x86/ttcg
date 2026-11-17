@@ -1,6 +1,14 @@
 #pragma once
 #include "Tournaments.h"
+#include "SavedMatch.h"
 namespace ttcg {
+// A finished table has nothing left to play. It only needs the player again when the
+// winner still has cards to choose, or a tournament prize screen still holds foil
+// upgrades. Any other finished table can be settled without them.
+inline bool finishedMatchSettles(const SavedMatch& table, const CollectionSave& s) {
+    if (!table.present || !table.table.finished()) return false;
+    return table.tournament ? !pendingTournamentFoils(s) : !s.contract.choicePending();
+}
 inline std::string_view collectionRecoveryBlocked(const CollectionSave& s, bool interrupted = false) {
     if (interrupted) return "Finish or forfeit your interrupted game first.";
     if (s.contract.pending() || s.goldCredit) return "Finish the pending card trade or payment first.";
@@ -16,6 +24,31 @@ inline std::string_view tesseraResetBlocked(const CollectionSave& s, bool interr
     for (const auto& [id, gold] : s.tournaments.npcGold)
         if (gold) return "Finish pending tournament payments first.";
     return {};
+}
+struct DroppedPayments {
+    unsigned residents = 0, merchants = 0, gold = 0;
+    explicit operator bool() const { return residents || merchants; }
+};
+// Gold owed to the world that can never be delivered: a tournament purse for someone
+// who no longer plays Tessera, or a payment to a merchant chest whose plugin is gone.
+// Left in place, either would block Reset Tessera for good. `exists(id)` says
+// whether the saved form can still be found.
+template <class Exists> DroppedPayments dropUndeliverablePayments(CollectionSave& s, Exists exists) {
+    DroppedPayments dropped;
+    for (auto& [base, gold] : s.tournaments.npcGold)
+        if (gold && (opponentIndex(base) < 0 || !exists(base))) {
+            ++dropped.residents;
+            dropped.gold += gold;
+            gold = 0;
+        }
+    std::erase_if(s.tournaments.npcGold, [](const auto& entry) { return !entry.second; });
+    for (auto& [chest, merchant] : s.merchants)
+        if (merchant.goldCredit > 0 && !exists(chest)) {
+            ++dropped.merchants;
+            dropped.gold += unsigned(merchant.goldCredit);
+            merchant.goldCredit = 0;
+        }
+    return dropped;
 }
 inline CollectionSave freshTesseraSave(const CollectionSave& previous) {
     CollectionSave fresh;

@@ -132,6 +132,33 @@ int main() {
            std::vector<unsigned>{strandedMaster});
     assert(tournamentEntryAvailable(*tournament(strandedClock, strandedMaster), 7));
     assert(reconcileTournamentInvitations(strandedClock, strandedLetter, 90, 0, 7).empty());
+    {
+        // A courier that never takes the letter must not hold the circuit: the event
+        // runs without the player, and the next one can be scheduled.
+        CollectionSave stuck;
+        grantStarter(stuck);
+        const auto lost = newTournament(stuck, 1, 100, true, 1);
+        auto* e = tournament(stuck, lost);
+        assert(e && e->invitation == 1 && !e->ends);
+        const auto waiting = [&] {
+            return std::any_of(stuck.tournaments.events.begin(), stuck.tournaments.events.end(),
+                               [](const auto& event) { return event.circuit == 1 && !event.awarded && !event.ends; });
+        };
+        assert(waiting());
+        assert(!withdrawTournamentInvitation(stuck, lost + 1, 130));
+        assert(withdrawTournamentInvitation(stuck, lost, 130) && !withdrawTournamentInvitation(stuck, lost, 131));
+        assert(!e->invitation && e->starts == 130 && e->ends == 130 + 7 * 24 && !e->discovered && !waiting());
+        assert(!recordTournamentInvitation(stuck, tournamentLetter(*e), false, 131, lost));
+        assert(decodeCollection(encodeCollection(stuck), loaded) &&
+               encodeCollection(loaded) == encodeCollection(stuck));
+        assert(!tournamentEntryAvailable(*e, 140) && !enterTournament(stuck, lost, 140, bank));
+        tickTournaments(stuck, 130 + 7 * 24);
+        assert(tournament(stuck, lost)->awarded && tournament(stuck, lost)->bracket[14] != tournamentPlayer);
+        // An invitation already with the courier, or delivered, is left alone.
+        const auto sent = newTournament(stuck, 2, 400, true, 1);
+        assert(recordTournamentInvitation(stuck, tournamentLetter(*tournament(stuck, sent)), false, 401, sent));
+        assert(!withdrawTournamentInvitation(stuck, sent, 402) && tournament(stuck, sent)->invitation == 2);
+    }
     std::cout
         << "Invitations: missed inventory callback recovery, host/venue entry gates, duplicate notes, retained old letters, delayed acknowledgements, late delivery windows and saved entry passed\n";
 }

@@ -20,7 +20,7 @@ void App::cardGrid(ImVec2 at, ImVec2 size, bool changed) {
     const int count = int(visible.size());
     ImGuiListClipper clip;
     clip.Begin((count + columns - 1) / columns, rowH);
-    int material = MaterialSlot::grid;
+    int material = 0;
     while (clip.Step())
         for (int row = clip.DisplayStart; row < clip.DisplayEnd; ++row) {
             const auto origin = ImGui::GetCursorScreenPos() + ImVec2(6, 6) * scale;
@@ -42,9 +42,11 @@ void App::cardGrid(ImVec2 at, ImVec2 size, bool changed) {
                 const bool twice = ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0);
                 const bool held = ImGui::IsItemFocused();
                 // In the deck editor a double click, Enter or X puts the card straight into the deck.
+                // With the right-stick cursor showing, X means the card under it, as A and Y do.
+                const bool aimed = ImGui::IsMousePosValid() ? ImGui::IsItemHovered() : held;
                 if (editing && known && c.owned[foil ? 1 : 0] > 0 &&
-                    (twice || (held && (ImGui::IsKeyPressed(ImGuiKey_Enter, false) ||
-                                        ImGui::IsKeyPressed(ImGuiKey_GamepadFaceLeft, false))))) {
+                    (twice || (held && ImGui::IsKeyPressed(ImGuiKey_Enter, false)) ||
+                     (aimed && ImGui::IsKeyPressed(ImGuiKey_GamepadFaceLeft, false)))) {
                     selected = id;
                     selectedFoil = foil;
                     addToDeck(c.id | (foil ? ttcg::foilFlag : 0));
@@ -63,7 +65,7 @@ void App::cardGrid(ImVec2 at, ImVec2 size, bool changed) {
                 const bool chosen = (id == selected && foil == selectedFoil && (screen != 0 || selectedPack < 0)) ||
                                     (ImGui::IsItemFocused() && ImGui::GetIO().NavVisible);
                 if (known)
-                    card(id, p, ImVec2(w, h), chosen, foil && face.foil, -1, material++);
+                    card(id, p, ImVec2(w, h), chosen, foil && face.foil, -1, MaterialSlot::gridSlot(material++));
                 else {
                     auto texture = assets.get(customBack);
                     ImGui::GetWindowDrawList()->AddImage(texture.id, p, p + ImVec2(w, h));
@@ -437,8 +439,7 @@ void App::deckModal() {
         }
         ImGui::Dummy(ImVec2(1, 12 * scale));
         const auto pos = ImGui::GetCursorScreenPos();
-        if (button("cancel", "Cancel", pos, ImVec2(180, 39) * scale) || ImGui::IsKeyPressed(ImGuiKey_Escape, false) ||
-            ImGui::IsKeyPressed(ImGuiKey_GamepadFaceRight, false)) {
+        if (button("cancel", "Cancel", pos, ImVec2(180, 39) * scale) || backPressed()) {
             deckDialog.clear();
             ImGui::CloseCurrentPopup();
         } else if (button("save-deck", remove ? "Delete" : "Save", pos + ImVec2(215, 0) * scale,

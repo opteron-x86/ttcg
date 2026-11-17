@@ -56,8 +56,10 @@ void publish() {
                 ",\"tournament\":" + std::to_string(saved.tournament) +
                 ",\"finished\":" + (saved.table.finished() ? "true" : "false") +
                 ",\"venue\":" + ttcg::quote(e ? ttcg::tournamentVenues[e->hold - 1].name : "") + ",\"canResume\":" +
-                (campaign::interfaceSettings.gamesEnabled && e && campaign::tournamentVenue() == e->hold ? "true"
-                                                                                                         : "false") +
+                (campaign::interfaceSettings.gamesEnabled &&
+                         (e ? campaign::tournamentVenue() == e->hold : saved.table.finished())
+                     ? "true"
+                     : "false") +
                 "}";
     } else
         data += "null";
@@ -136,8 +138,12 @@ bool resumeMatch() {
     auto actor = campaign::resolveID<RE::Actor>(saved.opponent);
     auto player = RE::PlayerCharacter::GetSingleton();
     const auto* event = ttcg::tournament(campaign::saved, saved.tournament);
-    if (!player || player->IsDead() || player->IsInCombat() || !actor || !campaign::actorReadyForCards(actor) ||
-        (saved.tournament ? (!event || campaign::tournamentVenue() != event->hold) : !eligible(actor)))
+    // Only the winnings of a finished game are left, and those are already held:
+    // the player can collect them from the album, wherever the opponent is.
+    const bool collecting = saved.table.finished() && !saved.tournament;
+    if (!player || player->IsDead() || player->IsInCombat() || !actor) return false;
+    if (!collecting && (!campaign::actorReadyForCards(actor) ||
+                        (saved.tournament ? (!event || campaign::tournamentVenue() != event->hold) : !eligible(actor))))
         return false;
     if (!api || !uiReady || !api->IsValid(view) || (!visible && api->HasAnyActiveFocus())) return false;
     campaign::closeShop();
@@ -211,7 +217,11 @@ void showPanel(RE::Actor* actor, const std::string& requested) {
     }
     if (campaign::savedMatch.present && target == "lobby") {
         if (campaign::resumingWith(actor) && resumeMatch()) return;
-        RE::SendHUDMessage::ShowHUDMessage(("Finish your game with " + campaign::savedMatchName() + " first.").c_str());
+        RE::SendHUDMessage::ShowHUDMessage(
+            (campaign::savedMatch.table.finished()
+                 ? "Open your album and collect your winnings from " + campaign::savedMatchName() + " first."
+                 : "Finish your game with " + campaign::savedMatchName() + " first.")
+                .c_str());
         return;
     }
     if (campaign::savedMatch.present && campaign::savedMatch.tournament && requested == "registration") {

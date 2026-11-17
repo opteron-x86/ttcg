@@ -21,6 +21,27 @@ void recordResult(const ttcg::Result& result) {
     checkpointMatch();
     playSound("UIMenuFocus");
 }
+// Game thread: play the move a search chose for the table as it stood at `stateRevision`.
+void applyAIMove(ttcg::Move move, std::uint64_t token, std::uint64_t round, std::uint64_t stateRevision) {
+    // The table this search was for has closed, and closing cleared `thinking`.
+    if (epoch.load() != token || !visible || session != round) return;
+    if (!checkLiveWorld()) return;
+    thinking = false;
+    if (revision != stateRevision || match.turn != 1) {
+        // Something else was published during the search (a card reward, for
+        // example). The move may no longer fit, so choose again from the table as it is.
+        runAI();
+        return;
+    }
+    auto result = match.play(move);
+    if (!result.legal) {
+        log::error("AI returned an illegal move");
+        close();
+        return;
+    }
+    recordResult(result);
+    publish();
+}
 void runAI() {
     if (!visible || !active || thinking || settling || worldFocus.switching() || match.finished() || match.turn != 1 ||
         !checkLiveWorld())
@@ -48,20 +69,8 @@ void runAI() {
         // Presentation has acknowledged the previous move before this search starts.
         std::this_thread::sleep_for(std::chrono::milliseconds(300));
         if (epoch.load() != token) return;
-        collectionIntegration::queue([move, token, round, stateRevision]() {
-            if (epoch.load() != token || !visible || session != round || revision != stateRevision || match.turn != 1)
-                return;
-            if (!checkLiveWorld()) return;
-            thinking = false;
-            auto result = match.play(move);
-            if (!result.legal) {
-                log::error("AI returned an illegal move");
-                close();
-                return;
-            }
-            recordResult(result);
-            publish();
-        });
+        collectionIntegration::queue(
+            [move, token, round, stateRevision]() { applyAIMove(move, token, round, stateRevision); });
     }).detach();
 }
 } // namespace tessera_plugin

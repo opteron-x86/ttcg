@@ -130,6 +130,16 @@ inline unsigned recordTournamentInvitation(CollectionSave& s, unsigned letter, b
         }
     return 0;
 }
+// The courier never took this invitation. The event runs without the player, so
+// its circuit and trophy are not held for an invitation that cannot arrive.
+inline bool withdrawTournamentInvitation(CollectionSave& s, unsigned id, unsigned hour) {
+    auto* e = tournament(s, id);
+    if (!e || !e->circuit || e->invitation != 1 || e->awarded) return false;
+    e->invitation = 0;
+    e->starts = std::max(hour, e->announced);
+    e->ends = e->starts + 7 * 24;
+    return true;
+}
 inline std::vector<unsigned> recoverTournamentInvitations(CollectionSave& s, unsigned letter, unsigned carried,
                                                           unsigned courierCopies, unsigned hour) {
     // Reconcile delivered notes with outstanding courier requests.

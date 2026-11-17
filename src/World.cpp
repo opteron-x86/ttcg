@@ -71,7 +71,19 @@ void interruptPanel() {
     const bool interrupted = active;
     checkpointMatch();
     close(!interrupted);
-    if (interrupted) RE::SendHUDMessage::ShowHUDMessage("Tessera game interrupted. You can resume it later.");
+    if (!interrupted) return;
+    const bool finished = campaign::savedMatch.present && campaign::savedMatch.table.finished();
+    const auto* player = RE::PlayerCharacter::GetSingleton();
+    campaign::receipt.clear();
+    // A finished game with nothing left to choose is settled here, not left to lock
+    // packs, shops and other opponents until the player returns to this table.
+    if (finished && player && !player->IsDead() && campaign::settleFinishedMatch()) {
+        if (!campaign::receipt.empty())
+            RE::SendHUDMessage::ShowHUDMessage(("Tessera: " + campaign::receipt + ".").c_str());
+        return;
+    }
+    RE::SendHUDMessage::ShowHUDMessage(finished ? "Tessera interrupted. Collect your winnings from your album."
+                                                : "Tessera game interrupted. You can resume it later.");
 }
 bool checkLiveWorld() {
     if (!visible || !worldFocus.unpaused()) return true;
@@ -107,9 +119,11 @@ bool checkLiveWorld() {
             RE::SendHUDMessage::ShowHUDMessage("Your Tessera game has been canceled.");
             return false;
         }
-        if (actor->IsInCombat() || actor->IsHostileToActor(player) || actor->GetCurrentScene() ||
-            (!campaign::tournamentID && (actor->GetParentCell() != player->GetParentCell() ||
-                                         actor->GetPosition().GetDistance(player->GetPosition()) >= 900.f))) {
+        // A finished table only shows its result and winnings; the opponent can leave.
+        if (!match.finished() &&
+            (actor->IsInCombat() || actor->IsHostileToActor(player) || actor->GetCurrentScene() ||
+             (!campaign::tournamentID && (actor->GetParentCell() != player->GetParentCell() ||
+                                          actor->GetPosition().GetDistance(player->GetPosition()) >= 900.f)))) {
             interruptPanel();
             return false;
         }

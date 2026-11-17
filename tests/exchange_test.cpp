@@ -28,6 +28,9 @@ int main() {
     const auto paid = encodeCollection(s);
     for (int i = 0; i < 10; ++i) assert(completeExchange(s, quest, 1) == ExchangeResult::Done);
     assert(encodeCollection(s) == paid);
+    // A completed offer can't be cancelled, and saying so changes nothing.
+    assert(cancelExchange(s, quest, 1) == ExchangeResult::Stale && encodeCollection(s) == paid);
+    assert(exchange(s, quest)->status == ExchangeStatus::Completed);
     CollectionSave loaded;
     assert(decodeCollection(paid, loaded));
     assert(completeExchange(loaded, quest, 1) == ExchangeResult::Done && encodeCollection(loaded) == paid);

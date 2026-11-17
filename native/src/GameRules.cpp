@@ -14,7 +14,6 @@ void GameApp::rules(ImVec2 at, ImVec2 size) {
             topic = id;
             demoStep = 0;
             demoSelected = false;
-            selectedHand = -1;
             demoChanged = ImGui::GetTime();
         }
     }
@@ -70,7 +69,6 @@ void GameApp::rules(ImVec2 at, ImVec2 size) {
     if (button("demo-back", "← Back", controls, ImVec2(98, 36) * scale, false, demoStep > 0)) {
         --demoStep;
         demoSelected = false;
-        selectedHand = -1;
     }
     text(controls + ImVec2(142, 9.5f) * scale, std::to_string(demoStep + 1) + " / " + std::to_string(frames.size()), 17,
          palette().muted, 0, true);
@@ -78,12 +76,10 @@ void GameApp::rules(ImVec2 at, ImVec2 size) {
                demoStep + 1 < int(frames.size()) && number(frame, "hand", -1) < 0)) {
         ++demoStep;
         demoSelected = false;
-        selectedHand = -1;
     }
     if (button("demo-replay", "Start again", controls + ImVec2(320, 0) * scale, ImVec2(125, 36) * scale)) {
         demoStep = 0;
         demoSelected = false;
-        selectedHand = -1;
     }
 }
 void GameApp::rulesModal() {
@@ -99,7 +95,7 @@ void GameApp::rulesModal() {
         const auto at = ImGui::GetWindowPos() + ImVec2(25, 22) * scale;
         text(at, "Rules", 25, palette().accent);
         if (button("close-rules", "×", at + ImVec2(extent.x - 85 * scale, -6 * scale), ImVec2(35, 36) * scale) ||
-            ImGui::IsKeyPressed(ImGuiKey_Escape, false) || ImGui::IsKeyPressed(ImGuiKey_GamepadFaceRight, false)) {
+            backPressed()) {
             showRuleReference = false;
             ImGui::CloseCurrentPopup();
         }

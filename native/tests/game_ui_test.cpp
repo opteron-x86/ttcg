@@ -322,6 +322,211 @@ int main(int argc, char** argv) {
                 io.ClearInputMouse();
                 io.ClearEventsQueue();
             }
+            // Esc and B end whatever ImGui is in the middle of. The same press must not
+            // also close Tessera.
+            for (auto key : {ImGuiKey_Escape, ImGuiKey_GamepadFaceRight}) {
+                const auto press = [&] {
+                    io.AddKeyEvent(key, true);
+                    frame();
+                    io.AddKeyEvent(key, false);
+                    frame();
+                    frame();
+                };
+                load("album", "appearance");
+                const auto slider = bounds("##board-texture").GetCenter();
+                io.AddMousePosEvent(slider.x, slider.y);
+                frame();
+                io.AddMouseButtonEvent(0, true);
+                frame();
+                require(GImGui->ActiveId != 0, "Slider did not take the mouse");
+                press();
+                require(!command("close"), "Back closed Tessera while a slider was held");
+                io.AddMouseButtonEvent(0, false);
+                frame();
+                frame();
+                {
+                    // The game answers the slider's change before anything else is sent.
+                    auto s = app.snapshot();
+                    s["revision"] = s["revision"].get<int>() + 1;
+                    app.receive(s.dump());
+                    frame();
+                }
+                press();
+                require(command("close"), "Back no longer closes the album once the slider is let go");
+                // A deck card in mid-drag is dropped where it is, not into the deck.
+                load("album", "decks");
+                const auto source = bounds("card").GetCenter(), target = bounds("slot", 0).GetCenter();
+                io.AddMousePosEvent(source.x, source.y);
+                frame();
+                io.AddMouseButtonEvent(0, true);
+                frame();
+                io.AddMousePosEvent(source.x + 20, source.y - 20);
+                frame();
+                frame();
+                require(preview::GameTestAccess::dragVisible(app), "Deck drag did not begin");
+                press();
+                require(!command("close"), "Back closed Tessera in the middle of a drag");
+                require(!preview::GameTestAccess::dragVisible(app), "Back did not cancel the drag");
+                io.AddMousePosEvent(target.x, target.y);
+                frame();
+                frame();
+                io.AddMouseButtonEvent(0, false);
+                frame();
+                frame();
+                require(!command("deck "), "A cancelled drag still changed the deck");
+                press();
+                require(command("close"), "Back no longer closes the album after a cancelled drag");
+            }
+            {
+                // A drag still held when the menu closes is gone when it reopens.
+                load("album", "decks");
+                const auto source = bounds("card").GetCenter(), target = bounds("slot", 0).GetCenter();
+                io.AddMousePosEvent(source.x, source.y);
+                frame();
+                io.AddMouseButtonEvent(0, true);
+                frame();
+                io.AddMousePosEvent(source.x + 20, source.y - 20);
+                frame();
+                frame();
+                require(preview::GameTestAccess::dragVisible(app), "Deck drag did not begin");
+                app.resume();
+                frame();
+                require(!GImGui->ActiveId && !GImGui->DragDropActive && !preview::GameTestAccess::dragVisible(app),
+                        "A drag survived closing the menu");
+                io.AddMousePosEvent(target.x, target.y);
+                frame();
+                frame();
+                io.AddMouseButtonEvent(0, false);
+                frame();
+                frame();
+                require(!command("deck "), "A drag from before the menu closed finished after it reopened");
+            }
+            {
+                // Choosing a hotkey: Q, E and the bumpers are keys, not tab switches.
+                load("album", "controls");
+                auto s = app.snapshot();
+                s["settings"]["capturing"] = "collection";
+                s["revision"] = 77;
+                app.receive(s.dump());
+                frame();
+                const int tab = preview::GameTestAccess::tab(app);
+                for (auto key : {ImGuiKey_Q, ImGuiKey_E, ImGuiKey_GamepadL1, ImGuiKey_GamepadR1}) {
+                    io.AddKeyEvent(key, true);
+                    frame();
+                    io.AddKeyEvent(key, false);
+                    frame();
+                    require(preview::GameTestAccess::tab(app) == tab, "A key pressed for a hotkey also switched tabs");
+                }
+                s["settings"]["capturing"] = "";
+                s["revision"] = 78;
+                app.receive(s.dump());
+                frame();
+                io.AddKeyEvent(ImGuiKey_E, true);
+                frame();
+                io.AddKeyEvent(ImGuiKey_E, false);
+                frame();
+                require(preview::GameTestAccess::tab(app) != tab, "E no longer steps through the tabs");
+            }
+            {
+                // The Rules page opened over a live table has its own card selection.
+                load("match");
+                click("hand", 0);
+                const int chosen = preview::GameTestAccess::selectedHand(app);
+                require(chosen >= 0, "Match fixture has no card to choose");
+                click("reference");
+                require(ImGui::GetTopMostPopupModal() &&
+                            std::string_view(ImGui::GetTopMostPopupModal()->Name) == "Rules",
+                        "Rules did not open over the match");
+                const auto frames = read("../../TesseraUI/rules").at("demos").at("play");
+                const int hand = preview::number(frames[0], "hand", -1);
+                require(hand >= 0 && hand != chosen, "The first play demo step no longer chooses a different card");
+                ImVec2 demoCard;
+                bool found = false;
+                for (const auto& hit : hits)
+                    if (hit.label == "hand" && hit.window.find("rule-content") != std::string::npos) {
+                        const auto* window = ImGui::FindWindowByName(hit.window.c_str());
+                        if (hit.id == ImHashStr("hand", 0, ImHashData(&hand, sizeof(hand), window->ID))) {
+                            demoCard = hit.bounds.GetCenter();
+                            found = true;
+                        }
+                    }
+                require(found, "Rules demo has no card to choose");
+                clickAt(demoCard);
+                require(preview::GameTestAccess::demoSelected(app), "Rules demo card was not chosen");
+                require(preview::GameTestAccess::selectedHand(app) == chosen,
+                        "Choosing a demo card changed the card chosen in the live match");
+                click("demo-replay");
+                require(preview::GameTestAccess::selectedHand(app) == chosen,
+                        "Restarting the demo dropped the card chosen in the live match");
+            }
+            {
+                // With the right-stick cursor showing, X adds the card under it, not
+                // the one the D-pad last focused.
+                load("album", "decks");
+                click("card", 1);
+                const int under = preview::GameTestAccess::inspected(app);
+                click("card", 0);
+                require(preview::GameTestAccess::inspected(app) != under, "Deck editor cards are not distinct");
+                commands.clear();
+                preview::skyrim::MenuInput input;
+                input.reset(true);
+                input.cursor(bounds("card", 1).GetCenter());
+                input.stick(false, .8f, 0);
+                app.inputDevice(input.controller());
+                frame();
+                frame();
+                input.gamepad(ImGuiKey_GamepadFaceLeft, 1);
+                frame();
+                input.gamepad(ImGuiKey_GamepadFaceLeft, 0);
+                frame();
+                frame();
+                require(preview::GameTestAccess::inspected(app) == under,
+                        "X in cursor mode acted on the focused card, not the one under the cursor");
+                // In the inspector the right stick turns the card and leaves the cursor mode alone.
+                input.stick(false, 0, 0);
+                input.stick(true, 0, -.8f);
+                frame();
+                require(!input.pointerMode(), "Left stick did not return to navigation");
+                input.stick(true, 0, 0);
+                input.turning(true);
+                input.stick(false, .9f, 0);
+                frame();
+                require(ImGui::IsKeyDown(ImGuiKey_GamepadRStickRight) && !ImGui::IsKeyDown(ImGuiKey_GamepadRStickLeft),
+                        "Right stick is not passed on while a card is inspected");
+                require(!input.pointerMode(), "Turning a card switched to the cursor");
+                input.turning(false);
+                frame();
+                require(!ImGui::IsKeyDown(ImGuiKey_GamepadRStickRight), "Right stick stayed held after the inspector");
+                input.stick(false, .9f, 0);
+                frame();
+                require(!ImGui::IsKeyDown(ImGuiKey_GamepadRStickRight) && input.pointerMode(),
+                        "Right stick does not aim the cursor outside the inspector");
+                input.disconnect();
+                io.ClearInputKeys();
+                io.ClearInputMouse();
+                io.ClearEventsQueue();
+                frame();
+            }
+            {
+                // Text that cannot shrink any further is shortened, not drawn over its neighbour.
+                load("album", "cards");
+                const std::string name = "Sheogorath, Daedric Prince of Madness and Lord of the Never-There";
+                const float room = preview::GameTestAccess::textWidth(app, name, 12) * .5f;
+                const auto shown = preview::GameTestAccess::fitted(app, name, 12, room);
+                require(shown != name && shown.ends_with("…") && shown.size() > 8, "Long text was not shortened");
+                require(preview::GameTestAccess::textWidth(app, shown, 12) <= room, "Shortened text still overflows");
+                require(preview::GameTestAccess::fitted(app, "Whiterun", 17, room) == "Whiterun",
+                        "Text that fits was changed");
+                require(preview::GameTestAccess::fitted(app, "Señor Ærøskøbing", 17, 1).ends_with("…"),
+                        "Shortening broke on multi-byte text");
+            }
+            // A scrolling grid never borrows the drag, pack or settings cards' render targets.
+            static_assert(preview::MaterialSlot::gridSlot(0) == preview::MaterialSlot::grid &&
+                          preview::MaterialSlot::gridSlot(preview::MaterialSlot::gridCount - 1) ==
+                              preview::MaterialSlot::count - 1 &&
+                          preview::MaterialSlot::gridSlot(preview::MaterialSlot::gridCount) ==
+                              preview::MaterialSlot::none &&
+                          preview::MaterialSlot::grid > preview::MaterialSlot::appearance + 3);
             // Collection deletion requires the Developer gate and an explicit,
             // revision-bound confirmation. Missing-set recovery is available normally.
             load("album", "developer");

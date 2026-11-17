@@ -130,8 +130,7 @@ void App::packModal() {
     }
     const bool accept = ImGui::IsKeyPressed(ImGuiKey_Enter, false) || ImGui::IsKeyPressed(ImGuiKey_Space, false) ||
                         ImGui::IsKeyPressed(ImGuiKey_GamepadFaceDown, false);
-    const bool back = !inspecting && (ImGui::IsKeyPressed(ImGuiKey_Escape, false) ||
-                                      ImGui::IsKeyPressed(ImGuiKey_GamepadFaceRight, false));
+    const bool back = !inspecting && backPressed();
     const bool pressed = button("pack-continue", revealing ? "Reveal all" : "Continue",
                                 at + ImVec2((size.x - 180 * scale) * .5f, size.y - 66 * scale), ImVec2(180, 42) * scale,
                                 true, !collection.busy);

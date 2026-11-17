@@ -139,7 +139,8 @@ int main(int argc, char** argv) {
                                  ThreeOpen | Decimation | Same | Plus | Reverse, Affinity | Same | Plus | Reverse,
                                  Open | Affinity | Legion | Same | Plus, Affinity | Decimation | Same | Plus | Reverse})
         for (unsigned seed = 0; seed < 100; ++seed) {
-            Match m(seed + 70, rules);
+            // Combos are rare; this range of seeds is one where every rule is exercised.
+            Match m(seed + 1000, rules);
             int activated = -1, activations = 0;
             while (!m.finished()) {
                 auto move = chooseMove(m, 1000, 2);

@@ -344,7 +344,7 @@ void GameApp::tournamentOutcome() {
                 send("tournament", "continue " + std::to_string(eventID));
             ImGui::CloseCurrentPopup();
         }
-        if (ImGui::IsKeyPressed(ImGuiKey_Escape, false) || ImGui::IsKeyPressed(ImGuiKey_GamepadFaceRight, false)) {
+        if (backPressed()) {
             leave("ack");
             ImGui::CloseCurrentPopup();
         }
@@ -512,7 +512,7 @@ void GameApp::resultModal() {
                 ImGui::CloseCurrentPopup();
             }
             if (button("leave", "Leave", buttons + ImVec2(can ? 190 * scale : 0, 0), ImVec2(150, 42) * scale, !can) ||
-                ImGui::IsKeyPressed(ImGuiKey_Escape, false) || ImGui::IsKeyPressed(ImGuiKey_GamepadFaceRight, false)) {
+                backPressed()) {
                 send("close");
                 ImGui::CloseCurrentPopup();
             }

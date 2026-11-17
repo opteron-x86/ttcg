@@ -1,5 +1,28 @@
 # Changelog
 
+## Unreleased
+
+- Fixed losing Tessera progress when a save's Tessera data can't be read. The data is kept unchanged and a message is shown.
+- Fixed the opponent freezing mid-game until the match closed as stalled.
+- Fixed a finished game left interrupted blocking packs, shops, decks and other opponents. Stakes settle at once, and winnings that need a choice can be collected from the album.
+- Fixed Esc or B closing Tessera while adjusting a slider, dragging a card or closing a dropdown in a dialog.
+- Fixed the right stick not turning the inspected card.
+- Fixed Q and E switching tabs while binding a hotkey.
+- Fixed a card drag carrying over after the menu closed.
+- Fixed X adding the focused card, not the one under the cursor.
+- Fixed long card facts and player names overlapping their labels.
+- Fixed a card chosen in the Rules demo replacing the card chosen in the match.
+- Fixed foil cards sharing a finish with a dragged card on very large layouts.
+- Fixed a tournament circuit stalling when the courier can't take its invitation.
+- Fixed Reset Tessera being blocked by payments that can never be delivered.
+- Fixed an opponent gaining a card when an exchange offer is cancelled after a restock.
+- Fixed players and merchant chests from injected records not being recognised after a reload.
+- Fixed a thread-safety problem when an NPC dies.
+- Legion and Decimation rule text says one group is chosen per board.
+- The Three Open demo shows the same cards as its lesson.
+- Exchange API: `CancelOffer` on a completed offer answers `stale`; `CompleteOffer` with its confirmation open answers `busy`.
+- `TTCG.ini.example` lists the current skins and settings.
+
 ## 0.33.0
 
 - Redesigned interface. Skins follow Skyrim UI mods: Skyrim (the new default), Oathvein, Vel’dun, Norden, Edge, Untarnished, Nordic, Outlander, Dear Diary, Dear Diary Dark and Wood and Paper. The five older themes are retired; a saved older theme opens the Skyrim skin.

@@ -53,7 +53,7 @@ Tessera_Exchange.CancelOffer(Self, offerID)
 
 `CompleteOffer` opens Skyrim's confirmation box with the exact card and reward. It warns about saved decks and the last playable hand. The player must be near the named collector. Tessera checks the terms again after confirmation, transfers the cards, records completion and delivers the gold. Finish your quest only after the `completed` result. Repeating completion on that same offer cannot give another reward.
 
-Possible results: `posted`, `refreshed`, `text-refreshed`, `accepted`, `completed`, `cancelled`, `declined`, `missing-card`, `busy`, `changed`, `stale`, `unavailable`. A declined confirmation leaves the offer accepted. `changed` means the player should confirm again; `busy` means another game or payment must finish first. `stale` means the supplied offer ID or state no longer permits the action.
+Possible results: `posted`, `refreshed`, `text-refreshed`, `accepted`, `completed`, `cancelled`, `declined`, `missing-card`, `busy`, `changed`, `stale`, `unavailable`. A declined confirmation leaves the offer accepted. `changed` means the player should confirm again; `busy` means another game or payment must finish first, or that this offer's confirmation box is already open. `stale` means the supplied offer ID or state no longer permits the action: cancelling a completed offer is `stale`, while cancelling an offer twice is `cancelled` both times.
 
 ## Read the terms and restore after loading
 

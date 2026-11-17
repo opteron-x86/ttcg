@@ -43,11 +43,17 @@ struct Match {
     std::array<int, 2> swapped{-1, -1};
     int activeGroup = -1;
     std::array<unsigned, 2> reveals{};
+    // std::shuffle and the standard distributions give different results in each
+    // standard library. What a seed deals must be the same in the game (MSVC) as in
+    // the tools that write the rule demos and their captions (libstdc++).
+    template <class Values> static void shuffle(Values& values, std::mt19937& rng) {
+        for (std::size_t n = values.size(); n > 1; --n) std::swap(values[n - 1], values[rng() % n]);
+    }
     void seedVisibility(std::uint32_t seed) {
         std::mt19937 rng(seed ^ 0x3A0FE1u);
         for (auto& mask : reveals) {
             std::array<int, 5> slots{0, 1, 2, 3, 4};
-            std::shuffle(slots.begin(), slots.end(), rng);
+            shuffle(slots, rng);
             mask = (1u << slots[0]) | (1u << slots[1]) | (1u << slots[2]);
         }
     }
@@ -141,10 +147,9 @@ struct Match {
         tiles = {};
         if (!(rules & Affinity)) return;
         std::mt19937 rng(seed ^ 0xA771F17u);
-        const int count = std::uniform_int_distribution<int>(1, 5)(rng);
-        std::uniform_int_distribution<int> attribute(0, 4);
-        for (int i = 0; i < count; ++i) tiles[i] = 1u << attribute(rng);
-        std::shuffle(tiles.begin(), tiles.end(), rng);
+        const int count = 1 + int(rng() % 5);
+        for (int i = 0; i < count; ++i) tiles[i] = 1u << (rng() % 5);
+        shuffle(tiles, rng);
     }
     int modifier(int card, int square) const {
         if (card < 0) return 0;

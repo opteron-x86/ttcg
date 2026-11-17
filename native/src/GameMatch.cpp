@@ -81,8 +81,7 @@ bool GameApp::ruleRequestModal() {
         if (button("decline-rule", "No", buttons + ImVec2(170, 0) * scale, ImVec2(150, 42) * scale, false, ready))
             answer(false);
         // Close the offer conversation on Escape.
-        const bool back = escapeRequested || ImGui::IsKeyPressed(ImGuiKey_Escape, false) ||
-                          ImGui::IsKeyPressed(ImGuiKey_GamepadFaceRight, false);
+        const bool back = escapeRequested || backPressed();
         escapeRequested = false;
         if (back && ready) {
             send("close");
@@ -234,6 +233,7 @@ void GameApp::lobby(ImVec2 at, ImVec2 size) {
         showRuleReference = true;
         topic = "play";
         demoStep = 0;
+        demoSelected = false;
     }
     if (flag(culture, "canAbolish")) {
         if (button("abolish-menu", "Challenge a rule", footer + ImVec2(210, 23) * scale, ImVec2(165, 38) * scale))
@@ -292,8 +292,7 @@ void GameApp::groupModal() {
                 break;
             }
         }
-        if (ImGui::Button("Cancel") || ImGui::IsKeyPressed(ImGuiKey_Escape, false) ||
-            ImGui::IsKeyPressed(ImGuiKey_GamepadFaceRight, false)) {
+        if (ImGui::Button("Cancel") || backPressed()) {
             groupHand = -1;
             ImGui::CloseCurrentPopup();
         }
@@ -450,14 +449,17 @@ std::pair<ImVec2, ImVec2> GameApp::table(const Json& data, ImVec2 at, ImVec2 siz
                                     ? std::sin(std::numbers::pi_v<float> * std::clamp(firstProgress, 0.f, 1.f))
                                     : 0;
         const auto name = player ? (demo ? "Opponent" : label(state, "opponent", "Opponent")) : "You";
-        const float nameSize = std::clamp(22.f * (handArea - 86 * scale) /
-                                              std::max(1.f, font()->CalcTextSizeA(22 * scale, 1e5f, 0, name.c_str()).x),
-                                          12.f, 22.f);
-        const float nameWidth = font()->CalcTextSizeA(nameSize * scale, 1e5f, 0, name.c_str()).x;
+        // A long name shrinks as far as the smallest text allowed, then is shortened.
+        const float nameRoom = handArea - 86 * scale;
+        const float nameSize =
+            std::clamp(22.f * nameRoom / std::max(1.f, font()->CalcTextSizeA(22 * scale, 1e5f, 0, name.c_str()).x),
+                       AlbumLayout::smallestText, 22.f);
+        const auto shownName = fitted(name, nameSize, nameRoom);
+        const float nameWidth = font()->CalcTextSizeA(nameSize * scale, 1e5f, 0, shownName.c_str()).x;
         // The skin's band sits behind whoever is to move.
         if (playerTurn == (player == 0) && !animating)
             skinBand("selector", ImVec2(left, at.y - 4 * scale), ImVec2(handArea, 40 * scale));
-        text(ImVec2(player ? left + handArea - nameWidth - 24 * scale : left + 24 * scale, at.y + 3 * scale), name,
+        text(ImVec2(player ? left + handArea - nameWidth - 24 * scale : left + 24 * scale, at.y + 3 * scale), shownName,
              nameSize, firstGlow > 0 ? colour : palette().ink);
         float pop = 0;
         if (!demo) {
@@ -521,8 +523,12 @@ std::pair<ImVec2, ImVec2> GameApp::table(const Json& data, ImVec2 at, ImVec2 siz
             const bool hittable = hitSize.y > 0;
             const bool hit = hittable && ImGui::InvisibleButton("hand", hitSize, ImGuiButtonFlags_EnableNav);
             if (hit && selectable && !staticDemo) {
-                selectedHand = h;
-                demoSelected = demo;
+                // A demo keeps its own selection: the Rules page can be open over a live
+                // table, whose chosen card is not the demo's to change.
+                if (demo)
+                    demoSelected = true;
+                else
+                    selectedHand = h;
             }
             if (hittable && display >= 0 &&
                 ((ImGui::IsItemHovered() && ImGui::IsMouseClicked(1)) ||
@@ -663,8 +669,9 @@ std::pair<ImVec2, ImVec2> GameApp::table(const Json& data, ImVec2 at, ImVec2 siz
                 d->AddQuadFilled(centre + ImVec2(0, -r), centre + ImVec2(r, 0), centre + ImVec2(0, r),
                                  centre + ImVec2(-r, 0), boardColour.mark);
             }
-            const bool target = !busy && playerTurn && selectedHand >= 0 &&
-                                (!demo || !staticDemo && demoSelected && square == number(data, "square", -1));
+            const bool target =
+                !busy && playerTurn &&
+                (demo ? !staticDemo && demoSelected && square == number(data, "square", -1) : selectedHand >= 0);
             const bool aimed =
                 (target && (ImGui::IsItemHovered() || demo)) || (ImGui::IsItemFocused() && ImGui::GetIO().NavVisible);
             if (aimed && target && !demo) {
@@ -827,16 +834,18 @@ void GameApp::ruleSounds(const Json& data, Presentation& clock) {
     const double elapsed = ImGui::GetTime() - clock.start;
     for (int i = 0; i < int(clock.stageStarts.size()); ++i)
         if (!clock.stageSounds[i] && elapsed >= clock.stageStarts[i]) {
-            const auto name = lower(label(data["stages"][i], "label"));
+            // A label can name several rules ("Same Wall / Plus"): one sound for each.
+            // "Same Wall" also contains "same", which is not a second rule.
+            auto name = lower(label(data["stages"][i], "label"));
             for (const auto& pair : std::array<std::pair<const char*, const char*>, 6>{{{"same wall", "samewall"},
                                                                                         {"same", "same"},
                                                                                         {"plus", "plus"},
                                                                                         {"combo", "combo"},
                                                                                         {"legion", "legion"},
                                                                                         {"decimation", "decimation"}}})
-                if (name.find(pair.first) != std::string::npos) {
+                if (const auto found = name.find(pair.first); found != std::string::npos) {
                     send("rule", pair.second, false);
-                    if (name == "same wall") break;
+                    name.erase(found, std::string_view(pair.first).size());
                 }
             clock.stageSounds[i] = true;
         }

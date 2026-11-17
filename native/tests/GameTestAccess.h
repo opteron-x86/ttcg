@@ -54,6 +54,16 @@ struct GameTestAccess {
     }
     static int tradePhase(const GameApp& app) { return app.trade.phase; }
     static int demoStep(const GameApp& app) { return app.demoStep; }
+    static int tab(const GameApp& app) { return app.tab; }
+    static int selectedHand(const GameApp& app) { return app.selectedHand; }
+    static std::string fitted(const GameApp& app, const std::string& value, float size, float width) {
+        return app.fitted(value, size, width);
+    }
+    static float textWidth(const GameApp& app, const std::string& value, float size) {
+        return app.font()
+            ->CalcTextSizeA(std::max(size, AlbumLayout::smallestText) * app.scale, 1e5f, 0, value.c_str())
+            .x;
+    }
     static bool inspecting(const GameApp& app) { return app.inspecting; }
     static int inspected(const GameApp& app) {
         return app.selected + (app.selectedFoil ? app.collection.cards.size() : 0);

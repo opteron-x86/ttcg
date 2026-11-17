@@ -98,9 +98,13 @@ PauseWorldInMatchSetup=1
 PauseWorldDuringMatches=1
 
 [Appearance]
-; Window theme: 0 Tessera, 1 Charcoal, 2 Oxblood, 3 Parchment, 4 Umber, 5 Oathvein, 6 Vel'dun, 7 Norden,
-; 8 Untarnished, 9 Edge, 10 Dear Diary.
-Theme=0
+; Interface skin: 5 Oathvein, 6 Vel'dun, 7 Norden, 8 Untarnished, 9 Edge, 10 Dear Diary Dark, 11 Nordic,
+; 12 Outlander, 13 Skyrim, 14 Dear Diary, 15 Wood and Paper. 0-4 are retired and open Skyrim.
+Theme=13
+; Window size as a percentage of the screen: 60 to 100 in steps of 5. 100 fills the screen.
+WindowSize=90
+; Key and button prompts: 0 automatic, 1 the skin's own style, 2 installed icon sets.
+KeyPrompts=0
 ; Board: 0 match theme, 1 plain, 2 slate, 3 green felt, 4 parchment, 5 dark leather, 6 walnut, 7 dark slab.
 BoardSurface=0
 ; Board material strength, 0-100. Ten or more shows the material in full; lower values fade it into the plain board.
@@ -108,7 +112,8 @@ BoardTexture=10
 ; Choose a card back in Tessera Settings. Saved across characters and restarts.
 ; Built-ins: mosaic, dragon, celestial. Custom images go in TesseraUI/art/backs/custom/.
 CardBack=mosaic
-; 0 = framed card with a value plate on each edge (default); 1 = the earlier borderless face.
+; 0 = framed card with a value plate on each edge (default); 1 = the earlier borderless face;
+; 2 = printed card.
 CardFrame=0
 ; 0 = values on the edges (default); 1 = classic upper-left diamond.
 RankLayout=0

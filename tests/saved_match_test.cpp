@@ -1,4 +1,5 @@
 #include "SavedMatch.h"
+#include "CollectionRecovery.h"
 #include "Tournaments.h"
 #include "Opponents.h"
 #include <cassert>
@@ -127,6 +128,49 @@ int main() {
     assert(bank.stock[0][0] == 100 && bank.stock[1][0] == 100);
     for (int p = 0; p < 2; ++p)
         for (auto id : originals[p]) assert(bank.count(p, id) > 0);
+    {
+        // A finished table needs the player again only to choose winnings or to
+        // collect tournament foils. Everything else settles without them.
+        unsigned choices = 0, settled = 0;
+        for (unsigned seed = 1; seed <= 40; ++seed)
+            for (unsigned trade : {TradeNone, TradeOne, TradeDiff, TradeDirect, TradeAll}) {
+                SavedMatch done;
+                done.present = true;
+                done.opponent = 123;
+                done.competitive = true;
+                done.table = Match(seed, 0);
+                Bank stakes;
+                const auto dealt = done.originals();
+                for (int p = 0; p < 2; ++p) {
+                    stakes.stock[p][0] = 100;
+                    for (auto id : dealt[p]) ++stakes.stock[p][id];
+                }
+                CollectionSave c;
+                assert(c.contract.reserve(stakes, dealt, trade, 10, 123));
+                assert(!finishedMatchSettles(done, c)); // Still being played.
+                std::mt19937 rng(seed);
+                while (!done.table.finished()) {
+                    const auto moves = done.table.legalMoves();
+                    assert(done.table.play(moves[rng() % moves.size()]).legal);
+                }
+                assert(c.contract.capture(done.table) && matchContractValid(done, c.contract));
+                const bool choosing = c.contract.outcome == 0 && (trade == TradeOne || trade == TradeDiff);
+                assert(c.contract.choicePending() == choosing && finishedMatchSettles(done, c) == !choosing);
+                ++(choosing ? choices : settled);
+                // Once the stakes are paid nothing holds the table.
+                assert(c.contract.settleSelection(stakes, c.contract.outcome,
+                                                  c.contract.automaticChoice(c.contract.outcome)));
+                assert(!c.contract.pending() && finishedMatchSettles(done, c));
+                // A tournament table is held only by unspent foil upgrades.
+                done.tournament = 5;
+                assert(finishedMatchSettles(done, c));
+                c.tournaments.events.emplace_back().foilUpgrades = 1;
+                assert(!finishedMatchSettles(done, c));
+                done.present = false;
+                assert(!finishedMatchSettles(done, c));
+            }
+        assert(choices > 10 && settled > 100);
+    }
     // A tournament's clock does not stop for an open or interrupted table.
     CollectionSave collection;
     grantStarter(collection);

@@ -90,6 +90,21 @@ int main() {
     auto reverse = Lesson::workshop(Reverse);
     assert(reverse.advance(1, 4) && reverse.advance());
     assert(reverse.match.board[4].owner == 1);
+    // What a seed deals is fixed, whichever standard library built the game: the
+    // rule demos and their captions are written on one and shown on the other.
+    {
+        struct Deal {
+            unsigned seed;
+            std::array<unsigned, 9> tiles;
+            std::array<unsigned, 2> reveals;
+        };
+        for (const auto& deal :
+             {Deal{1, {0, 16, 0, 8, 16, 0, 0, 0, 4}, {14, 25}}, Deal{73, {0, 0, 0, 16, 0, 16, 0, 0, 0}, {11, 14}},
+              Deal{20251116, {1, 0, 0, 0, 1, 0, 0, 0, 0}, {11, 22}}}) {
+            const Match pinned({0, 1, 2, 3, 4}, {5, 6, 7, 8, 9}, deal.seed, Affinity | ThreeOpen);
+            assert(pinned.tiles == deal.tiles && pinned.reveals == deal.reveals);
+        }
+    }
     // Affinity marks 1–5 distinct squares. Attributes may repeat; no marker when off.
     Match affinity(17, Affinity), repeat(17, Affinity), unmarked(17);
     assert(affinity.tiles == repeat.tiles);

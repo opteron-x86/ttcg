@@ -94,9 +94,12 @@ public:
                                           RE::BSTEventSource<RE::TESDeathEvent>*) override {
         if (event && watchedActor(event->actorDying.get())) interruptWorld();
         if (event && event->actorDying) {
-            const auto id = campaign::persistentID(event->actorDying.get());
-            collectionIntegration::queue([id]() {
-                if (campaign::savedMatch.present && campaign::savedMatch.opponent == id && !active)
+            // Death events can arrive off the game thread; the identity map belongs to it.
+            const auto form = event->actorDying->GetFormID();
+            collectionIntegration::queue([form]() {
+                if (!campaign::savedMatch.present || active) return;
+                auto* actor = RE::TESForm::LookupByID(form);
+                if (actor && campaign::persistentID(actor) == campaign::savedMatch.opponent)
                     campaign::recoverSavedMatch();
             });
         }
@@ -331,6 +334,9 @@ void message(SKSE::MessagingInterface::Message* msg) {
                 releaseSavedOpponent();
                 campaign::recover();
                 collectionIntegration::activate();
+                if (!campaign::saveValid)
+                    RE::DebugMessageBox(
+                        "Tessera can't read its data in this save. The save comes from a newer version of Tessera, or the data is damaged.\n\nTessera stays off for this save and keeps the data unchanged. Update Tessera to play again.");
             });
         }
         log::debug("{}: cleanup complete", name);
