@@ -529,8 +529,16 @@ inline void recoverTournamentLetters() {
         }
 }
 inline void ensureAlbum();
+inline void seedEconomy() {
+    if (!saved.economyRandom)
+        saved.economyRandom =
+            static_cast<std::uint32_t>(std::chrono::steady_clock::now().time_since_epoch().count()) | 1u;
+}
 inline void updateRegionalRules() {
-    if (available()) ttcg::tickRegionalRules(saved, gameHour(), cultureHeldHold);
+    if (!available()) return;
+    // A new game's map of rules is rolled from this seed the first time it is needed.
+    seedEconomy();
+    ttcg::tickRegionalRules(saved, gameHour(), cultureHeldHold);
 }
 // `background` is the periodic update during play, which must not stall a frame.
 inline void updateTournaments(bool background = false) {
@@ -781,9 +789,7 @@ inline bool recoverSavedMatch() {
 inline void recover() {
     if (!available()) return;
     removeLegacyAlbumStock();
-    if (!saved.economyRandom)
-        saved.economyRandom =
-            static_cast<std::uint32_t>(std::chrono::steady_clock::now().time_since_epoch().count()) | 1u;
+    seedEconomy();
     claimAlbum();
     if (saved.goldCredit) {
         Bank bank(0);

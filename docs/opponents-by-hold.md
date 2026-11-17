@@ -4,18 +4,20 @@
 
 ## Hold overview
 
-| Region | Players | Experts | Masters | Default rules | Trade |
-|---|---:|---:|---:|---|---|
-| Whiterun | 45 | 5 | 3 | Open | One |
-| Falkreath | 25 | 3 | 2 | Open · Same | One |
-| Haafingar | 43 | 4 | 3 | Open · Same · Plus | All |
-| Hjaalmarch | 20 | 3 | 2 | None | One |
-| The Pale | 25 | 4 | 2 | Open · Plus | Diff |
-| The Rift | 43 | 7 | 3 | Three Open · Plus | Direct |
-| Winterhold | 24 | 6 | 2 | Open · Affinity | Direct |
-| Eastmarch | 31 | 3 | 3 | Open · Legion | Diff |
-| The Reach | 29 | 5 | 3 | Three Open · Same | Diff |
-| Solstheim | 27 | 5 | 3 | Three Open · Decimation | One |
+| Region | Players | Experts | Masters |
+|---|---:|---:|---:|
+| Whiterun | 45 | 5 | 3 |
+| Falkreath | 25 | 3 | 2 |
+| Haafingar | 43 | 4 | 3 |
+| Hjaalmarch | 20 | 3 | 2 |
+| The Pale | 25 | 4 | 2 |
+| The Rift | 43 | 7 | 3 |
+| Winterhold | 24 | 6 | 2 |
+| Eastmarch | 31 | 3 | 3 |
+| The Reach | 29 | 5 | 3 |
+| Solstheim | 27 | 5 | 3 |
+
+No hold has rules of its own. Each new game rolls a different set of rules and a trade rule for every hold. From then on rules drift over time and travel with you from hold to hold. Your Journal shows what is played where.
 
 Each hold has at least three accessible Experts before optional rescue quests. Progression tests remove each of those Experts in turn and verify that Famous remains attainable without defeating a Master. Thaena is now a Regular; Badnir joins the Whistling Mine players; he and Gunding are Experienced, giving Winterhold three accessible Experienced players and avoiding a progression bottleneck below Respected. Winterhold also has a larger public tournament pool. Milore Ienth and Drovas Relvi are Regulars, keeping Solstheim’s early progression viable without first completing the stone and mine quests.
 
@@ -37,11 +39,7 @@ Whiterun requires six points, three staked wins and two different opponents for 
 
 After rank access, daily willingness uses base chances of 95% / 90% / 80% / 60% / 30% / 12% by opponent level, plus two percentage points per reputation point (up to 35), plus 35 when Famous or Legendary, capped at 98%. Hulda and children always accept. M’aiq accepts when his personal cooldown permits a game. Daily rolls are saved until midnight. A Master’s invitation grants willingness for 24 game hours.
 
-
-
 ## Whiterun
-
-**Default rules:** Open · One.
 
 | Opponent | Usual location | Level | Card pool | Gold cap | Access / role |
 |---|---|---|---|---:|---|
@@ -99,8 +97,6 @@ After rank access, daily willingness uses base chances of 95% / 90% / 80% / 60% 
 
 ## Falkreath
 
-**Default rules:** Open · Same · One.
-
 | Opponent | Usual location | Level | Card pool | Gold cap | Access / role |
 |---|---|---|---|---:|---|
 | Kust | Falkreath graveyard | Beginner | I × 18 | 100 | Standard |
@@ -130,8 +126,6 @@ After rank access, daily willingness uses base chances of 95% / 90% / 80% / 60% 
 | Hern | Half-Moon Mill | Experienced | I × 2 · II × 2 · III × 19 · IV × 5 | 250 | Only while naturally enabled, alive and non-hostile. |
 
 ## Haafingar
-
-**Default rules:** Open · Same · Plus · All.
 
 | Opponent | Usual location | Level | Card pool | Gold cap | Access / role |
 |---|---|---|---|---:|---|
@@ -181,8 +175,6 @@ After rank access, daily willingness uses base chances of 95% / 90% / 80% / 60% 
 
 ## Hjaalmarch
 
-**Default rules:** Hidden hands · One.
-
 | Opponent | Usual location | Level | Card pool | Gold cap | Access / role |
 |---|---|---|---|---:|---|
 | Lurbuk | Moorside Inn | Beginner | I × 18 | 100 | Standard |
@@ -207,8 +199,6 @@ After rank access, daily willingness uses base chances of 95% / 90% / 80% / 60% 
 | Idgrod Ravencrone | Highmoon Hall / political relocation | Master | V × 17 · VI × 11 · VII × 2 · IX × 1 | 1000 | Standard; Gyron Vardengroet (IX) |
 
 ## The Pale
-
-**Default rules:** Open · Plus · Diff.
 
 | Opponent | Usual location | Level | Card pool | Gold cap | Access / role |
 |---|---|---|---|---:|---|
@@ -239,8 +229,6 @@ After rank access, daily willingness uses base chances of 95% / 90% / 80% / 60% 
 | Silus Vesuius | Dawnstar | Regular | I × 12 · II × 11 · III × 2 | 250 | Only after naturally enabled; no interference with his quest. |
 
 ## The Rift
-
-**Default rules:** Three Open · Plus · Direct.
 
 | Opponent | Usual location | Level | Card pool | Gold cap | Access / role |
 |---|---|---|---|---:|---|
@@ -290,8 +278,6 @@ After rank access, daily willingness uses base chances of 95% / 90% / 80% / 60% 
 
 ## Winterhold
 
-**Default rules:** Open · Affinity · Direct.
-
 | Opponent | Usual location | Level | Card pool | Gold cap | Access / role |
 |---|---|---|---|---:|---|
 | Haran | The Frozen Hearth | Beginner | I × 18 | 250 | Standard |
@@ -320,8 +306,6 @@ After rank access, daily willingness uses base chances of 95% / 90% / 80% / 60% 
 | Sergius Turrianus | College of Winterhold | Regular | I × 8 · II × 14 · III × 2 | 250 | No membership requirement; world access, hostility and scene checks still apply. |
 
 ## Eastmarch
-
-**Default rules:** Open · Legion · Diff.
 
 | Opponent | Usual location | Level | Card pool | Gold cap | Access / role |
 |---|---|---|---|---:|---|
@@ -359,8 +343,6 @@ After rank access, daily willingness uses base chances of 95% / 90% / 80% / 60% 
 
 ## The Reach
 
-**Default rules:** Three Open · Same · Diff.
-
 | Opponent | Usual location | Level | Card pool | Gold cap | Access / role |
 |---|---|---|---|---:|---|
 | Hroki | Silver-Blood Inn | Beginner | I × 18 | 100 | Standard |
@@ -394,8 +376,6 @@ After rank access, daily willingness uses base chances of 95% / 90% / 80% / 60% 
 | Ogmund | Silver-Blood Inn, Markarth | Experienced | II × 4 · III × 17 · IV × 5 | 250 | Retain hostility and quest-scene checks. |
 
 ## Solstheim
-
-**Default rules:** Three Open · Decimation · One.
 
 | Opponent | Usual location | Level | Card pool | Gold cap | Access / role |
 |---|---|---|---|---:|---|

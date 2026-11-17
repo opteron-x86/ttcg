@@ -226,7 +226,7 @@ inline void postLocal(RE::StaticFunctionTag*, RE::TESQuest* q, int hold) {
                     rewards.push_back(id);
             if (!rewards.empty()) reward = rewards[rng() % rewards.size()];
         }
-        const unsigned gold = reward ? 0u : unsigned(std::clamp(ttcg::shopSalePrice(requested) * 3, 50, 2500));
+        const unsigned gold = reward ? 0u : ttcg::exchangeGold(requested);
         const auto r = ttcg::postExchange(s, owner, campaign::persistentID(actor), ledger, requested, reward, gold);
         notify(q, resultName(r, "posted"));
     });

@@ -66,8 +66,16 @@ int main() {
     assert(loaded.reputation.at(base).quarters == 24 && loaded.invitations.at(base).accepted);
     assert(loaded.holds.at(1).rules == (ttcg::Open | ttcg::Same) && loaded.holds.at(1).trade == ttcg::TradeAll);
     assert(!ttcg::encounterReady(loaded, maiq, 999) && ttcg::encounterReady(loaded, maiq, 1000));
+    // The old save stored one hold's terms. The others are filled in with what they
+    // began with then, at three words each, so they no longer depend on a default.
+    assert(loaded.holds.size() == ttcg::legacyHoldTerms.size());
+    for (const auto& legacy : ttcg::legacyHoldTerms)
+        if (legacy.hold != 1)
+            assert(loaded.holds.at(legacy.hold).rules == legacy.terms.rules &&
+                   loaded.holds.at(legacy.hold).trade == legacy.terms.trade);
     const auto cleaned = ttcg::encodeCollection(loaded);
-    assert(cleaned.size() + 6 == wire.size() + 3 + 3 * loaded.culture.regions.size());
+    assert(cleaned.size() + 6 ==
+           wire.size() + 3 + 3 * loaded.culture.regions.size() + 3 * (ttcg::legacyHoldTerms.size() - 1));
     assert(ttcg::decodeCollection(cleaned, current) && ttcg::encodeCollection(current) == cleaned);
     // Corrupt data in a discarded field must still reject atomically.
     const std::array<std::uint32_t, 3> oldFlags{1, base, 65};

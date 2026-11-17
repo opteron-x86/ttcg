@@ -129,8 +129,8 @@ int main() {
            s.residents.grants.empty() && !s.residents.seed);
     assert(s.culture.regions.empty() && !s.culture.carriedRules && s.invitations.empty() && s.encounterAfter.empty() &&
            !s.encounteredRules);
-    assert(s.holds.at(1).rules == starter.holds.at(1).rules && !s.developmentCardsGranted &&
-           !s.developmentFoilsGranted);
+    // The reset character has no map of rules yet: a new one is rolled when the calendar next runs.
+    assert(s.holds.empty() && !s.developmentCardsGranted && !s.developmentFoilsGranted);
     assert(s.tournaments.events.empty() && s.tournaments.trophies.empty() && s.tournaments.sequence == sequence);
     for (const auto& [owner, offer] : s.exchanges) assert(!offer.active() && offer.status == ExchangeStatus::Cancelled);
     assert(s.exchanges.at(789).serial == 1 && s.exchanges.at(790).serial == 7 &&

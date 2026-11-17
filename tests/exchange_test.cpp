@@ -7,6 +7,15 @@ int main() {
     for (const auto& c : cards)
         if (exchangeCard(c.form)) pool.push_back(c.form);
     assert(pool.size() > 20);
+    // A gold reward is worth taking, and never more than the card costs to buy.
+    unsigned floored = 0, cheap = 0;
+    for (auto id : pool) {
+        const auto gold = exchangeGold(id);
+        assert(int(gold) < shopPrice(id) && int(gold) >= shopSalePrice(id) * 2 && gold >= 20 && gold <= 2500);
+        floored += gold == 50;
+        cheap += gold < 50;
+    }
+    assert(floored && cheap);
     const auto a = pool[0], b = pool[1];
     const unsigned quest = worldFormID({"Collector.esp", 0x800}), npc = worldFormID({"Follower.esp", 0x900});
     CollectionSave s;

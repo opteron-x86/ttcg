@@ -5,13 +5,17 @@
 //   ai-lab depth RULES DEALS AGENT            plies finished at each move of a game
 //   ai-lab first RULES DEALS AGENT            the first mover's score in self-play
 //   ai-lab tournament EVENTS                  time to play out whole tournaments off screen
+//   ai-lab drift [STEPS] [RUNS]               regional rules over three years with nobody playing,
+//                                             starting from STEPS changes of history
 //   ai-lab smoke                              a short run that fails if the ladder is upside down
 //
 // RULES is the rule mask (0 hidden hands, 16 Open, 19 Open + Same + Plus, ...).
 // An agent is a skill name (beginner, learner, regular, experienced, expert, master),
 // "nodes:plies:guesses[:careless]" for a search of your own, "sees:AGENT" for that
 // agent shown the hidden hand (an upper bound), or "v033:0-3" for the 0.33 opponents.
+#include "RuleCulture.h"
 #include "Tournaments.h"
+#include <set>
 #include <atomic>
 #include <chrono>
 #include <cstdio>
@@ -261,8 +265,73 @@ void tournaments(int events) {
                 "worst background slice of %d games %.1f ms\n",
                 events, double(games) / events, total / events, worst, backgroundTournamentGames, slice);
 }
+// Three years of regional rules with nobody playing: what a new game starts with,
+// how varied the map is, and how the time is shared between rules.
+void drift(unsigned steps, int runs) {
+    const std::array<unsigned, 6> days{1, 30, 90, 180, 365, 730};
+    struct Day {
+        double distinct = 0, rules = 0, hidden = 0, open = 0, threeOpen = 0;
+    };
+    std::array<Day, 6> at{};
+    std::array<double, 5> trade{};
+    std::array<double, ruleFlags.size()> ruleShare{};
+    double samples = 0, changes = 0, ruleDays = 0;
+    for (int run = 0; run < runs; ++run) {
+        CollectionSave save;
+        save.economyRandom = 0x1234567u * unsigned(run + 1) | 1u;
+        save.starter = true;
+        for (const auto& hold : holds) {
+            auto random = invitationHash(hold.id ^ save.economyRandom ^ 0x48495354u) | 1u;
+            save.holds[hold.id] = regionalHistory(random, steps);
+        }
+        for (unsigned day = 1; day <= 365 * 3; ++day) {
+            std::map<unsigned, unsigned> before;
+            for (const auto& hold : holds) before[hold.id] = holdTerms(save, hold.id).rules;
+            tickRegionalRules(save, day * 24);
+            std::set<unsigned> sets;
+            Day today;
+            for (const auto& hold : holds) {
+                const auto terms = holdTerms(save, hold.id);
+                sets.insert(terms.rules);
+                today.rules += std::popcount(terms.rules);
+                today.hidden += !(terms.rules & (Open | ThreeOpen));
+                today.open += bool(terms.rules & Open);
+                today.threeOpen += bool(terms.rules & ThreeOpen);
+                changes += std::popcount(before[hold.id] & ~terms.rules);
+                ruleDays += std::popcount(terms.rules);
+                if (day > 365) {
+                    ++trade[terms.trade];
+                    ++samples;
+                    for (std::size_t n = 0; n < ruleFlags.size(); ++n) ruleShare[n] += bool(terms.rules & ruleFlags[n]);
+                }
+            }
+            for (std::size_t n = 0; n < days.size(); ++n)
+                if (day == days[n]) {
+                    at[n].distinct += double(sets.size());
+                    at[n].rules += today.rules / holds.size();
+                    at[n].hidden += today.hidden / holds.size();
+                    at[n].open += today.open / holds.size();
+                    at[n].threeOpen += today.threeOpen / holds.size();
+                }
+        }
+    }
+    std::printf("history of %u changes, %d runs\n", steps, runs);
+    for (std::size_t n = 0; n < days.size(); ++n)
+        std::printf("  day %3u: %.1f different rule sets in 10 holds, %.2f rules a hold, "
+                    "hands hidden %.0f%%, open %.0f%%, three open %.0f%%\n",
+                    days[n], at[n].distinct / runs, at[n].rules / runs, 100 * at[n].hidden / runs,
+                    100 * at[n].open / runs, 100 * at[n].threeOpen / runs);
+    std::printf("  a rule stays about %.0f days once it is in force\n", changes ? ruleDays / changes : 0.0);
+    std::printf("  years 2-3 trade rules:");
+    for (unsigned t = TradeOne; t <= TradeAll; ++t) std::printf(" %s %.1f%%", tradeName(t), 100 * trade[t] / samples);
+    std::printf("\n  years 2-3 rules in force:");
+    for (std::size_t n = 0; n < ruleFlags.size(); ++n)
+        std::printf(" %s %.0f%%", ruleName(ruleFlags[n]), 100 * ruleShare[n] / samples);
+    std::printf("\n");
+}
 int usage() {
-    std::fprintf(stderr, "usage: ai-lab match|ladder|depth|first|tournament|smoke ...  (see tools/ai-lab/main.cpp)\n");
+    std::fprintf(stderr,
+                 "usage: ai-lab match|ladder|depth|first|tournament|drift|smoke ...  (see tools/ai-lab/main.cpp)\n");
     return 2;
 }
 }
@@ -283,6 +352,8 @@ int main(int argc, char** argv) {
         depth(rules, deals, parse(argv[4]));
     else if (command == "first" && argc >= 5)
         first(rules, deals, parse(argv[4]));
+    else if (command == "drift")
+        drift(argc > 2 ? unsigned(std::atoi(argv[2])) : regionalHistorySteps, argc > 3 ? std::atoi(argv[3]) : 300);
     else if (command == "tournament")
         tournaments(argc > 2 ? std::atoi(argv[2]) : 30);
     else if (command == "smoke") {
