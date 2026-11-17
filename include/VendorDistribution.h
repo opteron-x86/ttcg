@@ -1,8 +1,15 @@
 #pragma once
+#include "PackStock.h"
 #include <algorithm>
+#include <functional>
 #include <set>
 #include <vector>
 namespace vendors {
+// Adds the pack roll to a chest base; see PackStock.h for how. Empty when packs are off.
+using AddPackRoll = std::function<bool(RE::TESObjectCONT*, RE::TESLevItem*)>;
+inline PackStock packStock = PackStock::On;
+// Chest bases that should carry the roll, and how many do.
+inline unsigned packChests = 0, packsStocked = 0;
 inline std::vector<RE::TESFaction*> factions;
 inline std::vector<RE::TESObjectREFR*> albumContainers;
 inline RE::TESFaction* generalGoodsRole{};
@@ -64,7 +71,7 @@ inline bool eligible(RE::Actor* actor) {
         if (actor->IsInFaction(faction)) return true;
     return false;
 }
-inline void initialize(const char* plugin, bool distributePacks = true) {
+inline void initialize(const char* plugin, const AddPackRoll& addPackRoll, bool distributePacks = true) {
     static bool initialized = false;
     if (initialized) return;
     auto data = RE::TESDataHandler::GetSingleton();
@@ -76,7 +83,11 @@ inline void initialize(const char* plugin, bool distributePacks = true) {
         SKSE::log::error("Missing vendor pack records");
         return;
     }
-    SKSE::log::info("Vendor pack injection: {}", distributePacks ? "enabled" : "disabled (diagnostic)");
+    packStock = packStockFor(distributePacks, static_cast<bool>(addPackRoll));
+    SKSE::log::info("Vendor pack injection: {}", packStock == PackStock::On ? "enabled"
+                                                 : packStock == PackStock::SwitchedOff
+                                                     ? "disabled (diagnostic)"
+                                                     : "unavailable on this game version");
     SKSE::log::debug("Vendor pack roll: {:08X} at {}", roll->GetFormID(), static_cast<const void*>(roll));
     std::set<RE::TESObjectCONT*> generalContainers, otherContainers;
     std::set<RE::TESObjectREFR*> generalReferences, otherReferences;
@@ -108,24 +119,26 @@ inline void initialize(const char* plugin, bool distributePacks = true) {
         SKSE::log::debug("General-goods faction: {:08X}", faction->GetFormID());
     }
     unsigned count = 0;
-    if (distributePacks)
-        for (auto base : generalContainers) {
-            // Base inventories are shared by all references. Avoid stocking an inn or
-            // specialist when a mod reuses its chest base for a general merchant.
-            if (otherContainers.contains(base)) {
-                SKSE::log::warn("Shared vendor container {:08X}: pack injection skipped", base->GetFormID());
-                continue;
-            }
-            if (base->GetObjectCount(roll) == 0 && base->AddObjectToContainer(roll, 1, nullptr)) {
-                ++count;
-                SKSE::log::debug("Vendor pack injected into base {:08X} at {}", base->GetFormID(),
-                                 static_cast<const void*>(base));
-            }
+    for (auto base : generalContainers) {
+        // Base inventories are shared by all references. Avoid stocking an inn or
+        // specialist when a mod reuses its chest base for a general merchant.
+        if (otherContainers.contains(base)) {
+            SKSE::log::warn("Shared vendor container {:08X}: pack injection skipped", base->GetFormID());
+            continue;
         }
+        ++packChests;
+        if (packStock == PackStock::On && base->GetObjectCount(roll) == 0 && addPackRoll(base, roll)) {
+            ++count;
+            SKSE::log::debug("Vendor pack injected into base {:08X} at {}", base->GetFormID(),
+                             static_cast<const void*>(base));
+        }
+        if (base->GetObjectCount(roll) > 0) ++packsStocked;
+    }
     const auto tagged = tagAlbumSellers();
     SKSE::log::debug("Album dialogue: general-goods role {}, marker {}, tagged {} NPC bases",
                      generalGoodsRole != nullptr, albumSeller != nullptr, tagged);
     initialized = true;
-    SKSE::log::info("Album sellers: {} service factions; packs added to {} container bases", factions.size(), count);
+    SKSE::log::info("Album sellers: {} service factions; packs added to {} of {} container bases", factions.size(),
+                    count, packChests);
 }
 }

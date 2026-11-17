@@ -357,6 +357,10 @@ void GameApp::settings(ImVec2 at, ImVec2 size) {
         }
         toggle("Tessera games", "games", "gamesEnabled");
         textBlock("Disables Tessera games. The album is still available.", width, 17);
+        if (const auto packs = label(s, "merchantPacks"); !packs.empty()) {
+            heading("Merchant packs");
+            textBlock(packs, width, 18, palette().accent);
+        }
         heading("Modded players");
         select("Residents", "residents", "residents", {"Disabled", "Some residents", "All eligible residents"});
         toggle("Only vanilla voices", "vanilla-voices", "vanillaVoicesOnly");

@@ -2,6 +2,7 @@
 #include "Campaign.h"
 #include "TournamentPresentation.h"
 #include "VendorDistribution.h"
+#include "EngineContainer.h"
 #include "RuleCulture.h"
 #include "WorldAccess.h"
 #include "WorldIdentity.h"
@@ -84,20 +85,24 @@ inline std::string revealKind;
 inline std::uint64_t revealID = 0;
 inline std::map<std::uint32_t, RE::ActorHandle> authoredEncounterActors;
 inline ttcg::Stock owned;
-inline int physicalCount(RE::TESObjectREFR* actor, RE::TESBoundObject* form) {
+// Counting must not set a reference's inventory up as a side effect: that rolls its
+// leveled lists, at whatever moment the count happened to be asked for. A chest
+// that hasn't been set up holds nothing Tessera put there. `prepare` is for a
+// merchant the player is trading with, whose gold has to be real.
+inline int physicalCount(RE::TESObjectREFR* actor, RE::TESBoundObject* form, bool prepare = false) {
     if (!actor || !form) return 0;
-    auto items = actor->GetInventoryCounts([&](RE::TESBoundObject& object) { return &object == form; });
+    auto items = actor->GetInventoryCounts([&](RE::TESBoundObject& object) { return &object == form; }, !prepare);
     auto it = items.find(form);
     return it == items.end() ? 0 : std::max(0, it->second);
 }
-inline int physicalChange(RE::TESObjectREFR* actor, RE::TESBoundObject* form, int amount) {
+inline int physicalChange(RE::TESObjectREFR* actor, RE::TESBoundObject* form, int amount, bool prepare = false) {
     if (!actor || !form || !amount) return 0;
-    const int before = physicalCount(actor, form);
+    const int before = physicalCount(actor, form, prepare);
     if (amount > 0)
         actor->AddObjectToContainer(form, nullptr, amount, nullptr);
     else
         actor->RemoveItem(form, std::min(before, -amount), RE::ITEM_REMOVE_REASON::kRemove, nullptr, nullptr);
-    return physicalCount(actor, form) - before;
+    return physicalCount(actor, form, prepare) - before;
 }
 inline bool authoredKey(std::uint32_t id) { return ttcg::identityMaster(id) != nullptr; }
 // The plugin whose FormID space a form lives in. For an ordinary record that is the
@@ -354,7 +359,14 @@ inline void initForms(bool distributeVendorPacks = true) {
     goldForm = RE::TESForm::LookupByID<RE::TESBoundObject>(0xF);
     packForm = RE::TESDataHandler::GetSingleton()->LookupForm<RE::TESObjectMISC>(0x840, plugin);
     tournamentPackForm = RE::TESDataHandler::GetSingleton()->LookupForm<RE::TESObjectMISC>(0xFD6, plugin);
-    vendors::initialize(plugin, distributeVendorPacks);
+    // Only look the routine up when it will be used.
+    const auto addObject = distributeVendorPacks ? vendors::engineAddObject() : nullptr;
+    vendors::initialize(plugin,
+                        addObject ? vendors::AddPackRoll([addObject](RE::TESObjectCONT* base, RE::TESLevItem* roll) {
+                            return addObject(static_cast<RE::TESContainer*>(base), roll, 1, nullptr) != nullptr;
+                        })
+                                  : vendors::AddPackRoll{},
+                        distributeVendorPacks);
     SKSE::log::info("Album forms available: {}", available());
 }
 inline void seedOpponent(RE::Actor* actor);

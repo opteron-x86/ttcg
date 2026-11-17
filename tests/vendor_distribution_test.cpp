@@ -33,13 +33,11 @@ struct BGSListForm : TESForm {
     }
 };
 struct TESLevItem : TESForm {};
+// No AddObjectToContainer here: the plugin must not change a base container with
+// CommonLib's routine. The entry goes in through the function it is handed.
 struct TESObjectCONT : TESForm {
     std::map<TESForm*, int> objects;
     int GetObjectCount(TESForm* p) { return objects[p]; }
-    bool AddObjectToContainer(TESForm* p, int n, void*) {
-        objects[p] += n;
-        return true;
-    }
 };
 struct TESObjectREFR : TESForm {
     TESForm* base{};
@@ -104,9 +102,18 @@ struct TESDataHandler {
 }
 #include "VendorDistribution.h"
 int main(int argc, char** argv) {
-    assert(argc == 1 || (argc == 2 && std::string_view(argv[1]) == "--no-pack-injection"));
-    const bool distributePacks = argc == 1;
-    const int expectedPacks = distributePacks ? 1 : 0;
+    const std::string_view mode = argc == 2 ? argv[1] : "";
+    assert(argc == 1 || mode == "--no-pack-injection" || mode == "--unknown-game");
+    // Packs are stocked only when they are switched on and the game's routine was found.
+    const bool distributePacks = mode != "--no-pack-injection", routineFound = mode != "--unknown-game";
+    const int expectedPacks = distributePacks && routineFound ? 1 : 0;
+    unsigned added = 0;
+    const vendors::AddPackRoll addRoll = [&](RE::TESObjectCONT* base, RE::TESLevItem* item) {
+        ++base->objects[item];
+        ++added;
+        return true;
+    };
+    const auto routine = routineFound ? addRoll : vendors::AddPackRoll{};
     using namespace RE;
     BGSKeyword categories[4], pack;
     unsigned ids[] = {0x8F958, 0x8F959, 0x937A2, 0x914E9};
@@ -144,11 +151,15 @@ int main(int argc, char** argv) {
     modNPC.factions.push_back({&f[2], 0});
     innNPC.factions.push_back({&f[3], 0});
     TESDataHandler::GetSingleton()->npcs = {&regular, &modNPC, &innNPC};
-    if (distributePacks)
-        vendors::initialize("Fixture.esp");
-    else
-        vendors::initialize("Fixture.esp", false);
+    vendors::initialize("Fixture.esp", routine, distributePacks);
     assert(vendors::factions.size() == 4);
+    // Two chest bases qualify; the inn's and the one shared with a specialist do not.
+    assert(vendors::packChests == 2 && vendors::packsStocked == unsigned(expectedPacks) * 2 &&
+           added == vendors::packsStocked);
+    assert(vendors::packStock == (!distributePacks ? vendors::PackStock::SwitchedOff
+                                  : routineFound   ? vendors::PackStock::On
+                                                   : vendors::PackStock::UnknownGame));
+    assert(vendors::packNotice(vendors::packStock).empty() == (expectedPacks == 1));
     assert(general.GetObjectCount(&roll) == expectedPacks && modded.GetObjectCount(&roll) == expectedPacks);
     assert(inn.GetObjectCount(&roll) == 0 && shared.GetObjectCount(&roll) == 0);
     assert(inclusion.HasForm(&pack) && !food.HasForm(&pack));
@@ -207,8 +218,20 @@ int main(int argc, char** argv) {
     vendors::albumContainers.push_back(nullptr);
     assert(vendors::removeLegacyAlbums(&album, change) == 1 && removals == 3);
     // Distribution is fixed at startup; later initialization cannot switch modes.
-    vendors::initialize("Fixture.esp", !distributePacks);
-    assert(vendors::factions.size() == 4);
+    vendors::initialize("Fixture.esp", addRoll, !distributePacks);
+    assert(vendors::factions.size() == 4 && vendors::packChests == 2 && added == vendors::packsStocked);
     assert(general.GetObjectCount(&roll) == expectedPacks && modded.GetObjectCount(&roll) == expectedPacks);
     assert(inclusion.HasForm(&pack) && modNPC.IsInFaction(&marker));
+    // The routine is used only where it begins as it does in the games it was checked on.
+    auto code = vendors::addObjectPrologue;
+    assert(vendors::addObjectRecognised(code.data()) && !vendors::addObjectRecognised(nullptr));
+    for (auto& byte : code) {
+        byte ^= 0x10;
+        assert(!vendors::addObjectRecognised(code.data()));
+        byte ^= 0x10;
+    }
+    assert(vendors::packStockFor(true, true) == vendors::PackStock::On &&
+           vendors::packStockFor(true, false) == vendors::PackStock::UnknownGame &&
+           vendors::packStockFor(false, true) == vendors::PackStock::SwitchedOff &&
+           vendors::packStockFor(false, false) == vendors::PackStock::SwitchedOff);
 }

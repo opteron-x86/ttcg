@@ -24,8 +24,9 @@ inline RE::TESObjectREFR* merchantContainer(RE::Actor* actor) {
 struct ShopBank {
     std::array<RE::TESObjectREFR*, 2> actors;
     explicit ShopBank(unsigned key) : actors{RE::PlayerCharacter::GetSingleton(), resolveID<RE::TESObjectREFR>(key)} {}
-    int count(int side) { return physicalCount(actors[side], goldForm); }
-    int change(int side, int amount) { return physicalChange(actors[side], goldForm, amount); }
+    // The player is trading with this merchant: its chest is set up, as barter would.
+    int count(int side) { return physicalCount(actors[side], goldForm, true); }
+    int change(int side, int amount) { return physicalChange(actors[side], goldForm, amount, true); }
 };
 inline bool openShop(RE::Actor* actor) {
     shop = {};

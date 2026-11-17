@@ -75,8 +75,8 @@ namespace campaign {
  inline RE::TESBoundObject goldObject;
  inline RE::TESBoundObject* goldForm=&goldObject;
  unsigned ledgerKey(RE::TESObjectREFR* actor){return actor?actor->ledger:0;}
- int physicalCount(RE::TESObjectREFR* actor,RE::TESBoundObject*){return actor?actor->gold:0;}
- int physicalChange(RE::TESObjectREFR* actor,RE::TESBoundObject*,int amount){if(!actor)return 0;amount=std::max(amount,-actor->gold);actor->gold+=amount;return amount;}
+ int physicalCount(RE::TESObjectREFR* actor,RE::TESBoundObject*,bool=false){return actor?actor->gold:0;}
+ int physicalChange(RE::TESObjectREFR* actor,RE::TESBoundObject*,int amount,bool=false){if(!actor)return 0;amount=std::max(amount,-actor->gold);actor->gold+=amount;return amount;}
  RESOLVER
  BANK
  SHOP
