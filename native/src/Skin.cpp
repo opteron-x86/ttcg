@@ -71,8 +71,28 @@ void App::loadSkins() {
             s.border = g.value("border", true);
             s.ruleSelector = g.value("selector", std::string()) == "rule";
             const auto corner = g.value("corner", std::string());
-            s.corner = corner == "key" ? 1 : corner == "dot" ? 2 : 0;
+            s.corner = corner == "key" ? 1 : corner == "dot" ? 2 : corner == "tile" ? 3 : 0;
             s.ornament = g.value("rule", std::string()) == "diamond";
+            s.edge = colour(g, "edge", 0);
+            // Three colours from `centre` outwards; `middle` is where the second one sits.
+            if (const auto shade = g.find("gradient"); shade != g.end() && shade->is_object()) {
+                const auto stops = shade->find("colours"), centre = shade->find("centre");
+                const bool valid = stops != shade->end() && stops->is_array() && stops->size() == 3 &&
+                                   centre != shade->end() && centre->is_array() && centre->size() == 2 &&
+                                   (*centre)[0].is_number() && (*centre)[1].is_number();
+                if (valid) {
+                    const auto stop = [&](int n) {
+                        return plain(colour(Json{{"c", (*stops)[std::size_t(n)]}}, "c", s.ground));
+                    };
+                    s.shade = {std::clamp((*centre)[0].get<float>(), 0.f, 1.f),
+                               std::clamp((*centre)[1].get<float>(), 0.f, 1.f),
+                               std::clamp(shade->value("middle", .5f), .05f, .95f),
+                               stop(0),
+                               stop(1),
+                               stop(2)};
+                    s.shaded = true;
+                }
+            }
         }
         constexpr std::string_view boards[]{"", "plain", "slate", "felt", "parchment", "leather", "walnut", "slab"};
         for (int board = 1; board < int(std::size(boards)); ++board)
@@ -114,11 +134,20 @@ void App::skinPanel(ImVec2 at, ImVec2 size, float density, ImU32 tint, const cha
     const auto* piece = skinPiece(name);
     const auto art = skinArt(name);
     if (!art.id || piece->margin <= 0) {
-        const auto& s = skin();
+        auto& s = skins[theme];
         const ImVec2 end = at + size;
-        d->AddRectFilled(at, end, main ? s.ground : s.dialog);
-        if (s.border) d->AddRect(at, end, palette().line);
-        const auto ink = alpha(palette().muted, .62f);
+        if (main && s.shaded) {
+            // Dithered once at a fixed size; stretching it keeps the dark tones free of bands.
+            if (!s.shadeTexture.id) {
+                constexpr int width = 1024, height = 576;
+                s.shadeTexture = renderer.upload(gradientPixels(s.shade, width, height).data(), width, height);
+            }
+            d->AddImage(s.shadeTexture.id, at, end, ImVec2(0, 0), ImVec2(1, 1), s.ground | 0xffffff);
+        } else
+            d->AddRectFilled(at, end, main ? s.ground : s.dialog);
+        const auto edge = s.edge ? s.edge : palette().line;
+        if (s.border) d->AddRect(at, end, edge);
+        const auto ink = s.edge ? s.edge | 0xff000000 : alpha(palette().muted, .62f);
         const float u = 3.2f * scale, weight = std::max(1.f, 1.3f * scale);
         for (int i = 0; i < 4 && s.corner; ++i) {
             const ImVec2 sign(i % 2 ? -1.f : 1.f, i / 2 ? -1.f : 1.f);
@@ -127,6 +156,13 @@ void App::skinPanel(ImVec2 at, ImVec2 size, float density, ImU32 tint, const cha
             const auto point = [&](float x, float y) { return origin + ImVec2(x * sign.x, y * sign.y) * u; };
             if (s.corner == 2) {
                 d->AddCircleFilled(origin, 2.4f * scale, alpha(palette().ink, .85f));
+                continue;
+            }
+            if (s.corner == 3) {
+                // A tessera: one small tile set into each corner, inside a short bracket.
+                const ImVec2 bracket[]{point(0, 7), point(0, 0), point(7, 0)};
+                d->AddPolyline(bracket, 3, ink, 0, weight);
+                d->AddRectFilled(ImMin(point(2, 2), point(4, 4)), ImMax(point(2, 2), point(4, 4)), ink);
                 continue;
             }
             // A meander bracket, the corner mark of Nordic-style panels.

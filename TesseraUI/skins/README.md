@@ -37,8 +37,16 @@ A skin with no panel art can describe a flat ground instead, as the minimalist U
 "ground": {"fill": "#1b1b1bb4", "dialog": "#1b1b1bee", "border": false, "selector": "rule", "corner": "key"}
 ```
 
-`fill` is the main window and `dialog` the popups; `border` draws the hairline outline; `selector: "rule"` underlines the hovered or primary button instead of filling it; `corner` is `key` (a meander bracket) or `dot`. `rule: "diamond"` sets a small diamond on the title rule.
+`fill` is the main window and `dialog` the popups; `border` draws the hairline outline; `selector: "rule"` underlines the hovered or primary button instead of filling it; `corner` is `key` (a meander bracket), `dot` or `tile` (a small square inside a bracket). `rule: "diamond"` sets a small diamond on the title rule. `edge` colours the outline and the corner marks; without it they use the palette's `line` and `muted`.
+
+The main window can be shaded instead of filled:
+
+```json
+"ground": {"fill": "#131e19f7", "gradient": {"centre": [0.4, 0.15], "middle": 0.58, "colours": ["#2a3731", "#17231e", "#111b17"]}}
+```
+
+`colours` run from `centre` (a fraction of the window's width and height) to the far corner, and the second colour sits at `middle`, a fraction of that distance. The shade is dithered so dark tones don't band. It takes its opacity from `fill`, which is also what a skin falls back to when the gradient is malformed. Popups keep `dialog`.
 
 `board` names the skin's default game board: `plain`, `slate`, `felt`, `parchment`, `leather`, `walnut` or `slab`.
 
-The textures here are artwork from Oathvein UI, Vel'dun UI and Norden UI by Nithog, Edge UI by EugeneUI, and Dear Diary Dark Mode, Dear Diary and Wood and Paper by uranreactor; they are not covered by Tessera's GPL-3.0 licence, and `docs/licenses/Skin-credits.txt` records the permissions. A skin may put dark ink on a light ground, as the two paper skins do. Skyrim follows the game's own interface, and Untarnished, Nordic and Outlander follow Untarnished UI by Vorganger, NORDIC UI by outobugi and Outlander UI II by rbtRvlt with a palette and flat ground alone. `tools/build-skin.py` regenerates them from installed copies of those mods using `tools/skin/recipes.json`.
+The textures here are artwork from Oathvein UI, Vel'dun UI and Norden UI by Nithog, Edge UI by EugeneUI, and Dear Diary Dark Mode, Dear Diary and Wood and Paper by uranreactor; they are not covered by Tessera's GPL-3.0 licence, and `docs/licenses/Skin-credits.txt` records the permissions. A skin may put dark ink on a light ground, as the two paper skins do. Tessera is the mod's own green and gold: a shaded ground, a gold outline and tile corners, with no textures. Skyrim follows the game's own interface, and Untarnished, Nordic and Outlander follow Untarnished UI by Vorganger, NORDIC UI by outobugi and Outlander UI II by rbtRvlt with a palette and flat ground alone. `tools/build-skin.py` regenerates them from installed copies of those mods using `tools/skin/recipes.json`.

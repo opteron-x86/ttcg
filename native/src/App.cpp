@@ -12,8 +12,9 @@
 namespace preview {
 namespace {
 constexpr ImU32 rgb(unsigned n, unsigned alpha = 255) { return IM_COL32(n >> 16, (n >> 8) & 255, n & 255, alpha); }
-// Indexed by theme; the five retired themes keep empty places so later indices stay put.
-const Palette themes[]{{},
+// Indexed by theme; the four retired themes keep empty places so later indices stay put.
+const Palette themes[]{{"Tessera", rgb(0x131e19), rgb(0x28372e), rgb(0xe7dec6), rgb(0xafa991), rgb(0xd0b474),
+                        rgb(0x586044, 130), rgb(0x4c5237), true},
                        {},
                        {},
                        {},
@@ -115,15 +116,18 @@ App::App(Renderer& r, const Options& o) : renderer(r), options(o), assets(r, o.t
 App::~App() {
     for (auto texture : boardSurfaces)
         if (texture.id) renderer.release(texture);
+    for (auto& s : skins)
+        if (s.shadeTexture.id) renderer.release(s.shadeTexture);
 }
 void App::surface(ImVec2 at, ImVec2 size, bool main) {
-    // A painted frame and its shadow reach past the rectangle they surround.
+    // A painted frame and its shadow reach past the rectangle they surround, and a
+    // dialog's own clip rectangle stops short of the outline a flat ground draws on its edge.
     const auto* piece = skinPiece(main ? "window" : "panel");
-    const float reach = piece ? (piece->inset + piece->pad) * piece->scale * skinUnit() : 0;
+    const float reach = 1 + (piece ? (piece->inset + piece->pad) * piece->scale * skinUnit() : 0);
     auto* d = ImGui::GetWindowDrawList();
-    if (!main && reach > 0) d->PushClipRect(at - ImVec2(reach, reach), at + size + ImVec2(reach, reach), false);
+    if (!main) d->PushClipRect(at - ImVec2(reach, reach), at + size + ImVec2(reach, reach), false);
     skinPanel(at, size, main ? 1.f : .62f, IM_COL32_WHITE, main ? "window" : "panel");
-    if (!main && reach > 0) d->PopClipRect();
+    if (!main) d->PopClipRect();
 }
 void App::boardSurface(int material, ImVec2 at, ImVec2 size) {
     if (material == 0) material = ttcg::interfaceThemes[theme].boardSurface;

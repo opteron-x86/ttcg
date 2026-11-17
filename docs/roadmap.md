@@ -38,13 +38,13 @@ Made by the player on 2026-11-16:
 - Bring back the green-and-gold Tessera theme as a skin on the new layout.
 - Legion and Decimation keep their rule (one group per board); the rule text now says so (was D6, accepted with the plan).
 - The opponent's search follows the skill the player is shown, with no per-opponent exceptions (was D4, accepted with the plan).
+- 2026-11-17: Skyrim stays the default skin and Tessera returns at index 0 (D5, accepted with the plan).
 - 2026-11-17: Vanguard for the first move (D1), option B for regional rules (D2: no authored rules, everything from spread and drift), the proposed trade-rule weights (D3) and the exchange gold floor (G4).
 
 Open:
 
 | ID | Question | Needed by | Recommendation |
 |---|---|---|---|
-| D5 | Default skin | Phase 6 | Skyrim stays the default; Tessera returns at index 0, so players whose INI still says `Theme=0` get it back |
 | D7 | Sectioned save format (C7) | Phase 7 | Do it, after B1 has made unreadable records survive |
 
 ### First-move data (D1)
@@ -263,10 +263,20 @@ The classic Tessera theme (index 0, retired in 0.33.0) was dark green and gold. 
 
 Its default board was Felt (3). The ground was a dithered radial gradient (`Surface.h`, removed in the same commit).
 
-- [ ] **T1** Clear `retired` on index 0 and add `TesseraUI/skins/tessera/skin.json` with the palette, a gold hairline, corner marks and Felt as its board. The typeface is chosen from previews: Jost, or the bundled serif.
-- [ ] **T2** Bring back the gradient ground, either as a baked texture from a small tool or as a `ground.gradient` option in `skin.json`. Choose whichever keeps the skin loader simpler.
-- [ ] **T3** Optional: Tessera's own panel and title-band art. It's first-party, so no third-party permission is needed. Record provenance if generated.
-- [ ] **T4** Settings order, `TTCG.ini.example`, `native/tests/game_ui_test.cpp` theme expectations, and `TesseraUI/skins/README.md`. Previews at 720p, 1080p and 4K for the album, lobby, match, results, shop and settings. D5 decides the default.
+Done on `phase6/tessera-skin` (2026-11-17), stacked on phase 5, and waiting for the in-game check.
+
+- [x] **T1** Index 0 is no longer retired and `TesseraUI/skins/tessera/skin.json` carries the palette, Felt as its board, a gold outline (`ground.edge`), tile corners (`corner: "tile"`) and the diamond on the title rule. The player's cards are gold and the opponent's red. Typeface: Jost. The serif the old theme used was previewed too; it reads worse at card-name size, and Settings > Appearance > Fonts still offers serifs.
+- [x] **T2** `ground.gradient` in `skin.json`: three colours from a centre outwards. `App::skinPanel` dithers it once into a 1024×576 texture (`gradientPixels` in `Surface.h`, the generator the boards already use) and stretches that across the main window. No baked file, and any flat skin can use it.
+- [ ] **T3** Not done: own panel and title-band art. The drawn outline and corners carry the look; painted art can follow if the skin feels plain in game.
+- [x] **T4** The theme menu lists Skyrim first and Tessera second. `TTCG.ini.example`, `native/tests/game_ui_test.cpp`, `tests/interface_settings_test.cpp` and `TesseraUI/skins/README.md` follow. Previews at 720p, 1080p and 4K for the album, lobby, match, results, shop and settings are in `build/previews/tessera`.
+- Also fixed: the result, rule-request and inspector panels clipped the outline and corner marks of every flat skin (`App::surface`).
+
+D5: Skyrim stays the default, as recommended. A `Theme=0` left in an INI from before 0.33.0 opens Tessera again.
+
+In Skyrim:
+- Settings > Appearance > Interface: choose Tessera. The ground is green with no visible bands, also at 1440p and 4K.
+- Play a game: gold for your cards, red for the opponent's, on the felt board.
+- Open a result dialog and a pack: popups have the gold outline and corner tiles.
 
 ## Phase 7: code cleanup
 

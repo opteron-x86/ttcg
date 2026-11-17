@@ -32,6 +32,8 @@
 - The Journal shows each player's rules, trade rule and wager cap.
 - The lobby says when rule challenges open again.
 - A first run picks the skin for Oathvein, Norden, Edge, Untarnished, Dear Diary or Dear Diary Dark Mode when that mod is installed.
+- Tessera's green-and-gold skin is back as a choice in Settings > Appearance. A saved `Theme=0` opens it again.
+- Result and rule-request dialogs show their outline on skins that draw one.
 - The shop's Buy, Sell and Buy back step with LB/RB and Q/E.
 - Result, trade and rule-request dialogs show their own key prompts.
 - Text uses five sizes throughout.

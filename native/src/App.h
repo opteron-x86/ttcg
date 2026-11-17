@@ -3,6 +3,7 @@
 #include "Model.h"
 #include "MatchAppearance.h"
 #include "InterfaceTheme.h"
+#include "Surface.h"
 #include <array>
 #include <string>
 #include <unordered_map>
@@ -32,8 +33,13 @@ struct Skin {
     // A skin without panel art draws flat grounds, as the minimalist UI mods do.
     ImU32 ground = 0, dialog = 0;
     bool border = true, ruleSelector = false;
-    int corner = 0;        // 0 none, 1 key, 2 dot
+    int corner = 0;        // 0 none, 1 key, 2 dot, 3 tile
     bool ornament = false; // A diamond on the title rule.
+    ImU32 edge = 0;        // The outline and corner marks; zero keeps the palette's line.
+    // A radial shade behind the main window, lightest at its centre; popups keep `dialog`.
+    bool shaded = false;
+    SurfaceGradient shade{};
+    Texture shadeTexture{};
     std::unordered_map<std::string, SkinArt> art;
 };
 struct Face {

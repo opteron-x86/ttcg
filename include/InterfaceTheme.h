@@ -10,7 +10,7 @@ struct InterfaceTheme {
 };
 // The index is saved in TTCG.ini. Append themes; never reorder or remove entries. A retired theme
 // keeps its place so the indices after it stay put, and a saved retired index opens the default.
-inline constexpr std::array interfaceThemes{InterfaceTheme{"tessera", "Tessera", 3, true},
+inline constexpr std::array interfaceThemes{InterfaceTheme{"tessera", "Tessera", 3},
                                             InterfaceTheme{"charcoal", "Charcoal", 2, true},
                                             InterfaceTheme{"oxblood", "Oxblood", 5, true},
                                             InterfaceTheme{"parchment", "Parchment", 4, true},
