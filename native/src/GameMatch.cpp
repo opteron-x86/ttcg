@@ -149,16 +149,13 @@ void GameApp::lobby(ImVec2 at, ImVec2 size) {
                 send("browse", "album");
             }
         }
-        if (id >= 0 && ((ImGui::IsItemHovered() && ImGui::IsMouseClicked(1)) ||
-                        (ImGui::IsItemFocused() &&
-                         (ImGui::IsKeyPressed(ImGuiKey_I) || ImGui::IsKeyPressed(ImGuiKey_GamepadFaceUp)))))
-            inspectCard(id);
+        if (id >= 0 && inspectRequested()) inspectCard(id);
         const bool focused = ImGui::IsItemFocused() && ImGui::GetIO().NavVisible;
         if (id >= 0) {
             const bool hovered = ImGui::IsItemHovered();
             const ImVec2 drawn = p - ImVec2(0, (hovered || focused ? 6 : 0) * scale);
             softShadow(drawn, ImVec2(w, h), hovered || focused ? 1.4f : 1, hovered || focused ? 14 : 10);
-            displayCard(id, drawn, ImVec2(w, h), focused, -1, 1 + i);
+            displayCard(id, drawn, ImVec2(w, h), focused, -1, MaterialSlot::hands + i);
         } else {
             ImGui::GetWindowDrawList()->AddRect(p, p + ImVec2(w, h), focused ? palette().accent : palette().line);
             text(p + ImVec2(w / 2, h / 2), "+", 32, palette().muted, 0, true);
@@ -303,7 +300,7 @@ void GameApp::groupModal() {
                 break;
             }
         }
-        if (ImGui::Button("Cancel") || backPressed()) {
+        if (action("Cancel") || backPressed()) {
             groupHand = -1;
             ImGui::CloseCurrentPopup();
         }
@@ -541,10 +538,7 @@ std::pair<ImVec2, ImVec2> GameApp::table(const Json& data, ImVec2 at, ImVec2 siz
                 else
                     selectedHand = h;
             }
-            if (hittable && display >= 0 &&
-                ((ImGui::IsItemHovered() && ImGui::IsMouseClicked(1)) ||
-                 (ImGui::IsItemFocused() &&
-                  (ImGui::IsKeyPressed(ImGuiKey_I) || ImGui::IsKeyPressed(ImGuiKey_GamepadFaceUp)))))
+            if (hittable && display >= 0 && inspectRequested())
                 inspectCard(display, true,
                             itemNumber(member(data, "handModifiers").is_array() ? member(data, "handModifiers")[player]
                                                                                 : Json{},
@@ -573,7 +567,7 @@ std::pair<ImVec2, ImVec2> GameApp::table(const Json& data, ImVec2 at, ImVec2 siz
                 if (!stack) softShadow(drawn, ImVec2(hw, hh), selected ? 1.5f : .8f, selected ? 14 : 8);
                 displayCard(display, drawn, ImVec2(hw, hh),
                             selected || (hittable && ImGui::IsItemFocused() && ImGui::GetIO().NavVisible), player,
-                            (demo ? 110 : 1) + player * 5 + h,
+                            (demo ? MaterialSlot::demoHands : MaterialSlot::hands) + player * 5 + h,
                             itemNumber(member(data, "handModifiers").is_array() ? member(data, "handModifiers")[player]
                                                                                 : Json{},
                                        h, 0),
@@ -640,8 +634,8 @@ std::pair<ImVec2, ImVec2> GameApp::table(const Json& data, ImVec2 at, ImVec2 siz
             if (!moving)
                 displayCard(number(cell, "card", -1), pos, cardSize,
                             highlight || (ImGui::IsItemFocused() && ImGui::GetIO().NavVisible), owner,
-                            (demo ? 120 : 11) + square, itemNumber(member(data, "modifiers"), square, 0), false,
-                            CardContext::Board);
+                            (demo ? MaterialSlot::demoBoard : MaterialSlot::board) + square,
+                            itemNumber(member(data, "modifiers"), square, 0), false, CardContext::Board);
             if (turnWidth < 1 || lift > 0)
                 scaleVertices(firstVertex, pos + cardSize * .5f,
                               ImVec2(turnWidth * (1 + .07f * lift), 1 + .07f * lift));
@@ -659,10 +653,7 @@ std::pair<ImVec2, ImVec2> GameApp::table(const Json& data, ImVec2 at, ImVec2 siz
                 d->AddRect(pos, pos + cardSize, fade(taker, .75f + .25f * breath), 0, 0, std::max(2.f, 3 * scale));
                 cornerMarks(pos, cardSize, taker, 16, 5);
             }
-            if ((hit || ImGui::IsItemHovered() && ImGui::IsMouseClicked(1) ||
-                 ImGui::IsItemFocused() &&
-                     (ImGui::IsKeyPressed(ImGuiKey_I) || ImGui::IsKeyPressed(ImGuiKey_GamepadFaceUp))) &&
-                !busy)
+            if ((hit || inspectRequested()) && !busy)
                 inspectCard(number(cell, "card", -1), true, itemNumber(member(data, "modifiers"), square, 0));
         } else {
             if (slot.id)
@@ -704,7 +695,7 @@ std::pair<ImVec2, ImVec2> GameApp::table(const Json& data, ImVec2 at, ImVec2 siz
                 const int ghost = itemNumber(member(data, "hands")[0], selectedHand);
                 if (ghost >= 0) {
                     const int first = d->VtxBuffer.Size;
-                    displayCard(ghost, pos, cardSize, false, 0, 161, 0, false, CardContext::Board);
+                    displayCard(ghost, pos, cardSize, false, 0, MaterialSlot::ghost, 0, false, CardContext::Board);
                     fadeVertices(first, .42f);
                 }
             }
@@ -747,7 +738,8 @@ std::pair<ImVec2, ImVec2> GameApp::table(const Json& data, ImVec2 at, ImVec2 siz
             if (hand < 0 || other < 0) continue;
             const auto source = handPositions[1 - player][other], target = handPositions[player][hand];
             displayCard(itemNumber(state["hands"][player], hand), source + (target - source) * ease, ImVec2(hw, hh),
-                        true, t < .5f ? 1 - player : player, 162 + player, 0, false, CardContext::Hand);
+                        true, t < .5f ? 1 - player : player, MaterialSlot::swapping + player, 0, false,
+                        CardContext::Hand);
         }
     }
     if (animating && clock.placedSquare >= 0 && clock.placedHand >= 0 && elapsed < .36) {
@@ -757,8 +749,8 @@ std::pair<ImVec2, ImVec2> GameApp::table(const Json& data, ImVec2 at, ImVec2 siz
         const auto source = handPositions[clock.placedPlayer][clock.placedHand];
         const float t = 1 - std::pow(1 - std::clamp(float(elapsed / .36), 0.f, 1.f), 3);
         displayCard(number(data["board"][q], "card", -1), source + (target - source) * t,
-                    ImVec2(hw, hh) + (ImVec2(tileW, tileH) - ImVec2(hw, hh)) * t, false, clock.placedPlayer, 160, 0,
-                    false, t < .5f ? CardContext::Hand : CardContext::Board);
+                    ImVec2(hw, hh) + (ImVec2(tileW, tileH) - ImVec2(hw, hh)) * t, false, clock.placedPlayer,
+                    MaterialSlot::placing, 0, false, t < .5f ? CardContext::Hand : CardContext::Board);
     }
     if (demo && animating) {
         for (int i = 0; i < int(arrayMember(animation, "stages").size()); ++i) {

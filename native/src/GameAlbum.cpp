@@ -16,8 +16,7 @@ void GameApp::nativeFilters(ImVec2 at, float width, bool editing) {
         refreshFilter();
     }
     const std::vector<std::string> ownership{"Owned", "Discovered", "Missing", "Extras"},
-        tiers{"Tier", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"},
-        sorts{"Low to high", "High to low", "Name", "Quantity", "Rarity"};
+        tiers = tierChoices("Tier"), sorts{"Low to high", "High to low", "Name", "Quantity", "Rarity"};
     // The deck editor only offers cards you own, so it has no ownership choice.
     if (editing) filter.ownership = 0;
     const float ownW = editing ? 0 : choiceWidth(ownership) + 10 * scale, tierW = choiceWidth(tiers),
@@ -63,7 +62,7 @@ void GameApp::nativeFilters(ImVec2 at, float width, bool editing) {
         int set = int(std::find(keys.begin(), keys.end(), filter.set) - keys.begin());
         if (set >= int(keys.size())) set = 0;
         if (combo("##set", "Set", set, sets, 330 * scale)) filter.set = keys[set];
-        if (ImGui::Button("Reset filters")) {
+        if (action("Reset filters")) {
             filter = Filter{};
             query[0] = 0;
         }

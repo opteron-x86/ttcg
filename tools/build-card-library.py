@@ -64,11 +64,11 @@ def build():
     template = (ROOT / 'tools/card-library.html').read_text()
     # Embed the actual runtime material so the in-game reference cannot drift.
     # Scope it to its swatch; other review finishes have their own material layers.
-    runtime_foil = (ROOT / 'TesseraUI/foil.css').read_text()
-    grain = quote((ROOT / 'TesseraUI/foil-grain.svg').read_text(), safe='')
+    runtime_foil = (ROOT / 'tools/shared/foil.css').read_text()
+    grain = quote((ROOT / 'tools/shared/foil-grain.svg').read_text(), safe='')
     runtime_foil = runtime_foil.replace("url('foil-grain.svg')", 'url("data:image/svg+xml,' + grain + '")')
     template = template.replace('/* RUNTIME_FOIL_CSS */', '@scope (.finish-current) {\n' + runtime_foil + '\n}')
-    template = template.replace('/* FOIL_MATERIAL_JS */', (ROOT / 'TesseraUI/foil-material.js').read_text())
+    template = template.replace('/* FOIL_MATERIAL_JS */', (ROOT / 'tools/shared/foil-material.js').read_text())
     for marker, filename in (
         ('/* LIBRARY_FINISHES_CSS */', 'finishes.css'),
         ('/* FOIL_REVIEW_CSS */', 'review.css'),

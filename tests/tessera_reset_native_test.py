@@ -5,9 +5,9 @@ import subprocess
 import tempfile
 
 root = Path(__file__).resolve().parents[1]
-source = (root / 'include/NativeCollection.h').read_text()
-begin = source.index('inline bool removeResetItems()')
-cleanup = source[begin:source.index('inline void acknowledgeTournamentCourier', begin)]
+source = (root / 'src/CollectionSync.cpp').read_text()
+begin = source.index('bool removeResetItems()')
+cleanup = source[begin:source.index('void acknowledgeTournamentCourier', begin)]
 code = r'''
 #include <array>
 #include <cassert>

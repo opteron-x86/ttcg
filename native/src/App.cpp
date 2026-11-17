@@ -11,42 +11,29 @@
 
 namespace preview {
 namespace {
-constexpr ImU32 rgb(unsigned n, unsigned alpha = 255) { return IM_COL32(n >> 16, (n >> 8) & 255, n & 255, alpha); }
-// Indexed by theme; the four retired themes keep empty places so later indices stay put.
-const Palette themes[]{{"Tessera", rgb(0x131e19), rgb(0x28372e), rgb(0xe7dec6), rgb(0xafa991), rgb(0xd0b474),
-                        rgb(0x586044, 130), rgb(0x4c5237), true},
-                       {},
-                       {},
-                       {},
-                       {},
-                       {"Oathvein", rgb(0x161616), rgb(0x302626), rgb(0xe9e6dd), rgb(0xa3a19c), rgb(0xe9e6dd),
-                        rgb(0xe9e6dd, 46), rgb(0x8f3229), true},
-                       {"Vel'dun", rgb(0x151612), rgb(0x302d26), rgb(0xece8d9), rgb(0xb4b3a5), rgb(0xbeb18a),
-                        rgb(0x938d77, 165), rgb(0x625b43), true},
-                       {"Norden", rgb(0x101315), rgb(0x2b3033), rgb(0xe9e6dd), rgb(0xb4b8bb), rgb(0xd2d5d4),
-                        rgb(0xa9b0b3, 135), rgb(0x464f55), true},
-                       {"Untarnished", rgb(0x0b0b0b), rgb(0x1c1c1c), rgb(0xf2f2f2), rgb(0xa8a8a8), rgb(0xffffff),
-                        rgb(0xffffff, 48), rgb(0x3d3d3d), true},
-                       {"Edge", rgb(0x161613), rgb(0x2a2820), rgb(0xe6e1d3), rgb(0xa39e8f), rgb(0xc9b47a),
-                        rgb(0xc9b47a, 64), rgb(0x5a4f2e), true},
-                       {"Dear Diary", rgb(0x0c0c0c), rgb(0x1e1e1e), rgb(0xefefef), rgb(0xa9a9a9), rgb(0xe6e6e6),
-                        rgb(0xffffff, 42), rgb(0x3b3b3b), true},
-                       {"Nordic", rgb(0x060606), rgb(0x161616), rgb(0xececec), rgb(0x8e8e8e), rgb(0xd6d6d6),
-                        rgb(0xffffff, 48), rgb(0x3a3a3a), true},
-                       {"Outlander", rgb(0x0c0c0e), rgb(0x1a1b20), rgb(0xf2efe8), rgb(0xa9a8a4), rgb(0xffffff),
-                        rgb(0xffffff, 56), rgb(0x3f4a66), true},
-                       {"Skyrim", rgb(0x000000), rgb(0x151515), rgb(0xffffff), rgb(0xa8a8a8), rgb(0xffffff),
-                        rgb(0xffffff, 89), rgb(0x4a4a4a), true},
-                       {"Dear Diary", rgb(0xb4a698), rgb(0xc4b8ab), rgb(0x231a14), rgb(0x463a31), rgb(0x6e2a1c),
-                        rgb(0x3a261c, 89), rgb(0x8f7d6c), false},
-                       {"Wood and Paper", rgb(0x8f866a), rgb(0xa39a7e), rgb(0x1d150d), rgb(0x33281a), rgb(0x5a2f14),
-                        rgb(0x2e1d0e, 102), rgb(0x6f6247), false}};
-static_assert(std::size(themes) == ttcg::interfaceThemeCount);
-const char* romans[]{"", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"};
-ImU32 rarity(const CardView& card) {
-    const std::string_view r = card.rarity;
-    return r == "Rare" ? rgb(0x56dfff) : r == "Epic" ? rgb(0xd684fa) : r == "Legendary" ? rgb(0xe6bc65) : rgb(0xb7b89e);
-}
+// A theme's colours before its skin.json is read, and all it has when that file is missing.
+struct ThemePalette {
+    std::string_view id;
+    Palette palette;
+};
+constexpr ThemePalette themes[]{
+    {"tessera", {rgb(0x131e19), rgb(0xe7dec6), rgb(0xafa991), rgb(0xd0b474), rgb(0x586044, 130), rgb(0x4c5237), true}},
+    {"oathvein", {rgb(0x161616), rgb(0xe9e6dd), rgb(0xa3a19c), rgb(0xe9e6dd), rgb(0xe9e6dd, 46), rgb(0x8f3229), true}},
+    {"veldun", {rgb(0x151612), rgb(0xece8d9), rgb(0xb4b3a5), rgb(0xbeb18a), rgb(0x938d77, 165), rgb(0x625b43), true}},
+    {"norden", {rgb(0x101315), rgb(0xe9e6dd), rgb(0xb4b8bb), rgb(0xd2d5d4), rgb(0xa9b0b3, 135), rgb(0x464f55), true}},
+    {"untarnished",
+     {rgb(0x0b0b0b), rgb(0xf2f2f2), rgb(0xa8a8a8), rgb(0xffffff), rgb(0xffffff, 48), rgb(0x3d3d3d), true}},
+    {"edge", {rgb(0x161613), rgb(0xe6e1d3), rgb(0xa39e8f), rgb(0xc9b47a), rgb(0xc9b47a, 64), rgb(0x5a4f2e), true}},
+    {"deardiary", {rgb(0x0c0c0c), rgb(0xefefef), rgb(0xa9a9a9), rgb(0xe6e6e6), rgb(0xffffff, 42), rgb(0x3b3b3b), true}},
+    {"nordic", {rgb(0x060606), rgb(0xececec), rgb(0x8e8e8e), rgb(0xd6d6d6), rgb(0xffffff, 48), rgb(0x3a3a3a), true}},
+    {"outlander", {rgb(0x0c0c0e), rgb(0xf2efe8), rgb(0xa9a8a4), rgb(0xffffff), rgb(0xffffff, 56), rgb(0x3f4a66), true}},
+    {"skyrim", {rgb(0x000000), rgb(0xffffff), rgb(0xa8a8a8), rgb(0xffffff), rgb(0xffffff, 89), rgb(0x4a4a4a), true}},
+    {"diarypaper",
+     {rgb(0xb4a698), rgb(0x231a14), rgb(0x463a31), rgb(0x6e2a1c), rgb(0x3a261c, 89), rgb(0x8f7d6c), false}},
+    {"woodpaper",
+     {rgb(0x8f866a), rgb(0x1d150d), rgb(0x33281a), rgb(0x5a2f14), rgb(0x2e1d0e, 102), rgb(0x6f6247), false}},
+};
+ImU32 rarity(const CardView& card) { return rgb(rarityPigment(card.rarity)); }
 std::string groups(const CardView& card) {
     std::string out;
     for (unsigned i = 0; i < ttcg::creatureGroups.size(); ++i)
@@ -66,12 +53,24 @@ std::string affinities(const CardView& card) {
         }
     return out.empty() ? "No affinity" : out;
 }
-ImU32 alpha(ImU32 colour, float amount) {
-    return (colour & 0xffffff) | (unsigned(std::clamp(amount, 0.f, 1.f) * 255) << 24);
+// Every theme a player can choose has a row.
+constexpr bool themesHavePalettes() {
+    for (const auto& theme : ttcg::interfaceThemes) {
+        bool found = theme.retired;
+        for (const auto& entry : themes) found |= entry.id == theme.id;
+        if (!found) return false;
+    }
+    return true;
 }
+static_assert(themesHavePalettes());
 }
-const Palette& App::builtInPalette(int index) { return themes[ttcg::interfaceThemeIndex(index)]; }
-const Palette& App::palette() const { return skins[theme].loaded ? skins[theme].palette : themes[theme]; }
+const Palette& App::builtInPalette(int index) {
+    const auto id = ttcg::interfaceThemes[ttcg::interfaceThemeIndex(index)].id;
+    for (const auto& entry : themes)
+        if (entry.id == id) return entry.palette;
+    return themes[0].palette;
+}
+const Palette& App::palette() const { return skins[theme].loaded ? skins[theme].palette : builtInPalette(theme); }
 ImFont* App::font() const { return preferredFont ? preferredFont : palette().sans ? sans : serif; }
 App::App(Renderer& r, const Options& o) : renderer(r), options(o), assets(r, o.tesseraRoot) {
     theme = ttcg::interfaceThemeIndex(o.theme);
@@ -175,7 +174,6 @@ bool App::backPressed() const {
     return ImGui::IsKeyPressed(ImGuiKey_Escape, false) || ImGui::IsKeyPressed(ImGuiKey_GamepadFaceRight, false);
 }
 void App::resume() {
-    closing = false;
     // The menu closed with something held. A drag begun before it closed would
     // otherwise still be live, and could finish on the first click after reopening.
     ImGui::ClearActiveID();
@@ -281,6 +279,12 @@ bool App::button(const char* id, const char* label, ImVec2 at, ImVec2 size, bool
          : active || hover || focused ? palette().ink
                                       : alpha(palette().ink, .86f));
     return pressed && enabled;
+}
+bool App::action(const char* label) {
+    const auto at = ImGui::GetCursorScreenPos();
+    const ImVec2 size(font()->CalcTextSizeA(18 * scale, 1e5f, 0, label).x + 36 * scale, 38 * scale);
+    // Inside ImGui::BeginDisabled the label dims with the button.
+    return button(label, label, at, size, false, !(GImGui->CurrentItemFlags & ImGuiItemFlags_Disabled));
 }
 void App::style() {
     auto& s = ImGui::GetStyle();
@@ -479,8 +483,8 @@ void App::card(int index, ImVec2 at, ImVec2 size, bool chosen, bool foil, int ow
     d->AddCircle(badge, 10 * unit, rarity(c), 32, 1.1f * unit);
     d->AddCircle(badge, 7.8f * unit, alpha(rarity(c), .55f), 32, .55f * unit);
     auto* tierFont = font();
-    auto tier = tierFont->CalcTextSizeA(10 * unit, 1e5f, 0, romans[c.tier]);
-    d->AddText(tierFont, 10 * unit, badge - tier * .5f, rarity(c), romans[c.tier]);
+    auto tier = tierFont->CalcTextSizeA(10 * unit, 1e5f, 0, tierNumeral(c.tier));
+    d->AddText(tierFont, 10 * unit, badge - tier * .5f, rarity(c), tierNumeral(c.tier));
     int offset = 0;
     for (int i = 0; i < 5; ++i)
         if (c.affinityMask & (1u << i)) {

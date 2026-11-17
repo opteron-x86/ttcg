@@ -61,14 +61,11 @@ void App::packModal() {
     line(at + ImVec2(30, 77) * scale, at + ImVec2(size.x - 30 * scale, 77 * scale));
     const float rowY = at.y + 105 * scale;
     // Cards are dealt face down and turn over one at a time; rarer cards make the player wait a beat.
-    const auto tone = [](const std::string& rarity) {
-        return rarity == "Rare"        ? IM_COL32(86, 223, 255, 255)
-               : rarity == "Epic"      ? IM_COL32(214, 132, 250, 255)
-               : rarity == "Legendary" ? IM_COL32(240, 196, 101, 255)
-                                       : IM_COL32(226, 222, 208, 255);
-    };
     const auto weight = [](const std::string& rarity) {
         return rarity == "Rare" ? 1 : rarity == "Epic" ? 2 : rarity == "Legendary" ? 3 : 0;
+    };
+    const auto tone = [&](const std::string& rarity) {
+        return weight(rarity) ? rgb(rarityPigment(rarity)) : IM_COL32(226, 222, 208, 255);
     };
     constexpr double turn = .44;
     std::vector<double> starts;

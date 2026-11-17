@@ -88,7 +88,7 @@ public:
     Texture material(Texture source, int slot, float x, float y, float strength, int treatment, float amount) override {
         if (!source.id || slot < 0 || slot >= int(targets.size())) return source;
         auto& t = targets[slot];
-        const float ratio = std::min(1.f, (slot >= 22 ? 512.f : 1024.f) / source.height);
+        const float ratio = std::min(1.f, (slot >= MaterialSlot::reduced ? 512.f : 1024.f) / source.height);
         const int w = std::max(1, int(source.width * ratio)), h = std::max(1, int(source.height * ratio));
         if (strength == 0 && t.staticSource == source.id && t.treatment == treatment && t.amount == amount &&
             t.texture.width == w && t.texture.height == h)

@@ -10,7 +10,7 @@ begin = source.index('inline int physicalCount(')
 counters = source[begin:source.index('inline bool authoredKey(', begin)]
 shop = (root / 'include/NativeShop.h').read_text()
 begin = shop.index('struct ShopBank {')
-bank = shop[begin:shop.index('inline bool openShop(', begin)]
+bank = shop[begin:shop.index('bool openShop(', begin)]
 code = r"""
 #include <algorithm>
 #include <array>

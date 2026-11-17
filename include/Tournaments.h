@@ -302,7 +302,7 @@ inline unsigned tournamentNPCWinner(const CollectionSave& s, const Tournament& e
     int ai = opponentIndex(a), bi = opponentIndex(b);
     if (!tournamentEntrant(s, ai)) return b;
     if (!tournamentEntrant(s, bi)) return a;
-    auto seed = tournamentHash(e.seed ^ node ^ (game * 2654435761u));
+    auto seed = tournamentHash(e.seed ^ node ^ (game * seedSpread));
     auto ah = opponentHand(tournamentStock(s, a), ai, seed, e.rules),
          bh = opponentHand(tournamentStock(s, b), bi, seed ^ 0xABC123, e.rules);
     // Resolve actual games with the same rule engine; bounded searches avoid blocking the game thread.
@@ -660,7 +660,7 @@ inline void tickTournaments(CollectionSave& s, unsigned hour, unsigned currentHo
                     earliest = ts.nextRegular[h];
                     nextHold = h + 1;
                 }
-                ts.nextRegular[h] = hour + (30 + tournamentHash(hour ^ (h + 1) * 2654435761u) % 16) * 24;
+                ts.nextRegular[h] = hour + (30 + tournamentHash(hour ^ (h + 1) * seedSpread) % 16) * 24;
             }
         // Missed dates never spawn a backlog after waiting or a long absence.
         if (nextHold && activeRegular < 3) newTournament(s, nextHold, hour, false, 0);

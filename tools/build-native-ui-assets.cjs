@@ -1,16 +1,17 @@
-// Copy presentation data from the existing, shared frontend reference. No browser
-// or JavaScript engine is shipped or needed at runtime.
+// Write the data the native interface reads: the Rules tab's text and demos
+// (TesseraUI/rules.json), the affinity icons and the fonts. No browser or JavaScript
+// engine is shipped or needed at runtime.
 const fs=require('node:fs'),vm=require('node:vm'),path=require('node:path');
-const root=path.resolve(__dirname,'..'),base=path.join(root,'TesseraUI'),out=path.join(root,'TesseraUI');
+const root=path.resolve(__dirname,'..'),rules=path.join(root,'tools/rules'),out=path.join(root,'TesseraUI');
 fs.mkdirSync(out,{recursive:true});
-const album=fs.readFileSync(path.join(base,'album.js'),'utf8');
-const app=fs.readFileSync(path.join(base,'app.js'),'utf8');
-const lesson=fs.readFileSync(path.join(base,'lesson.js'),'utf8');
+const read=file=>fs.readFileSync(file,'utf8');
+const renderer=read(path.join(root,'tools/shared/card-renderer.js'));
 const ctx=vm.createContext({});
-vm.runInContext(fs.readFileSync(path.join(base,'rule-demos.js'),'utf8')+';this.demos=ruleDemos;this.guided=guidedDemos;',ctx);
-vm.runInContext(album.slice(album.indexOf('const TRADE_RULES='),album.indexOf('function stopRulesDemo()'))+';this.pages=RULE_PAGES;this.trades=TRADE_RULES;',ctx);
-vm.runInContext(app.slice(app.indexOf('const affinityNames='),app.indexOf('function affinityIcon('))+';this.icons=affinityArtwork;this.pigments=affinityPigments;',ctx);
-vm.runInContext('var state={cards:[]};'+lesson.slice(lesson.indexOf('function lessonCardName('),lesson.indexOf('function resetLesson('))+lesson.slice(lesson.indexOf('function lessonPrompt(')).replace('selected=demoSelected','selected=false'),ctx);
+// rule-demos.js is written by tests/rule_demo_host.cpp from the game's own engine.
+vm.runInContext(read(path.join(rules,'rule-demos.js'))+';this.demos=ruleDemos;this.guided=guidedDemos;',ctx);
+vm.runInContext(read(path.join(rules,'rule-pages.js'))+';this.pages=RULE_PAGES;this.trades=TRADE_RULES;',ctx);
+vm.runInContext(renderer.slice(renderer.indexOf('const affinityNames='),renderer.indexOf('function affinityIcon('))+';this.icons=affinityArtwork;this.pigments=affinityPigments;',ctx);
+vm.runInContext('var state={cards:[]};'+read(path.join(rules,'lesson-prompts.js')),ctx);
 // Card names/sides for captions come from the same generated canonical catalog.
 ctx.state.cards=JSON.parse(fs.readFileSync(path.join(root,'data/cards.json'))).cards;
 for(const frames of Object.values({...ctx.demos,...ctx.guided}))for(const frame of frames)if(!frame.caption)frame.caption=ctx.lessonPrompt(frame,false);

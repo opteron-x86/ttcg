@@ -432,7 +432,6 @@ void Host::draw() {
         const bool wantsText = inputActive && io.WantTextInput;
         if (s.wantsText.exchange(wantsText) != wantsText)
             SKSE::GetTaskInterface()->AddTask([this, token] { syncTextInput(token); });
-        if (g.app->closeRequested()) queueClose("back/close button");
         ImGui::Render();
         frameStarted = false;
         isolated.bindTarget();

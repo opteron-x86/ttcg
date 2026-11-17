@@ -139,7 +139,7 @@ void GameApp::tournaments(ImVec2 at, ImVec2 size) {
         ImGui::SetCursorScreenPos(pos);
         if (ImGui::InvisibleButton(("prize" + std::to_string(pindex)).c_str(), extent, ImGuiButtonFlags_EnableNav))
             inspectCard(id.get<int>());
-        displayCard(id.get<int>(), pos, extent, false, -1, 135 + pindex);
+        displayCard(id.get<int>(), pos, extent, false, -1, MaterialSlot::eventPrizes + pindex);
         ++pindex;
     }
     if (number(e, "fee") && !flag(e, "joined"))
@@ -276,7 +276,7 @@ void GameApp::tournamentOutcome() {
                 if (ImGui::InvisibleButton(("reward-art" + std::to_string(slot)).c_str(), ImVec2(180, 240) * scale,
                                            ImGuiButtonFlags_EnableNav))
                     inspectCard(id.get<int>());
-                displayCard(id.get<int>(), pos, ImVec2(180, 240) * scale, false, -1, 145 + slot);
+                displayCard(id.get<int>(), pos, ImVec2(180, 240) * scale, false, -1, MaterialSlot::resultPrizes + slot);
                 ++slot;
             }
             if (!cards.empty()) {
@@ -346,7 +346,7 @@ void GameApp::tournamentOutcome() {
                 ImGui::EndChild();
                 // The chosen card, and the button that spends an upgrade on it.
                 const auto chosen = p + ImVec2(gridWidth + 20 * scale, 0);
-                displayCard(foilSelection, chosen, ImVec2(156, 208) * scale, false, -1, 148);
+                displayCard(foilSelection, chosen, ImVec2(156, 208) * scale, false, -1, MaterialSlot::foilChoice);
                 text(chosen + ImVec2(0, 216 * scale), fitted(collection.cards[foilSelection].name, 17, side), 18,
                      palette().ink);
                 if (button("upgrade", "Make foil", chosen + ImVec2(0, 250) * scale, ImVec2(200, 43) * scale, true,
@@ -522,7 +522,8 @@ void GameApp::resultModal() {
                         inspectCard(cards[i], false);
                     softShadow(pos, ImVec2(prizeW, prizeH), 1, 7);
                     displayCard(cards[i], pos, ImVec2(prizeW, prizeH),
-                                ImGui::IsItemFocused() && ImGui::GetIO().NavVisible, owner, 150 + slot);
+                                ImGui::IsItemFocused() && ImGui::GetIO().NavVisible, owner,
+                                MaterialSlot::tradeHands + slot);
                     ImGui::PopID();
                     ++slot;
                 }
@@ -595,16 +596,12 @@ void GameApp::resultModal() {
                         else if (std::popcount(claimMask) < required)
                             claimMask |= bit;
                     }
-                    if ((ImGui::IsItemHovered() && ImGui::IsMouseClicked(1)) ||
-                        (ImGui::IsItemFocused() &&
-                         (ImGui::IsKeyPressed(ImGuiKey_I) || ImGui::IsKeyPressed(ImGuiKey_GamepadFaceUp))) ||
-                        (hit && (!choice || player == 0)))
-                        inspectCard(id);
+                    if (inspectRequested() || (hit && (!choice || player == 0))) inspectCard(id);
                     const bool inFlight = trade.phase == TradeView::Gathering && (trade.sourceMask & (1u << index)) &&
                                           elapsed < .58 + index * .045;
                     if (!inFlight)
                         displayCard(id, pos - ImVec2(0, selected ? 14 * scale : 0), ImVec2(w, h), selected, player,
-                                    150 + index);
+                                    MaterialSlot::tradeHands + index);
                     ImGui::PopID();
                 }
             }
@@ -657,7 +654,7 @@ void GameApp::resultModal() {
                     if (t < 1)
                         displayCard(id, trade.sources[index] + (positions[index] - trade.sources[index]) * ease,
                                     trade.sizes[index] + (ImVec2(w, h) - trade.sizes[index]) * ease, false, player,
-                                    150 + index);
+                                    MaterialSlot::tradeHands + index);
                 }
             }
             d->PopClipRect();

@@ -35,7 +35,7 @@ assert set(re.findall(r'Function (\w+)\(',api))==set(re.findall(r'RegisterFuncti
 assert 'SetUniqueID(0x54544347)' in native
 assert b"TTCG_Album\0" in (root/'Tessera TCG.esp').read_bytes()
 assert 'supportedCollectionFormat(record.version)' in (root/'include/SaveRecords.h').read_text()
-assert 'ttcg::decodeSaveRecords(' in (root/'include/NativeCollection.h').read_text()
+assert 'ttcg::decodeSaveRecords(' in (root/'src/CollectionSave.cpp').read_text()
 for p in [root/'README.md',root/'docs/reference-guide.md',root/'docs/opponents-by-hold.md',root/'docs/card-art-replacers.md']:
  text=p.read_text()
  for link in re.findall(r'\]\(([^)]+)\)',text):

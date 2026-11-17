@@ -29,7 +29,7 @@ def build_page():
     payload = json.dumps(data, ensure_ascii=False, separators=(',', ':')).replace('<', '\\u003c').replace('&', '\\u0026')
     page = (SOURCE / 'index.html').read_text()
     # Use the same local SVG artwork as the shared in-game card renderer.
-    app = (ROOT / 'TesseraUI/app.js').read_text()
+    app = (ROOT / 'tools/shared/card-renderer.js').read_text()
     page = page.replace('/* AFFINITY_JS */', app[app.index('const affinityNames='):app.index('const tierMetrics=')])
     pieces = {'EDITOR_CSS': SOURCE / 'editor.css', 'ZIP_JS': SOURCE / 'vendor/fflate-0.8.3.js',
               'RANK_JS': ROOT / 'tools/catalog-audit/rank-tools.js', 'CORE_JS': SOURCE / 'core.js',

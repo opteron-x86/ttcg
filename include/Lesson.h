@@ -322,7 +322,8 @@ inline Lesson ruleExample(unsigned rule) {
     } else if (rule == FallenAce || rule == SameWall) {
         int attacker = -1, target = -1, chain = -1;
         for (int a = 0; a < int(cards.size()) && attacker < 0; ++a)
-            if (!cards[a].pending && (rule == FallenAce ? cards[a].sides[1] == 1 : cards[a].sides[0] == 10))
+            if (!cards[a].pending &&
+                (rule == FallenAce ? cards[a].sides[1] == lowestRank : cards[a].sides[0] == aceRank))
                 for (int b = 0; b < int(cards.size()) && attacker < 0; ++b)
                     if (!cards[b].pending && b != a &&
                         cards[b].sides[3] == (rule == FallenAce ? 10 : cards[a].sides[1])) {

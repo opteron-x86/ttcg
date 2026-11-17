@@ -37,17 +37,16 @@ With a physical controller (the automated tests drive the same input path, but n
 
 The established gameplay test runtime is Skyrim SE 1.6.1170 under Linux/Proton. The DLL enables SE, AE and VR; the automated loader checks cover their declarations. In-game validation on other runtimes and VR remains to be recorded here.
 
-## Native UI overhaul checkpoint
+## Interface
 
-The player confirmed scene blur in Skyrim on 10 November 2026. The previous build switched to keyboard glyphs when the right stick moved the cursor and had unreliable controller navigation. The controller and Edge follow-up is ready for another physical-controller check. Use the Main package under `dist/controller-edge-followups/`; its `build-info.json` identifies the source and tested DLL. Keep the separate Card Art installation enabled.
+Desktop previews, the native tests and the Wine probes do not replace these checks. Record the runtime, resolution, input device and any UI or icon mods with the results.
 
-- Switch between Oathvein, Vel'dun, Norden, Untarnished, Edge and Dear Diary. Check the album, lobby, match and result dialog at the normal play resolution.
-- In Appearance, check that default fonts and colours identify the skin. Switch between Medallions, Borderless and Printed: nameplate/shadow/stroke controls belong to Borderless; on the other two, border controls appear with the control marker. Explicit font/colour choices should survive theme changes and restarts.
-- Move between keyboard/mouse and a physical controller. Use the right stick to move the cursor, A to click/drag and Y to inspect its card; glyphs must stay on controller. Use the left stick or D-pad to navigate between filters, scrolling lists and other panels, then A/Y to activate/inspect the focused item. Switch modes while A is held, and disconnect/reconnect during a click; no button should remain held. B should dismiss a dropdown or inspector without also closing the screen. Prompts should switch to the installed icon pack's A/B/Y glyphs, or readable plain caps without that pack. Verify focused pad Y inspection in the lobby, album, decks and shop. Settings and Journal should not advertise inspection; modal dialogs should not leave active-looking prompts behind them.
-- Blur is confirmed in normal use. Check repeated opening and closing, including after card inspection, match setup and results. Test both paused and unpaused play. The scene should blur only while Tessera is open and recover after closing, forced closure and save reload.
-- Complete a match, settle the trade, open packs and receive a tournament reward. Confirm the framed cards, new board materials and result summaries do not obstruct selection or settlement.
-
-Record runtime, resolution, input device and any UI/icon mods with results. Desktop previews, the 89 native tests and Wine probes do not replace these Skyrim checks.
+- Skins: switch between every skin in **Settings > Appearance**, Tessera included. Check the album, lobby, match and a result dialog at the normal play resolution. On Tessera the green ground shows no bands, and dialogs have the gold outline and corner tiles.
+- First run: with `Theme` removed from `TTCG.ini` and one of Oathvein, Norden, Edge, Untarnished, Dear Diary or Dear Diary Dark Mode installed, Tessera opens with that skin; with none, Skyrim.
+- Card face: in Appearance, default fonts and colours follow the skin. Switch between Medallions, Borderless and Printed: nameplate, shadow and stroke controls belong to Borderless; the other two show border controls with the control marker. A font or colour chosen by hand survives a skin change and a restart.
+- Capture preview: with a card chosen, pointing at a square marks the cards it would take. Turn it off in **Settings > Gameplay** and the marks are gone.
+- Blur: the scene blurs only while Tessera is open. Check repeated opening and closing, after card inspection, match setup and results, paused and unpaused, and after a forced close and a save reload.
+- Complete a match, settle the trade, open packs and receive a tournament reward. Cards, board and result summaries must not obstruct selection or settlement.
 
 ## Merchant inventory crash isolation
 

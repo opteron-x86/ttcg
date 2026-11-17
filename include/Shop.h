@@ -44,7 +44,7 @@ inline bool refreshShop(MerchantStock& m, unsigned key, unsigned hour, unsigned 
     ++m.generation;
     if (!m.generation) m.generation = 1;
     m.restockAt = std::min(100000000u, hour + shopRestockHours);
-    std::mt19937 rng(key ^ (m.generation * 2654435761u) ^ 0x43415244u);
+    std::mt19937 rng(key ^ (m.generation * seedSpread) ^ 0x43415244u);
     std::set<CardID> selected;
     for (int slot = 0; slot < (specialist ? 14 : 10); ++slot) {
         const auto roll = rng() % 1000;
@@ -89,7 +89,7 @@ inline bool refreshShop(MerchantStock& m, unsigned key, unsigned hour, unsigned 
             additions.push_back(c.form);
             if (regionalShopCard(c, hold)) additions.push_back(c.form);
         }
-    std::mt19937 extra(key ^ (m.generation * 2654435761u) ^ 0x45585041u);
+    std::mt19937 extra(key ^ (m.generation * seedSpread) ^ 0x45585041u);
     for (unsigned slot = 0; slot < (specialist ? 3u : 2u) && !additions.empty(); ++slot) {
         const auto id = additions[extra() % additions.size()];
         std::erase(additions, id);
@@ -135,8 +135,8 @@ inline const char* shopMessage(ShopResult r) {
     }
 }
 template <class Bank> bool recoverShop(CollectionSave& s, MerchantStock& m, Bank& bank) {
-    if (s.goldCredit > 0) s.goldCredit -= std::clamp(bank.change(0, s.goldCredit), 0, s.goldCredit);
-    if (m.goldCredit > 0) m.goldCredit -= std::clamp(bank.change(1, m.goldCredit), 0, m.goldCredit);
+    payGoldCredit(s.goldCredit, [&](int owed) { return bank.change(0, owed); });
+    payGoldCredit(m.goldCredit, [&](int owed) { return bank.change(1, owed); });
     return !s.goldCredit && !m.goldCredit;
 }
 template <class Bank>

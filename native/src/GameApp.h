@@ -74,8 +74,9 @@ class GameApp final : public App {
                  const std::string& detail = {}, float trailing = 0, int marker = 0);
     void textBlock(const std::string&, float width, float pixels = 18, ImU32 colour = 0);
     bool combo(const char* id, const char* label, int& value, const std::vector<std::string>& choices, float width);
-    void displayCard(int display, ImVec2 at, ImVec2 size, bool chosen = false, int owner = -1, int slot = 0,
-                     int modifier = 0, bool large = false, CardContext context = CardContext::General);
+    void displayCard(int display, ImVec2 at, ImVec2 size, bool chosen = false, int owner = -1,
+                     int slot = MaterialSlot::single, int modifier = 0, bool large = false,
+                     CardContext context = CardContext::General);
     void inspectCard(int display, bool metadata = true, int modifier = 0) override;
     float metadata(const CardView& card, ImVec2 at, float width, bool draw = true);
     // Labelled facts about a card, one per row; returns the height used.
@@ -109,7 +110,6 @@ class GameApp final : public App {
     void nativeAlbum(ImVec2 at, ImVec2 size);
     void nativeDecks(ImVec2 at, ImVec2 size);
     void nativeFilters(ImVec2 at, float width, bool deck = false);
-    bool filtersOpen = false;
     Filter appliedFilter;
     bool filterDirty = true;
     Filter cardFilter, deckFilter;

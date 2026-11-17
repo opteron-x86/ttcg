@@ -195,9 +195,11 @@ struct Match {
         return boardComplete() && (rules & SuddenDeath) && redeals < 5 && score()[0] == score()[1];
     }
     bool finished() const { return boardComplete() && !suddenDeathPending(); }
-    bool acePair(int a, int b) const { return (rules & FallenAce) && ((a == 1 && b == 10) || (a == 10 && b == 1)); }
+    bool acePair(int a, int b) const {
+        return (rules & FallenAce) && ((a == lowestRank && b == aceRank) || (a == aceRank && b == lowestRank));
+    }
     bool beats(int a, int b, int printedA, int printedB) const {
-        if (acePair(printedA, printedB)) return rules & Reverse ? printedA == 10 : printedA == 1;
+        if (acePair(printedA, printedB)) return printedA == (rules & Reverse ? aceRank : lowestRank);
         return rules & Reverse ? a < b : a > b;
     }
     bool beats(int a, int b) const { return beats(a, b, a, b); }
@@ -258,137 +260,80 @@ struct Match {
         placed = 0;
         activeGroup = -1;
         swapped = {-1, -1};
-        const auto seed = dealSeed + redeals * 2654435761u;
+        const auto seed = dealSeed + redeals * seedSpread;
         seedTiles(seed);
         seedVisibility(seed);
         turn = int(random() % 2);
         selectTurnCard();
         return true;
     }
-    Result play(Move m, bool recordStages = true) {
-        Result result;
-        if (boardComplete() || m.group < -1 || m.group >= static_cast<int>(creatureGroups.size()) ||
-            !playableHand(m.hand) || m.square < 0 || m.square >= 9 || board[m.square].card >= 0)
-            return result;
-        const auto choices = groupChoices(m);
-        if (choices.size() > 1 && std::find(choices.begin(), choices.end(), m.group) == choices.end()) return result;
-        if (m.group >= 0 && std::find(choices.begin(), choices.end(), m.group) == choices.end()) return result;
-        const int owner = turn, id = hands[owner][m.hand];
-        if (!choices.empty()) {
-            activeGroup = choices.size() == 1 ? choices[0] : m.group;
-            if (recordStages) {
-                CaptureStage stage;
-                stage.rule = rules & (Legion | Decimation);
-                stage.group = activeGroup;
-                stage.highlights = 1u << m.square;
-                for (int i = 0; i < 9; ++i)
-                    if (board[i].card >= 0 && (cardGroups[board[i].card] & (1ull << activeGroup)))
-                        stage.highlights |= 1u << i;
-                result.stages.push_back(stage);
-            }
-        }
-        result.legal = true;
-        const auto before = board;
-        std::array<int, 9> affinityBefore{}, dominionBefore{};
-        if (recordStages)
-            for (int s = 0; s < 9; ++s) {
-                affinityBefore[s] = affinityModifier(s == m.square ? id : board[s].card);
-                dominionBefore[s] = dominionModifier(board[s].card, s);
-            }
-        // The incoming card affects both sides' modifiers before any capture.
-        board[m.square] = {id, owner, origins[owner][m.hand]};
-        if (recordStages)
-            for (unsigned rule : {rules & (Ascension | Descension), rules & Dominion})
-                if (rule) {
-                    CaptureStage stage;
-                    stage.rule = rule;
-                    for (int s = 0; s < 9; ++s)
-                        if (board[s].card >= 0 &&
-                            (rule == Dominion ? dominionModifier(board[s].card, s) != dominionBefore[s]
-                                              : affinityModifier(board[s].card) != affinityBefore[s]))
-                            stage.highlights |= 1u << s;
-                    if (stage.highlights) result.stages.push_back(stage);
-                }
-        std::array<bool, 9> special{};
-        std::array<int, 4> neighbors{}, sums{};
-        neighbors.fill(-1);
-        sums.fill(-1);
+    // The played card against its four neighbours by printed rank, which is what Same and Plus read.
+    struct Contact {
+        std::array<int, 4> neighbors{-1, -1, -1, -1}, sums{-1, -1, -1, -1};
         std::array<bool, 4> equal{};
         int equalCount = 0;
         bool wallMatch = false;
+        // Same needs two equal sides; under Same Wall an Ace against the edge is one of them.
+        bool same(int side) const { return equalCount >= 2 && equal[side]; }
+        // Plus needs another side that adds up to the same total.
+        bool plus(int side) const {
+            if (sums[side] < 0) return false;
+            for (int other = 0; other < 4; ++other)
+                if (other != side && sums[other] == sums[side]) return true;
+            return false;
+        }
+    };
+    Contact touch(int id, int square, const std::array<Slot, 9>& before) const {
+        Contact contact;
         for (int side = 0; side < 4; ++side) {
-            int n = neighbor(m.square, side);
-            neighbors[side] = n;
+            const int n = neighbor(square, side);
+            contact.neighbors[side] = n;
             if (n < 0) {
-                if ((rules & SameWall) && cards[id].sides[side] == 10) {
-                    ++equalCount;
-                    wallMatch = true;
+                if ((rules & SameWall) && cards[id].sides[side] == aceRank) {
+                    ++contact.equalCount;
+                    contact.wallMatch = true;
                 }
                 continue;
             }
             if (before[n].card < 0) continue;
-            int a = cards[id].sides[side], b = cards[before[n].card].sides[(side + 2) % 4];
-            sums[side] = a + b;
-            equal[side] = a == b;
-            if (equal[side]) ++equalCount;
-            // Same/Plus use printed ranks. Basic captures use tile-adjusted ranks.
-            if (before[n].owner != owner && captures(id, m.square, side, before[n].card, n)) {
-                result.flipped[n] = true;
-                result.fallenAce |= acePair(a, b);
-            }
+            const int a = cards[id].sides[side], b = cards[before[n].card].sides[(side + 2) % 4];
+            contact.sums[side] = a + b;
+            contact.equal[side] = a == b;
+            if (a == b) ++contact.equalCount;
         }
+        return contact;
+    }
+    // Marks what the played card takes from its neighbours and answers which of them fell to
+    // Same or Plus: only those go on to Combo.
+    std::array<bool, 9> resolveCaptures(int id, int square, int owner, const std::array<Slot, 9>& before,
+                                        const Contact& contact, Result& result) const {
+        std::array<bool, 9> special{};
         for (int side = 0; side < 4; ++side) {
-            int n = neighbors[side];
+            const int n = contact.neighbors[side];
             if (n < 0 || before[n].card < 0 || before[n].owner == owner) continue;
-            if ((rules & Same) && equalCount >= 2 && equal[side]) {
+            // An ordinary capture uses ranks as the table changes them; Same and Plus use printed ranks.
+            if (captures(id, square, side, before[n].card, n)) {
+                result.flipped[n] = true;
+                result.fallenAce |= acePair(cards[id].sides[side], cards[before[n].card].sides[(side + 2) % 4]);
+            }
+            if ((rules & Same) && contact.same(side)) {
                 special[n] = true;
                 result.same = true;
             }
-            if ((rules & Plus) && sums[side] >= 0)
-                for (int other = 0; other < 4; ++other)
-                    if (other != side && sums[other] == sums[side]) {
-                        special[n] = true;
-                        result.plus = true;
-                    }
+            if ((rules & Plus) && contact.plus(side)) {
+                special[n] = true;
+                result.plus = true;
+            }
         }
-        result.sameWall = result.same && wallMatch;
-        publicOrigins |= 1u << origins[owner][m.hand];
-        used[owner][m.hand] = true;
-        ++placed;
-        std::vector<int> queue;
+        for (int n = 0; n < 9; ++n)
+            if (special[n]) result.flipped[n] = true;
+        result.sameWall = result.same && contact.wallMatch;
+        return special;
+    }
+    // Same/Plus captures go on capturing their own neighbours; ordinary captures never do.
+    void resolveCombo(std::vector<int> queue, int owner, bool recordStages, Result& result) {
         std::array<int, 9> depth{};
-        CaptureStage normal, specialStage;
-        normal.rule = result.fallenAce ? FallenAce : 0u;
-        if (result.fallenAce) normal.highlights = 1u << m.square;
-        specialStage.rule = (result.same ? Same : 0u) | (result.sameWall ? SameWall : 0u) | (result.plus ? Plus : 0u);
-        if (recordStages && specialStage.rule) {
-            specialStage.highlights = 1u << m.square;
-            for (int side = 0; side < 4; ++side) {
-                int n = neighbors[side];
-                if (n < 0 || before[n].card < 0) continue;
-                bool participates = result.same && equal[side];
-                if (result.plus)
-                    for (int other = 0; other < 4; ++other)
-                        if (other != side && sums[other] == sums[side]) participates = true;
-                if (participates) specialStage.highlights |= 1u << n;
-            }
-        }
-        for (int n = 0; n < 9; ++n) {
-            if (special[n]) {
-                result.flipped[n] = true;
-                queue.push_back(n);
-            }
-            if (result.flipped[n]) {
-                board[n].owner = owner;
-                if (recordStages) (special[n] ? specialStage : normal).captures |= 1u << n;
-            }
-        }
-        if (recordStages) {
-            if (normal.captures) result.stages.push_back(normal);
-            if (specialStage.captures) result.stages.push_back(specialStage);
-        }
         const auto comboStart = result.stages.size();
-        // Only Same/Plus captures seed Combo; basic captures never recurse.
         for (std::size_t i = 0; i < queue.size(); ++i)
             for (int side = 0; side < 4; ++side) {
                 int n = neighbor(queue[i], side);
@@ -406,6 +351,97 @@ struct Match {
                     }
                 }
             }
+    }
+    // The stages below are what the interface plays back. The search skips them.
+    CaptureStage groupStage(int square) const {
+        CaptureStage stage;
+        stage.rule = rules & (Legion | Decimation);
+        stage.group = activeGroup;
+        stage.highlights = 1u << square;
+        for (int i = 0; i < 9; ++i)
+            if (board[i].card >= 0 && (cardGroups[board[i].card] & (1ull << activeGroup))) stage.highlights |= 1u << i;
+        return stage;
+    }
+    struct Modifiers {
+        std::array<int, 9> affinity{}, dominion{};
+    };
+    // Every square's modifiers before a card lands; the card itself is measured for `square`.
+    Modifiers modifiersBefore(int id, int square) const {
+        Modifiers before;
+        for (int s = 0; s < 9; ++s) {
+            before.affinity[s] = affinityModifier(s == square ? id : board[s].card);
+            before.dominion[s] = dominionModifier(board[s].card, s);
+        }
+        return before;
+    }
+    // One stage for each modifier rule the new card changed a value under.
+    void recordModifierStages(const Modifiers& before, Result& result) const {
+        for (unsigned rule : {rules & (Ascension | Descension), rules & Dominion})
+            if (rule) {
+                CaptureStage stage;
+                stage.rule = rule;
+                for (int s = 0; s < 9; ++s)
+                    if (board[s].card >= 0 &&
+                        (rule == Dominion ? dominionModifier(board[s].card, s) != before.dominion[s]
+                                          : affinityModifier(board[s].card) != before.affinity[s]))
+                        stage.highlights |= 1u << s;
+                if (stage.highlights) result.stages.push_back(stage);
+            }
+    }
+    // Ordinary captures first, then those by Same and Plus with the cards that made the match.
+    void recordCaptureStages(int square, const std::array<Slot, 9>& before, const Contact& contact,
+                             const std::array<bool, 9>& special, Result& result) const {
+        CaptureStage normal, matched;
+        normal.rule = result.fallenAce ? FallenAce : 0u;
+        if (result.fallenAce) normal.highlights = 1u << square;
+        matched.rule = (result.same ? Same : 0u) | (result.sameWall ? SameWall : 0u) | (result.plus ? Plus : 0u);
+        if (matched.rule) {
+            matched.highlights = 1u << square;
+            for (int side = 0; side < 4; ++side) {
+                const int n = contact.neighbors[side];
+                if (n < 0 || before[n].card < 0) continue;
+                // The player's own cards count towards a match, so they are shown too.
+                if ((result.same && contact.equal[side]) || (result.plus && contact.plus(side)))
+                    matched.highlights |= 1u << n;
+            }
+        }
+        for (int n = 0; n < 9; ++n)
+            if (result.flipped[n]) (special[n] ? matched : normal).captures |= 1u << n;
+        if (normal.captures) result.stages.push_back(normal);
+        if (matched.captures) result.stages.push_back(matched);
+    }
+    Result play(Move m, bool recordStages = true) {
+        Result result;
+        if (boardComplete() || m.group < -1 || m.group >= static_cast<int>(creatureGroups.size()) ||
+            !playableHand(m.hand) || m.square < 0 || m.square >= 9 || board[m.square].card >= 0)
+            return result;
+        const auto choices = groupChoices(m);
+        // A group must be named when there is a choice, and may only be one on offer.
+        const bool offered = std::find(choices.begin(), choices.end(), m.group) != choices.end();
+        if ((choices.size() > 1 || m.group >= 0) && !offered) return result;
+        const int owner = turn, id = hands[owner][m.hand];
+        if (!choices.empty()) {
+            activeGroup = choices.size() == 1 ? choices[0] : m.group;
+            if (recordStages) result.stages.push_back(groupStage(m.square));
+        }
+        result.legal = true;
+        const auto before = board;
+        const auto modifiers = recordStages ? modifiersBefore(id, m.square) : Modifiers{};
+        // The incoming card affects both sides' modifiers before any capture.
+        board[m.square] = {id, owner, origins[owner][m.hand]};
+        if (recordStages) recordModifierStages(modifiers, result);
+        const auto contact = touch(id, m.square, before);
+        const auto special = resolveCaptures(id, m.square, owner, before, contact, result);
+        publicOrigins |= 1u << origins[owner][m.hand];
+        used[owner][m.hand] = true;
+        ++placed;
+        std::vector<int> matched;
+        for (int n = 0; n < 9; ++n) {
+            if (special[n]) matched.push_back(n);
+            if (result.flipped[n]) board[n].owner = owner;
+        }
+        if (recordStages) recordCaptureStages(m.square, before, contact, special, result);
+        resolveCombo(std::move(matched), owner, recordStages, result);
         turn = 1 - owner;
         selectTurnCard();
         return result;
@@ -421,7 +457,7 @@ inline int evaluate(const Match& m) {
                 int n = Match::neighbor(p, side);
                 if (n < 0 || m.board[n].card >= 0) continue;
                 int rank = m.rank(m.board[p].card, p, side);
-                value += (m.board[p].owner == 1 ? 1 : -1) * (m.rules & Reverse ? 11 - rank : rank);
+                value += (m.board[p].owner == 1 ? 1 : -1) * (m.rules & Reverse ? reversedRank(rank) : rank);
             }
     return value;
 }

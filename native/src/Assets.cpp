@@ -59,7 +59,6 @@ Texture Assets::load(const std::filesystem::path& file) {
             stbi_load_from_memory(data.data(), int(data.size()), &w, &h, &channels, 4), stbi_image_free);
         if (!rgba) return {};
         auto texture = renderer.upload(rgba.get(), w, h);
-        ++decoded;
         return texture;
     }
     if (w <= 0 || h <= 0 || w > 8192 || h > 8192) return {};
@@ -67,7 +66,6 @@ Texture Assets::load(const std::filesystem::path& file) {
                                                              WebPFree);
     if (!rgba) return {};
     auto texture = renderer.upload(rgba.get(), w, h);
-    ++decoded;
     return texture;
 }
 Texture Assets::get(const std::string& path) {
@@ -96,15 +94,6 @@ Texture Assets::optional(const std::string& path) {
     resident += texture.bytes;
     textures.emplace(path, Entry{texture, frame});
     return texture;
-}
-Texture Assets::card(int index, bool large) {
-    std::string path = ttcg::cards[index].art;
-    if (!large && path.starts_with("cards/")) path.replace(0, 6, "thumbs/");
-    return get(path);
-}
-Texture Assets::back(int index) {
-    static const char* names[]{"mosaic", "dragon", "celestial"};
-    return get(std::string("backs/") + names[std::clamp(index, 0, 2)] + ".webp");
 }
 Texture Assets::pack(unsigned kind) {
     // Pack images are included in Main.

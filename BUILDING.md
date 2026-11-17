@@ -35,6 +35,18 @@ build/native/native/TesseraNativeUI --snapshot build/test-fixtures/album.json
 
 For a Windows DLL from Linux, install clang-cl, lld-link, llvm-rc, xwin and Wine, then run `bash tools/build-native.sh`. The script downloads the pinned SDK and build dependencies. Run `bash tools/test-native.sh` to test that DLL through Wine. `XWIN_SYSROOT` can select an existing Windows SDK.
 
+## Rules tab text and demos
+
+The game reads the Rules tab from `TesseraUI/rules.json`, which is generated and committed. Its sources are in `tools/rules`:
+
+- `rule-pages.js`: the text of each rule and trade rule.
+- `rule-demos.js`: the demo boards, written by `tests/rule_demo_host.cpp` from the game's engine. After an engine change, compile that file against `include/` and run it with `tools/rules/rule-demos.js` as its argument.
+- `lesson-prompts.js`: captions for demo frames that have none.
+
+Run `node tools/build-native-ui-assets.cjs` after changing any of them. It needs Node and `rsvg-convert`.
+
+The developer tools that are web pages (card library, rule lab, expansion editor, catalog audit) share `tools/shared`. Their browser tests run with `bash tools/test-web-tools.sh` after `npm install`; they are not part of ctest.
+
 ## Formatting
 
 C++ sources follow `.clang-format`. Run `bash tools/format.sh` before committing; CI runs `bash tools/format.sh --check` with clang-format 23.1.4 (`pipx install clang-format==23.1.4`). Generated headers are listed in `.clang-format-ignore` and keep their generators' layout.

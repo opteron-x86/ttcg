@@ -1,14 +1,12 @@
 #pragma once
 #include "CardName.h"
+#include "Colour.h"
 #include <cmath>
 
 namespace preview {
 inline float smooth(float t) {
     t = std::clamp(t, 0.f, 1.f);
     return t * t * (3 - 2 * t);
-}
-inline ImU32 fade(ImU32 colour, float opacity) {
-    return (colour & 0xffffff) | (unsigned(((colour >> 24) & 255) * std::clamp(opacity, 0.f, 1.f)) << 24);
 }
 inline void gradientLine(ImDrawList* d, ImVec2 at, float width, ImU32 colour, float thickness = 1) {
     const auto clear = colour & 0xffffff;

@@ -68,7 +68,6 @@ void GameApp::reset() {
     seenEvents.clear();
     seenReveal = 0;
     dismissedReveal = 0;
-    closing = false;
 }
 void GameApp::receive(std::string_view raw) {
     Json next = Json::parse(raw);
@@ -154,21 +153,23 @@ void GameApp::applySettings() {
     matchAppearance.borderWidth = std::clamp(number(c, "controlBorderWidth", 12), 0, 40) / 10.f;
     matchAppearance.borderOpacity = std::clamp(number(c, "controlBorderOpacity", 100), 0, 100) / 100.f;
     matchAppearance.marker = flag(c, "controlMarker");
-    preferredFont = interfaceFonts[std::clamp(number(c, "interfaceFont"), 0, 4)];
     // A skin names its own typeface.
     ImFont* skinFont = skin().font == "lato"    ? lato
                        : skin().font == "serif" ? serif
                        : skin().font == "sans"  ? sans
                                                 : jost;
-    if (!number(c, "interfaceFont")) preferredFont = skinFont;
-    cardNameFont = nameFonts[std::clamp(number(c, "cardNameFont", 1) ? number(c, "cardNameFont") : 1, 0, 4)];
-    cardValueFont = valueFonts[std::clamp(number(c, "cardValueFont", 1) ? number(c, "cardValueFont") : 1, 0, 4)];
-    // Unless the player picked fonts or colours, the card face follows the skin.
-    if (!number(c, "cardNameFont")) cardNameFont = skinFont;
+    // Choice 0 follows the skin; 1 to 4 are the fonts the player can pick.
+    const auto chosenFont = [&](const char* setting, const std::array<ImFont*, 5>& fonts, ImFont* skinChoice) {
+        const int choice = std::clamp(number(c, setting), 0, 4);
+        return choice ? fonts[choice] : skinChoice;
+    };
+    preferredFont = chosenFont("interfaceFont", interfaceFonts, skinFont);
+    cardNameFont = chosenFont("cardNameFont", nameFonts, skinFont);
+    cardValueFont = chosenFont("cardValueFont", valueFonts, skinFont);
+    // Unless the player picked colours, the card face follows the skin.
     if (!number(c, "nameCase")) face.lettering = 1;
     // Light artwork swallows unstroked numerals.
     if (!flag(c, "rankStroke")) face.stroke = 1;
-    if (!number(c, "cardValueFont")) cardValueFont = skinFont;
     if (matchAppearance.palette == 0 && skin().player && skin().opponent) {
         matchAppearance.palette = 4;
         matchAppearance.playerColour = skin().player;
@@ -330,10 +331,8 @@ void GameApp::inspectCard(int display, bool meta, int modifier) {
     } else if (label(state, "screen") == "album" && tab <= 1)
         inspectionList = visible;
     yaw = pitch = turnTarget = 0;
-    autoRotate = false;
 }
 float GameApp::factRows(const CardView& c, ImVec2 at, float width, bool draw, bool compact) {
-    const char* tiers[]{"", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"};
     const ImU32 rarity = rarityInk(c.rarity);
     struct Row {
         const char* name;
@@ -343,7 +342,7 @@ float GameApp::factRows(const CardView& c, ImVec2 at, float width, bool draw, bo
     };
     std::vector<Row> rows;
     rows.push_back({"Rarity", c.rarity + (selectedFoil ? " · Foil" : ""), rarity});
-    if (!compact) rows.push_back({"Tier", tiers[std::clamp(c.tier, 0, 10)], palette().ink});
+    if (!compact) rows.push_back({"Tier", tierNumeral(c.tier), palette().ink});
     std::string group;
     for (unsigned i = 0; i < ttcg::creatureGroups.size(); ++i)
         if (c.groups & (1ull << i)) group += (group.empty() ? "" : ", ") + std::string(ttcg::creatureGroups[i]);

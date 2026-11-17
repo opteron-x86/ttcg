@@ -5,10 +5,6 @@
 
 namespace preview {
 namespace {
-constexpr ImU32 rgb(unsigned n, unsigned alpha = 255) { return IM_COL32(n >> 16, (n >> 8) & 255, n & 255, alpha); }
-ImU32 alpha(ImU32 colour, float amount) {
-    return (colour & 0xffffff) | (unsigned(std::clamp(amount, 0.f, 1.f) * 255) << 24);
-}
 ImU32 mix(ImU32 a, ImU32 b, float t) {
     const auto channel = [&](int shift) {
         const float x = float((a >> shift) & 255), y = float((b >> shift) & 255);
@@ -16,16 +12,16 @@ ImU32 mix(ImU32 a, ImU32 b, float t) {
     };
     return channel(0) | channel(8) | channel(16) | 0xff000000;
 }
-const char* romans[]{"", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"};
 // Frame metals: the colour the baked metal is multiplied by, and the gem's pigment.
 struct Metal {
     unsigned tint, gem;
 };
 Metal metal(std::string_view rarity) {
-    return rarity == "Rare"        ? Metal{0x6699b3, 0x56dfff}
-           : rarity == "Epic"      ? Metal{0x8f70b3, 0xd684fa}
-           : rarity == "Legendary" ? Metal{0xd6a857, 0xe6bc65}
-                                   : Metal{0x9ea39e, 0xb7b89e};
+    const unsigned tint = rarity == "Rare"        ? 0x6699b3
+                          : rarity == "Epic"      ? 0x8f70b3
+                          : rarity == "Legendary" ? 0xd6a857
+                                                  : 0x9ea39e;
+    return {tint, rarityPigment(rarity)};
 }
 }
 // Baked frame atlas, in card units; tools/bake-card-frame.py writes the same layout.
@@ -259,8 +255,8 @@ void App::framedCard(const CardView& c, Texture texture, ImVec2 at, ImVec2 size,
     diamond(g * .62f, alpha(mix(pigment, rgb(0xffffff), .1f), .8f), std::max(1.f, .8f * unit));
     auto* tierFont = font();
     const float tierSize = (c.tier == 8 ? 8.f : 10.f) * unit;
-    const auto tier = tierFont->CalcTextSizeA(tierSize, 1e5f, 0, romans[c.tier]);
-    d->AddText(tierFont, tierSize, gem - tier * .5f, rgb(0xf6f1e2), romans[c.tier]);
+    const auto tier = tierFont->CalcTextSizeA(tierSize, 1e5f, 0, tierNumeral(c.tier));
+    d->AddText(tierFont, tierSize, gem - tier * .5f, rgb(0xf6f1e2), tierNumeral(c.tier));
     // Affinities, bottom right.
     int offset = 0;
     for (int i = 0; i < 5; ++i)

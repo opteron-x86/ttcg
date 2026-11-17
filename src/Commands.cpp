@@ -48,7 +48,6 @@ bool setGamesEnabled(bool enabled) {
         RE::SendHUDMessage::ShowHUDMessage(enabled ? "Tessera enabled." : "Tessera disabled.");
     return true;
 }
-#include "NativeTournamentCommands.h"
 bool validCommandSize(std::string_view text) { return text.size() <= (text.starts_with("cardback ") ? 2048u : 128u); }
 void command(const char* raw) {
     if (!raw || !visible) return;
@@ -817,10 +816,11 @@ void command(const char* raw) {
         revision = 0;
         const auto* event = ttcg::tournament(campaign::saved, campaign::tournamentID);
         const auto seed =
-            event ? ttcg::tournamentHash(
-                        event->seed ^ event->matchNode ^ event->replays ^
-                        ((event->wins[event->matchNode - 8][0] + event->wins[event->matchNode - 8][1]) * 2654435761u))
-                  : static_cast<std::uint32_t>(std::chrono::steady_clock::now().time_since_epoch().count());
+            event
+                ? ttcg::tournamentHash(event->seed ^ event->matchNode ^ event->replays ^
+                                       ((event->wins[event->matchNode - 8][0] + event->wins[event->matchNode - 8][1]) *
+                                        ttcg::seedSpread))
+                : static_cast<std::uint32_t>(std::chrono::steady_clock::now().time_since_epoch().count());
         match = ttcg::Match(ttcg::indices(deck), ttcg::indices(campaign::rivalDeck), seed, rules);
         active = true;
         for (int p = 0; p < 2; ++p)
