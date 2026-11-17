@@ -8,8 +8,8 @@ Started 2026-11-16 from a full review of `master` at `6fc37d1` (0.33.0, 90/90 na
 |---|---|---|---|
 | 1 | Bugs | `phase1/bug-fixes` | Done; in-game check pending |
 | 2 | Merchant packs through the game's own function (1.7.104 crash) | `phase2/merchant-packs` | Done; in-game check pending |
-| 3 | AI | `phase3/ai` | Planned |
-| 4 | Balance: first move, regional rules, trade rules | `phase4/balance` | Planned; decisions D1–D3 needed |
+| 3 | AI | `phase3/ai` | Done; in-game check pending |
+| 4 | Balance: first move, regional rules, trade rules | `phase4/balance` | In progress |
 | 5 | Interface and UX | `phase5/interface` | Planned |
 | 6 | Tessera green-and-gold skin | `phase6/tessera-skin` | Planned; decision D5 needed |
 | 7 | Code cleanup | `phase7/cleanup` | Planned; C1 can go earlier |
@@ -35,15 +35,13 @@ Made by the player on 2026-11-16:
 - Do every UI/UX item and the code cleanup, including deleting the retired web UI.
 - Bring back the green-and-gold Tessera theme as a skin on the new layout.
 - Legion and Decimation keep their rule (one group per board); the rule text now says so (was D6, accepted with the plan).
+- The opponent's search follows the skill the player is shown, with no per-opponent exceptions (was D4, accepted with the plan).
+- 2026-11-17: Vanguard for the first move (D1), option B for regional rules (D2: no authored rules, everything from spread and drift), the proposed trade-rule weights (D3) and the exchange gold floor (G4).
 
 Open:
 
 | ID | Question | Needed by | Recommendation |
 |---|---|---|---|
-| D1 | First-move compensation | Phase 4 | +1 on all four sides of the first card while the first mover still owns it ("Vanguard"), and show who moves first before stakes are accepted. See the data below. |
-| D2 | Keep authored hold rules, or leave rules to spread and drift | Phase 4 | Decide after the G2 simulations |
-| D3 | Trade-rule weights for drift | Phase 4 | One 35, Diff 30, Direct 25, All 10 |
-| D4 | Skill labels vs search settings (38 of 46 "Expert" opponents run Master's search) | Phase 3 | The search follows the level the player sees; keep explicit exceptions for named masters |
 | D5 | Default skin | Phase 6 | Skyrim stays the default; Tessera returns at index 0, so players whose INI still says `Theme=0` get it back |
 | D7 | Sectioned save format (C7) | Phase 7 | Do it, after B1 has made unreadable records survive |
 
@@ -134,27 +132,62 @@ Then ask the 1.7.104 reporter to repeat their five-cycle test with this build an
 
 ## Phase 3: AI
 
-Measured in the review (paired, mirrored deals, tier 4–7; Master's score against Expert, ±0.015):
+Done on `phase3/ai` (2026-11-17), stacked on phase 2, and waiting for the in-game check.
 
-| Master variant | Hidden, basic | Time per move |
+Every figure below comes from `tools/ai-lab` (built as `build/native/tests/ai-lab`): paired deals played twice with the seats exchanged, tier 4–7 cards, 500 deals, so about ±0.012. A score of 0.5 is level.
+
+The six skills a player is shown are now six strengths (decision D4: the search follows the label). Before, they were four search settings, and most Experts thought as hard as a Master.
+
+| Skill | Positions per move | Looks ahead | Hands imagined | Careless move |
+|---|---|---|---|---|
+| Beginner | 1,000 | 1 play | 1 | 1 in 3 |
+| Learner | 2,000 | 1 play | 1 | 1 in 8 |
+| Regular | 5,000 | 2 plays | 1 | never |
+| Experienced | 10,000 | 3 plays | 1 | never |
+| Expert | 20,000 | 4 plays | 3 | never |
+| Master | 280,000 | to the end | 16 | never |
+
+Each skill's score against the one below it:
+
+| Step | Hidden | Open | Hidden, Same + Plus | Open, Same + Plus | Three Open | Open, Chaos |
+|---|---|---|---|---|---|---|
+| Learner over Beginner | 0.59 | 0.59 | 0.53 | 0.53 | 0.59 | 0.53 |
+| Regular over Learner | 0.62 | 0.75 | 0.60 | 0.83 | 0.71 | 0.72 |
+| Experienced over Regular | 0.59 | 0.65 | 0.64 | 0.74 | 0.62 | 0.61 |
+| Expert over Experienced | 0.59 | 0.62 | 0.56 | 0.66 | 0.56 | 0.55 |
+| Master over Expert | 0.61 | 0.67 | 0.62 | 0.71 | 0.60 | 0.55 |
+
+Against the 0.33.0 opponents:
+
+| Match-up | Hidden | Open |
 |---|---|---|
-| Today (one guessed hand) | 0.47 | 7–10 ms |
-| 8 guesses sharing the 70k-node budget | 0.65 | ~9 ms |
-| 8 guesses × 70k nodes | 0.68 | 55–65 ms |
-| 8 × 70k, guesses from obtainable cards only | 0.69 | ~58 ms |
-| Sees the real hand (upper bound) | 0.77 | 7.5 ms |
+| 0.33.0 Master over 0.33.0 Expert | 0.48 | 0.58 |
+| Master over 0.33.0 Master | 0.68 | 0.60 |
+| Master over 0.33.0 Expert | 0.68 | 0.69 |
+| Expert over 0.33.0 Expert | 0.58 | 0.55 |
+| Master over Regular | 0.74 | 0.81 |
 
-In Open play today's Master scores 0.60 against Expert. It plays the last four or so moves exactly; before that, the node budget stops it at 3 to 6 plies, so the 7-ply cap is never reached. It is not unbeatable: even with the player's real hand it loses or draws against Expert some of the time. It also never reads hidden values; A1 keeps a test for that.
+What the numbers say:
 
-- [ ] **A1 Several guessed hands.** Sample K hands, run the search on each, add up the values per root move and play the best total. Start with K = 8 for Master and 4 for Expert, sharing the existing budgets, then tune with A5. Add a test that the chosen move doesn't change when only the player's hidden values change.
-- [ ] **A2 Guess from cards the player could hold.** Cards that are available and not pending, with deck limits (one copy of a Unique, two of anything else), and without cards already visible. Weight by tier only if the player's deck strength is already public, for example in the lobby.
-- [ ] **A3 Search.** Pass alpha at the root and try the previous best move first (about one more ply on the same budget). Remove the unused ply cap and name the per-skill budgets.
-- [ ] **A4 One belief and budget helper.** Shared by `Opponents.h::opponentMove` and `Tournaments.h::tournamentNPCWinner`.
-- [ ] **A5 `tools/ai-lab`.** A CMake target that isn't shipped, built from the scratch harness. It runs matchups, reports depth and measures first-move effects, and has a small ctest smoke run. Record the baseline tables here.
-- [ ] **A6 Skill labels (D4).** Line up the authored profiles (`include/OpponentProfiles.inc`) with what the level shows. Generated residents use level → skill 0,0,1,1,2,3 (`OpponentRegistry.h:134`).
-- [ ] **A7 Off-screen tournament games.** `resolveTournament(..., finish)` plays every remaining NPC pairing on the game thread, up to 7 pairings × 3 games × 3 replays per expiring event (`Tournaments.h:290-317,409-420`). Measure the worst case, then pick: one pairing per background tick, a worker thread on a snapshot with the result applied through the task queue, or a cheaper search. Results stay seeded and deterministic.
+- **Master is not unbeatable, and with hidden hands it cannot be.** A Master shown the player's real hand scores only 0.74 against the Master that has to guess. Hidden cards cap how much thinking can win, which is why the steps are smaller in hidden play and why more positions per move stopped helping: at eight times the cost Master gained 0.02 on Expert.
+- **Imagining several hands is the gain.** One guessed hand was the old weakness. Master now takes about 24 ms a move with hidden hands and 14 ms with open ones on the development machine, on a worker thread.
+- **Master plays the last seven plays of an Open game exactly**, and looks 4.6 and 5.5 plays ahead on the first two. The 0.33.0 Master never looked seven ahead before the endgame.
 
-Target: Master clearly above Expert in both hidden and Open play, and Expert above Regular, with per-move time under about 60 ms on the game's worker thread.
+- [x] **A1 Several guessed hands.** `opponentMove` imagines the hidden hand as many times as the skill allows, searches each on its share of the budget, adds the values up per move and plays the best total. `tests/opponents_test.cpp` checks that no skill's move changes when only hidden cards change, from either seat.
+- [x] **A2 Guess from cards the player could hold.** `imagineHiddenHand` draws from cards that are available and not pending, keeps to the deck limits with what that hand has already shown, and never replaces a card in view. Tier 8–10 and unreleased cards are no longer guessed. No tier weighting: nothing public says how strong the player's deck is.
+- [x] **A3 Search.** `searchRoot` orders the moves best first after each pass. With one known position it also cuts off moves that can't beat the best, worth about a play of depth; with several guesses every move keeps its exact value so they can be added up. Master's unused seven-play cap is gone and the budgets are named in `searchStyles`.
+- [x] **A4 One helper.** The live opponent and the off-screen tournament games both call `opponentMove`; it plays for whoever is to move, so neither seat is special.
+- [x] **A5 `tools/ai-lab`.** Commands: `match`, `ladder`, `depth`, `first`, `tournament`, `smoke`. It can also play the 0.33.0 opponents (`v033:0`–`3`), a search of your own (`nodes:plies:guesses`) and an opponent shown the hidden hand (`sees:master`). `ai_lab_smoke` runs in ctest.
+- [x] **A6 Skill labels (D4).** `OpponentProfile::skill` is gone from the code and from `data/opponents.json`; `level` is the strength. Children's three grades are Beginner, Regular and Expert. `[Development] OpponentSkill` now takes 0–5 for the six names, and the Developer page lists them.
+  - Players will notice: Experienced opponents (54 of 72 ran the old third setting) and Experts (38 of 46 ran Master's) are easier than in 0.33.0, Masters are harder with hidden hands, and Learners are a little harder than Beginners.
+- [x] **A7 Off-screen tournament games.** An event that ends with nobody watching averaged 12 ms on the game thread and reached 47 ms, more when several ended together. The periodic background update now plays one off-screen game per call (`backgroundTournamentGames`): typically under 1 ms, 9 ms at worst. Anything left is finished at once when Tessera opens. A sliced event ends exactly as it would have at once (tested; results are seeded per game). Off-screen games use `offscreenStyle`: each skill's carelessness and one or two plays of look-ahead.
+
+Not done: the plan's target of "Master clearly above Expert in hidden play" is met at 0.61, which is as far as the hidden hand allows without making Expert weaker.
+
+In Skyrim:
+- Play a Beginner, a Regular, an Expert and a Master with hidden hands and with Open. The opponent should answer within the usual pause, and the difficulty should rise with the label.
+- With `[Development] OpponentSkill` set from the Developer page, check each of the six names.
+- Leave a tournament unentered until it ends, keep playing for ten minutes without opening Tessera, then open the Tournaments tab: the bracket is complete.
 
 ## Phase 4: balance
 

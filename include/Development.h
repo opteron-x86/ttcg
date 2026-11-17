@@ -39,7 +39,7 @@ struct DevelopmentSettings {
             tradeRule = value;
         else if (key == "Wager" && (value == -1 || offeredWager(value)))
             wager = value;
-        else if (key == "OpponentSkill" && value >= -1 && value <= 3)
+        else if (key == "OpponentSkill" && value >= -1 && value <= masterLevel)
             opponentSkill = value;
         else
             return false;
@@ -78,7 +78,7 @@ struct DevelopmentSettings {
         value = integer("Wager", -1);
         if (offeredWager(value)) d.wager = value;
         value = integer("OpponentSkill", -1);
-        if (value >= 0 && value <= 3) d.opponentSkill = value;
+        if (value >= 0 && value <= masterLevel) d.opponentSkill = value;
         return d;
     }
     std::array<bool, 3> tournamentSwitches() const {
@@ -91,8 +91,7 @@ struct DevelopmentSettings {
                (unlockedOpponent(s, i) || (unlockAllPlayers && !progress(s, i).unavailable));
     }
     const char* skillName(const char* normal) const {
-        static constexpr const char* names[] = {"Beginner", "Regular", "Experienced", "Expert"};
-        return opponentSkill < 0 ? normal : names[opponentSkill];
+        return opponentSkill < 0 ? normal : skillLevelNames[opponentSkill];
     }
     HoldTerms terms(HoldTerms normal) const {
         if (rules >= 0) normal.rules = rules;

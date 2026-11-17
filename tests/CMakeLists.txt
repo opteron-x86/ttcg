@@ -43,3 +43,11 @@ foreach(name build-creature-groups build-opponent-collections build-opponents bu
   add_test(NAME check_${name} COMMAND "${Python3_EXECUTABLE}" "${PROJECT_SOURCE_DIR}/tools/${name}.py" --check)
   set_tests_properties(check_${name} PROPERTIES WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}")
 endforeach()
+# Measures the opponents against each other (docs/roadmap.md, phase 3). Not shipped.
+find_package(Threads REQUIRED)
+add_executable(ai-lab ../tools/ai-lab/main.cpp)
+target_include_directories(ai-lab PRIVATE ../include)
+target_compile_options(ai-lab PRIVATE -O2)
+target_link_libraries(ai-lab PRIVATE Threads::Threads)
+add_test(NAME ai_lab_smoke COMMAND ai-lab smoke)
+set_tests_properties(ai_lab_smoke PROPERTIES WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}")

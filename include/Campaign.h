@@ -160,9 +160,9 @@ inline const ChildProfile& childProfile(std::uint32_t base) {
     static constexpr ChildProfile fallback{0, "", 0, "Beast"};
     return fallback;
 }
-inline const char* childSkillName(std::uint32_t base) {
-    return std::array{"Beginner", "Regular", "Expert"}[childProfile(base).skill];
-}
+// A child's three practice grades are Beginner, Regular and Expert.
+inline int childLevel(std::uint32_t base) { return childProfile(base).skill * 2; }
+inline const char* childSkillName(std::uint32_t base) { return skillLevelNames[childLevel(base)]; }
 inline std::pair<int, int> childTiers(std::uint32_t base) {
     return std::array{std::pair{1, 2}, std::pair{3, 4}, std::pair{5, 7}}[childProfile(base).skill];
 }

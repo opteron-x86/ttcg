@@ -460,27 +460,56 @@ inline int search(const Match& m, int depth, int alpha, int beta, int& budget) {
         }
     return count ? sum / count : evaluate(m);
 }
-inline Move chooseMove(const Match& m, int nodeLimit = 100000, int maxDepth = 9) {
-    auto moves = m.legalMoves();
-    if (moves.empty()) return {};
-    Move completed = moves.front();
-    // Iterative deepening with a node ceiling. Open hands, deterministic search.
+// What a search of the side to move's options found: every legal move with its
+// value, best first, at the deepest ply that finished inside the node budget.
+// Values are from the second player's side, as `evaluate` gives them.
+struct RootSearch {
+    std::vector<Move> moves;
+    std::vector<int> values;
+    int depth = 0;
+    Move best() const { return moves.empty() ? Move{} : moves.front(); }
+};
+// Iterative deepening with a node ceiling. Open hands, deterministic search.
+// With `exact`, every move is searched on a full window and its value is exact, so
+// values from several searches can be added up. Without it only the best move's
+// value is exact: the others are cut off as soon as they can't beat it, which
+// buys about one more ply from the same budget.
+inline RootSearch searchRoot(const Match& m, int nodeLimit = 100000, int maxDepth = 9, bool exact = false) {
+    RootSearch result;
+    result.moves = m.legalMoves();
+    result.values.assign(result.moves.size(), 0);
+    if (result.moves.empty()) return result;
+    const bool second = m.turn == 1;
     int budget = nodeLimit;
+    auto moves = result.moves;
+    std::vector<int> values(moves.size());
     for (int depth = 1; depth <= std::min(maxDepth, 9 - m.placed); ++depth) {
-        int best = m.turn == 1 ? -1000000 : 1000000;
-        Move candidate = completed;
-        for (auto move : moves) {
+        int best = second ? -1000000 : 1000000;
+        for (std::size_t i = 0; i < moves.size(); ++i) {
             auto next = m;
-            next.play(move, false);
-            int value = search(next, depth - 1, -1000000, 1000000, budget);
-            if (budget <= 0) return completed;
-            if ((m.turn == 1 && value > best) || (m.turn == 0 && value < best)) {
-                best = value;
-                candidate = move;
-            }
+            next.play(moves[i], false);
+            const bool window = !exact && i;
+            values[i] =
+                search(next, depth - 1, window && second ? best : -1000000, window && !second ? best : 1000000, budget);
+            if (budget <= 0) return result;
+            best = second ? std::max(best, values[i]) : std::min(best, values[i]);
         }
-        completed = candidate;
+        // Best first: the next, deeper pass then prunes against the likeliest move.
+        std::vector<std::size_t> order(moves.size());
+        for (std::size_t i = 0; i < order.size(); ++i) order[i] = i;
+        std::stable_sort(order.begin(), order.end(), [&](std::size_t a, std::size_t b) {
+            return second ? values[a] > values[b] : values[a] < values[b];
+        });
+        for (std::size_t i = 0; i < order.size(); ++i) {
+            result.moves[i] = moves[order[i]];
+            result.values[i] = values[order[i]];
+        }
+        result.depth = depth;
+        moves = result.moves;
     }
-    return completed;
+    return result;
+}
+inline Move chooseMove(const Match& m, int nodeLimit = 100000, int maxDepth = 9) {
+    return searchRoot(m, nodeLimit, maxDepth).best();
 }
 }

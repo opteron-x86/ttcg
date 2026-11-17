@@ -310,14 +310,8 @@ inline unsigned tournamentNPCWinner(const CollectionSave& s, const Tournament& e
         Match m(indices(ah), indices(bh), seed + replay, e.rules);
         while (!m.finished()) {
             if (m.redeal()) continue;
-            auto belief = m;
-            const int skill = opponents[m.turn ? bi : ai].skill;
-            if (!(belief.rules & Open)) {
-                std::mt19937 hidden(seed + m.placed + m.redeals * 9);
-                for (int h = 0; h < 5; ++h)
-                    if (!m.known(1 - m.turn, h, m.turn)) belief.hands[1 - m.turn][h] = hidden() % cards.size();
-            }
-            auto move = chooseMove(belief, 300 + skill * 500, 1 + int(skill > 1));
+            const auto move = opponentMove(m, offscreenStyle(int(opponents[m.turn ? bi : ai].level)),
+                                           seed + unsigned(m.placed) + m.redeals * 9);
             if (!m.play(move).legal) m.play(m.legalMoves().front());
         }
         auto score = m.score();
@@ -408,7 +402,9 @@ inline void playTournamentNPCGame(CollectionSave& s, Tournament& e, unsigned nod
     const auto winner = tournamentNPCWinner(s, e, node, w[0] + w[1]);
     if (++w[winner == a ? 0 : 1] == 2) e.bracket[node] = winner;
 }
-inline void resolveTournament(CollectionSave& s, Tournament& e, bool finish = false) {
+// `games`, when given, is how many more off-screen games may be played now. An event
+// that runs out of them is finished by a later call; it is not awarded until then.
+inline void resolveTournament(CollectionSave& s, Tournament& e, bool finish = false, int* games = nullptr) {
     if (!e.matchNode && !e.bracket[14])
         for (unsigned n = 0; n < 8; ++n) {
             const auto base = e.bracket[n];
@@ -426,7 +422,10 @@ inline void resolveTournament(CollectionSave& s, Tournament& e, bool finish = fa
                 e.eliminated = true;
                 e.matchNode = 0;
             } else
-                while (!e.bracket[node]) playTournamentNPCGame(s, e, node);
+                while (!e.bracket[node]) {
+                    if (games && (*games)-- <= 0) return;
+                    playTournamentNPCGame(s, e, node);
+                }
         }
     awardTournament(s, e);
 }
@@ -630,14 +629,18 @@ inline unsigned newTournament(CollectionSave& s, unsigned hold, unsigned hour, b
     ts.events.push_back(e);
     return e.id;
 }
+// An event that ended with nobody watching has every remaining table played out
+// here, on the game thread. `offscreenGames` caps how many are played in one call,
+// so a background update never stalls a frame; the rest follow on later calls.
+inline constexpr int backgroundTournamentGames = 1;
 inline void tickTournaments(CollectionSave& s, unsigned hour, unsigned currentHold = 0,
-                            std::array<bool, 3> developmentCircuits = {}) {
+                            std::array<bool, 3> developmentCircuits = {}, int offscreenGames = 1000000) {
     auto& ts = s.tournaments;
     if (!s.starter && !s.developmentCardsGranted) return;
     for (auto& e : ts.events)
         if (!e.awarded && e.ends) {
             if (hour >= e.ends)
-                resolveTournament(s, e, true);
+                resolveTournament(s, e, true, &offscreenGames);
             else if (tournamentOpen(e, hour))
                 resolveTournament(s, e);
         }

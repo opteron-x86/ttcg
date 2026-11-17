@@ -21,6 +21,11 @@
 - Card packs are added to merchant chests with the game's own function. This is a likely fix for the crash during death and reload on 1.7.104; not yet confirmed.
 - Checking a container for Tessera items no longer sets up its inventory.
 - Settings > Gameplay says when merchants can't stock packs on a game version.
+- Opponents imagine several possible hands when yours is hidden, drawn only from cards you could own. Master is stronger with hidden hands.
+- Each of the six skill labels is its own strength. Experienced and Expert opponents are easier than before; Learners are slightly harder than Beginners.
+- Master plays the end of an Open game exactly from the third card.
+- Tournaments that end unattended no longer stall the game while their remaining games are played.
+- `[Development] OpponentSkill` takes 0–5 for the six skill names.
 - Legion and Decimation rule text says one group is chosen per board.
 - The Three Open demo shows the same cards as its lesson.
 - Exchange API: `CancelOffer` on a completed offer answers `stale`; `CompleteOffer` with its confirmation open answers `busy`.

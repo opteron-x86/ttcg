@@ -56,7 +56,7 @@ TradeRule=-1
 ; -1 lets the player choose the normal wager. Otherwise 0, 5, 10, 25, 50, 100 or 200.
 ; Games with children always use 0; both players must afford a fixed wager.
 Wager=-1
-; -1 uses NPC skill. 0 = Beginner, 1 = Regular, 2 = Experienced, 3 = Expert.
+; -1 uses NPC skill. 0 = Beginner, 1 = Learner, 2 = Regular, 3 = Experienced, 4 = Expert, 5 = Master.
 OpponentSkill=-1
 ; Borrowed-card demo: 0 = off; 1 = Three Open; 2 = Legion; 3 = Decimation; 4 = Affinity.
 RuleLesson=0
