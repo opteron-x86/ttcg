@@ -157,7 +157,7 @@ int main() {
     }
     {
         // Vanguard: the first card of a board is one stronger on every side while
-        // the player who placed it holds it.
+        // the player who placed it holds it, until the fifth card is played.
         int first = -1, level = -1, stronger = -1, retaker = -1, spare = -1;
         for (int f = 0; f < int(cards.size()) && first < 0; ++f) {
             const auto& c = cards[f];
@@ -175,7 +175,7 @@ int main() {
             if (i != first && i != level && i != stronger && i != retaker && cards[i].sides[2] >= 2) spare = i;
         assert(first >= 0 && spare >= 0);
         const auto deal = [&](unsigned rules, bool rule = true) {
-            Match m({first, spare, retaker, spare, spare}, {level, stronger, spare, spare, spare}, 5, rules, 0);
+            Match m({first, retaker, spare, spare, spare}, {level, stronger, spare, spare, spare}, 5, rules, 0);
             m.vanguardRule = rule;
             return m;
         };
@@ -184,14 +184,15 @@ int main() {
         assert(m.play({0, 4}).legal && m.vanguard == 4 && m.vanguardOwner == 0 && m.modifier(first, 4) == 1);
         assert(m.rank(first, 4, 1) == cards[first].sides[1] + 1);
         // A card one higher than the printed rank no longer takes it.
-        assert(m.play({0, 5}).legal && m.board[4].owner == 0);
+        auto held = m;
+        assert(held.play({0, 5}).legal && held.board[4].owner == 0);
         auto without = deal(Open, false);
         assert(without.play({0, 4}).legal && without.vanguard == -1 && without.play({0, 5}).legal &&
                without.board[4].owner == 1);
         // Captured, it is an ordinary card; retaken by the first mover, it is the Vanguard again.
-        assert(m.play({1, 0}).legal && m.play({1, 3}).legal && m.board[4].owner == 1 && m.modifier(first, 4) == 0);
+        assert(m.play({1, 3}).legal && m.board[4].owner == 1 && m.modifier(first, 4) == 0);
         assert(m.vanguard == 4 && m.vanguardOwner == 0);
-        assert(m.play({2, 1}).legal && m.board[4].owner == 0 && m.modifier(first, 4) == 1);
+        assert(m.play({1, 1}).legal && m.board[4].owner == 0 && m.modifier(first, 4) == 1);
         // Only the first card: no later card is given the bonus.
         for (int square = 0; square < 9; ++square)
             if (square != 4) assert(m.vanguardModifier(square) == 0);
@@ -210,6 +211,15 @@ int main() {
         assert(!decodeMatch(broken, loaded));
         wire.pop_back();
         assert(decodeMatch(wire, loaded) && loaded.table.vanguard == -1 && loaded.table.modifier(first, 4) == 0);
+        // The opening ends with the fifth card: from then on it is an ordinary card,
+        // whoever holds it, and stays one.
+        assert(m.placed == 3 && m.play({2, 8}).legal && m.placed == 4 && m.board[4].owner == 0 &&
+               m.modifier(first, 4) == 1);
+        assert(m.play({2, 6}).legal && m.placed == 5 && m.board[4].owner == 0 && m.modifier(first, 4) == 0);
+        while (!m.boardComplete()) {
+            assert(m.play(m.legalMoves().front()).legal);
+            assert(m.vanguardModifier(4) == 0);
+        }
         // Under Reverse lower is stronger, so there the Vanguard is one lower.
         auto reverse = deal(Open | Reverse);
         assert(reverse.play({0, 4}).legal && reverse.modifier(first, 4) == -1);

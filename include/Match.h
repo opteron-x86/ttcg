@@ -44,13 +44,14 @@ struct Match {
     int activeGroup = -1;
     // Vanguard. Whoever moves first plays into an empty board and is answered last,
     // which costs them games. In return the first card of a board is one stronger on
-    // every side for as long as the player who placed it holds it. These are that
-    // card's square and that player, or -1 before the first card.
+    // every side while the player who placed it holds it, until the fifth card is
+    // played. These are that card's square and that player, or -1 before the first card.
     int vanguard = -1, vanguardOwner = -1;
     // Off only where the game is being measured without it, and in rule lessons.
     bool vanguardRule = true;
-    // The bonus lasts while the board holds no more than this many cards: all nine.
-    int vanguardSpan = 9;
+    // The bonus lasts while the board holds no more than this many cards. Kept for
+    // the whole board it made the first mover the favourite (docs/roadmap.md, phase 4).
+    int vanguardSpan = 4;
     std::array<unsigned, 2> reveals{};
     // std::shuffle and the standard distributions give different results in each
     // standard library. What a seed deals must be the same in the game (MSVC) as in

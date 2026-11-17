@@ -21,7 +21,7 @@
 - Card packs are added to merchant chests with the game's own function. This is a likely fix for the crash during death and reload on 1.7.104; not yet confirmed.
 - Checking a container for Tessera items no longer sets up its inventory.
 - Settings > Gameplay says when merchants can't stock packs on a game version.
-- Vanguard: the first card played has +1 on every side while the player who placed it holds it (−1 under Reverse). The Rules tab has a page for it.
+- Vanguard: the first card played has +1 on every side while the player who placed it holds it, until the fifth card is played (−1 under Reverse). The Rules tab has a page for it.
 - The lobby shows who moves first before you agree to the stakes.
 - Holds no longer have fixed starting rules. Each new game rolls its own rules for every hold; existing saves keep theirs.
 - The All trade rule is rarer in regional drift; One is the commonest.

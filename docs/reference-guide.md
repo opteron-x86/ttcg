@@ -32,7 +32,7 @@ The match's trade rule determines which cards change hands afterward. Review the
 
 Win cards in matches, buy packs, trade with merchants or enter tournaments. Opponents keep cards they win and can use them in later matches. Your Journal records known players, regional rules and your results.
 
-Whoever moves first is named in the lobby. Their first card is the Vanguard: it has +1 on every side while they hold it.
+Whoever moves first is named in the lobby. Their first card is the Vanguard: it has +1 on every side while they hold it, until the fifth card is played.
 
 No hold has rules of its own: each new game rolls a different set for every hold, and they change from there. Local victories build reputation. Stronger opponents and tournament success open further opportunities. Regional rules can spread through play; Famous players can challenge an Expert or Master to abolish a rule.
 

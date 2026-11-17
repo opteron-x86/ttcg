@@ -395,39 +395,32 @@ inline Lesson ruleExample(unsigned rule) {
     return d;
 }
 // The Vanguard is part of every game and has no rule flag. Its example is the one
-// lesson table that keeps it: the first card holds against a rank one higher, loses
-// the bonus when it is captured and has it again when it is retaken.
+// lesson table that keeps it: the first card holds against a rank one higher, and is
+// an ordinary card again once the fifth card is played.
 inline Lesson vanguardExample() {
     Lesson d;
-    int first = -1, level = -1, stronger = -1, retaker = -1, spare = -1;
+    int first = -1, level = -1;
     const auto plain = [](int i) { return !cards[i].pending && !cards[i].unique && cards[i].tier <= 5; };
-    for (int f = 0; f < int(cards.size()) && first < 0; ++f) {
-        const auto& c = cards[f];
-        if (!plain(f) || c.sides[1] > 8 || c.sides[3] > 7 || c.sides[0] > 8) continue;
-        int a = -1, b = -1, r = -1;
-        for (int i = 0; i < int(cards.size()); ++i) {
-            if (i == f || !plain(i)) continue;
-            if (a < 0 && cards[i].sides[3] == c.sides[1] + 1) a = i;
-            if (b < 0 && i != a && cards[i].sides[1] >= c.sides[3] + 2 && cards[i].sides[0] == 1) b = i;
-            if (r < 0 && i != a && i != b && cards[i].sides[2] > c.sides[0] && cards[i].sides[2] <= 9) r = i;
-        }
-        if (a >= 0 && b >= 0 && r >= 0) first = f, level = a, stronger = b, retaker = r;
-    }
-    for (int i = 0; i < int(cards.size()) && spare < 0; ++i)
-        if (plain(i) && i != first && i != level && i != stronger && i != retaker && cards[i].sides[2] >= 2) spare = i;
-    if (first < 0 || spare < 0) throw std::invalid_argument("Missing Vanguard example cards");
-    d.match = Match({first, spare, retaker, d.match.hands[0][3], d.match.hands[0][4]},
-                    {level, stronger, d.match.hands[1][2], d.match.hands[1][3], d.match.hands[1][4]}, 37, Open, 0);
+    for (int f = 0; f < int(cards.size()) && first < 0; ++f)
+        if (plain(f) && cards[f].sides[1] <= 8)
+            for (int i = 0; i < int(cards.size()) && first < 0; ++i)
+                if (i != f && plain(i) && cards[i].sides[3] == cards[f].sides[1] + 1) first = f, level = i;
+    if (first < 0) throw std::invalid_argument("Missing Vanguard example cards");
+    d.match =
+        Match({first, d.match.hands[0][1], d.match.hands[0][2], d.match.hands[0][3], d.match.hands[0][4]},
+              {level, d.match.hands[1][1], d.match.hands[1][2], d.match.hands[1][3], d.match.hands[1][4]}, 37, Open, 0);
     const auto held = std::to_string(cards[first].sides[1]), attack = std::to_string(cards[first].sides[1] + 1);
-    d.exampleMoves = {{0, 4}, {0, 5}, {1, 0}, {1, 3}, {2, 1}};
-    d.captions = {
-        "You move first. Place your first card: it becomes the Vanguard.",
-        "The Vanguard has +1 on every side while you hold it. Your opponent will attack its " + held + " with a " +
-            attack + ".",
-        "A " + attack + " does not beat " + held + " + 1, so the card holds. Play another card.",
-        "Your opponent will attack from the other side with a stronger card.",
-        "Captured, it is an ordinary card: the bonus belongs only to the player who moved first. Take it back.",
-        "Back in your hands it is the Vanguard again. Same and Plus still compare printed ranks."};
+    // The later cards go where they touch nothing of the other player's.
+    d.exampleMoves = {{0, 4}, {0, 5}, {1, 0}, {1, 8}, {2, 1}};
+    d.captions = {"You move first. Place your first card: it becomes the Vanguard.",
+                  "The Vanguard has +1 on every side while you hold it. Your opponent will attack its " + held +
+                      " with a " + attack + ".",
+                  "A " + attack + " does not beat " + held + " + 1, so the card holds. Play another card.",
+                  "Had it been captured, it would have been an ordinary card until you took it back. "
+                  "Your opponent will play the fourth card.",
+                  "The bonus lasts for the opening only. Play the fifth card.",
+                  "With the fifth card on the board the Vanguard is an ordinary card again. "
+                  "Same and Plus compare printed ranks throughout."};
     return d;
 }
 inline std::string allRuleDemosJson() {

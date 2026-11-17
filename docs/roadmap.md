@@ -9,7 +9,7 @@ Started 2026-11-16 from a full review of `master` at `6fc37d1` (0.33.0, 90/90 na
 | 1 | Bugs | `phase1/bug-fixes` | Done; in-game check pending |
 | 2 | Merchant packs through the game's own function (1.7.104 crash) | `phase2/merchant-packs` | Done; in-game check pending |
 | 3 | AI | `phase3/ai` | Done; in-game check pending |
-| 4 | Balance: first move, regional rules, trade rules | `phase4/balance` | Done; in-game check pending; Vanguard strength to confirm |
+| 4 | Balance: first move, regional rules, trade rules | `phase4/balance` | Done; in-game check pending. Ships after phases 5–7, with the save-format work |
 | 5 | Interface and UX | `phase5/interface` | Planned |
 | 6 | Tessera green-and-gold skin | `phase6/tessera-skin` | Planned; decision D5 needed |
 | 7 | Code cleanup | `phase7/cleanup` | Planned; C1 can go earlier |
@@ -180,7 +180,7 @@ In Skyrim:
 
 Done on `phase4/balance` (2026-11-17), stacked on phase 3, and waiting for the in-game check. One finding needs the player's eye: see "The Vanguard after phase 3" below.
 
-- [x] **G1 First move: the Vanguard (D1).** The first card of a board has +1 on every side while the player who placed it holds it (`Match::vanguardModifier`).
+- [x] **G1 First move: the Vanguard (D1).** The first card of a board has +1 on every side while the player who placed it holds it, until the fifth card is played (`Match::vanguardModifier`, `Match::vanguardSpan`).
   - Captured, it is an ordinary card; retaken by the first mover, it has the bonus again. Under Reverse it has −1, because lower ranks win there. Same and Plus compare printed ranks and ignore it. A Sudden Death redeal names a new Vanguard.
   - It is part of every rank the search compares, so opponents, tournament games and off-screen games all play with it.
   - Saved-match format 2 adds one word for its square and owner. A format 1 table loads with none and is finished without it.
@@ -211,36 +211,25 @@ Done on `phase4/balance` (2026-11-17), stacked on phase 3, and waiting for the i
 
 ### The Vanguard after phase 3
 
-The decision for the Vanguard was made on the review's numbers, which were measured with the 0.33.0 Expert: the first mover scored 0.36 in Open play. Phase 3 changed the opponents, and with them the first mover's handicap is smaller and depends on how far the opponent looks ahead.
+The Vanguard was first agreed as a bonus for the whole board, on the review's numbers: measured with the 0.33.0 Expert, the first mover scored 0.36 in Open play. Phase 3 changed the opponents. With them the first mover's handicap is smaller, depends on how far the opponent looks ahead, and a whole-board bonus made the first mover the favourite. The player chose the shorter bonus on 2026-11-17: it ends when the fifth card is played.
 
-First mover's score in self-play, without the Vanguard → with it (`ai-lab first`, 1,200–2,000 deals, ±0.013; 0.5 is fair):
+First mover's score in self-play (`ai-lab first`, 1,200–2,000 deals, ±0.013; 0.5 is fair):
 
-| Rules | Regular | Experienced | Expert | Master |
-|---|---|---|---|---|
-| Open | 0.47 → 0.51 | 0.48 → 0.57 | 0.44 → 0.56 | 0.52 → 0.61 |
-| Hidden | 0.44 → 0.47 | 0.43 → 0.47 | 0.46 → 0.53 | 0.41 → 0.53 |
-| Three Open | 0.46 → 0.49 | | 0.48 → 0.52 | 0.44 → 0.56 |
-| Open, Same + Plus | 0.49 → 0.52 | 0.55 → 0.58 | 0.36 → 0.41 | 0.51 → 0.58 |
-| Hidden, Same + Plus | 0.47 → 0.43 | | 0.54 → 0.55 | 0.45 → 0.49 |
-
-- Without the Vanguard the first mover averages 0.46. With it, 0.52.
-- It is close to fair with hidden hands, and helps most where the handicap was real (Master with hidden hands: 0.41 → 0.53).
-- **It overshoots in Open play against strong opponents**: 0.56–0.61 for Experienced to Master. Master's Open game was already even (0.52) before the bonus.
-- The Same/Plus gap in the review (0.33) belongs to one search depth: only Expert shows it (0.36), and the Vanguard moves it to 0.41. No second rule was adopted for it.
-
-Two alternatives were measured and not adopted:
-
-| Variant | Regular, Open | Regular, hidden | Expert, Open | Expert, hidden | Master, Open | Master, hidden |
+| | Regular, Open | Regular, hidden | Expert, Open | Expert, hidden | Master, Open | Master, hidden |
 |---|---|---|---|---|---|---|
-| Vanguard as shipped | 0.51 | 0.47 | 0.56 | 0.53 | 0.61 | 0.53 |
-| Bonus ends when the fifth card is played | 0.45 | 0.44 | 0.52 | 0.52 | 0.54 | 0.49 |
-| Also immune to the next play | | | 0.59 | 0.64 | | |
+| No Vanguard | 0.47 | 0.44 | 0.44 | 0.46 | 0.52 | 0.41 |
+| **Until the fifth card (shipped)** | 0.45 | 0.44 | 0.52 | 0.52 | 0.54 | 0.49 |
+| For the whole board | 0.51 | 0.47 | 0.56 | 0.53 | 0.61 | 0.53 |
+| Whole board, and immune to the next play | | | 0.59 | 0.64 | | |
 
-The shorter bonus averages 0.49 and never strays more than 0.06 from fair; the shipped one averages 0.52 and reaches 0.61. Switching is one constant (`Match::vanguardSpan`, 9 → 4) and a sentence of rule text. These are opponents playing each other; how it feels with a person in one seat is for the in-game check.
+- Without the Vanguard the first mover averages 0.46 across the rule sets and skills measured. The shipped rule averages 0.49 and stays within 0.06 of fair; the whole-board bonus averaged 0.52 and reached 0.61 against Master in Open play.
+- Regular opponents look two plays ahead and gain nothing from the shorter bonus. Against them the first mover keeps a small handicap.
+- The Same/Plus gap in the review (0.33) belongs to one search depth: without the Vanguard only Expert shows it (0.36 in Open, Same + Plus), where Regular scores 0.49 and Master 0.51. No second rule was adopted for it.
+- These are opponents playing each other. How it feels with a person in one seat is for the in-game check.
 
 In Skyrim:
 - The lobby names who moves first, and that player does. Leave the lobby and return: the same player still moves first.
-- The first card shows +1. Let it be captured and retake it.
+- The first card shows +1. Let it be captured and retake it before the fifth card: the +1 returns. From the fifth card on it shows none.
 - Interrupt a match after the first card, save, reload and resume: the +1 is still there. Resume a match interrupted on 0.33.0: it plays on without one.
 - Start a new game: the Journal shows different rules across the holds. Load a 0.33.0 save: every hold has the rules it had.
 - Rules tab: the Vanguard page and its example.
