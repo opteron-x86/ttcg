@@ -1,6 +1,7 @@
 #pragma once
 #include <array>
 #include <bit>
+#include <cstdint>
 #include <random>
 #include <vector>
 namespace ttcg {
@@ -28,7 +29,20 @@ enum Rule : unsigned {
 inline constexpr std::array<unsigned, 17> ruleFlags{Open,      ThreeOpen,   Same,      SameWall,   Plus,    Reverse,
                                                     FallenAce, Affinity,    Legion,    Decimation, Order,   Chaos,
                                                     Swap,      SuddenDeath, Ascension, Descension, Dominion};
-inline constexpr unsigned RuleMask = 262135; // Bit 8 is the Combo presentation event.
+// Every rule a table can carry. Bit 8 is not among them: it is the Combo presentation event.
+inline constexpr unsigned RuleMask = [] {
+    unsigned mask = 0;
+    for (auto flag : ruleFlags) mask |= flag;
+    return mask;
+}();
+static_assert(RuleMask == 262135 && std::popcount(RuleMask) == int(ruleFlags.size()));
+// Printed ranks run from 1 to the Ace, which is shown as A.
+inline constexpr int lowestRank = 1, aceRank = 10;
+// Under Reverse the lower rank wins, so a rank is worth what its mirror image would be.
+constexpr int reversedRank(int rank) { return lowestRank + aceRank - rank; }
+// Knuth's multiplicative hash constant, 2^32 / φ. Multiplying a small counter by it spreads
+// consecutive values over all 32 bits before they are mixed into a seed.
+inline constexpr std::uint32_t seedSpread = 2654435761u;
 inline bool validRules(unsigned r) {
     return !(r & ~RuleMask) && !((r & Open) && (r & ThreeOpen)) && !((r & Legion) && (r & Decimation)) &&
            !((r & Order) && (r & Chaos)) && !((r & Ascension) && (r & Descension)) && (!(r & SameWall) || (r & Same));

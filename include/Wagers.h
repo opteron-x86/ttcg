@@ -11,11 +11,13 @@ struct BettingPurse {
     int gold = 0;
     unsigned restockAt = 0;
 };
+// An opponent's cards and betting purse both come back after three days.
+inline constexpr unsigned restockHours = 72;
 inline void refreshBettingPurse(BettingPurse& purse, int cap, unsigned hour) {
     if (cap < 0 || cap > maximumWager || hour > 100000000) return;
     if (!purse.restockAt || hour >= purse.restockAt) {
         purse.gold = std::max(purse.gold, cap * 3);
-        purse.restockAt = hour + 72;
+        purse.restockAt = hour + restockHours;
     }
 }
 inline int changeBettingPurse(BettingPurse& purse, int amount) {

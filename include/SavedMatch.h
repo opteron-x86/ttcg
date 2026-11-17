@@ -22,7 +22,7 @@ struct SavedMatch {
 };
 inline constexpr unsigned savedMatchFormat = 1;
 inline std::uint32_t matchDecisionSeed(const Match& table) {
-    return table.dealSeed ^ (table.redeals * 2654435761u) ^ (unsigned(table.placed) * 2246822519u) ^ table.randomState;
+    return table.dealSeed ^ (table.redeals * seedSpread) ^ (unsigned(table.placed) * 2246822519u) ^ table.randomState;
 }
 inline std::vector<std::uint32_t> encodeMatch(const SavedMatch& s) {
     if (!s.present) return {};

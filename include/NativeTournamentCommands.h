@@ -48,9 +48,7 @@ bool prepareTournament(unsigned id) {
         publish();
         return true;
     }
-    auto actor = campaign::resolveOpponent(ttcg::opponents[i]);
-    if ((!actor || actor->IsDisabled()) && ttcg::opponents[i].alternateReference)
-        actor = campaign::resolveID<RE::Actor>(ttcg::opponents[i].alternateReference);
+    auto actor = campaign::resolveActiveOpponent(ttcg::opponents[i]);
     if (!actor || actor->IsDead() || actor->IsDisabled()) {
         campaign::notice = "Opponent unavailable.";
         ++revision;

@@ -817,10 +817,11 @@ void command(const char* raw) {
         revision = 0;
         const auto* event = ttcg::tournament(campaign::saved, campaign::tournamentID);
         const auto seed =
-            event ? ttcg::tournamentHash(
-                        event->seed ^ event->matchNode ^ event->replays ^
-                        ((event->wins[event->matchNode - 8][0] + event->wins[event->matchNode - 8][1]) * 2654435761u))
-                  : static_cast<std::uint32_t>(std::chrono::steady_clock::now().time_since_epoch().count());
+            event
+                ? ttcg::tournamentHash(event->seed ^ event->matchNode ^ event->replays ^
+                                       ((event->wins[event->matchNode - 8][0] + event->wins[event->matchNode - 8][1]) *
+                                        ttcg::seedSpread))
+                : static_cast<std::uint32_t>(std::chrono::steady_clock::now().time_since_epoch().count());
         match = ttcg::Match(ttcg::indices(deck), ttcg::indices(campaign::rivalDeck), seed, rules);
         active = true;
         for (int p = 0; p < 2; ++p)

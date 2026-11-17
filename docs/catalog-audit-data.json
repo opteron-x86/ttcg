@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "fingerprint": "47fbb1068fd4ec74c77f78f73a4816b488a24e1ef53f468d5c4ef3bb3ae872d6",
+  "fingerprint": "993bbe6d27a2df2962ecc2cd42d927d7373b3a4197db5093bea42d7cb9f01cb4",
   "sources": {
     "data/cards.json": "9686e8e8efc154cd65bb948dd51257769a7cc0b3f893ecf6c8f514b317eab28b",
     "data/opponents.json": "d91f25f7e6d5fa6669e34f1cb763b45024001ea787b1c2677e42e31c79a8dedb",
@@ -8,10 +8,10 @@
     "data/rank-policy.json": "ff4dc258453b31c2b03326f23bc15b018aece7bd4451369bf0ee934fd0f7e3bb",
     "data/workshop-roster.json": "d43c9bb6ee4b137b0cf3f4be25c6d227a7751c7ba85ed79f82257e6649c00b89",
     "include/Album.h": "37fd8afc68f3f7ee12a82c9d012055cc985fc4bbdc7d66646ad8048a61d6a69b",
-    "include/Tournaments.h": "024ce38a82da3233633f4cff81ba3133194925a12e02f8563c5d8d17cd6a3263",
-    "include/Match.h": "91f422d590f604f68f5122074f47bd36cc448aa7c46a2a56401670ded7637326",
-    "include/Campaign.h": "35f95603b445693bd3b6d29bcde3c25d4f9cf67963307c5b0b6e326ee9c84551",
-    "include/Shop.h": "bbeffc1a1b0b8e47657fa2e45e7b5eef80d9f01e0c48a339b7320bc83d713bbb"
+    "include/Tournaments.h": "6f04c16406b523743fac8c547dbbd61f76e7624e29be7ae251182cb81663ddb5",
+    "include/Match.h": "0ba8d7f27db2546ce81c23425994f8098131358e1af6a81f7a2b2fbca11f545f",
+    "include/Campaign.h": "ee57d806091b69fd59bfa81d432b380d09215bb1121a17ce8c4e85f8695e5d4b",
+    "include/Shop.h": "59191e476bd032c4743cd910c71800c509a0108812443d1923577a72a6a9867c"
   },
   "cards": [
     {
@@ -139677,7 +139677,7 @@
   "initialWorkshop": {
     "kind": "tessera-roster-workshop",
     "schema": 2,
-    "catalogFingerprint": "47fbb1068fd4ec74c77f78f73a4816b488a24e1ef53f468d5c4ef3bb3ae872d6",
+    "catalogFingerprint": "993bbe6d27a2df2962ecc2cd42d927d7373b3a4197db5093bea42d7cb9f01cb4",
     "sideOrder": [
       "top",
       "right",
@@ -139689,7 +139689,7 @@
       {
         "kind": "tessera-catalog-template",
         "schema": 2,
-        "catalogFingerprint": "47fbb1068fd4ec74c77f78f73a4816b488a24e1ef53f468d5c4ef3bb3ae872d6",
+        "catalogFingerprint": "993bbe6d27a2df2962ecc2cd42d927d7373b3a4197db5093bea42d7cb9f01cb4",
         "sideOrder": [
           "top",
           "right",
@@ -140548,7 +140548,7 @@
       {
         "kind": "tessera-catalog-template",
         "schema": 2,
-        "catalogFingerprint": "47fbb1068fd4ec74c77f78f73a4816b488a24e1ef53f468d5c4ef3bb3ae872d6",
+        "catalogFingerprint": "993bbe6d27a2df2962ecc2cd42d927d7373b3a4197db5093bea42d7cb9f01cb4",
         "sideOrder": [
           "top",
           "right",
@@ -141407,7 +141407,7 @@
       {
         "kind": "tessera-catalog-template",
         "schema": 2,
-        "catalogFingerprint": "47fbb1068fd4ec74c77f78f73a4816b488a24e1ef53f468d5c4ef3bb3ae872d6",
+        "catalogFingerprint": "993bbe6d27a2df2962ecc2cd42d927d7373b3a4197db5093bea42d7cb9f01cb4",
         "sideOrder": [
           "top",
           "right",
@@ -142304,7 +142304,7 @@
       {
         "kind": "tessera-catalog-template",
         "schema": 2,
-        "catalogFingerprint": "47fbb1068fd4ec74c77f78f73a4816b488a24e1ef53f468d5c4ef3bb3ae872d6",
+        "catalogFingerprint": "993bbe6d27a2df2962ecc2cd42d927d7373b3a4197db5093bea42d7cb9f01cb4",
         "sideOrder": [
           "top",
           "right",
@@ -143149,7 +143149,7 @@
       {
         "kind": "tessera-catalog-template",
         "schema": 2,
-        "catalogFingerprint": "47fbb1068fd4ec74c77f78f73a4816b488a24e1ef53f468d5c4ef3bb3ae872d6",
+        "catalogFingerprint": "993bbe6d27a2df2962ecc2cd42d927d7373b3a4197db5093bea42d7cb9f01cb4",
         "sideOrder": [
           "top",
           "right",
@@ -144061,7 +144061,7 @@
       {
         "kind": "tessera-catalog-template",
         "schema": 2,
-        "catalogFingerprint": "47fbb1068fd4ec74c77f78f73a4816b488a24e1ef53f468d5c4ef3bb3ae872d6",
+        "catalogFingerprint": "993bbe6d27a2df2962ecc2cd42d927d7373b3a4197db5093bea42d7cb9f01cb4",
         "sideOrder": [
           "top",
           "right",
@@ -144939,7 +144939,7 @@
       {
         "kind": "tessera-catalog-template",
         "schema": 2,
-        "catalogFingerprint": "47fbb1068fd4ec74c77f78f73a4816b488a24e1ef53f468d5c4ef3bb3ae872d6",
+        "catalogFingerprint": "993bbe6d27a2df2962ecc2cd42d927d7373b3a4197db5093bea42d7cb9f01cb4",
         "sideOrder": [
           "top",
           "right",
@@ -145828,7 +145828,7 @@
       {
         "kind": "tessera-catalog-template",
         "schema": 2,
-        "catalogFingerprint": "47fbb1068fd4ec74c77f78f73a4816b488a24e1ef53f468d5c4ef3bb3ae872d6",
+        "catalogFingerprint": "993bbe6d27a2df2962ecc2cd42d927d7373b3a4197db5093bea42d7cb9f01cb4",
         "sideOrder": [
           "top",
           "right",
@@ -146687,7 +146687,7 @@
       {
         "kind": "tessera-catalog-template",
         "schema": 2,
-        "catalogFingerprint": "47fbb1068fd4ec74c77f78f73a4816b488a24e1ef53f468d5c4ef3bb3ae872d6",
+        "catalogFingerprint": "993bbe6d27a2df2962ecc2cd42d927d7373b3a4197db5093bea42d7cb9f01cb4",
         "sideOrder": [
           "top",
           "right",
@@ -147546,7 +147546,7 @@
       {
         "kind": "tessera-catalog-template",
         "schema": 2,
-        "catalogFingerprint": "47fbb1068fd4ec74c77f78f73a4816b488a24e1ef53f468d5c4ef3bb3ae872d6",
+        "catalogFingerprint": "993bbe6d27a2df2962ecc2cd42d927d7373b3a4197db5093bea42d7cb9f01cb4",
         "sideOrder": [
           "top",
           "right",
@@ -148426,7 +148426,7 @@
       {
         "kind": "tessera-catalog-template",
         "schema": 2,
-        "catalogFingerprint": "47fbb1068fd4ec74c77f78f73a4816b488a24e1ef53f468d5c4ef3bb3ae872d6",
+        "catalogFingerprint": "993bbe6d27a2df2962ecc2cd42d927d7373b3a4197db5093bea42d7cb9f01cb4",
         "sideOrder": [
           "top",
           "right",
@@ -149281,7 +149281,7 @@
       {
         "kind": "tessera-catalog-template",
         "schema": 2,
-        "catalogFingerprint": "47fbb1068fd4ec74c77f78f73a4816b488a24e1ef53f468d5c4ef3bb3ae872d6",
+        "catalogFingerprint": "993bbe6d27a2df2962ecc2cd42d927d7373b3a4197db5093bea42d7cb9f01cb4",
         "sideOrder": [
           "top",
           "right",
@@ -150140,7 +150140,7 @@
       {
         "kind": "tessera-catalog-template",
         "schema": 2,
-        "catalogFingerprint": "47fbb1068fd4ec74c77f78f73a4816b488a24e1ef53f468d5c4ef3bb3ae872d6",
+        "catalogFingerprint": "993bbe6d27a2df2962ecc2cd42d927d7373b3a4197db5093bea42d7cb9f01cb4",
         "sideOrder": [
           "top",
           "right",
@@ -150954,7 +150954,7 @@
       {
         "kind": "tessera-catalog-template",
         "schema": 2,
-        "catalogFingerprint": "47fbb1068fd4ec74c77f78f73a4816b488a24e1ef53f468d5c4ef3bb3ae872d6",
+        "catalogFingerprint": "993bbe6d27a2df2962ecc2cd42d927d7373b3a4197db5093bea42d7cb9f01cb4",
         "sideOrder": [
           "top",
           "right",
@@ -151813,7 +151813,7 @@
       {
         "kind": "tessera-catalog-template",
         "schema": 2,
-        "catalogFingerprint": "47fbb1068fd4ec74c77f78f73a4816b488a24e1ef53f468d5c4ef3bb3ae872d6",
+        "catalogFingerprint": "993bbe6d27a2df2962ecc2cd42d927d7373b3a4197db5093bea42d7cb9f01cb4",
         "sideOrder": [
           "top",
           "right",
@@ -152602,7 +152602,7 @@
       {
         "kind": "tessera-catalog-template",
         "schema": 2,
-        "catalogFingerprint": "47fbb1068fd4ec74c77f78f73a4816b488a24e1ef53f468d5c4ef3bb3ae872d6",
+        "catalogFingerprint": "993bbe6d27a2df2962ecc2cd42d927d7373b3a4197db5093bea42d7cb9f01cb4",
         "sideOrder": [
           "top",
           "right",
@@ -153445,7 +153445,7 @@
       {
         "kind": "tessera-catalog-template",
         "schema": 2,
-        "catalogFingerprint": "47fbb1068fd4ec74c77f78f73a4816b488a24e1ef53f468d5c4ef3bb3ae872d6",
+        "catalogFingerprint": "993bbe6d27a2df2962ecc2cd42d927d7373b3a4197db5093bea42d7cb9f01cb4",
         "sideOrder": [
           "top",
           "right",
@@ -153788,7 +153788,7 @@
       {
         "kind": "tessera-catalog-template",
         "schema": 2,
-        "catalogFingerprint": "47fbb1068fd4ec74c77f78f73a4816b488a24e1ef53f468d5c4ef3bb3ae872d6",
+        "catalogFingerprint": "993bbe6d27a2df2962ecc2cd42d927d7373b3a4197db5093bea42d7cb9f01cb4",
         "sideOrder": [
           "top",
           "right",

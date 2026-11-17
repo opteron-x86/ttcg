@@ -168,6 +168,13 @@ inline RE::Actor* resolveOpponent(const ttcg::OpponentProfile& p) {
     auto actor = it->second.get();
     return actor && persistentID(actor->GetActorBase()) == p.base ? actor.get() : nullptr;
 }
+// The opponent as they are in the world now: their alternate reference stands in while
+// the usual one is missing or disabled, as it is for NPCs a quest moves.
+inline RE::Actor* resolveActiveOpponent(const ttcg::OpponentProfile& p) {
+    auto actor = resolveOpponent(p);
+    if ((!actor || actor->IsDisabled()) && p.alternateReference) actor = resolveID<RE::Actor>(p.alternateReference);
+    return actor;
+}
 inline std::uint32_t ledgerKey(RE::TESObjectREFR* actor) {
     if (!actor) return 0;
     const auto* p = profile(actor->As<RE::Actor>());
@@ -339,6 +346,11 @@ struct Bank {
     }
 };
 inline bool available() { return saveValid && goldForm && packForm && tournamentPackForm && progression && albumForm; }
+// Gives the player the gold Tessera still owes them, as far as their inventory takes it.
+inline void payPlayerGold() {
+    Bank bank(0);
+    ttcg::payGoldCredit(saved.goldCredit, [&](int owed) { return bank.change(0, 0, owed); });
+}
 inline void initForms(bool distributeVendorPacks = true) {
     initNpcForms();
     childChallengeInfo =
@@ -446,10 +458,7 @@ inline void syncProgression(ttcg::NpcSyncTiming* timing = nullptr) {
             // Refresh due stock before dialogue conditions are evaluated; never seed an
             // unseen collection just to decide whether its owner is willing to play.
             if (hasAlbum() && unlocked(i) && !saved.contract.pending() && restock && hour >= restock) {
-                auto actor = resolveOpponent(p);
-                if ((!actor || actor->IsDisabled()) && p.alternateReference)
-                    actor = resolveID<RE::Actor>(p.alternateReference);
-                if (actor) seedOpponent(actor);
+                if (auto actor = resolveActiveOpponent(p)) seedOpponent(actor);
             }
             const bool freeToTalk =
                 !saved.accessBlocked.contains(p.base) &&
@@ -602,10 +611,7 @@ inline void updateTournaments(bool background = false) {
     ttcg::deliverTournamentPacks(saved, [](unsigned kind, int amount) {
         return physicalChange(RE::PlayerCharacter::GetSingleton(), kind ? tournamentPackForm : packForm, amount);
     });
-    if (saved.goldCredit > 0) {
-        Bank bank(0);
-        saved.goldCredit -= std::clamp(bank.change(0, 0, saved.goldCredit), 0, saved.goldCredit);
-    }
+    payPlayerGold();
 }
 inline void acceptChallenge(RE::Actor* actor) {
     if (!actor || resumingWith(actor)) return;
@@ -778,6 +784,14 @@ inline bool recoverSavedMatch() {
     }
     return true;
 }
+// The development switches that hand out every card and foil.
+inline void grantDevelopmentCards() {
+    development.grantFoils(saved);
+    if (development.grantCards(saved)) {
+        ensureAlbum();
+        SKSE::log::info("Development: granted all {} playable cards", ttcg::cards.size());
+    }
+}
 inline void recover() {
     if (!available()) return;
     removeLegacyAlbumStock();
@@ -785,6 +799,7 @@ inline void recover() {
         saved.economyRandom =
             static_cast<std::uint32_t>(std::chrono::steady_clock::now().time_since_epoch().count()) | 1u;
     claimAlbum();
+    // Unlike payPlayerGold, this also collects gold the player still owes (a negative credit).
     if (saved.goldCredit) {
         Bank bank(0);
         saved.goldCredit -= bank.change(0, 0, saved.goldCredit);
@@ -802,11 +817,7 @@ inline void recover() {
         return;
     }
     if (!saved.contract.pending()) {
-        development.grantFoils(saved);
-        if (development.grantCards(saved)) {
-            ensureAlbum();
-            SKSE::log::info("Development: granted all {} playable cards", ttcg::cards.size());
-        }
+        grantDevelopmentCards();
         ensureAlbum();
         ttcg::retainOwnedDecks(saved);
         updateTournaments();
@@ -815,11 +826,7 @@ inline void recover() {
     auto& c = saved.contract;
     int winner = c.outcome >= -1 ? c.outcome : -1;
     finish(winner);
-    development.grantFoils(saved);
-    if (development.grantCards(saved)) {
-        ensureAlbum();
-        SKSE::log::info("Development: granted all {} playable cards", ttcg::cards.size());
-    }
+    grantDevelopmentCards();
     claimAlbum();
     ensureAlbum();
     updateTournaments();
@@ -906,7 +913,7 @@ inline bool prepare(RE::Actor* actor, bool resetTerms = false) {
     const auto games = record.competitive.wins + record.competitive.losses + record.competitive.draws;
     const auto handSeed = practice
                               ? static_cast<std::uint32_t>(std::chrono::steady_clock::now().time_since_epoch().count())
-                              : persistentID(actor) ^ (games * 2654435761u);
+                              : persistentID(actor) ^ (games * ttcg::seedSpread);
     if (tournamentID) {
         auto* e = ttcg::tournament(saved, tournamentID);
         if (!e) return false;
@@ -921,10 +928,11 @@ inline bool prepare(RE::Actor* actor, bool resetTerms = false) {
         notice = "This tournament has no game to prepare.";
         return false;
     }
-    const auto seed = event ? ttcg::tournamentHash(event->seed ^ node ^
-                                                   (event->wins[node - 8][0] + event->wins[node - 8][1]) * 2654435761u ^
-                                                   event->replays)
-                            : handSeed;
+    const auto seed =
+        event ? ttcg::tournamentHash(event->seed ^ node ^
+                                     (event->wins[node - 8][0] + event->wins[node - 8][1]) * ttcg::seedSpread ^
+                                     event->replays)
+              : handSeed;
     rivalDeck =
         practice ? ttcg::childHand(rival, base, seed, sessionRules) : ttcg::opponentHand(rival, i, seed, sessionRules);
     if (!ttcg::validHand(rivalDeck, rival)) {

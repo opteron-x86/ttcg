@@ -90,17 +90,7 @@ inline int deckLimit(CardID id) {
     const int i = cardIndex(id);
     return i < 0 ? 0 : cards[i].unique ? 1 : 2;
 }
-inline bool validHand(const Hand& hand, const Stock& stock) {
-    Stock need, identities;
-    for (auto id : hand) {
-        if (cardIndex(id) < 0) return false;
-        ++need[id];
-        if (++identities[baseCardID(id)] > deckLimit(id)) return false;
-    }
-    for (auto [id, n] : need)
-        if (count(stock, id) < n || n > deckLimit(id)) return false;
-    return true;
-}
+// A deck may have empty slots. The cards it does hold must be owned and within the copy limits.
 inline bool validDeck(const Hand& hand, const Stock& stock) {
     Stock need, identities;
     for (auto id : hand) {
@@ -112,6 +102,15 @@ inline bool validDeck(const Hand& hand, const Stock& stock) {
     for (auto [id, n] : need)
         if (count(stock, id) < n || n > deckLimit(id)) return false;
     return true;
+}
+// A hand to play with: a deck with every slot filled.
+inline bool validHand(const Hand& hand, const Stock& stock) {
+    return std::none_of(hand.begin(), hand.end(), [](CardID id) { return !id; }) && validDeck(hand, stock);
+}
+// Hands over as much of a gold credit as `pay` will take, and keeps the rest owed.
+// `pay` is given the amount and answers how much of it moved.
+template <class Pay> void payGoldCredit(int& credit, Pay pay) {
+    if (credit > 0) credit -= std::clamp(pay(credit), 0, credit);
 }
 // Preserve slot order, retaining the earliest owned copies of duplicate cards.
 inline void retainOwnedDeck(Hand& deck, const Stock& stock) {

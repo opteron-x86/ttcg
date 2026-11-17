@@ -269,9 +269,7 @@ struct Confirm : RE::IMessageBoxCallback {
             }
             const auto result = ttcg::completeExchange(campaign::saved, key, serial, warnings);
             if (result == ttcg::ExchangeResult::Done) {
-                campaign::Bank bank(0);
-                auto& credit = campaign::saved.goldCredit;
-                if (credit > 0) credit -= std::clamp(bank.change(0, 0, credit), 0, credit);
+                campaign::payPlayerGold();
             }
             notify(q, resultName(result, "completed"));
         });

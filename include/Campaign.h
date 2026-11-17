@@ -54,9 +54,11 @@ inline HoldTerms opponentTerms(const CollectionSave& s, int i) {
     // A saved game count keeps an encounter's terms stable through lobby visits,
     // album edits and reloads. Finishing or forfeiting advances the next draw.
     const auto& r = progress(s, i).competitive;
-    std::mt19937 rng(p.base ^ ((r.wins + r.losses + r.draws) * 2654435761u) ^ 0x4D414951u);
+    std::mt19937 rng(p.base ^ ((r.wins + r.losses + r.draws) * seedSpread) ^ 0x4D414951u);
     return {randomTournamentRules(rng, Reverse), TradeOne};
 }
+// A traveller met on the road is not met again for a week.
+inline constexpr unsigned travellerReturnHours = 7 * 24;
 inline bool encounterReady(const CollectionSave& s, int i, unsigned hour) {
     if (i < 0 || i >= int(opponents.size())) return false;
     if (!isMaiq(opponents[i])) return true;
@@ -64,7 +66,8 @@ inline bool encounterReady(const CollectionSave& s, int i, unsigned hour) {
     return it == s.encounterAfter.end() || hour >= it->second;
 }
 inline void finishTravellerEncounter(CollectionSave& s, int i, unsigned hour) {
-    if (i >= 0 && i < int(opponents.size()) && isMaiq(opponents[i])) s.encounterAfter[opponents[i].base] = hour + 168;
+    if (i >= 0 && i < int(opponents.size()) && isMaiq(opponents[i]))
+        s.encounterAfter[opponents[i].base] = hour + travellerReturnHours;
 }
 inline const char* holdName(std::uint32_t id) {
     for (auto h : holds)
@@ -293,8 +296,8 @@ inline int handRuleScore(const Hand& hand, unsigned rules) {
         const int i = cardIndex(id);
         const auto& card = cards[i];
         for (int value : card.sides)
-            score +=
-                4 * (rules & Reverse ? 11 - value - sample.affinityModifier(i) : value + sample.affinityModifier(i));
+            score += 4 * (rules & Reverse ? reversedRank(value) - sample.affinityModifier(i)
+                                          : value + sample.affinityModifier(i));
         for (auto other : hand)
             if (other != id) {
                 const auto groups = cardGroups[i] & cardGroups[cardIndex(other)];
@@ -378,11 +381,11 @@ inline void replenishOpponent(CollectionSave& s, int i, std::uint32_t actor, uns
     if (!opponents[i].restock) return;
     auto& next = progress(s, i).restockAt;
     if (!next) {
-        next = hour + 72;
+        next = hour + restockHours;
         return;
     }
     if (hour < next) return;
-    next = hour + 72;
+    next = hour + restockHours;
     std::vector<CardID> basics;
     for (auto [id, n] : pool) {
         const int index = cardIndex(id);
